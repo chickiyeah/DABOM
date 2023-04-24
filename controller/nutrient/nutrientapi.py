@@ -74,12 +74,42 @@ sikyakcredit = [
 #식약청 코드 
 #C005 - 바코드 정보 조회
 #I2790 - 음식 영양성분 조회
+age_error = {"CODE":"ER001","DETAIL":"AGE MUST BE INTEGER"}
+gender_error = {"CODE":"ER002","DETAIL":"GENDER MUST BE male OR female"}
+month_error = {"CODE":"ER003","DETAIL":"MONTH RANGE MUST BE FROM 0 TO 11"}
+
+
 
 @nutrient.get('/categories')
 async def get_categories():   
     sql = "SELECT new카테 as 카테고리, count(new카테) as 개수 FROM food.foodb GROUP BY new카테 ORDER BY new카테"
     res = execute_sql(sql)
     return res
+
+@nutrient.get('/recomm/{age}/{gender}')
+async def get_recommand(age, gender):
+    def get_recomm(age, gender):
+        if "_month" in age:
+            if int(age.split("_month")[0]) < 12:
+                age = age.split("_month")[0]+" 개월"
+            else:
+                raise HTTPException(400, month_error)
+
+        else:
+            if age.isdecimal():
+                age = age+" 세"
+            else:
+                raise HTTPException(400, age_error)
+
+        sql = 'SELECT * FROM food.'+gender+' WHERE 연령 = \"'+age+'\"'
+        return execute_sql(sql)
+
+    if gender == 'male' or gender == 'female':     
+        return get_recomm(age, gender)
+    else:
+        raise(400, gender_error)
+        
+
 
 @nutrient.get('/barcodecroll')
 async def teset():
