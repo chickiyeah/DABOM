@@ -86,6 +86,11 @@ async def get_categories():
     res = execute_sql(sql)
     return res
 
+@nutrient.get('/recomm2000')
+async def get_recomm2000():
+    sql = "SELECT * FROM food.recommeat"
+    return execute_sql(sql)
+
 @nutrient.get('/recomm/{age}/{gender}')
 async def get_recommand(age, gender):
     def get_recomm(age, gender):
