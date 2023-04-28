@@ -19,6 +19,7 @@ user_not_match_error = {"code":"ER026", "message":"User is not a member of this 
 request_user_not_match_error = {"code":"ER027", "message":"Request User is not Match with this verifycode"}
 recive_user_not_match_error = {"code":"ER028", "message":"Target User is not Match with this verifycode"}
 target_user_is_already_friend = {"code":"ER029", "message":"Target User is already Friend"}
+target_user_is_not_friend = {"code":"ER030", "message":"Target User is not Friend"}
 
 s = smtplib.SMTP("smtp.gmail.com", 587)
 s.ehlo()
@@ -140,6 +141,23 @@ async def friend_request(data:request_friend, authorized: bool = Depends(verify_
             return "friend request send"
         except auth.UserNotFoundError:
             raise HTTPException(400, User_NotFound)
+        
+@friendapi.post("/remove")
+async def remove_friend(delid:str, authorized: bool = Depends(verify_token)):
+    if authorized:
+        try:
+            auth.get_user(delid)
+            f_list = execute_sql("SELECT friends FROM user WHERE ID = '%s'" % authorized[1])
+            if delid in f_list:
+                f_list.remove(delid)
+                execute_sql("UPDATE user SET friends = '%s' WHERE ID = '%s'" % (f_list, authorized[1]))
+                return "Friend Removed"
+            else:
+                raise HTTPException(400, target_user_is_not_friend)
+            
+        except auth.UserNotFoundError:
+            raise HTTPException(400, User_NotFound)
+    
         
 @friendapi.post("/{f_type}/{req_id}/{req_nick}/{tar_id}/{tar_nick}/{verify_id}")
 async def edit_friend(f_type: str, req_id: str, req_nick:str, tar_id: str, tar_nick:str, verify_id: str):
