@@ -148,9 +148,12 @@ async def remove_friend(delid:str, authorized: bool = Depends(verify_token)):
         try:
             auth.get_user(delid)
             f_list = execute_sql("SELECT friends FROM user WHERE ID = '%s'" % authorized[1])
+            t_list = execute_sql("SELECT friends FROM user WHERE ID = '%s'" % delid)
             if delid in f_list:
                 f_list.remove(delid)
+                t_list.remove(authorized[1])
                 execute_sql("UPDATE user SET friends = '%s' WHERE ID = '%s'" % (f_list, authorized[1]))
+                execute_sql("UPDATE user SET friends = '%s' WHERE ID = '%s'" % (t_list, delid))
                 return "Friend Removed"
             else:
                 raise HTTPException(400, target_user_is_not_friend)
