@@ -1,4 +1,5 @@
 import re
+from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel
 from firebase_admin import auth
@@ -8,7 +9,7 @@ from controller.database import execute_sql
 import os
 import requests
 import json
-import pymysql
+import math
 
 from bs4 import BeautifulSoup
 
@@ -48,6 +49,9 @@ def verify_user_token(req: Request):
     except KeyError:
         raise HTTPException(status_code=401, detail=unauthorized)
 
+class calculate(BaseModel):
+    pal: float
+
 class get_barcode(BaseModel):
     barcode: str
 
@@ -79,10 +83,57 @@ gender_error = {"CODE":"ER002","DETAIL":"GENDER MUST BE male OR female"}
 month_error = {"CODE":"ER003","DETAIL":"MONTH RANGE MUST BE FROM 0 TO 11"}
 
 
+@nutrient.get('/calculate/kcal')
+async def calculate_kcal(pal: calculate,authorized: bool = Depends(verify_user_token)):
+    pal = pal.pal
+    if authorized:
+        uid = authorized[1]
+        sql = "SELECT height, weight, gender, age FROM user WHERE ID = '%s'" % uid
+        user = execute_sql(sql)[0]
+        if user['height'] != "" and user['weight'] != "" and (user['gender'] == "male" or user['gender'] == "female"):
+            if user['gender'] == "male":
+                base = ((10*int(user['weight'])+6.25*int(user['height'])-5*int(user['age']))+5)
+                base1 = 66.47 + 13.75*float(user['weight']) + 5*float(user['height']) - 6.76 * int(user['age'])
+                return str(int(float(base) * pal))+" kcal"
+            else:
+                base = ((10*int(user['weight'])+6.25*int(user['height'])-5*int(user['age']))-161)
+                base1 = 665.1 + 9.56*(float(user['weight'])) + 1.85 * float(user['height']) - 4.68 * int(user['age'])
+                return str(int(float(base) * pal))+" kcal"
+            
+        else:
+            return "2000 kcal"
+        
+@nutrient.get('/calculate/bmi')
+async def calculate_bmi(authorized: bool = Depends(verify_user_token)):
+    if authorized:
+        uid = authorized[1]
+        sql = "SELECT Nickname, height, weight FROM user WHERE ID = '%s'" % uid
+        data = execute_sql(sql)[0]
+        if data['height'] == "" or data['weight'] == "":
+            raise HTTPException(400, "Invalid Data")
+        else:
+            height = float(data['height']) * 0.01
+            bmi = float(data['weight'])/(height*height)
+
+            bmi = math.floor(bmi * 10)/10
+            
+            if bmi > 25.0:
+                status = "비만"
+            elif ((bmi > 23.0) and (bmi < 24.9)):
+                status = "과체중"
+            elif ((bmi > 18.5) and (bmi < 22.9)):
+                status = "정상"
+            elif bmi <= 18.5:
+                status = "저체중"
+            else:
+                raise HTTPException(401, "Invalid Value")
+
+            return "{2} 님의 BMI는 {0} 이고, {1} 입니다.".format(bmi, status, data['Nickname'])
+    
 
 @nutrient.get('/categories')
 async def get_categories():   
-    sql = "SELECT new카테 as 카테고리, count(new카테) as 개수 FROM food.foodb GROUP BY new카테 ORDER BY new카테"
+    sql = "SELECT new카테 as 카테고리,  count(new카테) as 개수 FROM food.foodb GROUP BY new카테 ORDER BY new카테"
     res = execute_sql(sql)
     return res
 

@@ -1,7 +1,9 @@
 import json
+from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel
 import os
+from pymysql import IntegrityError
 import requests
 import datetime
 import re
@@ -110,6 +112,8 @@ gender_choose_error = {'code':'ER020', 'message':'Gender Must be male or female.
 age_type_error = {'code':'ER021', 'message':'Age must be Integer'}
 height_type_error = {'code':'ER022', 'message':'Height must be Integer'}
 weight_type_error = {'code':'ER023', 'message':'Weight must be Integer'}
+
+birthday_error = {'code':'ER024', 'message':'Birthday must be contain two /'}
 
 Token_Revoke = {"code":"ER999", "message":"TOKEN REVOKED"}
 Invalid_Token = {"code":"ER998", "message":"INVALID TOKEN"}
@@ -272,10 +276,9 @@ class UserRegisterdata(BaseModel):
     password: str
     nickname: str
     gender: str
-    age: int
     birthday: str
-    height: int
-    weight: int
+    height: Optional[str]
+    weight: Optional[str]
 
 class LoginResponse(BaseModel):
     ID: str
@@ -322,9 +325,12 @@ class UserFindiddata(BaseModel):
 class refresh_token(BaseModel):
     refresh_token: str
 
-async def verify_tokenb(req: str):
-    token = req   
+class setinfomsg(BaseModel):
+    msg: str
+
+async def verify_tokenb(req: Request): 
     try:
+        token = req.headers["Authorization"]  
         # Verify the ID token while checking if the token is revoked by
         # passing check_revoked=True.
         user = auth.verify_id_token(token, check_revoked=True)
@@ -339,6 +345,8 @@ async def verify_tokenb(req: str):
     except auth.InvalidIdTokenError:
         # Token is invalid
         raise HTTPException(status_code=401, detail=unauthorized_invaild)
+    except KeyError:
+        raise HTTPException(status_code=400, detail=unauthorized)
 
 
 async def verify_tokena(req: Request):
@@ -370,6 +378,29 @@ def verify_admin_token(req: Request):
         return True
     else:
         return False
+
+@userapi.post('/setinfomsg')
+async def setinfomsg(data:setinfomsg ,authorized: bool = Depends(verify_tokenb)):
+    if authorized:
+        msg = data.msg
+        sql = "UPDATE infomsg SET message = '%s' WHERE ID = '%s'" % (msg, authorized[1])
+        res = execute_sql(sql)
+        if res == 0:
+            sql = "INSERT INTO infomsg VALUES ('%s','%s')" % (authorized[1], msg)
+            try:
+                res = execute_sql(sql)
+                return "data created"
+            except IntegrityError as e:
+                if e.args[0] == 1062:
+                    return "same data"
+        else:
+            return "data updated"
+                
+            
+
+        
+        
+
 
 @userapi.post("/refresh_token")
 async def refresh_token(token: refresh_token, requset: Request):
@@ -494,6 +525,7 @@ async def user_login(userdata: UserLogindata, request: Request):
 
     currentuser = Auth.current_user
     sql = "SELECT * FROM user WHERE ID = \"%s\"" % currentuser['localId']
+    
     userjson = execute_sql(sql)[0]
     userjson['access_token'] = currentuser['idToken']
     userjson['refresh_token'] = currentuser['refreshToken']
@@ -530,7 +562,7 @@ async def user_create(userdata: UserRegisterdata):
     password = userdata.password
     nickname = userdata.nickname
     gender = userdata.gender
-    age = userdata.age
+    birthday = userdata.birthday
     height = userdata.height
     weight = userdata.weight
     #이메일이 공란이면
@@ -582,8 +614,10 @@ async def user_create(userdata: UserRegisterdata):
     if not gender == "male" or gender == "female":
         raise HTTPException(400, gender_choose_error)
     
-    if not age.isdecimal() and not age == "":
-        raise HTTPException(400, age_type_error)
+    if birthday.count("/") != 2:
+        raise HTTPException(400, birthday_error)
+    
+    age = int(datetime.datetime.now().strftime("%Y")) - int(birthday.split("/")[0])
     
     if not height.isdecimal() and not height == "":
         raise HTTPException(400, height_type_error)
@@ -618,7 +652,7 @@ async def user_create(userdata: UserRegisterdata):
         d.login("noreply.dabom", "sxhmurnajtenjtbr")
         d.send_message(msg)        
 
-    sql = "INSERT INTO user VALUES (\""+email+"\",\""+id+"\",\""+nickname+"\",\""+str(now)+"\")"
+    sql = "INSERT INTO user VALUES (\""+email+"\",\""+id+"\",\""+nickname+"\",\""+str(now.strftime("%Y-%m-%d %H:%M:%S"))+"\",\""+gender+"\",\""+str(age)+"\",\""+height+"\",\""+weight+"\", \"[]\")"
     res = execute_sql(sql)
     if res != 1:
         raise HTTPException(500, "ERROR ON CREATE DATA FOR NEW USER")
