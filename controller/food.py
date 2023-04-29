@@ -23,6 +23,10 @@ unauthorized_userdisabled = {'code':'ER016','message':'UNAUTHORIZED (TOKENS FROM
 class search_input(BaseModel):
     keywords: str
 
+class add_food(BaseModel):
+    name: str
+    category: str
+    kcal: int
 
 async def verify_token(req: Request): 
     try:
@@ -44,6 +48,23 @@ async def verify_token(req: Request):
     except KeyError:
         raise HTTPException(status_code=400, detail=unauthorized)
 
+@foodapi.post("/add")
+async def food_add(data: add_food, authorized: bool = Depends(verify_token)):
+    if authorized:
+        name = data.name
+        cate = data.category
+        kcal = data.kcal
+        b_num = str(execute_sql("SELECT id FROM custom_food")[0]['id'])
+        b_num_len = "0"*(6-(len(str(int(b_num)+1))))
+        n_num = "C{0}{1}-ZZ-AVG".format(b_num_len, int(b_num)+1)
+        pname = execute_sql("SELECT Nickname FROM user WHERE ID = '{0}'".format(authorized[1]))[0]['Nickname']
+        execute_sql("UPDATE custom_food SET id = {0} WHERE `fetch` = 'chi'".format(int(b_num)+1))
+        execute_sql("INSERT INTO foodb (SAMPLE_ID, `에너지(㎉)`, new카테, 식품명, data_adder) VALUES ('{0}','{1}','{2}','{3}', '{4}')".format(n_num, kcal, cate, name, pname))
+
+        return "food added"
+        
+
+
 @foodapi.post("/search/and")
 async def food_search(input:search_input ,authorized: bool = Depends(verify_token)):
     if authorized:
@@ -58,7 +79,6 @@ async def food_search(input:search_input ,authorized: bool = Depends(verify_toke
                 search = search + "{0} LIKE \"%{1}%\" AND ".format(text[0], text[1])
 
         res = execute_sql(search[0:-4])
-        print(search[0:-4])
         return res
     
 @foodapi.post("/search/or")
@@ -75,7 +95,6 @@ async def food_search(input:search_input ,authorized: bool = Depends(verify_toke
                 search = search + "{0} LIKE \"%{1}%\" OR ".format(text[0], text[1])
 
         res = execute_sql(search[0:-4])
-        print(search[0:-4])
         return res
     
 @foodapi.get("/detail/{sample_id}")
