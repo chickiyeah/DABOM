@@ -167,8 +167,8 @@ async def get_recommand(age, gender):
         
 
 
-@nutrient.get('/barcodecroll')
-async def teset():
+@nutrient.get('/barcodecroll/{barcode}')
+async def teset(barcode:str):
     url = 'http://www.allproductkorea.or.kr/products/info?q=%7B%22mainKeyword%22:%22'+barcode+'%22,%22subKeyword%22:%22%22%7D&page=1&size=10'
     response = requests.get(url)
 
@@ -183,7 +183,8 @@ async def teset():
         print(title)
         resdata = {}
         resdata = {}
-        for k in range(len(datas)-1):
+        print(datas)
+        for k in range(len(datas)):
             print(datas[k]['data-prd-no'])
             print("k"+str(k))
 
@@ -218,11 +219,7 @@ async def teset():
                 print(str(i)+"/"+str(int(len(rdata)/3)))
                 print(resdata[re.sub('<.+?>', '', str(title[k]), 0).strip()])  
 
-                
-
-             
-        
-        return resdata
+            return resdata
 
     else : 
         print(response.status_code)

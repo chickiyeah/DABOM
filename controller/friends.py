@@ -13,6 +13,10 @@ import datetime
 import smtplib
 from email.message import EmailMessage
 import random
+import pyshorteners
+
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 restype_error = {"code":"ER025", "message":"Accept type is accept or reject"}
 user_not_match_error = {"code":"ER026", "message":"User is not a member of this verifycode"}
@@ -25,6 +29,8 @@ s = smtplib.SMTP("smtp.gmail.com", 587)
 s.ehlo()
 s.starttls()
 s.login("noreply.dabom", "sxhmurnajtenjtbr")
+
+bitly = pyshorteners.Shortener(api_key='6099ddc45ca69789ca421d865572f3d89c3c34ca')
 
 friendapi = APIRouter(prefix="/api/friends", tags=["friend"])
 
@@ -94,7 +100,7 @@ async def friend_request(data:request_friend, authorized: bool = Depends(verify_
             requestnick = execute_sql(sql)[0]['Nickname']
             tarsql = "SELECT Nickname FROM user WHERE ID='%s'" % targetid
             targetnick = execute_sql(tarsql)[0]['Nickname']
-            msg = EmailMessage()
+            msg = MIMEMultipart('alternative')
             msg['Subject'] = '[다봄] %s 님으로 부터 친구요청이 도착했습니다.' % requestnick
             msg['From'] = "noreply.dabom@gmail.com"
             msg['To'] = targetmail
@@ -121,22 +127,69 @@ async def friend_request(data:request_friend, authorized: bool = Depends(verify_
             execute_sql(add_verifykey)
 
             link = "http://130.162.141.91/friend/request/%s/%s/%s/%s/%s" % (requestid, requestnick, targetid, targetnick, verifykey)
-            msg.set_content("안녕하세요 다봄 입니다.\n\n%s 님이 유저님에게 친구요청을 보냈습니다.\n아래 링크를 클릭해서 수락/거절 여부를 선택해주세요!\n\n\n%s\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다." % (requestnick, link))
-            
+            text = "\n\n\n안녕하세요 다봄 입니다.\n\n%s 님이 유저님에게 친구요청을 보냈습니다.\n아래 링크를 클릭해서 수락/거절 여부를 선택해주세요!\n\n\n%s\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다."
+            html = """\
+<html>
+  <head></head>
+  <body>
+    <div>
+        <xlink href="//fonts.googleapis.com/css?family=Google+Sans" rel="stylesheet" type="text/css"
+            <tr align="center" height="32" style="height: 32px;">
+                <td>
+                    <table border="0" cellspacing="0" cellpadding="0"
+                    style="padding-bottom: 20px; max-width: 516px; min-width: 220px; margin-left:auto; margin-right:auto; margin-top:6rem">
+                        <tbody>
+                        <tr>
+                        <td>
+                            <div align="center" style="border-style: solid; border-width: thin; border-color:#dadce0; border-radius: 8px; padding: 40px 20px;">
+                                <img src='https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabomlogo.png?alt=media&token=8b895151-37d3-4bbe-ae65-efdd6adb6ff7' width="74" height="54" style="margin-bottom: 16px;" loading="lazy"/>
+                                <div style="font-family: 'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif;border-bottom: thin solid #dadce0; color: rgba(0,0,0,0.87); line-height: 32px; padding-bottom: 24px;text-align: center; word-break: break-word;><div style="font-size: 24px;">
+                                    <a style="text-decoration: none; color: rgba(0,0,0,0.87);" rel="noreferrer noopener"target="_blank">{0}</a> 님이 유저님에게 친구요청을 보냈습니다.
+                                </div>
+                                    <div style="font-family: Roboto-Regular,Helvetica,Arial,sans-serif; font-size: 14px; color: rgba(0,0,0,0.87); line-height: 20px;padding-top: 20px; text-align: center;">    
+                                        <p>아래 링크를 클릭해서 수락/거절 여부를 선택해주세요!</p>
+                                        <a href='{1}'> 친구 요청 보러가기 </a>
+                                        <br/>
+                                        <br/>
+                                        <p>※ 본 메일은 발신 전용 메일이며,</p>
+                                        <p>자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </td></tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </div>
+  </body>
+</html>
+""".format(requestnick, link)
+            # Record the MIME types of both parts - text/plain and text/html.
+            part1 = MIMEText(text, 'plain')
+            part2 = MIMEText(html, 'html')
+
+            # Attach parts into message container.
+            # According to RFC 2046, the last part of a multipart message, in this case
+            # the HTML message, is best and preferred.
+            msg.attach(part1)
+            msg.attach(part2)
+            #msg.set_content("<div><img src='https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabomlogo.png?alt=media&token=8b895151-37d3-4bbe-ae65-efdd6adb6ff7'>안녕하세요 다봄 입니다.\n\n%s 님이 유저님에게 친구요청을 보냈습니다.\n아래 링크를 클릭해서 수락/거절 여부를 선택해주세요!\n\n\n%s\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.</div>" % (requestnick, slink))
+            msg.add_header('Content-Disposition', 'attachment', filename="dabomlogo")
             try:
-                s.send_message(msg)
+                s.sendmail("noreply.dabom@gmail.com", targetmail, msg.as_string())
             except smtplib.SMTPServerDisconnected:
                 d = smtplib.SMTP("smtp.gmail.com", 587)
                 d.ehlo()
                 d.starttls()
                 d.login("noreply.dabom", "sxhmurnajtenjtbr")
-                d.send_message(msg)
+                d.sendmail("noreply.dabom@gmail.com", targetmail, msg.as_string())
             except smtplib.SMTPSenderRefused: #sender refused to send message
                 d = smtplib.SMTP("smtp.gmail.com", 587)
                 d.ehlo()
                 d.starttls()
                 d.login("noreply.dabom", "sxhmurnajtenjtbr")
-                d.send_message(msg)   
+                d.sendmail("noreply.dabom@gmail.com", targetmail, msg.as_string())   
             
             return "friend request send"
         except auth.UserNotFoundError:

@@ -11,6 +11,9 @@ import smtplib
 from email.message import EmailMessage
 from controller.database import execute_sql
 
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 s = smtplib.SMTP("smtp.gmail.com", 587)
 s.ehlo()
 s.starttls()
@@ -548,10 +551,7 @@ async def user_login(userdata: UserLogindata, request: Request):
     id = userjson['ID']
     login_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     ip = request.client.host
-
-    sql = "INSERT INTO loginlog VALUES ('{0}','{1}','{2}','{3}')".format(id, login_at, ip, userjson['Nickname'])
-    res = execute_sql(sql)
-    print(res)
+    execute_sql("INSERT INTO loginlog VALUES ('{0}','{1}','{2}','{3}')".format(id, login_at, ip, userjson['Nickname']))
 
     return userjson
 
@@ -631,26 +631,77 @@ async def user_create(userdata: UserRegisterdata):
 
     res = auth.generate_email_verification_link(email, action_code_settings=None, app=None)
     message = res.replace("lang=en", "lang=ko")
-    msg = EmailMessage()
+    msg = MIMEMultipart('alternative')
     msg['Subject'] = '[다봄] 계정 이메일 인증'
     msg['From'] = "noreply.dabom@gmail.com"
     msg['To'] = email
-    msg.set_content("안녕하세요 다봄 입니다.\n\n해당 이메일로 다봄 사이트에 가입되어 이메일 인증이 필요합니다.\n아래 링크를 클릭해서 이메일 인증을 완료할 수 있습니다.\n\n"+message+"\n\n만약 본인이 가입하지 않은거라면 이 메일을 무시하세요.\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.")
+    #message
+    #msg.set_content("안녕하세요 다봄 입니다.\n\n해당 이메일로 다봄 사이트에 가입되어 이메일 인증이 필요합니다.\n아래 링크를 클릭해서 이메일 인증을 완료할 수 있습니다.\n\n"+message+"\n\n만약 본인이 가입하지 않은거라면 이 메일을 무시하세요.\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.")
     
+    text = "회원가입"
+    html = """\
+<html>
+  <head></head>
+  <body>
+    <div>
+        <xlink href="//fonts.googleapis.com/css?family=Google+Sans" rel="stylesheet" type="text/css"
+            <tr align="center" height="32" style="height: 32px;">
+                <td>
+                    <table border="0" cellspacing="0" cellpadding="0"
+                    style="padding-bottom: 20px; max-width: 516px; min-width: 220px; margin-left:auto; margin-right:auto; margin-top:6rem">
+                        <tbody>
+                        <tr>
+                        <td>
+                            <div align="center" style="border-style: solid; border-width: thin; border-color:#dadce0; border-radius: 8px; padding: 40px 20px;">
+                                <img src='https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabomlogo.png?alt=media&token=8b895151-37d3-4bbe-ae65-efdd6adb6ff7' width="74" height="54" style="margin-bottom: 16px;" loading="lazy"/>
+                                <div style="font-family: 'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif;border-bottom: thin solid #dadce0; color: rgba(0,0,0,0.87); line-height: 32px; padding-bottom: 24px;text-align: center; word-break: break-word;><div style="font-size: 24px;">
+                                    <a style="text-decoration: none; color: rgba(0,0,0,0.87);" rel="noreferrer noopener"target="_blank">누군가가</a> 해당 이메일을 사용하여 사이트에 가입했습니다.
+                                </div>
+                                    <div style="font-family: Roboto-Regular,Helvetica,Arial,sans-serif; font-size: 14px; color: rgba(0,0,0,0.87); line-height: 20px;padding-top: 20px; text-align: center;">    
+                                        <p>해당 이메일로 다봄 사이트에 가입이 되어 이메일 인증이 필요합니다.</p>
+                                        <p> 아래 링크를 클릭하여 이메일 인증을 완료할 수 있습니다. </p>
+                                        <a href='{0}'> 이메일 인증 완료하기 </a>
+                                        <br/>
+                                        <strong>만약 본인이 가입하지 않은거라면 이 메일을 무시하세요.</strong>
+                                        <br/>                                        
+                                        <p>※ 본 메일은 발신 전용 메일이며,</p>
+                                        <p>자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </td></tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </div>
+  </body>
+</html>
+""".format(message)
+            # Record the MIME types of both parts - text/plain and text/html.
+    part1 = MIMEText(text, 'plain')
+    part2 = MIMEText(html, 'html')
+
+            # Attach parts into message container.
+            # According to RFC 2046, the last part of a multipart message, in this case
+            # the HTML message, is best and preferred.
+    msg.attach(part1)
+    msg.attach(part2)
+
     try:
-        s.send_message(msg)
+        s.sendmail("noreply.dabom@gmail.com", email, msg.as_string())
     except smtplib.SMTPServerDisconnected:
         d = smtplib.SMTP("smtp.gmail.com", 587)
         d.ehlo()
         d.starttls()
         d.login("noreply.dabom", "sxhmurnajtenjtbr")
-        d.send_message(msg)
+        d.sendmail("noreply.dabom@gmail.com", email, msg.as_string())
     except smtplib.SMTPSenderRefused: #sender refused to send message
         d = smtplib.SMTP("smtp.gmail.com", 587)
         d.ehlo()
         d.starttls()
         d.login("noreply.dabom", "sxhmurnajtenjtbr")
-        d.send_message(msg)        
+        d.sendmail("noreply.dabom@gmail.com", email, msg.as_string())       
 
     sql = "INSERT INTO user VALUES (\""+email+"\",\""+id+"\",\""+nickname+"\",\""+str(now.strftime("%Y-%m-%d %H:%M:%S"))+"\",\""+gender+"\",\""+str(age)+"\",\""+height+"\",\""+weight+"\", \"[]\")"
     res = execute_sql(sql)
@@ -703,28 +754,86 @@ async def user_reset_password(userdata: UserResetPWdata):
     rstlink = auth.generate_password_reset_link(email, action_code_settings=None, app=None)
     rstlink = rstlink.replace("lang=en", "lang=ko")
 
-    rst = EmailMessage()
+    rst = MIMEMultipart('alternative')
     rst['Subject'] = '[다봄] 계정 비밀번호 변경'
     rst['From'] = "noreply.dabom@gmail.com"
     rst['To'] = email
-    rst.set_content("안녕하세요 다봄 입니다.\n\n회원님께서는 다봄 계정의 비밀번호 변경을 요청하셨습니다.\n링크를 누르면 새로운 비밀번호를 설정하실 수 있습니다.\n\n"+rstlink+"\n\n회원님이 요청하신 것이 아니라면 이 메일을 무시하세요.\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.")
+    #rst.set_content("안녕하세요 다봄 입니다.\n\n회원님께서는 다봄 계정의 비밀번호 변경을 요청하셨습니다.\n링크를 누르면 새로운 비밀번호를 설정하실 수 있습니다.\n\n"+rstlink+"\n\n회원님이 요청하신 것이 아니라면 이 메일을 무시하세요.\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.")
     
+    text = "비번초기화"
+    html = """\
+<html>
+  <head></head>
+  <body>
+    <div>
+        <xlink href="//fonts.googleapis.com/css?family=Google+Sans" rel="stylesheet" type="text/css"
+            <tr align="center" height="32" style="height: 32px;">
+                <td>
+                    <table border="0" cellspacing="0" cellpadding="0"
+                    style="padding-bottom: 20px; max-width: 516px; min-width: 220px; margin-left:auto; margin-right:auto; margin-top:6rem">
+                        <tbody>
+                        <tr>
+                        <td>
+                            <div align="center" style="border-style: solid; border-width: thin; border-color:#dadce0; border-radius: 8px; padding: 40px 20px;">
+                                <img src='https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabomlogo.png?alt=media&token=8b895151-37d3-4bbe-ae65-efdd6adb6ff7' width="74" height="54" style="margin-bottom: 16px;" loading="lazy"/>
+                                <div style="font-family: 'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif;border-bottom: thin solid #dadce0; color: rgba(0,0,0,0.87); line-height: 32px; padding-bottom: 24px;text-align: center; word-break: break-word;><div style="font-size: 24px;">
+                                    <a style="text-decoration: none; color: rgba(0,0,0,0.87);" rel="noreferrer noopener"target="_blank"></a> 계정 비밀번호 초기화
+                                </div>
+                                    <div style="font-family: Roboto-Regular,Helvetica,Arial,sans-serif; font-size: 14px; color: rgba(0,0,0,0.87); line-height: 20px;padding-top: 20px; text-align: center;">    
+                                        <p> 비밀번호 초기화를 요청이 접수되어 비밀번호 초기화 링크를 보내드립니다.</p>
+                                        <p> 아래 링크를 클릭하여 비밀번호를 새로 설정하실 수 있습니다. </p>
+                                        <br>
+                                        <a href='{0}'> 비밀번호 재설정하기 </a>
+                                        <br>
+                                        <br>
+                                        <strong>만약 본인이 요청하지 않은거라면 이 메일을 무시하세요.</strong>
+                                        <br>
+                                        <br>
+                                        <p>회원님의 비밀번호는 암호화되어 저장되어 기존 비밀번호를 복구해 드릴수 없습니다.</p>
+                                        <br>  
+                                        <br>
+                                        <br>
+                                        <p>※ 본 메일은 발신 전용 메일이며,</p>
+                                        <p>자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </td></tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </div>
+  </body>
+</html>
+""".format(rstlink)
+    
+            # Record the MIME types of both parts - text/plain and text/html.
+    part1 = MIMEText(text, 'plain')
+    part2 = MIMEText(html, 'html')
+
+            # Attach parts into message container.
+            # According to RFC 2046, the last part of a multipart message, in this case
+            # the HTML message, is best and preferred.
+    rst.attach(part1)
+    rst.attach(part2)
+
     try:
-        s.send_message(rst)
+        s.sendmail("noreply.dabom@gmail.com", email, rst.as_string())
     except smtplib.SMTPServerDisconnected: # when server disconnect
         d = smtplib.SMTP("smtp.gmail.com", 587)
         d.ehlo()
         d.starttls()
         d.login("noreply.dabom", "sxhmurnajtenjtbr")
-        d.send_message(rst)
+        d.sendmail("noreply.dabom@gmail.com", email, rst.as_string())
     except smtplib.SMTPSenderRefused: #sender refused to send message
         d = smtplib.SMTP("smtp.gmail.com", 587)
         d.ehlo()
         d.starttls()
         d.login("noreply.dabom", "sxhmurnajtenjtbr")
-        d.send_message(rst)  
+        d.sendmail("noreply.dabom@gmail.com", email, rst.as_string())
 
-    return rstlink
+    return "password reset link sent"
 
 @userapi.post("/verify_email")
 async def user_verify(userdata: EmailVerify):
@@ -738,26 +847,81 @@ async def user_verify(userdata: EmailVerify):
         
         vlink = auth.generate_email_verification_link(email, action_code_settings=None, app=None)
 
-        ver = EmailMessage()
+        ver = MIMEMultipart('alternative')
         ver['Subject'] = '[다봄] 계정 이메일 인증'
         ver['From'] = 'noreply.dabom@gmail.com'
         ver['To'] = email
-        ver.set_content("안녕하세요 다봄 입니다.\n\n해당 이메일로 다봄 사이트에 이메일 인증이 요청되었습니다.\n아래 링크를 클릭해서 이메일 인증을 완료할 수 있습니다.\n\n"+vlink+"\n\n만약 본인이 가입하지 않은거라면 이 메일을 무시하세요.\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.")
+        #ver.set_content("안녕하세요 다봄 입니다.\n\n해당 이메일로 다봄 사이트에 이메일 인증이 요청되었습니다.\n아래 링크를 클릭해서 이메일 인증을 완료할 수 있습니다.\n\n"+vlink+"\n\n만약 본인이 가입하지 않은거라면 이 메일을 무시하세요.\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.")
+
+        text = "이메일 인증"
+        html = """\
+<html>
+  <head></head>
+  <body>
+    <div>
+        <xlink href="//fonts.googleapis.com/css?family=Google+Sans" rel="stylesheet" type="text/css"
+            <tr align="center" height="32" style="height: 32px;">
+                <td>
+                    <table border="0" cellspacing="0" cellpadding="0"
+                    style="padding-bottom: 20px; max-width: 516px; min-width: 220px; margin-left:auto; margin-right:auto; margin-top:6rem">
+                        <tbody>
+                        <tr>
+                        <td>
+                            <div align="center" style="border-style: solid; border-width: thin; border-color:#dadce0; border-radius: 8px; padding: 40px 20px;">
+                                <img src='https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabomlogo.png?alt=media&token=8b895151-37d3-4bbe-ae65-efdd6adb6ff7' width="74" height="54" style="margin-bottom: 16px;" loading="lazy"/>
+                                <div style="font-family: 'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif;border-bottom: thin solid #dadce0; color: rgba(0,0,0,0.87); line-height: 32px; padding-bottom: 24px;text-align: center; word-break: break-word;><div style="font-size: 24px;">
+                                    <a style="text-decoration: none; color: rgba(0,0,0,0.87);" rel="noreferrer noopener"target="_blank"></a> 계정 이메일 인증
+                                </div>
+                                    <div style="font-family: Roboto-Regular,Helvetica,Arial,sans-serif; font-size: 14px; color: rgba(0,0,0,0.87); line-height: 20px;padding-top: 20px; text-align: center;">    
+                                        <p> 이메일 인증 요청이 접수되어 이메일 인증 링크를 보내드립니다.</p>
+                                        <p> 아래 링크를 클릭하여 이메일 인증을 완료 하실수 있습니다. </p>
+                                        <br>
+                                        <a href='{0}'> 이메일 인증하기 </a>
+                                        <br>
+                                        <br>
+                                        <strong>만약 본인이 요청하지 않은거라면 이 메일을 무시하세요.</strong>
+                                        <br>  
+                                        <br>
+                                        <br>
+                                        <p>※ 본 메일은 발신 전용 메일이며,</p>
+                                        <p>자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </td></tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </div>
+  </body>
+</html>
+""".format(vlink)
+
+            # Record the MIME types of both parts - text/plain and text/html.
+        part1 = MIMEText(text, 'plain')
+        part2 = MIMEText(html, 'html')
+
+            # Attach parts into message container.
+            # According to RFC 2046, the last part of a multipart message, in this case
+            # the HTML message, is best and preferred.
+        ver.attach(part1)
+        ver.attach(part2)
 
         try:
-            s.send_message(ver)
+            s.sendmail("noreply.dabom@gmail.com", email, ver.as_string())
         except smtplib.SMTPServerDisconnected:
             d = smtplib.SMTP("smtp.gmail.com", 587)
             d.ehlo()
             d.starttls()
             d.login("noreply.dabom", "sxhmurnajtenjtbr")
-            d.send_message(ver)
+            d.sendmail("noreply.dabom@gmail.com", email, ver.as_string())
         except smtplib.SMTPSenderRefused: #sender refused to send message
             d = smtplib.SMTP("smtp.gmail.com", 587)
             d.ehlo()
             d.starttls()
             d.login("noreply.dabom", "sxhmurnajtenjtbr")
-            d.send_message(ver)         
+            d.sendmail("noreply.dabom@gmail.com", email, ver.as_string())         
         
         return {"detail":"Email Verification Link Sent"}
 
