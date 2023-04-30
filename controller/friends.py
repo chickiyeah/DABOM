@@ -64,16 +64,25 @@ unauthorized_userdisabled = {'code':'ER016','message':'UNAUTHORIZED (TOKENS FROM
 class request_friend(BaseModel):
     email: str
 
-@friendapi.get("/list")
-async def friend_list(authorized: bool = Depends(verify_token)):
+@friendapi.get("/list/{page}")
+async def friend_list(page: int, authorized: bool = Depends(verify_token)):
     if authorized:
+        if page <= 0:
+            raise HTTPException(400, "Page Must be greater than 0")
+        
         uid = authorized[1]
         sql = "SELECT friends FROM user WHERE ID = '%s'" % uid
         res = json.loads(execute_sql(sql)[0]['friends'])
         if len(res) == 0:
             return "친구가 존재하지 않습니다."
         
-        return res
+        sql = "SELECT * FROM infomsg WHERE"
+        for e in res:
+            sql = sql + " ID = '%s' OR" % e
+
+        sql = sql[0:-3] + " LIMIT 10 OFFSET %s0" % (page - 1)
+
+        return execute_sql(sql)
 
 @friendapi.post("/request")
 async def friend_request(data:request_friend, authorized: bool = Depends(verify_token)):
