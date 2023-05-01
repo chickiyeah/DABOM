@@ -57,9 +57,10 @@ async def food_add(data: add_food, authorized: bool = Depends(verify_token)):
         b_num = str(execute_sql("SELECT id FROM custom_food")[0]['id'])
         b_num_len = "0"*(6-(len(str(int(b_num)+1))))
         n_num = "C{0}{1}-ZZ-AVG".format(b_num_len, int(b_num)+1)
+        n_code ="C{0}{1}".format(b_num_len, int(b_num)+1)
         pname = execute_sql("SELECT Nickname FROM user WHERE ID = '{0}'".format(authorized[1]))[0]['Nickname']
         execute_sql("UPDATE custom_food SET id = {0} WHERE `fetch` = 'chi'".format(int(b_num)+1))
-        execute_sql("INSERT INTO foodb (SAMPLE_ID, `에너지(㎉)`, new카테, 식품명, data_adder) VALUES ('{0}','{1}','{2}','{3}', '{4}')".format(n_num, kcal, cate, name, pname))
+        execute_sql("INSERT INTO foodb (SAMPLE_ID, `에너지(kcal)`, new카테, 식품명, data_adder, 식품코드) VALUES ('{0}','{1}','{2}','{3}', '{4}','{5}')".format(n_num, kcal, cate, name, pname, n_code))
 
         return "food added"
         
@@ -100,7 +101,7 @@ async def food_search(input:search_input ,authorized: bool = Depends(verify_toke
 @foodapi.get("/detail/{sample_id}")
 async def food_datail(sample_id:str, authorized: bool = Depends(verify_token)):
     if authorized:
-        detail = execute_sql("SELECT 식품명, 1회제공량, 내용량_단위, 유통사, new카테, `에너지(㎉)` FROM foodb WHERE SAMPLE_ID = '%s'" % sample_id)
+        detail = execute_sql("SELECT 식품명, 1회제공량, 내용량_단위, 유통사, new카테, `에너지(kcal)` FROM foodb WHERE SAMPLE_ID = '%s'" % sample_id)
         if len(detail) == 0:
             raise HTTPException(400, "Could not find food with this sample id.")
         
@@ -111,6 +112,6 @@ async def food_datail(sample_id:str, authorized: bool = Depends(verify_token)):
             "식품명": detail['식품명'],
             "카테고리" : detail['new카테'],
             "유통사" : detail['유통사'],
-            "칼로리 (%s)" % gram : detail['에너지(㎉)']
+            "칼로리 (%s)" % gram : detail['에너지(kcal)']
         }    
         return res
