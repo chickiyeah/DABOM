@@ -514,6 +514,8 @@ async def get_object_with_barcode(barcode:str):
                                 "유통사": s_company,
                                 "new카테": cate_n
                             }
+
+                        return p_res
                     else:
                         objs = execute_sql("SELECT `NO`,`식품명`,`총내용량(g)` FROM foodb WHERE `총내용량(g)` = {0} AND `식품명` LIKE \"%{1}%\"".format(glist[0], name))
                         o_len = len(objs)
