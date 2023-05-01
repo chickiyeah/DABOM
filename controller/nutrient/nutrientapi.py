@@ -209,6 +209,7 @@ async def get_object_with_barcode(barcode:str):
                 datasa = div.select('div > div.popup.pop-warp > div.pop-body > table > tbody > tr:nth-child(n+2) > td')
                 div2 = soup.select_one('div.sub_content2')
                 bizno = div2.select('div > div.pdv_korchamDetail > div.pdv_wrap_korcham > table > tbody > tr:nth-child(4) > td > div > button')[0]['data-biz-no']
+                weight = int(str(re.sub(r'[^0-9]', '', str(div2.select('div > div.pdv_korchamDetail > div.pdv_wrap_korcham > table > tbody > tr:nth-child(8) > td')),0).strip()))
                 r_res = json.loads(requests.get("http://www.allproductkorea.or.kr/platform/nicednb/companies/biz-no/%s/credit-information" % bizno).text)
                 front = "`유통사`"
                 back = "'{0}'".format(r_res['cmpNm'])
@@ -273,13 +274,16 @@ async def get_object_with_barcode(barcode:str):
 
                                 
 
-                            
-                    if len(glist) != 1:
+                    try:
+                        if len(glist) != 1:
+                            back = back + ",{0},{1},'{2}'".format(glist[0], glist[1], "g")
+                            front = front + ",`총내용량(g)`,`1회제공량`,`내용량_단위`"
+                        else:
+                            back = back + ",{0},{0},'{1}'".format(glist[0],"g")
+                            front = front + ",`총내용량(g)`,`1회제공량`,`내용량_단위`"
+                    except IndexError:
                         front = front + ",`총내용량(g)`,`1회제공량`,`내용량_단위`"
-                        back = back + ",{0},{1},'{2}'".format(glist[0], glist[1], "g")
-                    else:
-                        front = front + ",`총내용량(g)`,`1회제공량`,`내용량_단위`"
-                        back = back + ",{0},{0},'{1}'".format(glist[0],"g")
+                        back = back + ",{0},{0},'{1}'".format(weight,"g")                        
                     
 
                     b_food_num = str(execute_sql("SELECT no FROM food_no")[0]['no'])
@@ -288,7 +292,10 @@ async def get_object_with_barcode(barcode:str):
                     b_num_len = "0"*(6-(len(str(int(b_num)+1))))
                     n_num = "C{0}{1}-ZZ-AVG".format(b_num_len, int(b_num)+1)
                     n_code ="C{0}{1}".format(b_num_len, int(b_num)+1)
-                    n_index = title1.find(" %sg" % glist[0])
+                    try:
+                        n_index = title1.find(" %sg" % glist[0])
+                    except IndexError:
+                        n_index = title1.find(" %s g" % weight)
                     #print(" %sg" % glist[0])
                     name = title1[:n_index]
                     #print(str(re.sub('<.+?>', '', str(title[k]), 0).strip()))
@@ -482,6 +489,31 @@ async def get_object_with_barcode(barcode:str):
                         execute_sql("UPDATE custom_food SET id = {0} WHERE `fetch` = 'chi'".format(int(b_num)+1))
                         execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'chi'".format(n_food_num))
                         #print(res)
+                        try:                            
+                            if len(glist) != 1:
+                                p_res = {
+                                    "식품명": name,
+                                    "1회제공량": glist[1],
+                                    "내용량_단위": "g",
+                                    "유통사": s_company,
+                                    "new카테": cate_n
+                                }
+                            else:
+                                p_res = {
+                                    "식품명": name,
+                                    "1회제공량": glist[0],
+                                    "내용량_단위": "g",
+                                    "유통사": s_company,
+                                    "new카테": cate_n
+                                }
+                        except IndexError:
+                            p_res = {
+                                "식품명": name,
+                                "1회제공량": weight,
+                                "내용량_단위": "g",
+                                "유통사": s_company,
+                                "new카테": cate_n
+                            }
                     else:
                         objs = execute_sql("SELECT `NO`,`식품명`,`총내용량(g)` FROM foodb WHERE `총내용량(g)` = {0} AND `식품명` LIKE \"%{1}%\"".format(glist[0], name))
                         o_len = len(objs)
@@ -646,25 +678,34 @@ async def get_object_with_barcode(barcode:str):
                                 res = execute_sql(sql)
                                 execute_sql("UPDATE custom_food SET id = {0} WHERE `fetch` = 'chi'".format(int(b_num)+1))
                                 execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'chi'".format(n_food_num))
-                                #print(res)                            
-                            if len(glist) != 1:
-                                p_res = {
-                                    "식품명": name,
-                                    "1회제공량": glist[1],
-                                    "내용량_단위": "g",
-                                    "유통사": s_company,
-                                    "new카테": cate_n
-                                }
-                            else:
-                                p_res = {
-                                    "식품명": name,
-                                    "1회제공량": glist[0],
-                                    "내용량_단위": "g",
-                                    "유통사": s_company,
-                                    "new카테": cate_n
-                                }
+                                #print(res)
+                                try:                            
+                                    if len(glist) != 1:
+                                        p_res = {
+                                            "식품명": name,
+                                            "1회제공량": glist[1],
+                                            "내용량_단위": "g",
+                                            "유통사": s_company,
+                                            "new카테": cate_n
+                                        }
+                                    else:
+                                        p_res = {
+                                            "식품명": name,
+                                            "1회제공량": glist[0],
+                                            "내용량_단위": "g",
+                                            "유통사": s_company,
+                                            "new카테": cate_n
+                                        }
+                                except IndexError:
+                                    p_res = {
+                                        "식품명": name,
+                                        "1회제공량": weight,
+                                        "내용량_단위": "g",
+                                        "유통사": s_company,
+                                        "new카테": cate_n
+                                    }
 
-                            return p_res                                
+                        return p_res                                
 
 
 
