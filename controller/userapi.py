@@ -527,9 +527,7 @@ async def user_login(userdata: UserLogindata, request: Request):
             raise HTTPException(status_code=400, detail=User_Disabled)
 
     currentuser = Auth.current_user
-    sql = "SELECT * FROM user WHERE ID = \"%s\"" % currentuser['localId']
-    
-    userjson = execute_sql(sql)[0]
+    userjson = execute_sql("SELECT * FROM user WHERE ID = \"%s\"" % currentuser['localId'])[0]
     userjson['access_token'] = currentuser['idToken']
     userjson['refresh_token'] = currentuser['refreshToken']
     userjson['expires_in'] = currentuser['expiresIn']

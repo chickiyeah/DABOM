@@ -22,9 +22,10 @@ unauthorized_userdisabled = {'code':'ER004','message':'UNAUTHORIZED (TOKENS FROM
 
 invaild_barcode_length = {'code':'ER005','message':'INVAILD BARCODE LENGTH'}
 
-no_data = {'code':'ER006','message':'NO DATA FOUND'}
-sikyak_no_data = {'code':'ER006-S','message':'NO DATA FOUND'}
-siktak_all_using = {'code':'ER007','message':'ALL CREDENTIALS IS USING'} #식약처 인증키 모두 사용중
+no_data = {'code':'ER017','message':'데이터가 없습니다.'}
+sikyak_no_data = {'code':'ER017-S','message':'NO DATA FOUND'}
+value_error = {'code':'ER018','message':'입력값이 올바르지 않습니다.'}
+#siktak_all_using = {'code':'ER007','message':'ALL CREDENTIALS IS USING'} #식약처 인증키 모두 사용중
 
 
 
@@ -78,9 +79,9 @@ sikyakcredit = [
 #식약청 코드 
 #C005 - 바코드 정보 조회
 #I2790 - 음식 영양성분 조회
-age_error = {"CODE":"ER001","DETAIL":"AGE MUST BE INTEGER"}
-gender_error = {"CODE":"ER002","DETAIL":"GENDER MUST BE male OR female"}
-month_error = {"CODE":"ER003","DETAIL":"MONTH RANGE MUST BE FROM 0 TO 11"}
+age_error = {"code":"ER019","DETAIL":"나이는 숫자여야합니다."}
+gender_error = {"code":"ER020","DETAIL":"성별을 male 이거나 female 이어야합니다."}
+month_error = {"code":"ER021","DETAIL":"0세이하 개월수는 0~11 개월 입니다."}
 
 
 @nutrient.get('/calculate/kcal')
@@ -126,7 +127,7 @@ async def calculate_bmi(authorized: bool = Depends(verify_user_token)):
             elif bmi <= 18.5:
                 status = "저체중"
             else:
-                raise HTTPException(401, "Invalid Value")
+                raise HTTPException(401, value_error)
 
             return "{2} 님의 BMI는 {0} 이고, {1} 입니다.".format(bmi, status, data['Nickname'])
     
@@ -286,9 +287,9 @@ async def get_object_with_barcode(barcode:str):
                         back = back + ",{0},{0},'{1}'".format(weight,"g")                        
                     
 
-                    b_food_num = str(execute_sql("SELECT no FROM food_no")[0]['no'])
+                    b_food_num = str(execute_sql("SELECT no FROM food_no WHERE fetch = 'food_db'")[0]['no'])
                     n_food_num = int(b_food_num)+1
-                    b_num = str(execute_sql("SELECT id FROM custom_food")[0]['id'])
+                    b_num = str(execute_sql("SELECT no FROM food_no WHERE fetch = 'custom_food'")[0]['no'])
                     b_num_len = "0"*(6-(len(str(int(b_num)+1))))
                     n_num = "C{0}{1}-ZZ-AVG".format(b_num_len, int(b_num)+1)
                     n_code ="C{0}{1}".format(b_num_len, int(b_num)+1)

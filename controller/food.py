@@ -54,13 +54,16 @@ async def food_add(data: add_food, authorized: bool = Depends(verify_token)):
         name = data.name
         cate = data.category
         kcal = data.kcal
-        b_num = str(execute_sql("SELECT id FROM custom_food")[0]['id'])
+        b_num = str(execute_sql("SELECT no FROM food_no WHERE fetch = 'custom_food'")[0]['no'])
         b_num_len = "0"*(6-(len(str(int(b_num)+1))))
         n_num = "C{0}{1}-ZZ-AVG".format(b_num_len, int(b_num)+1)
         n_code ="C{0}{1}".format(b_num_len, int(b_num)+1)
+        b_food_num = str(execute_sql("SELECT no FROM food_no WHERE fetch = 'food_db'")[0]['no'])
+        n_food_num = int(b_food_num)+1
         pname = execute_sql("SELECT Nickname FROM user WHERE ID = '{0}'".format(authorized[1]))[0]['Nickname']
-        execute_sql("UPDATE custom_food SET id = {0} WHERE `fetch` = 'chi'".format(int(b_num)+1))
-        execute_sql("INSERT INTO foodb (SAMPLE_ID, `에너지(kcal)`, new카테, 식품명, data_adder, 식품코드) VALUES ('{0}','{1}','{2}','{3}', '{4}','{5}')".format(n_num, kcal, cate, name, pname, n_code))
+        execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'custom_food'".format(int(b_num)+1))
+        execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'food_db'".format(n_food_num))
+        execute_sql("INSERT INTO foodb (NO, SAMPLE_ID, `에너지(kcal)`, new카테, 식품명, data_adder, 식품코드) VALUES ({0},'{1}','{2}','{3}', '{4}','{5}','{6}')".format(n_food_num, n_num, kcal, cate, name, pname, n_code))
 
         return "food added"
         
