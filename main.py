@@ -19,10 +19,11 @@ app.add_middleware(
 __init__()
 
 from controller.nutrient import nutrientapi
-from controller import userapi, diary, friends, food
+from controller import userapi, diary, friends, food, group
 
 app.include_router(nutrientapi.nutrient)
 app.include_router(userapi.userapi)
 app.include_router(diary.diaryapi)
 app.include_router(friends.friendapi)
-app.include_router(food.foodapi) 
+app.include_router(food.foodapi)
+app.include_router(group.groupapi)

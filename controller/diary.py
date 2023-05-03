@@ -85,6 +85,15 @@ async def post_add(data:add_diary, authorized: bool = Depends(verify_token)):
         res = execute_sql(sql)
         return res
 
+@diaryapi.get('/alone/{post_no}')
+async def post_get(post_no:int):
+    res = execute_sql("SELECT * from UserEat WHERE `NO` = %s" % post_no)
+
+    if len(res) == 0:
+        raise HTTPException(404, post_not_found)
+    
+    return res
+
 @diaryapi.get('/with_friend/{page}')
 async def get_with_friend(page:int, authorized: bool = Depends(verify_token)):
     if authorized:
@@ -135,12 +144,3 @@ async def post_delete(data: delete_diary, authorzed: bool = Depends(verify_token
         
         execute_sql("UPDATE UserEat SET `NO` = '%s', `제목` = '%s' WHERE `NO` = %s" % ("DELETED-"+no, "DELETED-"+note[0]['제목'], no))
         return "글을 삭제하였습니다."
-    
-@diaryapi.get('/get/{post_no}')
-async def post_get(post_no:int):
-    res = execute_sql("SELECT * from UserEat WHERE `NO` = %s" % post_no)
-
-    if len(res) == 0:
-        raise HTTPException(404, post_not_found)
-    
-    return res
