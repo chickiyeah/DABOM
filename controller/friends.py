@@ -118,6 +118,12 @@ async def friend_request(data:request_friend, authorized: bool = Depends(verify_
             f_sql =  "SELECT req_id, tar_id FROM f_verify"
             f_list = execute_sql(f_sql)
             d = {"req_id": requestid, "tar_id": targetid}
+            
+            newno = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'log_invite'")[0]['no'])+1
+
+            execute_sql("INSERT INTO log_invite (no, type, req, tar) VALUES ({0},'{1}','{2}','{3}')".format(newno, "friend", requestid, targetid))
+
+            execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'log_invite'".format(newno))
 
             if d in f_list:
                 delteme = "DELETE FROM f_verify WHERE req_id = '%s' AND tar_id = '%s'" % (requestid, targetid)
