@@ -207,7 +207,7 @@ async def friend_request(data:request_friend, authorized: bool = Depends(verify_
         except auth.UserNotFoundError:
             raise HTTPException(400, User_NotFound)
         
-@friendapi.post("/remove")
+@friendapi.delete("/remove")
 async def remove_friend(delid:str, authorized: bool = Depends(verify_token)):
     if authorized:
         try:

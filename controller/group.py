@@ -58,6 +58,10 @@ class invite_group(BaseModel):
     group_id: int
     target_id: str
 
+er023 = {'code': 'ER023', 'message':'해당 아이디에 해당하는 그룹은 존재하지 않습니다.'}
+er024 = {'code': 'ER024', 'message':'해당 그룹의 관리자가 아닙니다.'}
+er031 = {'code': 'ER031', 'message': '존재하지 않는 그룹입니다.'}
+
 @groupapi.get('/list/{page}')
 async def list_group(page:int):
     spage = 9 * (page-1)
@@ -66,7 +70,7 @@ async def list_group(page:int):
 
 @groupapi.get('/detail/{group_id}')
 async def detail_group(group_id:int):
-    er031 = {'code': 'ER031', 'message': '존재하지 않는 그룹입니다.'}
+    
     group = execute_sql("SELECT * FROM `group` WHERE id = {0}".format(group_id))
 
     if len(group) == 0:
@@ -102,15 +106,14 @@ async def create_group(data: create_group, authorized: bool = Depends(verify_tok
         else:
             image = data.image
 
-        res = execute_sql("INSERT INTO `group` (`id`, `name`, `description`, `owner`, `operator`, `members`, `warn`, `type`, `groupimg`) VALUES ({0},'{1}','{2}','{3}','{4}', '{5}', {6},'{7}','{8}')".format(id, name, description, owner, operator, members, warn, data.type, image))
+        res = execute_sql("INSERT INTO `group` (`id`, `name`, `description`, `owner`, `operator`, `members`, `warn`, `type`, `groupimg`, `deleted`, `banned`) VALUES ({0},'{1}','{2}','{3}','{4}', '{5}', {6},'{7}','{8}','false','false')".format(id, name, description, owner, operator, members, warn, data.type, image))
 
         return "그룹을 생성했습니다."
     
 @groupapi.post('/invite')
 async def group_invite(group:invite_group, authorized: bool = Depends(verify_token)):
     if authorized:
-        er023 = {'code': 'ER023', 'message':'해당 아이디에 해당하는 그룹은 존재하지 않습니다.'}
-        er024 = {'code': 'ER024', 'message':'해당 그룹의 관리자가 아닙니다.'}
+
         groups = execute_sql("SELECT `id`, `owner`, `operator`, `name` FROM `group` WHERE `id` = {0}".format(group.group_id))
         if len(groups) == 0:
             raise HTTPException(404, er023)
@@ -251,3 +254,27 @@ async def process_invite(accept_type:str, group_id:int, req_id:str, tar_id:str, 
     elif accept_type == 'reject':
         execute_sql("DELETE FROM f_verify WHERE `req_id` = '{0}' AND `tar_id` = '{1}' AND group_id = {2}".format(req_id, tar_id, group_id))
         return "초대를 거부하였습니다."
+    
+@groupapi.delete("/delete")
+async def remove_group(group_id:int, authorized: bool = Depends(verify_token)):
+    if authorized:
+        group = execute_sql("SELECT `id`, `owner`, `operator`, `members` FROM `group` WHERE `id` = %s" % group_id)
+
+        if len(group) == 0:
+            raise HTTPException(400, er031)
+        
+        group = group[0]
+
+        if authorized[1] != group['owner'] and not authorized[1] in json.loads(group['operators']):
+            raise HTTPException(403, er024)
+        
+        members = json.loads(group['members'])
+
+        for member in members:
+            p_group = json.loads(execute_sql("SELECT `groups` FROM user WHERE ID = '%s'" % member)[0]['groups'])
+            p_group.remove(group_id)
+            execute_sql("UPDATE user SET `groups` = '{0}' WHERE ID = '{1}'".format(p_group, member)) 
+
+        execute_sql("UPDATE `group` SET `deleted` = 'true'")
+
+        return "그룹을 제거했습니다."
