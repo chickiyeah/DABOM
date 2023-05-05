@@ -58,9 +58,22 @@ class invite_group(BaseModel):
     group_id: int
     target_id: str
 
-@groupapi.get('/list')
-async def list_group():
-    groups = execute_sql("SELECT ")
+@groupapi.get('/list/{page}')
+async def list_group(page:int):
+    spage = 9 * (page-1)
+    groups = execute_sql("SELECT id as no, name, description, count(members) as memcount, groupimg FROM `group` LIMIT 9 OFFSET {0}".format(spage))
+    return groups
+
+@groupapi.get('/detail/{group_id}')
+async def detail_group(group_id:int):
+    er031 = {'code': 'ER031', 'message': '존재하지 않는 그룹입니다.'}
+    group = execute_sql("SELECT * FROM `group` WHERE id = {0}".format(group_id))
+
+    if len(group) == 0:
+        raise HTTPException(400, er031)
+    
+    return group[0]
+
 
 @groupapi.post('/create')
 async def create_group(data: create_group, authorized: bool = Depends(verify_token)):
