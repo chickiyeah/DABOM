@@ -93,13 +93,29 @@ async def calculate_kcal(pal: calculate,authorized: bool = Depends(verify_user_t
         user = execute_sql(sql)[0]
         if user['height'] != "" and user['weight'] != "" and (user['gender'] == "male" or user['gender'] == "female"):
             if user['gender'] == "male":
-                base = ((10*int(user['weight'])+6.25*int(user['height'])-5*int(user['age']))+5)
-                base1 = 66.47 + 13.75*float(user['weight']) + 5*float(user['height']) - 6.76 * int(user['age'])
+                base = 66.47 + (13.75*float(user['weight'])) + (5*float(user['height'])) - (6.76 * int(user['age']))
                 return str(int(float(base) * pal))+" kcal"
             else:
-                base = ((10*int(user['weight'])+6.25*int(user['height'])-5*int(user['age']))-161)
-                base1 = 665.1 + 9.56*(float(user['weight'])) + 1.85 * float(user['height']) - 4.68 * int(user['age'])
+                base = 665.1 + (9.56*(float(user['weight']))) + (1.85 * float(user['height'])) - (4.68 * int(user['age']))
                 return str(int(float(base) * pal))+" kcal"
+            
+        else:
+            return "2000 kcal"
+        
+@nutrient.post('/culcutaete/tandanji')
+async def calculate_tandanji(pal: calculate,authorized: bool = Depends(verify_user_token)):
+    pal = pal.pal
+    if authorized:
+        uid = authorized[1]
+        sql = "SELECT height, weight, gender, age FROM user WHERE ID = '%s'" % uid
+        user = execute_sql(sql)[0]
+        if user['height'] != "" and user['weight'] != "" and (user['gender'] == "male" or user['gender'] == "female"):
+            if user['gender'] == "male":
+                base = 66.47 + (13.75*float(user['weight'])) + (5*float(user['height'])) - (6.76 * int(user['age']))
+                move = (float(base) * pal) + base
+            else:
+                base = 665.1 + (9.56*(float(user['weight']))) + (1.85 * float(user['height'])) - (4.68 * int(user['age']))
+                move = (float(base) * pal) + base
             
         else:
             return "2000 kcal"
@@ -111,21 +127,25 @@ async def calculate_bmi(authorized: bool = Depends(verify_user_token)):
         sql = "SELECT Nickname, height, weight FROM user WHERE ID = '%s'" % uid
         data = execute_sql(sql)[0]
         if data['height'] == "" or data['weight'] == "":
-            raise HTTPException(400, "Invalid Data")
+            raise HTTPException(400, value_error)
         else:
             height = float(data['height']) * 0.01
             bmi = float(data['weight'])/(height*height)
 
             bmi = math.floor(bmi * 10)/10
             
-            if bmi > 25.0:
+            if bmi > 30:
+                status = "고도비만"
+            elif ((bmi > 25.0) and (bmi < 29.9)):
                 status = "비만"
             elif ((bmi > 23.0) and (bmi < 24.9)):
                 status = "과체중"
             elif ((bmi > 18.5) and (bmi < 22.9)):
                 status = "정상"
-            elif bmi <= 18.5:
+            elif ((bmi > 11.1) and (bmi < 18.4)):
                 status = "저체중"
+            elif bmi < 11:
+                status = "뼈다구"
             else:
                 raise HTTPException(401, value_error)
 
@@ -777,7 +797,7 @@ async def get_barcode(barcode: get_barcode, authorized: bool = Depends(verify_us
 
                     return rejson
             
-            raise HTTPException(500, siktak_all_using)
+            raise HTTPException(500, "all credentials using")
 
 @nutrient.post('/products/detail')
 async def product_detail(product:productDetail):
@@ -1097,4 +1117,4 @@ async def barcode_onetouch(barcode:barcode):
                         error = "error"
                     except KeyError:
                         return rejson
-            raise HTTPException(500, siktak_all_using)    
+            raise HTTPException(500, "all credentials using")    

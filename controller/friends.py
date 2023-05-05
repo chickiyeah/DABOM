@@ -18,12 +18,9 @@ import pyshorteners
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-restype_error = {"code":"ER025", "message":"Accept type is accept or reject"}
-user_not_match_error = {"code":"ER026", "message":"User is not a member of this verifycode"}
-request_user_not_match_error = {"code":"ER027", "message":"Request User is not Match with this verifycode"}
-recive_user_not_match_error = {"code":"ER028", "message":"Target User is not Match with this verifycode"}
-target_user_is_already_friend = {"code":"ER029", "message":"Target User is already Friend"}
-target_user_is_not_friend = {"code":"ER030", "message":"Target User is not Friend"}
+er028 = {"code":"ER028", "message":"처리 타입은 accept/reject 만 허용됩니다."}
+er029 = {"code":"ER029", "message":"해당 유저와 이미 친구입니다."}
+er030 = {"code":"ER030", "message":"해당 유저와 친구가 아닙니다."}
 
 s = smtplib.SMTP("smtp.gmail.com", 587)
 s.ehlo()
@@ -99,7 +96,7 @@ async def friend_request(data:request_friend, authorized: bool = Depends(verify_
             res = json.loads(execute_sql(sql)[0]['friends'])
 
             if targetid in res:
-                raise HTTPException(400, target_user_is_already_friend)
+                raise HTTPException(400, er029)
             
             if not target:
                 raise HTTPException(400, User_NotFound)
@@ -113,7 +110,7 @@ async def friend_request(data:request_friend, authorized: bool = Depends(verify_
             msg['Subject'] = '[다봄] %s 님으로 부터 친구요청이 도착했습니다.' % requestnick
             msg['From'] = "noreply.dabom@gmail.com"
             msg['To'] = targetmail
-            versql = "SELECT code FROM f_verify"
+            versql = "SELECT code FROM f_verify WHERE `type` = 'friend'"
             veri_list = execute_sql(versql)
             f_sql =  "SELECT req_id, tar_id FROM f_verify"
             f_list = execute_sql(f_sql)
@@ -138,7 +135,7 @@ async def friend_request(data:request_friend, authorized: bool = Depends(verify_
             while verifykey in keys:
                 verifykey = "".join([random.choice(string.ascii_letters) for _ in range(15)])
             
-            add_verifykey = "INSERT INTO f_verify (code, req_id, tar_id) VALUES ('%s','%s','%s')" % (verifykey, requestid, targetid)
+            add_verifykey = "INSERT INTO f_verify (code, req_id, tar_id, `type`) VALUES ('%s','%s','%s', 'friend')" % (verifykey, requestid, targetid)
             execute_sql(add_verifykey)
 
             link = "http://130.162.141.91/friend/request/%s/%s/%s/%s/%s" % (requestid, requestnick, targetid, targetnick, verifykey)
@@ -224,7 +221,7 @@ async def remove_friend(delid:str, authorized: bool = Depends(verify_token)):
                 execute_sql("UPDATE user SET friends = '%s' WHERE ID = '%s'" % (t_list, delid))
                 return "Friend Removed"
             else:
-                raise HTTPException(400, target_user_is_not_friend)
+                raise HTTPException(400, er030)
             
         except auth.UserNotFoundError:
             raise HTTPException(400, User_NotFound)
@@ -233,12 +230,14 @@ async def remove_friend(delid:str, authorized: bool = Depends(verify_token)):
 @friendapi.post("/{f_type}/{req_id}/{req_nick}/{tar_id}/{tar_nick}/{verify_id}")
 async def edit_friend(f_type: str, req_id: str, req_nick:str, tar_id: str, tar_nick:str, verify_id: str):
     if not f_type == "accept" or f_type == "reject":
-        raise HTTPException(403, restype_error)
+        raise HTTPException(403, er028)
     
     versql = "SELECT * FROM f_verify WHERE code = '%s'" % verify_id
     veri = execute_sql(versql)
+    er026 = {'code':'ER026', 'message':'올바르지 않은 인증키입니다.'}
+    er027 = {'code':'ER027', 'message':'인증키에 저장된 정보와 일치하지 않습니다.'}
     if len(veri) == 0:
-        raise HTTPException(403, "Invalid verify")
+        raise HTTPException(403, er026)
     
     try:
         auth.get_user(req_id)
@@ -248,10 +247,10 @@ async def edit_friend(f_type: str, req_id: str, req_nick:str, tar_id: str, tar_n
 
     data = veri[0]
     if data['req_id'] != req_id:
-        raise HTTPException(403, request_user_not_match_error)
+        raise HTTPException(403, er027)
     
     if data['tar_id'] != tar_id:
-        raise HTTPException(403, recive_user_not_match_error)
+        raise HTTPException(403, er027)
 
     if f_type == "accept":
         r_friend = json.loads(execute_sql("SELECT friends FROM user WHERE ID = '%s'" % (req_id))[0]['friends'])

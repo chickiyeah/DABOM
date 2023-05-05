@@ -7,21 +7,21 @@ def __init__():
     pool.init()
     print('DB connection established')
 
-def execute_sql(sql: str):
+def execute_sql(qurey: str):
     connection = pool.get_conn()
     cur = connection.cursor()
-    def get(sql):
-        cur.execute(sql)
+    def get(qurey):
+        cur.execute(qurey)
         return cur.fetchall()
     
-    def edit(sql):
-        res = cur.execute(sql)
+    def edit(qurey):
+        res = cur.execute(qurey)
         return res
 
-    if "SELECT" in sql or "select" in sql:
-        res = get(sql)
+    if "SELECT" in qurey or "select" in qurey:
+        res = get(qurey)
     else:
-        res = edit(sql)
+        res = edit(qurey)
     
     pool.release(connection)
 

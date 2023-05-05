@@ -12,6 +12,8 @@ import datetime
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import random
+import string
 
 s = smtplib.SMTP("smtp.gmail.com", 587)
 s.ehlo()
@@ -65,8 +67,8 @@ async def create_group(data: create_group, authorized: bool = Depends(verify_tok
     er022 = {'code': 'ER022', 'message': '시스템에 의해 당신의 그룹생성 권한은 박탈되었습니다. (접근 차단된 그룹의 소유자입니다.)'}
     er025 = {'code': 'ER025', 'message': '그룹타입은 Public, Private 만 허용됩니다.'}
     if authorized:
-        ban = execute_sql("SELECT group_create_ban FROM user WHERE `ID` = %s" % authorized[1])[0]['group_create_ban']
-        if ban:
+        ban = execute_sql("SELECT group_create_ban FROM user WHERE `ID` = '%s'" % authorized[1])[0]['group_create_ban']
+        if ban == "True":
             raise HTTPException(403, er022)
         
         if data.type != 'Public' and data.type != 'Private':
@@ -87,7 +89,7 @@ async def create_group(data: create_group, authorized: bool = Depends(verify_tok
         else:
             image = data.image
 
-        res = execute_sql("INSERT INTO group (id, name, description, owner, operator, members, warn, type, groupimg) VALUES ({0},'{1}','{2}','{3}','{4}', {5}, '{6})'".format(id, name, description, owner, operator, members, warn, image))
+        res = execute_sql("INSERT INTO `group` (`id`, `name`, `description`, `owner`, `operator`, `members`, `warn`, `type`, `groupimg`) VALUES ({0},'{1}','{2}','{3}','{4}', '{5}', {6},'{7}','{8}')".format(id, name, description, owner, operator, members, warn, data.type, image))
 
         return "그룹을 생성했습니다."
     
@@ -102,14 +104,32 @@ async def group_invite(group:invite_group, authorized: bool = Depends(verify_tok
         
         n_group = groups[0]
         operators = json.loads(groups[0]['operator'])
-        if authorized[1] != n_group['owner'] or not authorized[1] in operators:
+        if authorized[1] != n_group['owner'] and not authorized[1] in operators:
             raise HTTPException(403, er024)
         
-        email = "SELECT `email` FROM user WHERE `ID` = '{0}'".format(group.target_id)
+        email = execute_sql("SELECT `email` FROM user WHERE `ID` = '{0}'".format(group.target_id))[0]['email']
 
-        link = "http://130.162.141.91/group/invite/{0}/{1}/{2}".format(group.group_id, authorized[1], group.target_id)
+        f_list = execute_sql("SELECT `req_id`, `tar_id`, `group_id` FROM f_verify WHERE `type` = 'group'")
+        data = {'req_id': authorized[1], 'tar_id': group.target_id, 'group_id': group.group_id}
+
+        if data in f_list:
+            execute_sql("DELETE FROM f_verify WHERE req_id = '%s' AND tar_id = '%s' AND group_id = %s" % (authorized[1], group.target_id, group.group_id))
+
+        veri_list = execute_sql("SELECT `code` FROM f_verify WHERE `type` = 'group'")
+        keys = []
+        for key in veri_list:
+            keys.append(key['code'])
+
+        verifykey = "".join([random.choice(string.ascii_letters) for _ in range(15)])
+
+        while verifykey in keys:
+            verifykey = "".join([random.choice(string.ascii_letters) for _ in range(15)])
+
+        link = "http://130.162.141.91/group/invite/{0}/{1}/{2}/{3}".format(group.group_id, authorized[1], group.target_id, verifykey)
 
         newno = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'log_invite'")[0]['no'])+1
+
+        execute_sql("INSERT INTO f_verify (`code`, `req_id`, `tar_id`, `group_id`, `type`) VALUES ('{0}','{1}','{2}',{3},'{4}')".format(verifykey, authorized[1], group.target_id, group.group_id, "group")),
 
         execute_sql("INSERT INTO log_invite (no, type, req, tar) VALUES ({0},'{1}','{2}','{3}')".format(newno, "group_invite", authorized[1], group.target_id))
 
@@ -142,8 +162,9 @@ async def group_invite(group:invite_group, authorized: bool = Depends(verify_tok
                                     <div style="font-family: Roboto-Regular,Helvetica,Arial,sans-serif; font-size: 14px; color: rgba(0,0,0,0.87); line-height: 20px;padding-top: 20px; text-align: center;">    
                                         <p> {0} 모임이 회원님을 모임에 초대했습니다. </p>
                                         <p> 아래 링크를 클릭하여 모임 초대를 확인할수 있습니다. </p>
+                                        <br><br>
                                         <a href='{1}'> 모임 초대 확인하기 </a>
-                                        <br/>                                      
+                                        <br><br>                                      
                                         <p>※ 본 메일은 발신 전용 메일이며,</p>
                                         <p>자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.</p>
                                     </div>
@@ -179,3 +200,41 @@ async def group_invite(group:invite_group, authorized: bool = Depends(verify_tok
             d.starttls()
             d.login("noreply.dabom", "sxhmurnajtenjtbr")
             d.sendmail("noreply.dabom@gmail.com", email, msg.as_string())
+
+        return "모임 초대메일 전송됨"
+
+@groupapi.post('/invite/{accept_type}/{group_id}/{req_id}/{tar_id}/{verifykey}')
+async def process_invite(accept_type:str, group_id:int, req_id:str, tar_id:str, verifykey:str):
+    er028 = {"code":"ER028", "message":"처리 타입은 accept/reject 만 허용됩니다."}
+    if not accept_type == "accept" or accept_type == "reject":
+        raise HTTPException(403, er028)
+        
+    data = execute_sql("SELECT `req_id`, `tar_id`, `group_id` FROM f_verify WHERE `code` = '{0}'".format(verifykey))
+    er026 = {'code':'ER026', 'message':'올바르지 않은 인증키입니다.'}
+    er027 = {'code':'ER027', 'message':'인증키에 저장된 정보와 일치하지 않습니다.'}
+
+    if len(data) == 0:
+        raise HTTPException(403, er026)
+
+    data = data[0]
+    if data['group_id'] != group_id:
+        raise HTTPException(403, er027)
+    
+    if data['req_id'] != req_id:
+        raise HTTPException(403, er027)
+    
+    if data['tar_id'] != tar_id:
+        raise HTTPException(403, er027)
+    
+    if accept_type == 'accept':
+        p_group = json.loads(execute_sql("SELECT `groups` FROM `user` WHERE `ID` = '%s'" % tar_id)[0]['groups'])
+        p_group.append(group_id)
+        execute_sql("UPDATE user SET `groups` = '{0}' WHERE ID = '{1}'".format(json.dumps(p_group), tar_id))
+        g_members = json.loads(execute_sql("SELECT `members` FROM `group` WHERE id = '%s'" % group_id)[0]['members'])
+        g_members.append(tar_id)
+        execute_sql("UPDATE `group` SET members = '{0}' WHERE id = '{1}'".format(json.dumps(g_members), group_id))
+        execute_sql("DELETE FROM f_verify WHERE `req_id` = '{0}' AND `tar_id` = '{1}' AND group_id = {2}".format(req_id, tar_id, group_id))
+        return "초대를 수락했습니다."
+    elif accept_type == 'reject':
+        execute_sql("DELETE FROM f_verify WHERE `req_id` = '{0}' AND `tar_id` = '{1}' AND group_id = {2}".format(req_id, tar_id, group_id))
+        return "초대를 거부하였습니다."
