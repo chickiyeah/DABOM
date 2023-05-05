@@ -61,20 +61,24 @@ class invite_group(BaseModel):
 er023 = {'code': 'ER023', 'message':'해당 아이디에 해당하는 그룹은 존재하지 않습니다.'}
 er024 = {'code': 'ER024', 'message':'해당 그룹의 관리자가 아닙니다.'}
 er031 = {'code': 'ER031', 'message': '존재하지 않는 그룹입니다.'}
+er032 = {'code': 'ER032', 'message': '접근 불가 그룹입니다.'}
 
 @groupapi.get('/list/{page}')
 async def list_group(page:int):
     spage = 9 * (page-1)
-    groups = execute_sql("SELECT id as no, name, description, count(members) as memcount, groupimg FROM `group` LIMIT 9 OFFSET {0}".format(spage))
+    groups = execute_sql("SELECT id as no, name, description, members, groupimg FROM `group` WHERE `deleted` = 'false' AND `banned` = 'false' LIMIT 9 OFFSET {0}".format(spage))
     return groups
 
 @groupapi.get('/detail/{group_id}')
 async def detail_group(group_id:int):
     
-    group = execute_sql("SELECT * FROM `group` WHERE id = {0}".format(group_id))
+    group = execute_sql("SELECT *, `deleted`, `banned` FROM `group` WHERE id = {0}".format(group_id))
 
     if len(group) == 0:
         raise HTTPException(400, er031)
+    
+    if group[0]['deleted'] == 'true' or group[0]['banned'] == 'true':
+        raise HTTPException(403, er032)
     
     return group[0]
 
@@ -107,7 +111,7 @@ async def create_group(data: create_group, authorized: bool = Depends(verify_tok
             image = data.image
 
         res = execute_sql("INSERT INTO `group` (`id`, `name`, `description`, `owner`, `operator`, `members`, `warn`, `type`, `groupimg`, `deleted`, `banned`) VALUES ({0},'{1}','{2}','{3}','{4}', '{5}', {6},'{7}','{8}','false','false')".format(id, name, description, owner, operator, members, warn, data.type, image))
-
+        execute_sql("UPDATE food_no SET `no` = {0} WHERE `fetch` = 'group_id'".format(id))
         return "그룹을 생성했습니다."
     
 @groupapi.post('/invite')
