@@ -47,7 +47,19 @@ async def verify_token(req: Request):
         raise HTTPException(status_code=401, detail=unauthorized_invaild)
     except KeyError:
         raise HTTPException(status_code=400, detail=unauthorized)
-    
+
+async def verify_admin(req: Request):
+    try:
+        token = req.headers['Authorization']
+        admin_token = "i>9/,tUmc_&==Ap|5)yk9$@H=T^ATpp]8UG@*E-nAWSag]pe<2"
+        if token == admin_token:
+            return True
+        else:
+            raise HTTPException(status_code=401, detail=unauthorized_invaild)
+
+    except KeyError:
+        raise HTTPException(403, unauthorized)
+
 class create_group(BaseModel):
     name:str
     description:str
@@ -62,6 +74,13 @@ er023 = {'code': 'ER023', 'message':'해당 아이디에 해당하는 그룹은 
 er024 = {'code': 'ER024', 'message':'해당 그룹의 관리자가 아닙니다.'}
 er031 = {'code': 'ER031', 'message': '존재하지 않는 그룹입니다.'}
 er032 = {'code': 'ER032', 'message': '접근 불가 그룹입니다.'}
+
+async def group_log(group_id:int, type:string, req_id:string, tar_id:string):
+    g_no = execute_sql("SELECT `no` FROM `food_no` WHERE `fetch` = 'group_log'")[0]['no'] + 1
+    execute_sql("INSERT INTO `group_log` (no, group_id, type, req, tar) VALUES ({0},{1},'{2}','{3}','{4}')".format(g_no, group_id, type, req_id, tar_id)),
+    execute_sql("UPDATE `food_no` SET `no` = {0} WHERE `fetch` = 'group_log'".format(g_no))
+    return 'added'
+
 
 @groupapi.get('/list/{page}')
 async def list_group(page:int):
@@ -112,11 +131,12 @@ async def create_group(data: create_group, authorized: bool = Depends(verify_tok
 
         res = execute_sql("INSERT INTO `group` (`id`, `name`, `description`, `owner`, `operator`, `members`, `warn`, `type`, `groupimg`, `deleted`, `banned`) VALUES ({0},'{1}','{2}','{3}','{4}', '{5}', {6},'{7}','{8}','false','false')".format(id, name, description, owner, operator, members, warn, data.type, image))
         execute_sql("UPDATE food_no SET `no` = {0} WHERE `fetch` = 'group_id'".format(id))
+        group_log(id, "create", authorized[1], "None")
         return "그룹을 생성했습니다."
     
 @groupapi.post('/invite')
-async def group_invite(group:invite_group, authorized: bool = Depends(verify_token)):
-    if authorized:
+async def group_invite(group:invite_group, authorized: bool = Depends(verify_token), admin: bool = Depends(verify_admin)):
+    if authorized or admin:
 
         groups = execute_sql("SELECT `id`, `owner`, `operator`, `name` FROM `group` WHERE `id` = {0}".format(group.group_id))
         if len(groups) == 0:
@@ -124,7 +144,7 @@ async def group_invite(group:invite_group, authorized: bool = Depends(verify_tok
         
         n_group = groups[0]
         operators = json.loads(groups[0]['operator'])
-        if authorized[1] != n_group['owner'] and not authorized[1] in operators:
+        if authorized[1] != n_group['owner'] and not authorized[1] in operators and not admin:
             raise HTTPException(403, er024)
         
         email = execute_sql("SELECT `email` FROM user WHERE `ID` = '{0}'".format(group.target_id))[0]['email']
@@ -145,13 +165,18 @@ async def group_invite(group:invite_group, authorized: bool = Depends(verify_tok
         while verifykey in keys:
             verifykey = "".join([random.choice(string.ascii_letters) for _ in range(15)])
 
-        link = "http://130.162.141.91/group/invite/{0}/{1}/{2}/{3}".format(group.group_id, authorized[1], group.target_id, verifykey)
+        if admin:
+            r_key = "admin"
+        else:
+            r_key = authorized[1]
+
+        link = "http://130.162.141.91/group/invite/{0}/{1}/{2}/{3}".format(group.group_id, r_key, group.target_id, verifykey)
 
         newno = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'log_invite'")[0]['no'])+1
 
-        execute_sql("INSERT INTO f_verify (`code`, `req_id`, `tar_id`, `group_id`, `type`) VALUES ('{0}','{1}','{2}',{3},'{4}')".format(verifykey, authorized[1], group.target_id, group.group_id, "group")),
+        execute_sql("INSERT INTO f_verify (`code`, `req_id`, `tar_id`, `group_id`, `type`) VALUES ('{0}','{1}','{2}',{3},'{4}')".format(verifykey, r_key, group.target_id, group.group_id, "group")),
 
-        execute_sql("INSERT INTO log_invite (no, type, req, tar) VALUES ({0},'{1}','{2}','{3}')".format(newno, "group_invite", authorized[1], group.target_id))
+        execute_sql("INSERT INTO log_invite (no, type, req, tar) VALUES ({0},'{1}','{2}','{3}')".format(newno, "group_invite", r_key, group.target_id))
 
         execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'log_invite'".format(newno))
 
@@ -221,6 +246,8 @@ async def group_invite(group:invite_group, authorized: bool = Depends(verify_tok
             d.login("noreply.dabom", "sxhmurnajtenjtbr")
             d.sendmail("noreply.dabom@gmail.com", email, msg.as_string())
 
+        group_log(group.group_id, "invite", r_key, group.target_id)
+
         return "모임 초대메일 전송됨"
 
 @groupapi.post('/invite/{accept_type}/{group_id}/{req_id}/{tar_id}/{verifykey}')
@@ -254,14 +281,16 @@ async def process_invite(accept_type:str, group_id:int, req_id:str, tar_id:str, 
         g_members.append(tar_id)
         execute_sql("UPDATE `group` SET members = '{0}' WHERE id = '{1}'".format(json.dumps(g_members), group_id))
         execute_sql("DELETE FROM f_verify WHERE `req_id` = '{0}' AND `tar_id` = '{1}' AND group_id = {2}".format(req_id, tar_id, group_id))
+        group_log(group_id, "invite_accept", req_id, tar_id, group_id)
         return "초대를 수락했습니다."
     elif accept_type == 'reject':
         execute_sql("DELETE FROM f_verify WHERE `req_id` = '{0}' AND `tar_id` = '{1}' AND group_id = {2}".format(req_id, tar_id, group_id))
+        group_log(group_id, "invite_reject", req_id, tar_id, group_id)
         return "초대를 거부하였습니다."
-    
+
 @groupapi.delete("/delete")
-async def remove_group(group_id:int, authorized: bool = Depends(verify_token)):
-    if authorized:
+async def remove_group(group_id:int, authorized: bool = Depends(verify_token), admin: bool = Depends(verify_admin)):
+    if authorized or admin:
         group = execute_sql("SELECT `id`, `owner`, `operator`, `members` FROM `group` WHERE `id` = %s" % group_id)
 
         if len(group) == 0:
@@ -269,7 +298,7 @@ async def remove_group(group_id:int, authorized: bool = Depends(verify_token)):
         
         group = group[0]
 
-        if authorized[1] != group['owner'] and not authorized[1] in json.loads(group['operators']):
+        if authorized[1] != group['owner'] and not authorized[1] in json.loads(group['operators']) and not admin:
             raise HTTPException(403, er024)
         
         members = json.loads(group['members'])
@@ -280,5 +309,98 @@ async def remove_group(group_id:int, authorized: bool = Depends(verify_token)):
             execute_sql("UPDATE user SET `groups` = '{0}' WHERE ID = '{1}'".format(p_group, member)) 
 
         execute_sql("UPDATE `group` SET `deleted` = 'true'")
+        group_log(group_id, "delete", authorized[1] or "admin", group_id)
 
         return "그룹을 제거했습니다."
+    
+er033 =  {'code':'ER033', 'message':'해당 유저는 해당그룹의 멤버가 아닙니다.'}
+
+@groupapi.post("/kick_member")
+async def kick_member(member_id:str, group_id:int, authorized: bool = Depends(verify_token), admin: bool = Depends(verify_admin)):
+    if authorized or admin:
+        group = execute_sql("SELECT `owner`, `operator`, `members` FROM `group` WHERE `id` = %s", group_id)
+        if len(group) == 0:
+            raise HTTPException(400, er031)
+        
+        n_group = group[0]
+        if authorized[1] != n_group['owner'] and not authorized[1] in json.loads(n_group['operator']) and not admin:
+            raise HTTPException(403, er024)
+
+        members = json.loads(n_group['members'])
+        if not member_id in members:
+            raise HTTPException(400, er033)
+            
+        mem_g = json.loads(execute_sql("SELECT `groups` FROM user WHERE `ID` = '{0}' OR `ID` = 'DELETED-{0}'".format(member_id))[0]['groups'])
+
+        mem_g.remove(group_id)
+        members.remove(member_id)
+            
+        execute_sql("UPDATE `user` SET `groups` = {0} WHERE `ID` = '{1}' OR `ID` = 'DELETED-{1}'".format(mem_g ,member_id))
+        execute_sql("UPDATE `group` SET `members` = {0} WHERE `id` = '{1}'".format(members, group_id))
+
+        group_log(group_id, "kick", authorized[1] or "admin", member_id)
+
+        return "멤버를 추방했습니다."
+
+er034 = {'code':'ER034', 'message':'해당 멤버는 이미 모임의 관리자입니다.'}
+
+@groupapi.post("/appoint")
+async def appoint_operator(group_id:int, user_id:str, authorized: bool = Depends(verify_token), admin: bool = Depends(verify_admin)):
+    if authorized or admin:
+        group = execute_sql("SELECT `id`, `owner`,`operator`,`members` FROM `group` WHERE `id` = %s" % group_id)
+
+        if len(group) == 0:
+            raise HTTPException(404, er031)    
+
+        d_group = group[0]
+
+        if authorized[1] != d_group['owner'] and not authorized[1] in json.loads(d_group['operator']) and not admin:
+            raise HTTPException(403, er024)
+        
+        if not user_id in json.loads(d_group['members']):
+            raise HTTPException(400, er033)
+        
+        operators = json.loads(d_group['operator'])
+
+        if user_id in operators or user_id == d_group['owner']:
+            raise HTTPException(400, er034)
+        
+        operators = operators.append(user_id)
+        execute_sql("UPDATE `group` SET `operator` = '%s' WHERE `id` = %s" % operators, group_id)
+        group_log(group_id, "appoint", authorized[1] or "admin", user_id)
+
+        return "%s 님을 %s 모임의 관리자로 임명했습니다."
+
+class group_warn(BaseModel):
+    group_id:int
+
+@groupapi.post("/warn")
+async def group_warn(group: group_warn, admin: bool = Depends(verify_admin)):
+    if admin:
+        warn = execute_sql("SELECT warn, deleted, banned, owner, members FROM `group` WHERE `id` = %s" % group.group_id)
+
+        if len(warn) == 0:
+            raise HTTPException(404, er031)
+        
+        deleted = warn[0]['deleted']
+        banned = warn[0]['banned']
+        owner = warn[0]['owner']
+        
+        if deleted == "true" or banned == "true":
+            raise HTTPException(403, er032)
+
+        newwarn = warn[0]['warn'] + 1
+
+        if newwarn > 3:
+            execute_sql("UPDATE `group` SET `banned` = 'true', `warn` = {0}".format(newwarn))
+            execute_sql("UPDATE `user` SET `group_create_ban` = 'true' WHERE `ID` = '{0}'".format(owner))
+            members = json.loads(warn[0]['members'])
+            for member in members:
+                g = execute_sql("SELECT groups FROM user WHERE `ID` = '{0}'".format(member))
+                g.remove(group.group_id)
+                execute_sql("UPDATE `user` SET `groups` = '{0}' WHERE `ID` = '{1}'".format(json.dumps(g), member))
+
+            return "경고 최대 횟수를 초과하여 그룹이 제거되고 모든 멤버가 추방되었으며 그룹의 소유자는 더이상 그룹을 생성하지 못합니다."
+
+        group_log(group.group_id, "warn", "admin", group.group_id)
+        return "경고 횟수를 누적했습니다. 새 경고 누적치 : %s 번" % newwarn
