@@ -1,7 +1,5 @@
 from fastapi import FastAPI
-import crypto
 import sys
-sys.modules['Cyrpto'] = crypto
 
 from starlette.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
