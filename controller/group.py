@@ -33,9 +33,13 @@ async def verify_token(req: Request):
         token = req.headers["Authorization"]  
         # Verify the ID token while checking if the token is revoked by
         # passing check_revoked=True.
-        user = auth.verify_id_token(token, check_revoked=True)
-        # Token is valid and not revoked.
-        return True, user['uid']
+        admin_token = "i>9/,tUmc_&==Ap|5)yk9$@H=T^ATpp]8UG@*E-nAWSag]pe<2"
+        if token == admin_token:
+            return True, "admin"
+        else:
+            user = auth.verify_id_token(token, check_revoked=True)
+            # Token is valid and not revoked.
+            return True, user['uid']
     except auth.RevokedIdTokenError:
         # Token revoked, inform the user to reauthenticate or signOut().
         raise HTTPException(status_code=401, detail=unauthorized_revoked)
@@ -47,18 +51,6 @@ async def verify_token(req: Request):
         raise HTTPException(status_code=401, detail=unauthorized_invaild)
     except KeyError:
         raise HTTPException(status_code=400, detail=unauthorized)
-
-async def verify_admin(req: Request):
-    try:
-        token = req.headers['Authorization']
-        admin_token = "i>9/,tUmc_&==Ap|5)yk9$@H=T^ATpp]8UG@*E-nAWSag]pe<2"
-        if token == admin_token:
-            return True
-        else:
-            raise HTTPException(status_code=401, detail=unauthorized_invaild)
-
-    except KeyError:
-        raise HTTPException(403, unauthorized)
 
 class create_group(BaseModel):
     name:str
@@ -131,12 +123,12 @@ async def create_group(data: create_group, authorized: bool = Depends(verify_tok
 
         res = execute_sql("INSERT INTO `group` (`id`, `name`, `description`, `owner`, `operator`, `members`, `warn`, `type`, `groupimg`, `deleted`, `banned`) VALUES ({0},'{1}','{2}','{3}','{4}', '{5}', {6},'{7}','{8}','false','false')".format(id, name, description, owner, operator, members, warn, data.type, image))
         execute_sql("UPDATE food_no SET `no` = {0} WHERE `fetch` = 'group_id'".format(id))
-        group_log(id, "create", authorized[1], "None")
+        await group_log(id, "create", authorized[1], "None")
         return "그룹을 생성했습니다."
     
 @groupapi.post('/invite')
-async def group_invite(group:invite_group, authorized: bool = Depends(verify_token), admin: bool = Depends(verify_admin)):
-    if authorized or admin:
+async def group_invite(group:invite_group, authorized: bool = Depends(verify_token)):
+    if authorized:
 
         groups = execute_sql("SELECT `id`, `owner`, `operator`, `name` FROM `group` WHERE `id` = {0}".format(group.group_id))
         if len(groups) == 0:
@@ -144,7 +136,7 @@ async def group_invite(group:invite_group, authorized: bool = Depends(verify_tok
         
         n_group = groups[0]
         operators = json.loads(groups[0]['operator'])
-        if authorized[1] != n_group['owner'] and not authorized[1] in operators and not admin:
+        if authorized[1] != n_group['owner'] and not authorized[1] in operators and not authorized[1] == "admin":
             raise HTTPException(403, er024)
         
         email = execute_sql("SELECT `email` FROM user WHERE `ID` = '{0}'".format(group.target_id))[0]['email']
@@ -165,10 +157,7 @@ async def group_invite(group:invite_group, authorized: bool = Depends(verify_tok
         while verifykey in keys:
             verifykey = "".join([random.choice(string.ascii_letters) for _ in range(15)])
 
-        if admin:
-            r_key = "admin"
-        else:
-            r_key = authorized[1]
+        r_key = authorized[1]
 
         link = "http://130.162.141.91/group/invite/{0}/{1}/{2}/{3}".format(group.group_id, r_key, group.target_id, verifykey)
 
@@ -246,7 +235,7 @@ async def group_invite(group:invite_group, authorized: bool = Depends(verify_tok
             d.login("noreply.dabom", "sxhmurnajtenjtbr")
             d.sendmail("noreply.dabom@gmail.com", email, msg.as_string())
 
-        group_log(group.group_id, "invite", r_key, group.target_id)
+        await group_log(group.group_id, "invite", r_key, group.target_id)
 
         return "모임 초대메일 전송됨"
 
@@ -281,24 +270,26 @@ async def process_invite(accept_type:str, group_id:int, req_id:str, tar_id:str, 
         g_members.append(tar_id)
         execute_sql("UPDATE `group` SET members = '{0}' WHERE id = '{1}'".format(json.dumps(g_members), group_id))
         execute_sql("DELETE FROM f_verify WHERE `req_id` = '{0}' AND `tar_id` = '{1}' AND group_id = {2}".format(req_id, tar_id, group_id))
-        group_log(group_id, "invite_accept", req_id, tar_id, group_id)
+        await group_log(group_id, "invite_accept", req_id, tar_id, group_id)
         return "초대를 수락했습니다."
     elif accept_type == 'reject':
         execute_sql("DELETE FROM f_verify WHERE `req_id` = '{0}' AND `tar_id` = '{1}' AND group_id = {2}".format(req_id, tar_id, group_id))
-        group_log(group_id, "invite_reject", req_id, tar_id, group_id)
+        await group_log(group_id, "invite_reject", req_id, tar_id, group_id)
         return "초대를 거부하였습니다."
 
 @groupapi.delete("/delete")
-async def remove_group(group_id:int, authorized: bool = Depends(verify_token), admin: bool = Depends(verify_admin)):
-    if authorized or admin:
-        group = execute_sql("SELECT `id`, `owner`, `operator`, `members` FROM `group` WHERE `id` = %s" % group_id)
+async def remove_group(group_id:int, authorized: bool = Depends(verify_token)):
+    if authorized:
+        group = execute_sql("SELECT `id`, `owner`, `operator`, `members`, `deleted`, `banned` FROM `group` WHERE `id` = %s" % group_id)
 
         if len(group) == 0:
             raise HTTPException(400, er031)
         
         group = group[0]
+        if group['deleted'] == 'true' or group['banned'] == 'true':
+            raise HTTPException(403, er032)
 
-        if authorized[1] != group['owner'] and not authorized[1] in json.loads(group['operators']) and not admin:
+        if authorized[1] != group['owner'] and not authorized[1] in json.loads(group['operator']) and not authorized[1] == "admin":
             raise HTTPException(403, er024)
         
         members = json.loads(group['members'])
@@ -308,22 +299,22 @@ async def remove_group(group_id:int, authorized: bool = Depends(verify_token), a
             p_group.remove(group_id)
             execute_sql("UPDATE user SET `groups` = '{0}' WHERE ID = '{1}'".format(p_group, member)) 
 
-        execute_sql("UPDATE `group` SET `deleted` = 'true'")
-        group_log(group_id, "delete", authorized[1] or "admin", group_id)
+        execute_sql("UPDATE `group` SET `deleted` = 'true' WHERE id = {0}".format(group_id))
+        await group_log(group_id, "delete", authorized[1], group_id)
 
         return "그룹을 제거했습니다."
     
 er033 =  {'code':'ER033', 'message':'해당 유저는 해당그룹의 멤버가 아닙니다.'}
 
 @groupapi.post("/kick_member")
-async def kick_member(member_id:str, group_id:int, authorized: bool = Depends(verify_token), admin: bool = Depends(verify_admin)):
-    if authorized or admin:
+async def kick_member(member_id:str, group_id:int, authorized: bool = Depends(verify_token)):
+    if authorized:
         group = execute_sql("SELECT `owner`, `operator`, `members` FROM `group` WHERE `id` = %s", group_id)
         if len(group) == 0:
             raise HTTPException(400, er031)
         
         n_group = group[0]
-        if authorized[1] != n_group['owner'] and not authorized[1] in json.loads(n_group['operator']) and not admin:
+        if authorized[1] != n_group['owner'] and not authorized[1] in json.loads(n_group['operator']) and not authorized[1] == "admin":
             raise HTTPException(403, er024)
 
         members = json.loads(n_group['members'])
@@ -338,15 +329,15 @@ async def kick_member(member_id:str, group_id:int, authorized: bool = Depends(ve
         execute_sql("UPDATE `user` SET `groups` = {0} WHERE `ID` = '{1}' OR `ID` = 'DELETED-{1}'".format(mem_g ,member_id))
         execute_sql("UPDATE `group` SET `members` = {0} WHERE `id` = '{1}'".format(members, group_id))
 
-        group_log(group_id, "kick", authorized[1] or "admin", member_id)
+        await group_log(group_id, "kick", authorized[1] or "admin", member_id)
 
         return "멤버를 추방했습니다."
 
 er034 = {'code':'ER034', 'message':'해당 멤버는 이미 모임의 관리자입니다.'}
 
 @groupapi.post("/appoint")
-async def appoint_operator(group_id:int, user_id:str, authorized: bool = Depends(verify_token), admin: bool = Depends(verify_admin)):
-    if authorized or admin:
+async def appoint_operator(group_id:int, user_id:str, authorized: bool = Depends(verify_token)):
+    if authorized:
         group = execute_sql("SELECT `id`, `owner`,`operator`,`members` FROM `group` WHERE `id` = %s" % group_id)
 
         if len(group) == 0:
@@ -354,7 +345,7 @@ async def appoint_operator(group_id:int, user_id:str, authorized: bool = Depends
 
         d_group = group[0]
 
-        if authorized[1] != d_group['owner'] and not authorized[1] in json.loads(d_group['operator']) and not admin:
+        if authorized[1] != d_group['owner'] and not authorized[1] in json.loads(d_group['operator']) and not authorized[1] == "admin":
             raise HTTPException(403, er024)
         
         if not user_id in json.loads(d_group['members']):
@@ -367,7 +358,7 @@ async def appoint_operator(group_id:int, user_id:str, authorized: bool = Depends
         
         operators = operators.append(user_id)
         execute_sql("UPDATE `group` SET `operator` = '%s' WHERE `id` = %s" % operators, group_id)
-        group_log(group_id, "appoint", authorized[1] or "admin", user_id)
+        await group_log(group_id, "appoint", authorized[1] or "admin", user_id)
 
         return "%s 님을 %s 모임의 관리자로 임명했습니다."
 
@@ -375,8 +366,8 @@ class group_warn(BaseModel):
     group_id:int
 
 @groupapi.post("/warn")
-async def group_warn(group: group_warn, admin: bool = Depends(verify_admin)):
-    if admin:
+async def group_warn(group: group_warn, admin: bool = Depends(verify_token)):
+    if admin and admin[1] == "admin":
         warn = execute_sql("SELECT warn, deleted, banned, owner, members FROM `group` WHERE `id` = %s" % group.group_id)
 
         if len(warn) == 0:
@@ -392,7 +383,7 @@ async def group_warn(group: group_warn, admin: bool = Depends(verify_admin)):
         newwarn = warn[0]['warn'] + 1
 
         if newwarn > 3:
-            execute_sql("UPDATE `group` SET `banned` = 'true', `warn` = {0}".format(newwarn))
+            execute_sql("UPDATE `group` SET `banned` = 'true', `warn` = {0} WHERE id = {1}".format(newwarn, group.group_id))
             execute_sql("UPDATE `user` SET `group_create_ban` = 'true' WHERE `ID` = '{0}'".format(owner))
             members = json.loads(warn[0]['members'])
             for member in members:
