@@ -1,3 +1,4 @@
+#-*- coding: utf-8 -*-
 from fastapi import APIRouter, Cookie, HTTPException, Depends, Request, WebSocket, status
 from pydantic import BaseModel
 from starlette.websockets import WebSocketDisconnect
@@ -40,6 +41,11 @@ async def receive_message(websocket: WebSocket, username: str, channel: str):
             message_event = MessageEvent.parse_raw(event.message)
             # Discard user's own messages
             if message_event.username != username:
+                message_event.dict()
+                msg = {
+                    'username': username,
+                    'message' : message_event.dict()['message']
+                }
                 await websocket.send_json(message_event.dict())
 
 
@@ -47,6 +53,11 @@ async def send_message(websocket: WebSocket, username: str, channel: str):
     data = await websocket.receive_text()
     r.xadd(channel,{'time':datetime.datetime.utcnow().isoformat(), 'username':username, 'channel':channel, 'message' :data})
     event = MessageEvent(username=username, message=data)
+    await broadcast.publish(channel, message=event.json())
+
+async def join_channel(username: str, channel: str):
+    r.xadd(channel,{'time':datetime.datetime.utcnow().isoformat(), 'username':"system", 'channel':channel, 'message' :f"{username}님이 채팅방에 참여했습니다."})
+    event = MessageEvent(username=username, message=f"{username}님이 채팅방에 참여했습니다.")
     await broadcast.publish(channel, message=event.json())
 
 @chat.delete("/delete_all")
@@ -65,6 +76,8 @@ async def delete_all(username: str, channel: str):
 async def websocket_endpoint(websocket: WebSocket, username: str = "Anonymous", channel: str = "lobby"):
     if username == "Anonymous":
         await websocket.close()
+    
+    await join_channel(username, channel)
 
     await websocket.accept()
 
