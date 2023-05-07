@@ -36,20 +36,30 @@ class MessageEvent(BaseModel):
 
 async def receive_message(websocket: WebSocket, username: str, channel: str):
     async with broadcast.subscribe(channel) as subscriber:
-        comments = r.xread(streams={channel: 0})
-        print(comments)
         async for event in subscriber:
             message_event = MessageEvent.parse_raw(event.message)
             # Discard user's own messages
             if message_event.username != username:
                 await websocket.send_json(message_event.dict())
 
+
 async def send_message(websocket: WebSocket, username: str, channel: str):
     data = await websocket.receive_text()
-    r.xadd(channel,{'time':datetime.datetime.utcnow().isoformat(), 'sender':username, 'channel':channel})
+    r.xadd(channel,{'time':datetime.datetime.utcnow().isoformat(), 'username':username, 'channel':channel, 'message' :data})
     event = MessageEvent(username=username, message=data)
     await broadcast.publish(channel, message=event.json())
 
+@chat.delete("/delete_all")
+async def delete_all(username: str, channel: str):
+    if username != "ruddls030":
+        raise HTTPException(400, "You are not allowed to delete")
+
+    data = r.xread(streams={channel: 0})
+    for streams in data:
+        stream_name, messages = streams
+        [ r.xdel( stream_name, i[0] ) for i in messages ]
+
+    return "all message delete"
 
 @chat.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket, username: str = "Anonymous", channel: str = "lobby"):
@@ -57,8 +67,22 @@ async def websocket_endpoint(websocket: WebSocket, username: str = "Anonymous", 
         await websocket.close()
 
     await websocket.accept()
+
+    await websocket.send_text(f"{username}님 안녕하세요! {channel} 채널에 참여했습니다!")
+    await websocket.send_text("대화 내용을 불러오는 중입니다...")
+
+    comments = r.xread(streams={channel: 0})
+    if len(comments) != 0:
+        c_data = comments[0][1]
+        for id, value in c_data:
+            data = {
+                'username' : value['username'],
+                'message' : value['message']
+            }
+            await websocket.send_json(data)
+            
+
     try:
-        print("in")
         while True:
             receive_message_task = asyncio.create_task(
                 receive_message(websocket, username, channel)
