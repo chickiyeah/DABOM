@@ -9,6 +9,7 @@ from broadcaster import Broadcast
 from starlette.routing import Route, WebSocketRoute
 from starlette.concurrency import run_until_first_complete
 import redis
+from controller.wordfilter import check_word
 r = redis.Redis(host="35.212.169.246", port=6379, decode_responses=True, db=0)
 
 chat = APIRouter(prefix="", tags=['webSocket_chat'])
@@ -51,9 +52,15 @@ async def receive_message(websocket: WebSocket, username: str, channel: str):
 
 async def send_message(websocket: WebSocket, username: str, channel: str):
     data = await websocket.receive_text()
-    r.xadd(channel,{'time':datetime.datetime.utcnow().isoformat(), 'username':username, 'channel':channel, 'message' :data})
-    event = MessageEvent(username=username, message=data)
-    await broadcast.publish(channel, message=event.json())
+    curse = check_word(data, "ko")
+    if curse != None:
+        r.xadd(channel,{'time':datetime.datetime.utcnow().isoformat(), 'username':username, 'channel':channel, 'message' :curse})
+        event = MessageEvent(username=username, message=curse)
+        await broadcast.publish(channel, message=event.json())
+    else:
+        r.xadd(channel,{'time':datetime.datetime.utcnow().isoformat(), 'username':username, 'channel':channel, 'message' :data})
+        event = MessageEvent(username=username, message=data)
+        await broadcast.publish(channel, message=event.json())
 
 async def join_channel(username: str, channel: str):
     r.xadd(channel,{'time':datetime.datetime.utcnow().isoformat(), 'username':"system", 'channel':channel, 'message' :f"{username}님이 채팅방에 참여했습니다."})
