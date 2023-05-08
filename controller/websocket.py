@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+import json
 from fastapi import APIRouter, Cookie, HTTPException, Depends, Request, WebSocket, status
 from pydantic import BaseModel
 from starlette.websockets import WebSocketDisconnect
@@ -10,13 +11,17 @@ from starlette.routing import Route, WebSocketRoute
 from starlette.concurrency import run_until_first_complete
 import redis
 from controller.wordfilter import check_word
-r = redis.Redis(host="35.212.169.246", port=6379, decode_responses=True, db=0)
+from controller.database import execute_sql
+r = redis.Redis(host="35.212.168.183", port=6379, decode_responses=True, db=0)
 
 chat = APIRouter(prefix="", tags=['webSocket_chat'])
 
 
+global current_user
+current_user = {"guilds":{}}
+
 #broadcast = Broadcast("redis://localhost:6379")
-broadcast = Broadcast("redis://35.212.169.246:6379")
+broadcast = Broadcast("redis://35.212.168.183:6379")
     
 #print(broadcast)
 CHANNEL = "CHAT"
@@ -80,7 +85,24 @@ async def delete_all(username: str, channel: str):
     return "all message delete"
 
 @chat.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket, username: str = "Anonymous", channel: str = "lobby"):
+async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Anonymous", channel: str = "lobby"):
+    client = websocket.client.host
+    print(client, u_id, username, channel)
+    udata = {
+        "ip" : client,
+        "id": u_id,
+        "nick": username,
+    }
+    guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{channel}'")
+    if len(guilds) == 0:
+        member = [f'{u_id}']
+        print(member)
+        execute_sql(f"INSERT INTO chatroom (room, members) VALUES ('{channel}', '{json.dumps(member)}')")
+    else:
+        members = json.loads(guilds[0]['members'])
+        members.append(u_id)
+        execute_sql(f"UPDATE chatroom SET members = '{json.dumps(members)}' WHERE room = '{channel}'")
+
     if username == "Anonymous":
         await websocket.close()
     
@@ -117,7 +139,12 @@ async def websocket_endpoint(websocket: WebSocket, username: str = "Anonymous", 
             for task in done:
                 task.result()
     except WebSocketDisconnect:
+        guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{channel}'")
+        members = json.loads(guilds[0]['members'])
+        members.remove(u_id)
+        execute_sql(f"UPDATE chatroom SET members = '{json.dumps(members)}' WHERE room = '{channel}'")
         await websocket.close()
+
 
 @chat.on_event("startup")
 async def start_up():
