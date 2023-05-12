@@ -8,13 +8,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3.3.0
 
-      - name: SSH Remote Commands
-        uses: appleboy/ssh-action@v0.1.10
+      - name: Deploy To Fastapi Server
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.REMOTE_SSH_HOST }}
           username: ${{ secrets.REMOTE_SSH_USERNAME }}
           key: ${{ secrets.REMOTE_SSH_KEY }}
           port: ${{ secrets.REMOTE_SSH_PORT }}
           script: |
-            cd DABOM
-            git pull origin main
+            cd ~/DABOM
+            sudo git pull origin main
