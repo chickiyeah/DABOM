@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from . import mysql_setup
 import sys
 
 from starlette.middleware.cors import CORSMiddleware
