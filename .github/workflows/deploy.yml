@@ -15,7 +15,6 @@ jobs:
           username: ${{ secrets.REMOTE_SSH_USERNAME }}
           key: ${{ secrets.REMOTE_SSH_KEY }}
           port: 22
-          password: ${{ secrets.PASSWORD }}
           debug: true
           script: |
             cd ~/DABOM
