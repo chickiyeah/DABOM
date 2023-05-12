@@ -14,8 +14,9 @@ from controller.wordfilter import check_word
 from controller.database import execute_sql
 r = redis.Redis(host="35.212.168.183", port=6379, decode_responses=True, db=0)
 
-chat = APIRouter(prefix="", tags=['webSocket_chat'])
+chat = APIRouter(prefix="/chat", tags=['webSocket_chat'])
 
+er035={"code":"ER035","message":"존재하지 않는 채팅방입니다."}
 
 global current_user
 current_user = {"guilds":{}}
@@ -84,17 +85,31 @@ async def delete_all(username: str, channel: str):
 
     return "all message delete"
 
+@chat.get("/members")
+async def members(group: str):
+    print(execute_sql("SELECT * FROM members"))
+    guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{group}'")
+    print(guilds)
+    if guilds == None or len(guilds) == 0:
+        raise HTTPException(400, er035)
+
+    res = {}
+    res['name'] = group
+    res['members'] = guilds[0]['members']
+
+    return res
+
+
 @chat.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Anonymous", channel: str = "lobby"):
     client = websocket.client.host
-    print(client, u_id, username, channel)
     udata = {
         "ip" : client,
         "id": u_id,
         "nick": username,
     }
     guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{channel}'")
-    if len(guilds) == 0:
+    if guilds == None or len(guilds) == 0:
         member = [f'{u_id}']
         print(member)
         execute_sql(f"INSERT INTO chatroom (room, members) VALUES ('{channel}', '{json.dumps(member)}')")
@@ -149,6 +164,7 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
 @chat.on_event("startup")
 async def start_up():
     await broadcast.connect()
+    execute_sql("TRUNCATE chatroom")
 
 @chat.on_event("shutdown")
 async def shutdown():

@@ -17,21 +17,24 @@ def execute_sql(sql:str):
             cur.execute(sql)
             try:
                 con.close()
+                res = cur.fetchall()
+                return res
             except pymysqlpool.ReturnConnectionToPoolError:
-                "no"
+                res = cur.fetchall()
+                return res
 
-            return cur.fetchall()
         
         def edit(sql):
             res = cur.execute(sql)
             try:
                 con.close()
+                return res
             except pymysqlpool.ReturnConnectionToPoolError:
-                "no"
+                return res
                 
-            return res
+           
 
         if "SELECT" in sql or "select" in sql:
-            get(sql)
+            return get(sql)
         else:
-            edit(sql)
+            return edit(sql)
