@@ -226,7 +226,8 @@ async def remove_friend(delid:str, authorized: bool = Depends(verify_token)):
         except auth.UserNotFoundError:
             raise HTTPException(400, User_NotFound)
 
-er037 = {"code":"ER037","message":"이미 차단된 유저입니다."}    
+er037 = {"code":"ER037","message":"이미 차단된 유저입니다."}
+er038 = {"code":"ER038","message":"차단되지 않은 유저입니다."}  
 @friendapi.post("/ban")
 async def ban_friend(user_id: str, authorized: bool = Depends(verify_token)):
     if authorized:
@@ -245,7 +246,24 @@ async def ban_friend(user_id: str, authorized: bool = Depends(verify_token)):
                 execute_sql("UPDATE user SET friends = '%s' WHERE ID = '%s'" % (t_list, user_id))
 
             b_list.append(user_id)
-            execute_sql(f"UPDATE user SET friend_ban = '{json.dumps(b_list)}' WHERE ID = '{authorized[1]}'")           
+            execute_sql(f"UPDATE user SET friend_ban = '{json.dumps(b_list)}' WHERE ID = '{authorized[1]}'")
+            return "유저를 차단했습니다."         
+
+        except auth.UserNotFoundError:
+            raise HTTPException(400, User_NotFound)
+
+@friendapi.post("/pardon")
+async def pardon_friend(user_id: str, authorized: bool = Depends(verify_token)):
+    if authorized:
+        try:
+            auth.get_user(user_id)
+            b_list = json.loads(execute_sql(f"SELECT friend_ban FROM user WHERE ID = {authorized[1]}"))
+            if not user_id in b_list:
+                raise HTTPException(400, er038)
+            
+            b_list.remove(user_id)
+            execute_sql(f"UPDATE user SET friend_ban = '{json.dumps(b_list)}' WHERE ID = '{authorized[1]}'")
+            return "유저를 차단해제했습니다."
 
         except auth.UserNotFoundError:
             raise HTTPException(400, User_NotFound)
