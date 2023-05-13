@@ -128,11 +128,11 @@ async def members(group: str):
     res['members'] = guilds[0]['members']
 
     return res
-er036 = {"code":"ER036","message":"뮤트 시간 타입이 올바르지 않습니다. (s, m, h ,d)"}
-@chat.get("/mute")
+er036 = {"code":"ER036","message":"뮤트 시간 타입이 올바르지 않습니다. (m, h ,d)"}
+@chat.post("/mute")
 async def mute(group: str, num: int, time_type: str, user_id: str, reason: Optional[str] = None, authorized: bool = Depends(verify_token)):
     if authorized:
-        if not time_type in ['s','m','h','d']:
+        if not time_type in ['m','h','d']:
             raise HTTPException(400, er036)
         
         groups = execute_sql("SELECT `id`, `owner`, `operator`, `name` FROM `group` WHERE `id` = {0}".format(group))
@@ -164,7 +164,7 @@ async def mute(group: str, num: int, time_type: str, user_id: str, reason: Optio
         else:
             execute_sql(f"UPDATE chat_mute SET unmute_at = {unmutesec} WHERE id = '{user_id}' AND `group` = {group}")
 
-@chat.get("/unmute")
+@chat.post("/unmute")
 async def unmute(group: str, user_id: str, authorized: bool = Depends(verify_token)):
     if authorized:
         groups = execute_sql("SELECT `id`, `owner`, `operator`, `name` FROM `group` WHERE `id` = {0}".format(group))
@@ -176,17 +176,55 @@ async def unmute(group: str, user_id: str, authorized: bool = Depends(verify_tok
         if authorized[1] != n_group['owner'] and not authorized[1] in operators and not authorized[1] == "admin":
             raise HTTPException(403, er024)
         
-        asyncio.create_task(execute_sql(f"DELETE FROM `chat_mute` WHERE id = '{user_id}' AND `group` = {group}"))
+        execute_sql(f"DELETE FROM `chat_mute` WHERE id = '{user_id}' AND `group` = {group}")
         return f"{user_id} unmuted"
+
+er037 = {"code": "ER037", "message": "이미 차단된 유저입니다."}
+
+@chat.post("/ban")
+async def ban(group: str, user_id: str, reason: Optional[str] = None, authorized: bool = Depends(verify_token)):
+    if authorized:
+        groups = execute_sql("SELECT `id`, `owner`, `operator`, `name` FROM `group` WHERE `id` = {0}".format(group))
+        if len(groups) == 0:
+            raise HTTPException(404, er023)
+        
+        n_group = groups[0]
+        operators = json.loads(groups[0]['operator'])
+        if authorized[1] != n_group['owner'] and not authorized[1] in operators and not authorized[1] == "admin":
+            raise HTTPException(403, er024)
+
+        rl = execute_sql(f"SELECT `id` FROM chat_ban WHERE `id` = {user_id} AND `group_id` = {group}")
+
+        if not len(rl) == 0:
+            raise HTTPException(400, er037)
+        
+        execute_sql(f"INSERT INTO chat_ban VALUES ('{user_id}', '{authorized[1]}','{reason}',{group})")
+
+er038 = {"code":"ER038","message":"차단되지 않은 유저입니다."}
+@chat.post('/pardon')
+async def pardon(group: str, user_id: str, authorized: bool = Depends(verify_token)):
+    if authorized:
+        groups = execute_sql("SELECT `id`, `owner`, `operator`, `name` FROM `group` WHERE `id` = {0}".format(group))
+        if len(groups) == 0:
+            raise HTTPException(404, er023)
+        
+        n_group = groups[0]
+        operators = json.loads(groups[0]['operator'])
+        if authorized[1] != n_group['owner'] and not authorized[1] in operators and not authorized[1] == "admin":
+            raise HTTPException(403, er024)
+
+        rl = execute_sql(f"SELECT `id` FROM chat_ban WHERE `id` = {user_id} AND `group_id` = {group}")
+
+        if len(rl) == 0:
+            raise HTTPException(400, er038)
+        
+        execute_sql(f"DELETE FROM chat_ban WHERE `id` = {user_id} AND `group_id` = {group}")
+
+
+
 
 @chat.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Anonymous", channel: str = "lobby"):
-    client = websocket.client.host
-    udata = {
-        "ip" : client,
-        "id": u_id,
-        "nick": username,
-    }
     guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{channel}'")
     if guilds == None or len(guilds) == 0:
         member = [f'{u_id}']
