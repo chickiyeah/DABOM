@@ -12,14 +12,40 @@ from starlette.concurrency import run_until_first_complete
 import redis
 from controller.wordfilter import check_word
 from controller.database import execute_sql
+from firebase_admin import auth
+import time
+
 r = redis.Redis(host="35.212.168.183", port=6379, decode_responses=True, db=0)
 
 chat = APIRouter(prefix="/chat", tags=['webSocket_chat'])
 
-er035={"code":"ER035","message":"존재하지 않는 채팅방입니다."}
 
-global current_user
-current_user = {"guilds":{}}
+er023 = {'code': 'ER023', 'message':'해당 아이디에 해당하는 그룹은 존재하지 않습니다.'}
+er024 = {'code': 'ER024', 'message':'해당 그룹의 관리자가 아닙니다.'}
+er035={"code":"ER035","message":"존재하지 않는 채팅방입니다."}
+unauthorized = {'code':'ER013','message':'UNAUTHORIZED'}
+unauthorized_revoked = {'code':'ER014','message':'UNAUTHORIZED (REVOKED TOKEN)'}
+unauthorized_invaild = {'code':'ER015','message':'UNAUTHORIZED (TOKEN INVALID)'}
+unauthorized_userdisabled = {'code':'ER016','message':'UNAUTHORIZED (TOKENS FROM DISABLED USERS)'}
+async def verify_token(req: Request): 
+    try:
+        token = req.headers["Authorization"]  
+        # Verify the ID token while checking if the token is revoked by
+        # passing check_revoked=True.
+        user = auth.verify_id_token(token, check_revoked=True)
+        # Token is valid and not revoked.
+        return True, user['uid']
+    except auth.RevokedIdTokenError:
+        # Token revoked, inform the user to reauthenticate or signOut().
+        raise HTTPException(status_code=401, detail=unauthorized_revoked)
+    except auth.UserDisabledError:
+        # Token belongs to a disabled user record.
+        raise HTTPException(status_code=401, detail=unauthorized_userdisabled)
+    except auth.InvalidIdTokenError:
+        # Token is invalid
+        raise HTTPException(status_code=401, detail=unauthorized_invaild)
+    except KeyError:
+        raise HTTPException(status_code=400, detail=unauthorized)
 
 #broadcast = Broadcast("redis://localhost:6379")
 broadcast = Broadcast("redis://35.212.168.183:6379")
@@ -41,6 +67,12 @@ API_TOKEN = "e[M[jUQ@PT7AMr(H],6Z/}Jil@bbFF&XO.x/>J00uf!^Cx~Q5d"
 class MessageEvent(BaseModel):
     username: str
     message: str
+
+async def mutecheck():
+    while True:
+        await asyncio.sleep(1)
+        t = int(time.mktime(datetime.datetime.now().timetuple()))
+        execute_sql(f"DELETE FROM `chat_mute` WHERE unmute_at < {t}")
 
 async def receive_message(websocket: WebSocket, username: str, channel: str):
     async with broadcast.subscribe(channel) as subscriber:
@@ -87,9 +119,7 @@ async def delete_all(username: str, channel: str):
 
 @chat.get("/members")
 async def members(group: str):
-    print(execute_sql("SELECT * FROM members"))
     guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{group}'")
-    print(guilds)
     if guilds == None or len(guilds) == 0:
         raise HTTPException(400, er035)
 
@@ -98,7 +128,56 @@ async def members(group: str):
     res['members'] = guilds[0]['members']
 
     return res
+er036 = {"code":"ER036","message":"뮤트 시간 타입이 올바르지 않습니다. (s, m, h ,d)"}
+@chat.get("/mute")
+async def mute(group: str, num: int, time_type: str, user_id: str, reason: Optional[str] = None, authorized: bool = Depends(verify_token)):
+    if authorized:
+        if not time_type in ['s','m','h','d']:
+            raise HTTPException(400, er036)
+        
+        groups = execute_sql("SELECT `id`, `owner`, `operator`, `name` FROM `group` WHERE `id` = {0}".format(group))
+        if len(groups) == 0:
+            raise HTTPException(404, er023)
+        
+        n_group = groups[0]
+        operators = json.loads(groups[0]['operator'])
+        if authorized[1] != n_group['owner'] and not authorized[1] in operators and not authorized[1] == "admin":
+            raise HTTPException(403, er024)
+        
+        cursec = int(time.mktime(datetime.datetime.now().timetuple()))
+        if time_type == 's':
+            plustime = num
+            unmutesec = cursec + plustime      
+        elif time_type == 'm':
+            plustime = (num * 60)
+            unmutesec = cursec + plustime
+        elif time_type == 'h':
+            plustime = ((num * 60) * 60)
+            unmutesec = cursec + plustime
+        elif time_type == 'd':
+            plustime = (((num * 60) * 60) * 12)
+            unmutesec = cursec + plustime
 
+        a = execute_sql("SELECT id FROM chat_mute WHERE id = %s" % user_id)
+        if len(a) == 0:
+            execute_sql(f"INSERT INTO chat_mute VALUES('{user_id}', '{authorized[1]}', '{reason}',{unmutesec}, {group})")
+        else:
+            execute_sql(f"UPDATE chat_mute SET unmute_at = {unmutesec} WHERE id = '{user_id}' AND `group` = {group}")
+
+@chat.get("/unmute")
+async def unmute(group: str, user_id: str, authorized: bool = Depends(verify_token)):
+    if authorized:
+        groups = execute_sql("SELECT `id`, `owner`, `operator`, `name` FROM `group` WHERE `id` = {0}".format(group))
+        if len(groups) == 0:
+            raise HTTPException(404, er023)
+        
+        n_group = groups[0]
+        operators = json.loads(groups[0]['operator'])
+        if authorized[1] != n_group['owner'] and not authorized[1] in operators and not authorized[1] == "admin":
+            raise HTTPException(403, er024)
+        
+        asyncio.create_task(execute_sql(f"DELETE FROM `chat_mute` WHERE id = '{user_id}' AND `group` = {group}"))
+        return f"{user_id} unmuted"
 
 @chat.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Anonymous", channel: str = "lobby"):
@@ -111,9 +190,6 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
     guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{channel}'")
     if guilds == None or len(guilds) == 0:
         member = [f'{u_id}']
-        print(websocket.client.port)
-        print(list(websocket.session))
-        print(websocket['subprotocols'])
         execute_sql(f"INSERT INTO chatroom (room, members) VALUES ('{channel}', '{json.dumps(member)}')")
     else:
         members = json.loads(guilds[0]['members'])
@@ -167,6 +243,7 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
 async def start_up():
     await broadcast.connect()
     execute_sql("TRUNCATE chatroom")
+    asyncio.create_task(mutecheck())
 
 @chat.on_event("shutdown")
 async def shutdown():
