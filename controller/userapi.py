@@ -701,7 +701,7 @@ async def user_create(userdata: UserRegisterdata):
         d.login("noreply.dabom", "sxhmurnajtenjtbr")
         d.sendmail("noreply.dabom@gmail.com", email, msg.as_string())       
 
-    sql = "INSERT INTO user VALUES (\""+email+"\",\""+id+"\",\""+nickname+"\",\""+str(now.strftime("%Y-%m-%d %H:%M:%S"))+"\",\""+gender+"\",\""+str(age)+"\",\""+height+"\",\""+weight+"\", \"[]\", 'False', '[]')"
+    sql = "INSERT INTO user VALUES (\""+email+"\",\""+id+"\",\""+nickname+"\",\""+str(now.strftime("%Y-%m-%d %H:%M:%S"))+"\",\""+gender+"\",\""+str(age)+"\",\""+height+"\",\""+weight+"\", \"[]\", 'False', '[]', '[]')"
     res = execute_sql(sql)
     if res != 1:
         raise HTTPException(500, "ERROR ON CREATE DATA FOR NEW USER")

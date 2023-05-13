@@ -212,8 +212,8 @@ async def remove_friend(delid:str, authorized: bool = Depends(verify_token)):
     if authorized:
         try:
             auth.get_user(delid)
-            f_list = execute_sql("SELECT friends FROM user WHERE ID = '%s'" % authorized[1])
-            t_list = execute_sql("SELECT friends FROM user WHERE ID = '%s'" % delid)
+            f_list = json.loads(execute_sql("SELECT friends FROM user WHERE ID = '%s'" % authorized[1])[0]['friends'])
+            t_list = json.loads(execute_sql("SELECT friends FROM user WHERE ID = '%s'" % delid)[0]['friends'])
             if delid in f_list:
                 f_list.remove(delid)
                 t_list.remove(authorized[1])
@@ -225,8 +225,31 @@ async def remove_friend(delid:str, authorized: bool = Depends(verify_token)):
             
         except auth.UserNotFoundError:
             raise HTTPException(400, User_NotFound)
-    
-        
+
+er037 = {"code":"ER037","message":"이미 차단된 유저입니다."}    
+@friendapi.post("/ban")
+async def ban_friend(user_id: str, authorized: bool = Depends(verify_token)):
+    if authorized:
+        try:
+            auth.get_user(user_id)
+            b_list = json.loads(execute_sql(f"SELECT friend_ban FROM user WHERE ID = {authorized[1]}"))
+            if user_id in b_list:
+                raise HTTPException(400, er037)
+
+            f_list = json.loads(execute_sql("SELECT friends FROM user WHERE ID = '%s'" % authorized[1]))
+            t_list = json.loads(execute_sql("SELECT friends FROM user WHERE ID = '%s'" % user_id))
+            if user_id in f_list:
+                f_list.remove(user_id)
+                t_list.remove(authorized[1])
+                execute_sql("UPDATE user SET friends = '%s' WHERE ID = '%s'" % (f_list, authorized[1]))
+                execute_sql("UPDATE user SET friends = '%s' WHERE ID = '%s'" % (t_list, user_id))
+
+            b_list.append(user_id)
+            execute_sql(f"UPDATE user SET friend_ban = '{json.dumps(b_list)}' WHERE ID = '{authorized[1]}'")           
+
+        except auth.UserNotFoundError:
+            raise HTTPException(400, User_NotFound)
+
 @friendapi.post("/{f_type}/{req_id}/{req_nick}/{tar_id}/{tar_nick}/{verify_id}")
 async def edit_friend(f_type: str, req_id: str, req_nick:str, tar_id: str, tar_nick:str, verify_id: str):
     if not f_type == "accept" or f_type == "reject":

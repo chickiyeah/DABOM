@@ -220,9 +220,6 @@ async def pardon(group: str, user_id: str, authorized: bool = Depends(verify_tok
         
         execute_sql(f"DELETE FROM chat_ban WHERE `id` = {user_id} AND `group_id` = {group}")
 
-
-
-
 @chat.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Anonymous", channel: str = "lobby"):
     guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{channel}'")
