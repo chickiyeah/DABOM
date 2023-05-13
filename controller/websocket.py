@@ -111,7 +111,9 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
     guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{channel}'")
     if guilds == None or len(guilds) == 0:
         member = [f'{u_id}']
-        print(member)
+        print(websocket.client.port)
+        print(list(websocket.session))
+        print(websocket['subprotocols'])
         execute_sql(f"INSERT INTO chatroom (room, members) VALUES ('{channel}', '{json.dumps(member)}')")
     else:
         members = json.loads(guilds[0]['members'])
