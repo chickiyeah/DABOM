@@ -19,7 +19,6 @@ r = redis.Redis(host="35.212.168.183", port=6379, decode_responses=True, db=0)
 
 chat = APIRouter(prefix="/chat", tags=['webSocket_chat'])
 
-
 er023 = {'code': 'ER023', 'message':'해당 아이디에 해당하는 그룹은 존재하지 않습니다.'}
 er024 = {'code': 'ER024', 'message':'해당 그룹의 관리자가 아닙니다.'}
 er035={"code":"ER035","message":"존재하지 않는 채팅방입니다."}
@@ -223,6 +222,10 @@ async def pardon(group: str, user_id: str, authorized: bool = Depends(verify_tok
 @chat.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Anonymous", channel: str = "lobby"):
     guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{channel}'")
+    user_d = {
+        'name': username,
+        'id': u_id
+    }
     if guilds == None or len(guilds) == 0:
         member = [f'{u_id}']
         execute_sql(f"INSERT INTO chatroom (room, members) VALUES ('{channel}', '{json.dumps(member)}')")
@@ -237,9 +240,13 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
     await join_channel(username, channel)
 
     await websocket.accept()
-
-    await websocket.send_text(f"{username}님 안녕하세요! {channel} 채널에 참여했습니다!")
-    await websocket.send_text("대화 내용을 불러오는 중입니다...")
+    data = {
+        'username' : "system",
+        'message' : f"{username}님 안녕하세요! {channel} 채널에 참여했습니다!"
+    }
+    await websocket.send_json(data)
+    data['message'] = "대화 내용을 불러오는 중입니다..."
+    await websocket.send_json(data)
 
     comments = r.xread(streams={channel: 0})
     if len(comments) != 0:
@@ -271,7 +278,8 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
         members = json.loads(guilds[0]['members'])
         members.remove(u_id)
         execute_sql(f"UPDATE chatroom SET members = '{json.dumps(members)}' WHERE room = '{channel}'")
-        await websocket.close()
+        print("socket closed")
+
 
 
 @chat.on_event("startup")

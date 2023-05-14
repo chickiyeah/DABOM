@@ -297,6 +297,7 @@ class verify_token(BaseModel):
 class verify_token_res(BaseModel):
     uid: str
     email: str
+    nick: str
 
 class token_revoke(BaseModel):
     uid: str
@@ -424,7 +425,7 @@ async def refresh_token(token: refresh_token, requset: Request):
     userjson['refresh_token'] = currentuser['refreshToken']  
 
     sql = "SELECT Login_IP FROM loginlog WHERE ID = \"%s\"" % userjson['id']
-    lastip = execute_sql(sql)[0]
+    lastip = execute_sql(sql)[0]['Login_IP']
 
     if lastip == client:
         return userjson
@@ -445,6 +446,8 @@ async def verify_token(token: verify_token):
         # passing check_revoked=True.
         decoded_token = auth.verify_id_token(usertoken, check_revoked=True)
         # Token is valid and not revoked.
+        nick = execute_sql(f"SELECT Nickname FROM user WHERE `ID` = '{decoded_token['uid']}'")[0]['Nickname']
+        decoded_token['nick'] = nick
         return decoded_token
     except auth.RevokedIdTokenError:
         # Token revoked, inform the user to reauthenticate or signOut().
@@ -524,7 +527,7 @@ async def user_login(userdata: UserLogindata, request: Request):
 
     currentuser = Auth.current_user
     try:
-        userjson= execute_sql("SELECT * FROM Users WHERE ID = \"%s\"" % currentuser['localId'])[0]
+        userjson= execute_sql("SELECT * FROM user WHERE ID = \"%s\"" % currentuser['localId'])[0]
     except TypeError:
         raise HTTPException(400, Invaild_Email)
     

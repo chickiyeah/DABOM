@@ -17,7 +17,7 @@ app.add_middleware(
 __init__()
 
 from controller.nutrient import nutrientapi
-from controller import userapi, diary, friends, food, group, websocket
+from controller import userapi, diary, friends, food, group, websocket, Screen
 
 
 app.include_router(nutrientapi.nutrient)
@@ -27,3 +27,5 @@ app.include_router(friends.friendapi)
 app.include_router(food.foodapi)
 app.include_router(group.groupapi)
 app.include_router(websocket.chat)
+app.include_router(Screen.ScreenRoute)
+app.mount("/static", StaticFiles(directory="FrontSide/assets"))
