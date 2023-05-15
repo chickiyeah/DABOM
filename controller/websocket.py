@@ -100,8 +100,8 @@ async def send_message(websocket: WebSocket, username: str, channel: str):
         await broadcast.publish(channel, message=event.json())
 
 async def join_channel(username: str, channel: str):
-    r.xadd(channel,{'time':datetime.datetime.utcnow().isoformat(), 'username':"system", 'channel':channel, 'message' :f"{username}님이 채팅방에 참여했습니다."})
-    event = MessageEvent(username=username, message=f"{username}님이 채팅방에 참여했습니다.")
+    r.xadd(channel,{'time':datetime.datetime.utcnow().isoformat(), 'username':"userupdate", 'channel':channel, 'message' :f"{username}님이 채팅방에 참여했습니다."})
+    event = MessageEvent(username="userupdate", message=f"{username}님이 채팅방에 참여했습니다.")
     await broadcast.publish(channel, message=event.json())
 
 @chat.delete("/delete_all")
@@ -122,6 +122,7 @@ async def members(group: str):
     if guilds == None or len(guilds) == 0:
         raise HTTPException(400, er035)
 
+    print(guilds)
     res = {}
     res['name'] = group
     res['members'] = guilds[0]['members']

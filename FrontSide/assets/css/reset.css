@@ -1,0 +1,23 @@
+@import "../css/font.css";
+
+html { box-sizing: border-box; -webkit-overflow-scrolling: touch; position: relative; width: 100%; }
+
+body {
+    font-size: 16px; letter-spacing: -0.5px;
+    font-family: 'GmarketSans','Cafe24Ohsquare', sans-serif;
+    /*position: relative; min-height: 100%; height: 100%; overflow-x: hidden; */
+    min-width: 360px; overflow-y: auto; font-weight: 500; color: #222222;
+}
+
+*::before, *::after { box-sizing: inherit; margin: 0; padding: 0; }
+/**:focus { outline: none;}*/
+img { display: block; height: auto; max-width: 100%;}
+a { color: inherit; text-decoration: none; }
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,p,blockquote,th,td,input,select,textarea,button,a,article, aside, canvas, details, embed, figure, figcaption, header, footer, menu,nav, output, ruby, section, summary, time, mark, audio, video { margin:0; padding:0; box-sizing:border-box;}
+h1,h2,h3,h4,h5,h6,p {font-stretch:normal;}
+article,aside,details,figcaption,figure, footer,hgroup,menu,nav,section { display:block; }
+dl,ul,ol,menu,li{list-style-type:none;}
+address,caption,cite,code,dfn,em,var,i{font-style:inherit;font-weight:inherit;}
+button { color: inherit; font-family: inherit; border: none; background-color: transparent; outline: none; cursor: pointer;}
+select {-webkit-appearance:none;-moz-appearance:none; appearance:none;}
+textarea { resize: none; }

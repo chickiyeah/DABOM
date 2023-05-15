@@ -372,12 +372,17 @@ async def verify_tokena(req: Request):
         raise HTTPException(status_code=400, detail=unauthorized)
 
 def verify_admin_token(req: Request):
-    token = req.headers["Authorization"]
-    
-    if token == "Bearer cncztSAt9m4JYA9":
-        return True
-    else:
-        return False
+    try:
+        token = req.headers["Authorization"]
+
+        if token == "Bearer cncztSAt9m4JYA9":
+            return True
+        else:
+            raise HTTPException(status_code=401, detail=unauthorized_invaild)
+        
+    except KeyError:
+        raise HTTPException(status_code=400, detail=unauthorized)
+
 
 @userapi.post('/setinfomsg')
 async def setinfomsg(data:setinfomsg ,authorized: bool = Depends(verify_tokenb)):
@@ -396,11 +401,23 @@ async def setinfomsg(data:setinfomsg ,authorized: bool = Depends(verify_tokenb))
         else:
             return "data updated"
                 
-            
+@userapi.get("/get_users")
+async def get_users(id:str, authorized:bool = Depends(verify_admin_token)):
+    if authorized:
+        back = ""
+        id = json.loads(id)
+        for u in id:
+            if back == "":
+                back = "`ID` = '"+ u + "'"
+            else:
+                back = back + " OR `ID` = '"+ u + "'"
+        f_users = []
+        users = execute_sql("SELECT `Nickname` FROM `user` WHERE "+back)
+        for user in users:
+            f_users.append(user['Nickname'])
 
-        
-        
-
+        print(f_users)
+        return f_users          
 
 @userapi.post("/refresh_token")
 async def refresh_token(token: refresh_token, requset: Request):

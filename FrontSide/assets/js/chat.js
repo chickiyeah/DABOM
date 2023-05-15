@@ -1,22 +1,25 @@
 window.addEventListener('DOMContentLoaded', async function() {
     let room = sessionStorage.getItem("chat_room")
-    console.log(await try_connect(room))
+    try_connect(room)
+    get_online_user(room)
+    console.log("비동기 동작중.")
 });
-
-async function decodeUnicode(unicodeString) {
-	var r = /\\u([\d\w]{4})/gi;
-	unicodeString = unicodeString.replace(r, function (match, grp) {
-	    return String.fromCharCode(parseInt(grp, 16)); } );
-	return decodeURI(unicodeString);
-}
-
+let connnect = false
 async function try_connect(room) {
     return new Promise(async function (resolve, reject) {
         user = await verify_token()
         console.log("token verified")
-        const chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}`)
+        console.log(user)
+        let chat
+        if (room == null) {
+            chat = new WebSocket(`ws://localhost:8000/chat/ws?username=${user.nick}&u_id=${user.uid}`)
+        } else {
+            chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}&channel=${room}`)
+        }
+
         chat.onopen = async function() {
             console.log("채팅서버 연결됨")
+            connnect = true
         }
 
         chat.onmessage = async function(event) {
@@ -25,14 +28,90 @@ async function try_connect(room) {
             } catch (e) {
                 chatdata = event.data
             }
-
+            
+            if (chatdata.username == "userupdate") {
+                get_online_user(room)
+            }
             console.log(chatdata)
         }
 
         window.onbeforeunload = async function() {
+            connnect = false
             chat.close()
         }
     })  
+}
+
+async function wait(sec) {
+    let start = Date.now(), now = start;
+    while (now - start < sec * 1000) {
+        now = Date.now();
+    }
+}
+
+async function post_example(value) {
+    return new Promise(async function (resolve, reject) {
+        fetch(requrl, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                access_token: access_token
+            })             
+        }).then(async function(res) {
+
+            if (response.status !== 200) {
+                res.json().then(async (json) => {
+                    console.log(json)
+                    resolve(json)
+                })
+            } else {
+                reject("error: " + res)
+            }
+        })
+    })
+}
+
+async function get_online_user(room) {
+    return new Promise(async function(resolve, reject) {
+        let requrl = ""
+        if (room == null) {
+            requrl = `/chat/members?group=lobby`
+        }else{
+            requrl = `/chat/members?group=${room}`
+        }
+
+        setTimeout(() => {               
+            fetch(requrl, {
+                method: 'GET',
+            }).then(async function(res) {
+                res.json().then(async (json) => {
+                    const members = JSON.parse(json.members);
+                    console.log(get_users_info(members))
+                })
+            })
+        }, 2000);
+    })
+}
+
+async function get_users_info(users) {
+    return new Promise((resolve, reject) => {
+        url = `/api/user/get_users?id=${JSON.stringify(users)}`
+        fetch(url, {
+            headers: {
+                Authorization: "Bearer cncztSAt9m4JYA9"
+            }
+        }).then((res) => {
+            if (res.statusCode !== 200) {
+                reject("오류.")
+            }else{
+                res.json().then(async (json) => {
+                    resolve(json)
+                })
+            }
+        })
+    })
 }
 
 async function verify_token() {
@@ -108,9 +187,6 @@ async function refresh_token() {
                 }
             }else{
                 res.json().then((json) => {
-                    
-                    console.log(json.access_token)
-                    console.log(json)
                     sessionStorage.setItem("access_token", json.access_token);
                     sessionStorage.setItem("refresh_token", json.refresh_token);
                     resolve("token refresed")

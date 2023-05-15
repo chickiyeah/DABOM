@@ -10,6 +10,10 @@ ScreenRoute = APIRouter(prefix="",tags=["Screens"])
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request":request})
 
+@ScreenRoute.get("/login")
+async def login(request: Request):
+    return templates.TemplateResponse("login.html", {"request":request})
+
 @ScreenRoute.get("/friend/request/{request_id}/{request_nickname}/{target_id}/{target_nickname}/{verify_id}")
 async def friend_accept_reject():
     return "."

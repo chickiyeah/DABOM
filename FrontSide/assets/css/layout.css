@@ -1,0 +1,17 @@
+@import "main.css";
+@import "login.css";
+
+
+/* ==============================================================
+  인풋 스타일 공통
+==============================================================*/
+input:focus { outline-color: #F43B00; }
+input::placeholder { font-family: 'GmarketSans', sans-serif; color: #909090;  font-size: 16px; transform:translate3d(0,2px,0); }
+input { height: 50px; border-radius: 6px; border: 1px solid #E1E1E1; padding: 0 10px; font-size: 16px;
+    font-family: 'GmarketSans', sans-serif;line-height: 1.5; }
+input[type="text"],input[type="password"] { width: 100%; }
+.checkbox input[type=checkbox] { display:none; }
+.checkbox input[type=checkbox] + label { display: inline-block; padding-left: 30px; background-repeat: no-repeat;
+    background-image:url("../images/disabled.svg"); cursor: pointer; background-size: 24px; line-height: 1.5;}
+.checkbox input[type=checkbox]:disabled + label { background-image: url("../images/disabled.svg");}
+.checkbox input[type=checkbox]:checked + label { background-image: url("../images/checkd.svg");}
