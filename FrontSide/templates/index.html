@@ -1,3 +1,13 @@
 <html>
-    <script src="/assets/js/chat.js"></script>
+    <script type="module" src="/assets/js/chat.js"></script>
+    <script type="module" src="/assets/js/fileupload.js"></script>
+    <body>
+
+        <form action='/chat/uploadfile' method="POST" entype="multipart/form-data">
+            <input type="file" name="file" id="input">
+        </form>
+        <input id="chat_input" type="text" placeholder="채팅">
+        <input type="submit" value="채팅 전송" id="send_button">
+
+    </body>
 </html>

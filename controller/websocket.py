@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 import json
-from fastapi import APIRouter, Cookie, HTTPException, Depends, Request, WebSocket, status
+from fastapi import APIRouter, Cookie, HTTPException, Depends, Request, WebSocket, UploadFile, File
 from pydantic import BaseModel
 from starlette.websockets import WebSocketDisconnect
 import asyncio
@@ -14,6 +14,20 @@ from controller.wordfilter import check_word
 from controller.database import execute_sql
 from firebase_admin import auth
 import time
+
+from firebase import Firebase
+
+firebaseConfig = {
+    "apiKey": "AIzaSyC58Oh7Lyb7EoB0FWZQ-qMqfqLtiTJIIFw",
+    "authDomain": "dabom-ca6fe.firebaseapp.com",
+    "projectId": "dabom-ca6fe",
+    "storageBucket": "dabom-ca6fe.appspot.com",
+    "messagingSenderId": "607249280151",
+    "appId": "1:607249280151:web:abcff56e0b43b1abb00dd2",
+    "databaseURL":"https://dabom-ca6fe-default-rtdb.firebaseio.com/"
+}
+
+Storage = Firebase(firebaseConfig).storage()
 
 r = redis.Redis(host="35.212.168.183", port=6379, decode_responses=True, db=0)
 
@@ -116,13 +130,22 @@ async def delete_all(username: str, channel: str):
 
     return "all message delete"
 
+@chat.post("/uploadfile")
+async def upload(image: UploadFile = File(), authorized:bool = Depends(verify_token)):
+    now = datetime.datetime.now()
+    print(image.file)
+    a = Storage.child("/dabom/"+authorized[1]+"/"+str(now)).put(image.file)
+    #print(a)
+    print("https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+authorized[1]+"%2F"+str(now)+"?alt=media&token="+a['downloadTokens'])
+    return "https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+authorized[1]+"%2F"+str(now)+"?alt=media&token="+a['downloadTokens']
+
+
 @chat.get("/members")
 async def members(group: str):
     guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{group}'")
     if guilds == None or len(guilds) == 0:
         raise HTTPException(400, er035)
 
-    print(guilds)
     res = {}
     res['name'] = group
     res['members'] = guilds[0]['members']

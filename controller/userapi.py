@@ -416,7 +416,6 @@ async def get_users(id:str, authorized:bool = Depends(verify_admin_token)):
         for user in users:
             f_users.append(user['Nickname'])
 
-        print(f_users)
         return f_users          
 
 @userapi.post("/refresh_token")
@@ -573,6 +572,8 @@ async def user_login(userdata: UserLogindata, request: Request):
 
     return userjson
 
+er039 = {"code": "ER039", "message": "생일이 올바르지 않습니다."}
+
 @userapi.post("/register", response_model=RegisterResponse, responses=register_responses, status_code=201)
 async def user_create(userdata: UserRegisterdata):
     now = datetime.datetime.now()
@@ -635,6 +636,13 @@ async def user_create(userdata: UserRegisterdata):
     if birthday.count("/") != 2:
         raise HTTPException(400, birthday_error)
     
+    s_birthday = birthday.split("/")
+
+    try:
+        t_birthday = datetime.datetime(int(s_birthday[0]), int(s_birthday[1]), int(s_birthday[2]))
+    except SyntaxError:
+        raise HTTPException(400, er039)
+    
     age = int(datetime.datetime.now().strftime("%Y")) - int(birthday.split("/")[0])
     
     if not height.isdecimal() and not height == "":
@@ -642,6 +650,8 @@ async def user_create(userdata: UserRegisterdata):
 
     if not weight.isdecimal() and not weight == "":
         raise HTTPException(400, weight_type_error)
+    
+    
 
 
     #유저의 고유 아이디 (UniqueID)
@@ -721,7 +731,7 @@ async def user_create(userdata: UserRegisterdata):
         d.login("noreply.dabom", "sxhmurnajtenjtbr")
         d.sendmail("noreply.dabom@gmail.com", email, msg.as_string())       
 
-    sql = "INSERT INTO user VALUES (\""+email+"\",\""+id+"\",\""+nickname+"\",\""+str(now.strftime("%Y-%m-%d %H:%M:%S"))+"\",\""+gender+"\",\""+str(age)+"\",\""+height+"\",\""+weight+"\", \"[]\", 'False', '[]', '[]')"
+    sql = "INSERT INTO user VALUES (\""+email+"\",\""+id+"\",\""+nickname+"\",\""+str(now.strftime("%Y-%m-%d %H:%M:%S"))+"\",\""+gender+"\",\""+str(age)+"\",\""+height+"\",\""+weight+"\", \"[]\", 'False', '[]', '[]', \""+str(t_birthday.strftime("%Y-%m-%d"))+"\")"
     res = execute_sql(sql)
     if res != 1:
         raise HTTPException(500, "ERROR ON CREATE DATA FOR NEW USER")
@@ -739,10 +749,19 @@ async def user_logout(userdata: UserLogoutdata):
         raise HTTPException(status_code=401, detail=unauthorized)
 
 @userapi.post("/findid")
-async def user_findid(userdata: UserFindiddata):
-    nick = userdata.nickname
+async def user_findid(birthday: str):
+    
+    if birthday.count("/") != 2:
+        raise HTTPException(400, birthday_error)
+    
+    s_birthday = birthday.split("/")
 
-    sql = "SELECT * FROM user WHERE Nickname = \"%s\"" % nick
+    try:
+        t_birthday = datetime.datetime(int(s_birthday[0]), int(s_birthday[1]), int(s_birthday[2]))
+    except SyntaxError:
+        raise HTTPException(400, er039)
+
+    sql = "SELECT * FROM user WHERE birthday = \"%s\"" % str(t_birthday.strftime("%Y-%m-%d"))
     users = execute_sql(sql)
 
     resemails = {}

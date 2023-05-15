@@ -4,15 +4,33 @@ window.addEventListener('DOMContentLoaded', async function() {
     get_online_user(room)
     console.log("비동기 동작중.")
 });
+
+import { clickEnter } from "./enterEvent.js";
+
+const chat_input = document.querySelector('#chat_input');
+const send_button = document.querySelector('#send_button');
+
+clickEnter(chat_input, send_button);
+send_button.addEventListener('click', async (event) => {
+    let room = sessionStorage.getItem("chat_room")
+    console.log("inhere")
+    send_message(chat_input.value)
+});
+
+
+var chat
 let connnect = false
+
+
 async function try_connect(room) {
     return new Promise(async function (resolve, reject) {
-        user = await verify_token()
+        let user = await verify_token()
         console.log("token verified")
-        console.log(user)
-        let chat
+        if(user.nick == null) {
+            location.reload();
+        }
         if (room == null) {
-            chat = new WebSocket(`ws://localhost:8000/chat/ws?username=${user.nick}&u_id=${user.uid}`)
+            chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}`)          
         } else {
             chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}&channel=${room}`)
         }
@@ -23,6 +41,7 @@ async function try_connect(room) {
         }
 
         chat.onmessage = async function(event) {
+            let chatdata
             try {
                 chatdata = JSON.parse(event.data)
             } catch (e) {
@@ -42,36 +61,13 @@ async function try_connect(room) {
     })  
 }
 
-async function wait(sec) {
-    let start = Date.now(), now = start;
-    while (now - start < sec * 1000) {
-        now = Date.now();
-    }
-}
-
-async function post_example(value) {
-    return new Promise(async function (resolve, reject) {
-        fetch(requrl, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                access_token: access_token
-            })             
-        }).then(async function(res) {
-
-            if (response.status !== 200) {
-                res.json().then(async (json) => {
-                    console.log(json)
-                    resolve(json)
-                })
-            } else {
-                reject("error: " + res)
-            }
-        })
+async function send_message(message) {
+    return new Promise(async function(resolve, reject) {
+        chat.send(message)
+        resolve("메시지 전송됨")
     })
 }
+
 
 async function get_online_user(room) {
     return new Promise(async function(resolve, reject) {
@@ -88,25 +84,29 @@ async function get_online_user(room) {
             }).then(async function(res) {
                 res.json().then(async (json) => {
                     const members = JSON.parse(json.members);
-                    console.log(get_users_info(members))
+                    //접속 아이디 전송
+                    get_users_info(members)
                 })
             })
         }, 2000);
     })
 }
 
+//아이디로 유저가져와서 html에 적용
 async function get_users_info(users) {
     return new Promise((resolve, reject) => {
-        url = `/api/user/get_users?id=${JSON.stringify(users)}`
+        let url = `/api/user/get_users?id=${JSON.stringify(users)}`
         fetch(url, {
             headers: {
                 Authorization: "Bearer cncztSAt9m4JYA9"
             }
         }).then((res) => {
-            if (res.statusCode !== 200) {
+            console.log(res.status)
+            if (res.status != 200) {
                 reject("오류.")
             }else{
                 res.json().then(async (json) => {
+                    console.log(json)
                     resolve(json)
                 })
             }
@@ -207,3 +207,27 @@ async function refresh_token() {
         reject( new Error("비활성화된 유저입니다. 관리자에게 문의해주세요."));
     }
 */
+
+async function post_example(value) {
+    return new Promise(async function (resolve, reject) {
+        fetch(requrl, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                access_token: access_token
+            })             
+        }).then(async function(res) {
+
+            if (response.status !== 200) {
+                res.json().then(async (json) => {
+                    console.log(json)
+                    resolve(json)
+                })
+            } else {
+                reject("error: " + res)
+            }
+        })
+    })
+}
