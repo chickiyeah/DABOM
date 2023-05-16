@@ -32,17 +32,17 @@ async function try_connect(room) {
             nick = user.nick
         }
         if (room == null) {
-            chat = new WebSocket(`ws://localhost:8000/chat/ws?username=${user.nick}&u_id=${user.uid}`)          
+            chat = new WebSocket(`ws://localhost:8000/chat/ws?username=${user.nick}&u_id=${user.uid}`) // 전역변수의 값을 바꿈   
         } else {
-            chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}&channel=${room}`)
+            chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}&channel=${room}`) // 전역변수의 값을 바꿈
         }
 
-        chat.onopen = async function() {
+        chat.onopen = async function() { //전역변수 사용
             console.log("채팅서버 연결됨")
             connnect = true
         }
 
-        chat.onmessage = async function(event) {
+        chat.onmessage = async function(event) { //전역변수 사용
             let chatdata
             try {
                 chatdata = JSON.parse(event.data)
@@ -53,7 +53,32 @@ async function try_connect(room) {
             if (chatdata.username == "userupdate") {
                 get_online_user(room)
             }
-            console.log(chatdata)
+
+
+            id = chatdata.u_id
+            nick = chatdata.nick
+            msg = chatdata.message
+
+            var f_return
+
+            if (msg.includes("file_message/*/")) {
+                let f_data = msg.split('/*/')[1]
+                let f_type = f_data.split('/')[0]
+                let f_type_extension = f_data.split('/')[1]
+                let f_file_extension = f_data.split('/')[2]
+                let f_name = f_data.split('/')[3]
+                let f_link = f_data.split('/_/')[1].replace("\"","")
+
+                if (f_type == "image") {
+                    f_return = `<img class='chat_image' src="${f_link}">`
+                } else if (f_type == "video") {
+                    f_return = `<video class='chat_video' src="${f_link}">`
+                } else {
+                    f_return = `<div class='chat_file'><a href="${f_link}">${f_name}</a></div>`
+                }
+            }
+
+            //html에 동적 투입 만들어야함
         }
 
         window.onbeforeunload = async function() {

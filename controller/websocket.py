@@ -93,8 +93,9 @@ async def logfile(author, msg, channel):
     f_type = f_data.split('/')[0]
     f_type_extension = f_data.split('/')[1]
     f_file_extension = f_data.split('/')[2]
+    f_name = f_data.split('/')[3]
     f_link = f_data.split('/_/')[1].replace("\"","")
-    execute_sql(f"INSERT INTO chat_file (file_type, file_type_ext, file_name_ext, file_link, author, channel, at) VALUES ('{f_type}','{f_type_extension}','{f_file_extension}','{f_link}','{author}','{channel}','{datetime.datetime.utcnow().isoformat()}')")
+    execute_sql(f"INSERT INTO chat_file (file_type, file_type_ext, file_name_ext, file_link, author, channel, at, file_name) VALUES ('{f_type}','{f_type_extension}','{f_file_extension}','{f_link}','{author}','{channel}','{datetime.datetime.utcnow().isoformat()}','{f_name}')")
 
 
 async def receive_message(websocket: WebSocket, username: str, channel: str, u_id: str):

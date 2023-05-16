@@ -59,13 +59,8 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
     .then(async function(data) { {}
       if (data.status == 200) {
         data.json().then(async (json) => {
-              console.log(json)
-              console.log("set start")
               sessionStorage.setItem("access_token", json.access_token)
               sessionStorage.setItem("refresh_token", json.refresh_token)
-              console.log("set end")
-              console.log("성공")
-              console.log(json)
               resolve(json)
           })
       } else {

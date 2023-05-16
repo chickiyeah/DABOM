@@ -21,12 +21,12 @@ async function handleFiles() {
                 var msg
                 if(type == '') {
                     if(extentsion == undefined){
-                        msg = "file_message/*/no_type/no_file_extension/no_custom_extension/_/"+link
+                        msg = "file_message/*/no_type/no_file_extension/no_custom_extension/"+file.name+"/_/"+link
                     } else {
-                        msg = "file_message/*/no_type/no_file_extension/"+extentsion+"/_/"+link
+                        msg = "file_message/*/no_type/no_file_extension/"+extentsion+"/"+file.name+"/_/"+link
                     }
                 } else {
-                    msg = "file_message/*/"+type+"/"+extentsion+"/_/"+link
+                    msg = "file_message/*/"+type+"/"+extentsion+"/"+file.name+"/_/"+link
                 }
 
                 send_message(msg)
