@@ -412,6 +412,7 @@ async def get_users(id:str, authorized:bool = Depends(verify_admin_token)):
             else:
                 back = back + " OR `ID` = '"+ u + "'"
         f_users = []
+
         users = execute_sql("SELECT `Nickname` FROM `user` WHERE "+back)
         for user in users:
             f_users.append(user['Nickname'])

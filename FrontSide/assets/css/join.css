@@ -1,0 +1,21 @@
+/* ==============================================================
+회원가입
+==============================================================*/
+.join_wrap .container { width: 100%; max-width: 460px; margin: 100px auto; padding: 0 24px; }
+.join_wrap .logo  { margin-bottom: 50px; }
+.join_wrap .logo a  { width: 78px; display: block; margin: 0 auto; }
+.join_wrap .filebox { display: flex; justify-content: center; margin-bottom: 35px; }
+.join_wrap .filebox .profile_img_box { position: relative; cursor: pointer; }
+.join_wrap .filebox .profile_img { display: inline-block; width: 90px; height: 90px; border-radius: 50%; overflow: hidden; }
+.join_wrap .filebox .camera_icon { display: inline-block; border-radius: 50%; width: 35px; height: 35px; overflow: hidden;
+ position: absolute; right: calc(50% - 70px); bottom: 4px; transform: translateX(-50%);
+ background: #909090 url("../images/camera.svg") no-repeat 50%;}
+.join_wrap .form_list .from_group input + input { margin-top: 10px; }
+.join_wrap .form_list .from_group + .from_group { margin-top: 25px; }
+.join_wrap .form_list .from_group h3 { font-weight: 500; margin-bottom: 5px; position: relative; display: inline-block;}
+.join_wrap .form_list .from_group h3 em  { font-weight: 300; font-size: 10px; color: #909090; padding-left: 5px; }   .join_wrap .form_list .from_group:nth-child(2) h3:before, .from_group:nth-child(3) h3:before, .from_group:nth-child(6) h3:before
+{ content: ""; width: 4px; height: 4px; border-radius: 50%; background: #FDDE58; display: inline-block;
+ position: absolute; right: -10px; top: calc(50% - 3px); transform: translateY(-50%); }
+.join_wrap .radio-list { display: flex; gap: 30px; margin-top: 15px; }
+.join_wrap .caution { font-weight: 500; font-size: 10px; color: #F43B00; margin-top: 35px; line-height: 1.5; }
+.join_wrap button { color: white; background: #F43B00; text-align: center; height: 45px; border-radius: 6px; width: 100%; font-size: 18px; }

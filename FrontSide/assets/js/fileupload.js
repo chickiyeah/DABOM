@@ -1,5 +1,7 @@
 const inputElement = document.getElementById("input").addEventListener("change", handleFiles)
 
+import { send_message } from './chat.js'
+
 async function handleFiles() {
     const filelist = this.files
     for (let i = 0, numFiles = filelist.length; i < numFiles; i++) {
@@ -8,16 +10,31 @@ async function handleFiles() {
         formdata.append('image', file)
         let xhr = new XMLHttpRequest();
         xhr.open('POST', '/chat/uploadfile', true)
-        verify_token()
+        await verify_token()
         let access_token = sessionStorage.getItem("access_token")
         xhr.setRequestHeader('Authorization', access_token)
         xhr.onload = xhr.onerror = async function () {
-            let link = xhr.responseText
-            let image = `<img src=${xhr.responseText}>`
+            let link = xhr.responseText.replace("\"","")
+            if (location.href.includes('chat')) {
+                let extentsion = file.name.split('.')[1]
+                let type = file.type
+                var msg
+                if(type == '') {
+                    if(extentsion == undefined){
+                        msg = "file_message/*/no_type/no_file_extension/no_custom_extension/_/"+link
+                    } else {
+                        msg = "file_message/*/no_type/no_file_extension/"+extentsion+"/_/"+link
+                    }
+                } else {
+                    msg = "file_message/*/"+type+"/"+extentsion+"/_/"+link
+                }
+
+                send_message(msg)
+            }
+            let image = `<img src="${xhr.responseText}">`
             console.log(image)
             
-            document.write(image)
-            document.append(link)
+            console.log(link)
 
         };
         xhr.send(formdata)

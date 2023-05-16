@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>아이디,비밀번호 찾기</title>
+    <link rel="stylesheet" href="/assets/css/reset.css">
+    <link rel="stylesheet" href="/assets/css/layout.css">
+</head>
+<body>
+<main>
+    <!--    각각 .tab_menu > li에 on 들어 올때 .find_id, find_pw display: none 처리 해주세요 -->
+    <div class="find_wrap">
+        <div class="container">
+            <h1 class="logo">
+                <a href="javascript:"><img src="/assets/images/logo.svg" alt="로고"></a>
+            </h1>
+            <ul class="tab_menu">
+                <li class="on">아이디 찾기</li>
+                <li>비밀번호 찾기</li>
+            </ul>
+            <div class="find_id">
+                <h2 class="text_hide">아이디 찾기</h2>
+                <span>생년월일</span>
+                <div class="birth_box">
+                    <input type="number" placeholder="년">
+                    <select>
+                        <option value="">월</option>
+                        <option value="">1월</option>
+                        <option value="">2월</option>
+                        <option value="">3월</option>
+                        <option value="">4월</option>
+                        <option value="">5월</option>
+                        <option value="">6월</option>
+                        <option value="">7월</option>
+                        <option value="">8월</option>
+                        <option value="">9월</option>
+                        <option value="">10월</option>
+                        <option value="">11월</option>
+                        <option value="">12월</option>
+                    </select>
+                    <input type="number" placeholder="일">
+                </div>
+                <button type="submit">아이디 찾기</button>
+            </div>
+            <div class="find_pw" style="display: none">
+                <h2 class="text_hide">비밀번호 찾기</h2>
+                <p>비밀번호의 경우 <em>암호화</em> 저장되어 분실 시 찾아드릴 수 없는 정보 입니다.</p>
+                <p><em>본인 확인</em>을 통해 비밀번호를 재설정 하실 수 있습니다.</p>
+                <span>이메일<em>가입된 계정 이메일을 정확히 기입해주시길 바랍니다</em></span>
+                <input type="text" placeholder="가입한 이메일">
+                <button type="submit">비밀번호 찾기</button>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

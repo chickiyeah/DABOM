@@ -20,7 +20,7 @@ send_button.addEventListener('click', async (event) => {
 
 var chat
 let connnect = false
-
+var nick
 
 async function try_connect(room) {
     return new Promise(async function (resolve, reject) {
@@ -28,9 +28,11 @@ async function try_connect(room) {
         console.log("token verified")
         if(user.nick == null) {
             location.reload();
+        }else{
+            nick = user.nick
         }
         if (room == null) {
-            chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}`)          
+            chat = new WebSocket(`ws://localhost:8000/chat/ws?username=${user.nick}&u_id=${user.uid}`)          
         } else {
             chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}&channel=${room}`)
         }
@@ -61,10 +63,12 @@ async function try_connect(room) {
     })  
 }
 
-async function send_message(message) {
+export async function send_message(message) {
     return new Promise(async function(resolve, reject) {
         chat.send(message)
         resolve("메시지 전송됨")
+        let send_data = ({"username":nick,"message":message})
+        console.log(send_data)
     })
 }
 
@@ -138,7 +142,9 @@ async function verify_token() {
                     response.json().then(async (json) => {
                         let detail_error = json.detail;
                         if (detail_error.code == "ER998") {
+                            console.log(refresh_token())
                             resolve(refresh_token())
+                           
                         }else{
                             reject(JSON.stringify(detail_error));
                             localStorage.clear();

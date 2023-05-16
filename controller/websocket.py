@@ -78,6 +78,7 @@ API_TOKEN = "e[M[jUQ@PT7AMr(H],6Z/}Jil@bbFF&XO.x/>J00uf!^Cx~Q5d"
 
 
 class MessageEvent(BaseModel):
+    u_id: str
     username: str
     message: str
 
@@ -87,35 +88,44 @@ async def mutecheck():
         t = int(time.mktime(datetime.datetime.now().timetuple()))
         execute_sql(f"DELETE FROM `chat_mute` WHERE unmute_at < {t}")
 
-async def receive_message(websocket: WebSocket, username: str, channel: str):
+async def logfile(author, msg, channel):
+    f_data = msg.split('/*/')[1]
+    f_type = f_data.split('/')[0]
+    f_type_extension = f_data.split('/')[1]
+    f_file_extension = f_data.split('/')[2]
+    f_link = f_data.split('/_/')[1].replace("\"","")
+    execute_sql(f"INSERT INTO chat_file (file_type, file_type_ext, file_name_ext, file_link, author, channel, at) VALUES ('{f_type}','{f_type_extension}','{f_file_extension}','{f_link}','{author}','{channel}','{datetime.datetime.utcnow().isoformat()}')")
+
+
+async def receive_message(websocket: WebSocket, username: str, channel: str, u_id: str):
     async with broadcast.subscribe(channel) as subscriber:
         async for event in subscriber:
             message_event = MessageEvent.parse_raw(event.message)
+            msg = message_event.dict()['message']
+            if "file_message/*/" in msg and message_event.u_id == u_id:
+                asyncio.create_task(logfile(u_id, msg, channel))
             # Discard user's own messages
-            if message_event.username != username:
-                message_event.dict()
-                msg = {
-                    'username': username,
-                    'message' : message_event.dict()['message']
-                }
+            if message_event.u_id != u_id:
                 await websocket.send_json(message_event.dict())
 
 
-async def send_message(websocket: WebSocket, username: str, channel: str):
+async def send_message(websocket: WebSocket, username: str, channel: str, u_id: str):
     data = await websocket.receive_text()
     curse = check_word(data, "ko")
     if curse != None:
-        r.xadd(channel,{'time':datetime.datetime.utcnow().isoformat(), 'username':username, 'channel':channel, 'message' :curse})
-        event = MessageEvent(username=username, message=curse)
+        r.xadd(channel,{'time':datetime.datetime.utcnow().isoformat(), 'username':username, 'channel':channel, 'message' :curse, 'u_id':u_id})
+        event = MessageEvent(u_id=u_id, username=username, message=curse)
+        execute_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{datetime.datetime.utcnow().isoformat()}', '{data}', '{username}')")
         await broadcast.publish(channel, message=event.json())
     else:
-        r.xadd(channel,{'time':datetime.datetime.utcnow().isoformat(), 'username':username, 'channel':channel, 'message' :data})
-        event = MessageEvent(username=username, message=data)
+        r.xadd(channel,{'time':datetime.datetime.utcnow().isoformat(), 'username':username, 'channel':channel, 'message' :data, 'u_id':u_id})
+        event = MessageEvent(u_id=u_id, username=username, message=data)
+        execute_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{datetime.datetime.utcnow().isoformat()}', '{data}', '{username}')")
         await broadcast.publish(channel, message=event.json())
 
 async def join_channel(username: str, channel: str):
-    r.xadd(channel,{'time':datetime.datetime.utcnow().isoformat(), 'username':"userupdate", 'channel':channel, 'message' :f"{username}님이 채팅방에 참여했습니다."})
-    event = MessageEvent(username="userupdate", message=f"{username}님이 채팅방에 참여했습니다.")
+    r.xadd(channel,{'time':datetime.datetime.utcnow().isoformat(), 'username':"userupdate", 'channel':channel, 'message' :f"{username}님이 채팅방에 참여했습니다.", 'u_id':"system"})
+    event = MessageEvent(u_id="system", username="userupdate", message=f"{username}님이 채팅방에 참여했습니다.")
     await broadcast.publish(channel, message=event.json())
 
 @chat.delete("/delete_all")
@@ -133,10 +143,10 @@ async def delete_all(username: str, channel: str):
 @chat.post("/uploadfile")
 async def upload(image: UploadFile = File(), authorized:bool = Depends(verify_token)):
     now = datetime.datetime.now()
-    print(image.file)
+    #print(image.file)
     a = Storage.child("/dabom/"+authorized[1]+"/"+str(now)).put(image.file)
     #print(a)
-    print("https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+authorized[1]+"%2F"+str(now)+"?alt=media&token="+a['downloadTokens'])
+    #print("https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+authorized[1]+"%2F"+str(now)+"?alt=media&token="+a['downloadTokens'])
     return "https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+authorized[1]+"%2F"+str(now)+"?alt=media&token="+a['downloadTokens']
 
 
@@ -265,6 +275,7 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
 
     await websocket.accept()
     data = {
+        'u_id':"system",
         'username' : "system",
         'message' : f"{username}님 안녕하세요! {channel} 채널에 참여했습니다!"
     }
@@ -276,19 +287,27 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
     if len(comments) != 0:
         c_data = comments[0][1]
         for id, value in c_data:
-            data = {
-                'username' : value['username'],
-                'message' : value['message']
-            }
+            try:
+                data = {
+                    'u_id': value['u_id'],
+                    'username' : value['username'],
+                    'message' : value['message']
+                }
+            except KeyError:
+                data = {
+                    'username' : value['username'],
+                    'message' : value['message']
+                }
+
             await websocket.send_json(data)
             
 
     try:
         while True:
             receive_message_task = asyncio.create_task(
-                receive_message(websocket, username, channel)
+                receive_message(websocket, username, channel, u_id)
             )
-            send_message_task = asyncio.create_task(send_message(websocket, username, channel))
+            send_message_task = asyncio.create_task(send_message(websocket, username, channel, u_id))
             done, pending = await asyncio.wait(
                 {receive_message_task, send_message_task},
                 return_when=asyncio.FIRST_COMPLETED,

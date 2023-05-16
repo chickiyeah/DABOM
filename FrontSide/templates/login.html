@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>로그인</title>
     <link rel="stylesheet" href="/assets/css/reset.css">
     <link rel="stylesheet" href="/assets/css/layout.css">
@@ -13,9 +16,9 @@
             <h1 class="logo">
                 <a href="javascript:"><img src="/assets/images/logo.svg" alt="로고"></a> <!-- 서버에서는 .. 안너어도 되요. -->
             </h1>
-            <form action="#">
+            <form> <!--  action="#" -->
                 <div class="member_group">
-                    <input id="login_id" type="text" placeholder="이메일">
+                    <input id="login_email" type="text" placeholder="이메일">
                     <input id="login_pw" type="password" placeholder="비밀번호">
                 </div>
                 <div class="checkbox">
@@ -23,11 +26,11 @@
                     <label for="save">로그인상태유지</label>
                 </div>
                 <div class="btn">
-                    <input type="submit" value="로그인" id="login_btn" onclick="login()">
+                    <input type="submit" value="로그인" id="login_btn">
                 </div>
                 <div class="util_box">
-                    <a href="javascript:">아이디 · 비밀번호 찾기</a>
-                    <a href="javascript:">아직도 회원이 아니세요? <em>가입하기</em></a>
+                    <a href="/findaccount">아이디 · 비밀번호 찾기</a>
+                    <a href="/register">아직도 회원이 아니세요? <em>가입하기</em></a>
                 </div>
             </form>
         </div>

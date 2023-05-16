@@ -6,13 +6,21 @@ templates = Jinja2Templates(directory="FrontSide/templates")
 
 ScreenRoute = APIRouter(prefix="",tags=["Screens"])
 
-@ScreenRoute.get("/")
+@ScreenRoute.get("/chat")
 async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request":request})
+    return templates.TemplateResponse("chat.html", {"request":request})
 
 @ScreenRoute.get("/login")
 async def login(request: Request):
     return templates.TemplateResponse("login.html", {"request":request})
+
+@ScreenRoute.get("/findaccount")
+async def findaccount(request: Request):
+    return templates.TemplateResponse("findaccount.html", {"request":request})
+
+@ScreenRoute.get("/register")
+async def register(request: Request):
+    return templates.TemplateResponse("register.html", {"request":request})
 
 @ScreenRoute.get("/friend/request/{request_id}/{request_nickname}/{target_id}/{target_nickname}/{verify_id}")
 async def friend_accept_reject():
