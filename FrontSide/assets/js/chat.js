@@ -32,7 +32,7 @@ async function try_connect(room) {
             nick = user.nick
         }
         if (room == null) {
-            chat = new WebSocket(`ws://localhost:8000/chat/ws?username=${user.nick}&u_id=${user.uid}`) // 전역변수의 값을 바꿈   
+            chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}`) // 전역변수의 값을 바꿈   
         } else {
             chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}&channel=${room}`) // 전역변수의 값을 바꿈
         }
