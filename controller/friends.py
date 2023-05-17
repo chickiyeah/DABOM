@@ -59,7 +59,7 @@ unauthorized_invaild = {'code':'ER015','message':'UNAUTHORIZED (TOKEN INVALID)'}
 unauthorized_userdisabled = {'code':'ER016','message':'UNAUTHORIZED (TOKENS FROM DISABLED USERS)'}
 
 class request_friend(BaseModel):
-    email: str
+    id: str
 
 @friendapi.get("/list/{page}")
 async def friend_list(page: int, authorized: bool = Depends(verify_token)):
@@ -84,10 +84,11 @@ async def friend_list(page: int, authorized: bool = Depends(verify_token)):
 @friendapi.post("/request")
 async def friend_request(data:request_friend, authorized: bool = Depends(verify_token)):
     if authorized:
-        targetmail = data.email
+        t_id = data.id
         
         try:
-            target = auth.get_user_by_email(targetmail)
+            target = auth.get_user(t_id)
+            targetmail = target.email
             targetid = target.uid
             target = target.email_verified
 

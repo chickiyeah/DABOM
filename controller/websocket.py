@@ -4,7 +4,7 @@ from fastapi import APIRouter, Cookie, HTTPException, Depends, Request, WebSocke
 from pydantic import BaseModel
 from starlette.websockets import WebSocketDisconnect
 import asyncio
-import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 from broadcaster import Broadcast
 from starlette.routing import Route, WebSocketRoute
@@ -14,8 +14,13 @@ from controller.wordfilter import check_word
 from controller.database import execute_sql
 from firebase_admin import auth
 import time
+from pytz import timezone
 
 from firebase import Firebase
+
+KST = timezone("ASIA/SEOUL")
+
+print(KST)
 
 firebaseConfig = {
     "apiKey": "AIzaSyC58Oh7Lyb7EoB0FWZQ-qMqfqLtiTJIIFw",
@@ -72,7 +77,7 @@ async def echo_message(websocket: WebSocket):
 
 async def send_time(websocket: WebSocket):
     await asyncio.sleep(10)
-    await websocket.send_text(f"It is: {datetime.datetime.utcnow().isoformat()}")
+    await websocket.send_text(f"It is: {datetime.utcnow().isoformat()}")
 
 API_TOKEN = "e[M[jUQ@PT7AMr(H],6Z/}Jil@bbFF&XO.x/>J00uf!^Cx~Q5d"
 
@@ -85,7 +90,7 @@ class MessageEvent(BaseModel):
 async def mutecheck():
     while True:
         await asyncio.sleep(1)
-        t = int(time.mktime(datetime.datetime.now().timetuple()))
+        t = int(time.mktime(datetime.now().timetuple()))
         execute_sql(f"DELETE FROM `chat_mute` WHERE unmute_at < {t}")
 
 async def logfile(author, msg, channel):
@@ -95,16 +100,15 @@ async def logfile(author, msg, channel):
     f_file_extension = f_data.split('/')[2]
     f_name = f_data.split('/')[3]
     f_link = f_data.split('/_/')[1].replace("\"","")
-    execute_sql(f"INSERT INTO chat_file (file_type, file_type_ext, file_name_ext, file_link, author, channel, at, file_name) VALUES ('{f_type}','{f_type_extension}','{f_file_extension}','{f_link}','{author}','{channel}','{datetime.datetime.utcnow().isoformat()}','{f_name}')")
-
+    now = str(datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"))
+    print(now)
+    res = execute_sql(f"INSERT INTO chat_file (file_type, file_type_ext, file_name_ext, file_link, author, channel, at, file_name) VALUES ('{f_type}','{f_type_extension}','{f_file_extension}','{f_link}','{author}','{channel}','{now}','{f_name}')")
+    print(res)
 
 async def receive_message(websocket: WebSocket, username: str, channel: str, u_id: str):
     async with broadcast.subscribe(channel) as subscriber:
         async for event in subscriber:
             message_event = MessageEvent.parse_raw(event.message)
-            msg = message_event.dict()['message']
-            if "file_message/*/" in msg and message_event.u_id == u_id:
-                asyncio.create_task(logfile(u_id, msg, channel))
             # Discard user's own messages
             if message_event.u_id != u_id:
                 await websocket.send_json(message_event.dict())
@@ -113,19 +117,24 @@ async def receive_message(websocket: WebSocket, username: str, channel: str, u_i
 async def send_message(websocket: WebSocket, username: str, channel: str, u_id: str):
     data = await websocket.receive_text()
     curse = check_word(data, "ko")
+    now = str(datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"))
+    msg = data
+    if "file_message/*/" in msg and u_id == u_id:
+        asyncio.create_task(logfile(u_id, msg, channel))
+
     if curse != None:
-        r.xadd(channel,{'time':datetime.datetime.utcnow().isoformat(), 'username':username, 'channel':channel, 'message' :curse, 'u_id':u_id})
+        r.xadd(channel,{'time':datetime.utcnow().isoformat(), 'username':username, 'channel':channel, 'message' :curse, 'u_id':u_id})
         event = MessageEvent(u_id=u_id, username=username, message=curse)
-        execute_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{datetime.datetime.utcnow().isoformat()}', '{data}', '{username}')")
+        execute_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
         await broadcast.publish(channel, message=event.json())
     else:
-        r.xadd(channel,{'time':datetime.datetime.utcnow().isoformat(), 'username':username, 'channel':channel, 'message' :data, 'u_id':u_id})
+        r.xadd(channel,{'time':datetime.utcnow().isoformat(), 'username':username, 'channel':channel, 'message' :data, 'u_id':u_id})
         event = MessageEvent(u_id=u_id, username=username, message=data)
-        execute_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{datetime.datetime.utcnow().isoformat()}', '{data}', '{username}')")
+        execute_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
         await broadcast.publish(channel, message=event.json())
 
 async def join_channel(username: str, channel: str):
-    r.xadd(channel,{'time':datetime.datetime.utcnow().isoformat(), 'username':"userupdate", 'channel':channel, 'message' :f"{username}님이 채팅방에 참여했습니다.", 'u_id':"system"})
+    r.xadd(channel,{'time':datetime.utcnow().isoformat(), 'username':"userupdate", 'channel':channel, 'message' :f"{username}님이 채팅방에 참여했습니다.", 'u_id':"system"})
     event = MessageEvent(u_id="system", username="userupdate", message=f"{username}님이 채팅방에 참여했습니다.")
     await broadcast.publish(channel, message=event.json())
 
@@ -143,7 +152,7 @@ async def delete_all(username: str, channel: str):
 
 @chat.post("/uploadfile")
 async def upload(image: UploadFile = File(), authorized:bool = Depends(verify_token)):
-    now = datetime.datetime.now()
+    now = str(datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"))
     #print(image.file)
     a = Storage.child("/dabom/"+authorized[1]+"/"+str(now)).put(image.file)
     #print(a)
@@ -178,7 +187,7 @@ async def mute(group: str, num: int, time_type: str, user_id: str, reason: Optio
         if authorized[1] != n_group['owner'] and not authorized[1] in operators and not authorized[1] == "admin":
             raise HTTPException(403, er024)
         
-        cursec = int(time.mktime(datetime.datetime.now().timetuple()))
+        cursec = int(time.mktime(datetime.now().timetuple()))
         if time_type == 's':
             plustime = num
             unmutesec = cursec + plustime      

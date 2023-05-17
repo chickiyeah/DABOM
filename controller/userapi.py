@@ -534,7 +534,6 @@ async def user_login(userdata: UserLogindata, request: Request):
         #HTTP 에러가 발생한 경우
         #오류 가져오기 json.loads(str(erra).split("]")[1].split('"errors": [\n')[1])['message']
         res = json.loads(str(erra).split("]")[1].split('"errors": [\n')[1])['message']
-        print(res)
         res = res.split(" : ")[0]
 
         if "INVALID_EMAIL" in res:

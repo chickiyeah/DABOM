@@ -1,22 +1,24 @@
 window.addEventListener('DOMContentLoaded', async function() {
-    let room = sessionStorage.getItem("chat_room")
-    try_connect(room)
-    get_online_user(room)
-    console.log("비동기 동작중.")
+    if (location.href.includes('chat')) {
+        let room = sessionStorage.getItem("chat_room")
+        try_connect(room)
+        get_online_user(room)
+        console.log("비동기 동작중.")
+    }
 });
 
 import { clickEnter } from "./enterEvent.js";
 
-const chat_input = document.querySelector('#chat_input');
-const send_button = document.querySelector('#send_button');
+if (location.href.includes('chat')) {
+    const chat_input = document.querySelector('#chat_input');
+    const send_button = document.querySelector('#send_button');
 
-clickEnter(chat_input, send_button);
-send_button.addEventListener('click', async (event) => {
-    let room = sessionStorage.getItem("chat_room")
-    console.log("inhere")
-    send_message(chat_input.value)
-});
-
+    clickEnter(chat_input, send_button);
+    send_button.addEventListener('click', async (event) => {
+        let room = sessionStorage.getItem("chat_room")
+        send_message(chat_input.value)
+    });
+}
 
 var chat
 let connnect = false
@@ -24,66 +26,68 @@ var nick
 
 async function try_connect(room) {
     return new Promise(async function (resolve, reject) {
-        let user = await verify_token()
-        console.log("token verified")
-        if(user.nick == null) {
-            location.reload();
-        }else{
-            nick = user.nick
-        }
-        if (room == null) {
-            chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}`) // 전역변수의 값을 바꿈   
-        } else {
-            chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}&channel=${room}`) // 전역변수의 값을 바꿈
-        }
-
-        chat.onopen = async function() { //전역변수 사용
-            console.log("채팅서버 연결됨")
-            connnect = true
-        }
-
-        chat.onmessage = async function(event) { //전역변수 사용
-            let chatdata
-            try {
-                chatdata = JSON.parse(event.data)
-            } catch (e) {
-                chatdata = event.data
+        if (location.href.includes('chat')) {
+            let user = await verify_token()
+            console.log("token verified")
+            if(user.nick == null) {
+                location.reload();
+            }else{
+                nick = user.nick
             }
-            
-            if (chatdata.username == "userupdate") {
-                get_online_user(room)
+            if (room == null) {
+                chat = new WebSocket(`ws://localhost:8000/chat/ws?username=${user.nick}&u_id=${user.uid}`) // 전역변수의 값을 바꿈   
+            } else {
+                chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}&channel=${room}`) // 전역변수의 값을 바꿈
             }
 
+            chat.onopen = async function() { //전역변수 사용
+                console.log("채팅서버 연결됨")
+                connnect = true
+            }
 
-            id = chatdata.u_id
-            nick = chatdata.nick
-            msg = chatdata.message
-
-            var f_return
-
-            if (msg.includes("file_message/*/")) {
-                let f_data = msg.split('/*/')[1]
-                let f_type = f_data.split('/')[0]
-                let f_type_extension = f_data.split('/')[1]
-                let f_file_extension = f_data.split('/')[2]
-                let f_name = f_data.split('/')[3]
-                let f_link = f_data.split('/_/')[1].replace("\"","")
-
-                if (f_type == "image") {
-                    f_return = `<img class='chat_image' src="${f_link}">`
-                } else if (f_type == "video") {
-                    f_return = `<video class='chat_video' src="${f_link}">`
-                } else {
-                    f_return = `<div class='chat_file'><a href="${f_link}">${f_name}</a></div>`
+            chat.onmessage = async function(event) { //전역변수 사용
+                let chatdata
+                try {
+                    chatdata = JSON.parse(event.data)
+                } catch (e) {
+                    chatdata = event.data
                 }
+                
+                if (chatdata.username == "userupdate") {
+                    get_online_user(room)
+                }
+
+
+                let id = chatdata.u_id
+                let nick = chatdata.nick
+                let msg = chatdata.message
+
+                var f_return
+
+                if (msg.includes("file_message/*/")) {
+                    let f_data = msg.split('/*/')[1]
+                    let f_type = f_data.split('/')[0]
+                    let f_type_extension = f_data.split('/')[1]
+                    let f_file_extension = f_data.split('/')[2]
+                    let f_name = f_data.split('/')[3]
+                    let f_link = f_data.split('/_/')[1].replace("\"","")
+
+                    if (f_type == "image") {
+                        f_return = `<img class='chat_image' src="${f_link}">`
+                    } else if (f_type == "video") {
+                        f_return = `<video class='chat_video' src="${f_link}">`
+                    } else {
+                        f_return = `<div class='chat_file'><a href="${f_link}">${f_name}</a></div>`
+                    }
+                }
+
+                //html에 동적 투입 만들어야함
             }
 
-            //html에 동적 투입 만들어야함
-        }
-
-        window.onbeforeunload = async function() {
-            connnect = false
-            chat.close()
+            window.onbeforeunload = async function() {
+                connnect = false
+                chat.close()
+            }
         }
     })  
 }
