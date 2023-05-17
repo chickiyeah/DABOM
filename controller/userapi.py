@@ -513,12 +513,14 @@ async def user_delete(authorized:bool = Depends(verify_tokena)):
             auth.delete_user(id)
             return {"detail":"User deleted successfully"}
         
-
+er040 = {"code":"ER040", "message":"너무 많은 시도가 있었습니다. 나중에 시도해주세요."}
 
 @userapi.post('/login', response_model=LoginResponse, responses=login_responses)
 async def user_login(userdata: UserLogindata, request: Request):
     email = userdata.email
     password = userdata.password
+
+    print(email, password)
 
     if(len(email) == 0):
         raise HTTPException(status_code=400, detail=Missing_Email)
@@ -532,7 +534,9 @@ async def user_login(userdata: UserLogindata, request: Request):
         #HTTP 에러가 발생한 경우
         #오류 가져오기 json.loads(str(erra).split("]")[1].split('"errors": [\n')[1])['message']
         res = json.loads(str(erra).split("]")[1].split('"errors": [\n')[1])['message']
+        print(res)
         res = res.split(" : ")[0]
+
         if "INVALID_EMAIL" in res:
             raise HTTPException(status_code=400, detail=Invaild_Email)
 
@@ -541,6 +545,9 @@ async def user_login(userdata: UserLogindata, request: Request):
 
         if "USER_DISABLED" in res:
             raise HTTPException(status_code=400, detail=User_Disabled)
+        
+        if "TOO_MANY_ATTEMPTS_TRY_LATER" in res:
+            raise HTTPException(status_code=400, detail=er040)
 
     currentuser = Auth.current_user
     try:

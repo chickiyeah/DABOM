@@ -33,7 +33,7 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
       reject("실패: 아이디 형식 오류");
     } else if (!loginPw.value.match(reg_pw)) {
       alert("비밀번호를 정확하게 입력하세요.");
-      loginPw.value = "";
+      loginPw.value = ""; //여기에서 하는게아니라
       loginPw.focus();
       console.log(1)
       reject("실패: 비밀번호 형식 오류");
@@ -61,11 +61,17 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
         data.json().then(async (json) => {
               sessionStorage.setItem("access_token", json.access_token)
               sessionStorage.setItem("refresh_token", json.refresh_token)
-              resolve(json)
+              resolve(json);
           })
-      } else {
-        console.log(data)
-        reject("실패: " + data)
+      } else if (data.status == 400 ) {
+        data.json().then(async (json) => {
+          let detail = json.detail;
+          if (detail.code == "ER009") {
+            reject( new Error("비밀번호 불일치"));
+          }
+        })
+      }else{
+        reject("SERVICE ERROR WITH UNKNOWN ERROR : " + data)
       }
     });
   });
