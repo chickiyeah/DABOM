@@ -1,14 +1,161 @@
-<html>
+<!doctype html>
+<html lang="en">
+<head>
     <script type="module" src="/assets/js/chat.js"></script>
     <script type="module" src="/assets/js/fileupload.js"></script>
-    <body>
-        <img src="/assets/images/default-profile.png" alt="프로필이미지">
-
-        <form action='/chat/uploadfile' method="POST" entype="multipart/form-data">
-            <input type="file" name="file" id="input">
-        </form>
-        <input id="chat_input" type="text" placeholder="채팅">
-        <input type="submit" value="채팅 전송" id="send_button">
-
-    </body>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>다봄모임/게시글목록 채팅하기</title>
+    <link rel="stylesheet" href="../assets/css/reset.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <script defer src="../assets/js/custom.js"></script>
+</head>
+<body>
+<main>
+    <div class="chat_wrap">
+        <div class="container">
+            <nav class="left_nav">
+                <h1 class="logo">
+                    <a href="javascript:"><img src="../assets/images/logo.svg" alt="로고"></a>
+                </h1>
+                <ul id="online_players" class="nav_list">
+                    <!-- JS 추가구역 -->
+                </ul>
+            </nav>
+            <div class="chat_box">
+                <div class="inner">
+                    <div class="chat_header">
+                        <div class="header_box">
+                            <h2 id="room_title">종로역 식단관리 모임</h2>
+                            <div class="utile_list">
+                                <a class="search_call" href="javascript:">
+                                    <img src="../assets/images/search-icon.svg" alt="검색아이콘">
+                                </a>
+                                <a class="img_call" href="javascript:">
+                                    <img src="../assets/images/imgmore-icon.svg" alt="이미지아이콘">
+                                </a>
+                                <a href="javascript:">
+                                    <img src="../assets/images/exit-icon.svg" alt="나가기아이콘">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="search_bar">
+                            <div class="search_box">
+                                <a href="javascript:">
+                                    <img src="../assets/images/back-icon.svg" alt="뒤로가기" class="goback1">
+                                </a>
+                                <input type="search" placeholder="대화 내용 검색">
+                                <a href="javascript:">
+                                    <img src="../assets/images/search-icon.svg" alt="검색아이콘">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="msg_box">
+                        <div class="chat ch1">
+                            <div class="profile_img">
+                                <img src="../assets/images/default-profile.png" alt="프로필이미지">
+                            </div>
+                            <div class="text_box">
+                                <div class="name">귤귤이</div>
+                                <div class="mag_info">
+                                    <div class="mag">안녕하세요! 반갑습니다~</div>
+                                    <div class="time">오후 6:18</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat ch2">
+                            <div class="text_box">
+                                <div class="mag_info">
+                                    <div class="mag">반갑습니다</div>
+                                    <div class="time">오후 6:18</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat ch2">
+                            <div class="text_box">
+                                <div class="mag_info">
+                                    <div class="mag">반갑습니다</div>
+                                    <div class="time">오후 6:18</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat">
+                            <div class="text_box">
+                                <div class="mag_info">
+                                    <div class="chat_image">
+                                        <img src="../assets/images/default-profile.png" alt="">
+                                    </div>
+                                    <div class="time">오후 6:18</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="msg_btn_box">
+                        <a class="filebox" href="javascript:">
+                            <form action='/chat/uploadfile' method="POST" entype="multipart/form-data">
+                                <input type="file" name="file" id="input">
+                                <label class="upload_img" for="input">
+                                    <i class="img_icon"></i>
+                                </label>
+                            </form>
+                                
+                        </a>
+                        <input id="chat_input" type="text" placeholder="메세지를 입력해주세요.">
+                        <a id="send_button">전송</a>
+                    </div>
+                    <div class="img_more_box">
+                        <div class="chat_header">
+                            <div class="img_box">
+                                <h2>사진 모아보기</h2>
+                                <a href="javascript:">
+                                    <img src="../assets/images/back-icon.svg" alt="뒤로가기" class="goback_image">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="img_list">
+                            <div class="img_item">
+                                <div class="date">2023/05</div>
+                                <div class="img_group">
+                                    <div class="group_item">
+                                        <img src="../assets/images/default-background.png" alt="배경이미지">
+                                    </div>
+                                    <div class="group_item">
+                                        <img src="../assets/images/default-background.png" alt="배경이미지">
+                                    </div>
+                                    <div class="group_item">
+                                        <img src="../assets/images/default-background.png" alt="배경이미지">
+                                    </div>
+                                    <div class="group_item">
+                                        <img src="../assets/images/default-background.png" alt="배경이미지">
+                                    </div>
+                                    <div class="group_item">
+                                        <img src="../assets/images/default-background.png" alt="배경이미지">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="img_item">
+                                <div class="date">2023/05</div>
+                                <div class="img_group">
+                                    <div class="group_item">
+                                        <img src="../assets/images/default-background.png" alt="배경이미지">
+                                    </div>
+                                    <div class="group_item">
+                                        <img src="../assets/images/default-background.png" alt="배경이미지">
+                                    </div>
+                                    <div class="group_item">
+                                        <img src="../assets/images/default-background.png" alt="배경이미지">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
 </html>

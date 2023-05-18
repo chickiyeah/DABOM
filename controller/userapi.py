@@ -278,6 +278,7 @@ class UserRegisterdata(BaseModel):
     birthday: str
     height: Optional[str]
     weight: Optional[str]
+    profie_image: Optional[str]
 
 class LoginResponse(BaseModel):
     ID: str
@@ -413,11 +414,9 @@ async def get_users(id:str, authorized:bool = Depends(verify_admin_token)):
                 back = back + " OR `ID` = '"+ u + "'"
         f_users = []
 
-        users = execute_sql("SELECT `Nickname` FROM `user` WHERE "+back)
-        for user in users:
-            f_users.append(user['Nickname'])
+        users = execute_sql("SELECT `Nickname`, `profile_image` FROM `user` WHERE "+back)
 
-        return f_users          
+        return users  
 
 @userapi.post("/refresh_token")
 async def refresh_token(token: refresh_token, requset: Request):
@@ -591,6 +590,7 @@ async def user_create(userdata: UserRegisterdata):
     birthday = userdata.birthday
     height = userdata.height
     weight = userdata.weight
+    image = userdata.profie_image
     #이메일이 공란이면
     if(len(email) == 0):
         raise HTTPException(status_code=400, detail=Missing_Email)
@@ -657,6 +657,9 @@ async def user_create(userdata: UserRegisterdata):
 
     if not weight.isdecimal() and not weight == "":
         raise HTTPException(400, weight_type_error)
+    
+    if image == "":
+        image = "../assets/images/default-profile.png"
     
     
 
@@ -738,7 +741,7 @@ async def user_create(userdata: UserRegisterdata):
         d.login("noreply.dabom", "sxhmurnajtenjtbr")
         d.sendmail("noreply.dabom@gmail.com", email, msg.as_string())       
 
-    sql = "INSERT INTO user VALUES (\""+email+"\",\""+id+"\",\""+nickname+"\",\""+str(now.strftime("%Y-%m-%d %H:%M:%S"))+"\",\""+gender+"\",\""+str(age)+"\",\""+height+"\",\""+weight+"\", \"[]\", 'False', '[]', '[]', \""+str(t_birthday.strftime("%Y-%m-%d"))+"\")"
+    sql = "INSERT INTO user VALUES (\""+email+"\",\""+id+"\",\""+nickname+"\",\""+str(now.strftime("%Y-%m-%d %H:%M:%S"))+"\",\""+gender+"\",\""+str(age)+"\",\""+height+"\",\""+weight+"\", \"[]\", 'False', '[]', '[]', \""+str(t_birthday.strftime("%Y-%m-%d"))+"\",'"+image+"')"
     res = execute_sql(sql)
     if res != 1:
         raise HTTPException(500, "ERROR ON CREATE DATA FOR NEW USER")

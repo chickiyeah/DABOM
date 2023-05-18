@@ -2,7 +2,6 @@ window.addEventListener('DOMContentLoaded', async function() {
     if (location.href.includes('chat')) {
         let room = sessionStorage.getItem("chat_room")
         try_connect(room)
-        get_online_user(room)
         console.log("비동기 동작중.")
     }
 });
@@ -12,6 +11,7 @@ import { clickEnter } from "./enterEvent.js";
 if (location.href.includes('chat')) {
     const chat_input = document.querySelector('#chat_input');
     const send_button = document.querySelector('#send_button');
+    
 
     clickEnter(chat_input, send_button);
     send_button.addEventListener('click', async (event) => {
@@ -19,6 +19,7 @@ if (location.href.includes('chat')) {
         send_message(chat_input.value)
     });
 }
+const players = document.querySelector('#online_players');
 
 var chat
 let connnect = false
@@ -36,8 +37,10 @@ async function try_connect(room) {
             }
             if (room == null) {
                 chat = new WebSocket(`ws://localhost:8000/chat/ws?username=${user.nick}&u_id=${user.uid}`) // 전역변수의 값을 바꿈   
+                document.querySelector("#room_title").textContent = "로비 채널"
             } else {
                 chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}&channel=${room}`) // 전역변수의 값을 바꿈
+                document.querySelector("#room_title").textContent = room
             }
 
             chat.onopen = async function() { //전역변수 사용
@@ -125,6 +128,20 @@ async function get_online_user(room) {
     })
 }
 
+function userlist(nick, image) {
+    let profile =`
+    <li>
+        <div class="profile_img">
+            <img src="${image}" alt="프로필이미지">
+        </div>
+        <p>${nick}</p>
+    </li>
+    `
+
+
+    return profile
+}
+
 //아이디로 유저가져와서 html에 적용
 async function get_users_info(users) {
     return new Promise((resolve, reject) => {
@@ -139,8 +156,15 @@ async function get_users_info(users) {
                 reject("오류.")
             }else{
                 res.json().then(async (json) => {
+                    //players.setHTML("")
                     console.log(json)
-                    resolve(json)
+                    json.forEach(data => {
+                        console.log(data.Nickname)
+                        let nick = data.Nickname
+                        let profile = data.profile_image || "../assets/images/default-profile.png"
+                        console.log(nick, profile)
+                        players.insertAdjacentHTML("beforeend", userlist(nick.profile))
+                    })
                 })
             }
         })
