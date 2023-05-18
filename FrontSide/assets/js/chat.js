@@ -7,28 +7,43 @@ window.addEventListener('DOMContentLoaded', async function() {
 });
 
 import { clickEnter } from "./enterEvent.js";
+const chat_input = document.querySelector('#chat_input');
+const send_button = document.querySelector('#send_button');
+const players = document.querySelector('#online_players');
+const msg_box = document.querySelector('.msg_box');
 
 if (location.href.includes('chat')) {
-    const chat_input = document.querySelector('#chat_input');
-    const send_button = document.querySelector('#send_button');
-    
-
     clickEnter(chat_input, send_button);
     send_button.addEventListener('click', async (event) => {
         let room = sessionStorage.getItem("chat_room")
         send_message(chat_input.value)
     });
 }
-const players = document.querySelector('#online_players');
 
 var chat
 let connnect = false
 var nick
+var u_id
+
+function in_out_message(nick, status) {
+    let msg = `
+    <div class="chat">
+        <div class="text_box">
+            <div class="mag_in_out">
+                <div class="message">${nick}님이 ${status}했습니다.</div>
+            </div>
+        </div>
+    </div>
+    `
+
+    return msg
+}
 
 async function try_connect(room) {
     return new Promise(async function (resolve, reject) {
         if (location.href.includes('chat')) {
             let user = await verify_token()
+            u_id = user.uid
             console.log("token verified")
             if(user.nick == null) {
                 location.reload();
@@ -57,6 +72,10 @@ async function try_connect(room) {
                 }
                 
                 if (chatdata.username == "userupdate") {
+                    let username = chatdata.message.split("님이")[0]
+                    let status = chatdata.message.split(" ")[2].split("했습니다.")[0]
+                    msg_box.insertAdjacentHTML("beforeend", in_out_message(username, status))
+                    msg_box.scrollTop = msg_box.scrollHeight;
                     get_online_user(room)
                 }
 
@@ -82,9 +101,85 @@ async function try_connect(room) {
                     } else {
                         f_return = `<div class='chat_file'><a href="${f_link}">${f_name}</a></div>`
                     }
-                }
 
-                //html에 동적 투입 만들어야함
+                    let date = new Date(chatdata.time)
+                    var hour = date.getHours()
+                    let minute = date.getMinutes()
+                    var a
+                    if (hour > 12) {
+                        a = "오후"
+                        hour = hour - 12
+                    } else if (hour < 12) {
+                        a = "오전"
+                    } else if (hour == 12) {
+                        a = "오후"
+                    }
+                    let newdate = `${a} ${hour}:${minute}`
+                    console.log(newdate)
+                    console.log(chatdata)
+                    if (chatdata.u_id != u_id) {
+                        //타인 메시지
+                        other_message(msg, id, newdate)
+                    } else {
+                        //본인 메시지
+                    }
+
+                    console.log(f_return)
+                }else{
+                    if (chatdata.username != "userupdate") {
+                        let date = new Date(chatdata.time)
+                        var hour = date.getHours()
+                        let minute = date.getMinutes()
+                        var a
+                        if (hour > 12) {
+                            a = "오후"
+                            hour = hour - 12
+                        } else if (hour < 12) {
+                            a = "오전"
+                        } else if (hour == 12) {
+                            a = "오후"
+                        }
+                        let newdate = `${a} ${hour}:${minute}`
+                        console.log(newdate)
+                        console.log(chatdata)
+                        if (chatdata.u_id != u_id) {
+                            //타인 메시지
+                            let profile = chatdata.pf_image || "../assets/images/default-profile.png"
+                            let msg = `<div class="chat ch1">
+                                     <div class="profile_img">
+                                        <img src="${profile}" alt="프로필이미지">
+                                    </div>
+                                    <div class="text_box">
+                                        <div class="name">${chatdata.username}</div>
+                                        <div class="mag_info">
+                                            <div class="mag">${chatdata.message}</div>
+                                            <div class="time">${newdate}</div>
+                                        </div>
+                                    </div>
+                                </div>`
+                                        
+                            msg_box.insertAdjacentHTML("beforeend", msg)
+                            msg_box.scrollTop = msg_box.scrollHeight;                                    
+                                
+                        } else {
+                            //본인 메시지
+                            setTimeout(() => {
+                                let msg = `<div class="chat ch2">
+                                                <div class="text_box">
+                                                    <div class="mag_info">
+                                                        <div class="mag">${chatdata.message}</div>
+                                                        <div class="time">${newdate}</div>
+                                                    </div>
+                                                </div>
+                                            </div>`
+                                
+                                console.log(msg)
+                                msg_box.insertAdjacentHTML("beforeend", msg)
+                                msg_box.scrollTop = msg_box.scrollHeight;
+                            },100)
+                        }
+                    }
+                }
             }
 
             window.onbeforeunload = async function() {
@@ -98,9 +193,33 @@ async function try_connect(room) {
 export async function send_message(message) {
     return new Promise(async function(resolve, reject) {
         chat.send(message)
+        chat_input.value = ""
+        let date = new Date()
+        var hour = date.getHours()
+        let minute = date.getMinutes()
+        var a
+        if (hour > 12) {
+            a = "오후"
+            hour = hour - 12
+        } else if (hour < 12) {
+            a = "오전"
+        } else if (hour == 12) {
+            a = "오후"
+        }
+        let newdate = `${a} ${hour}:${minute}`
+        //본인 메시지
+        let msg = `<div class="chat ch2">
+                        <div class="text_box">
+                            <div class="mag_info">
+                                <div class="mag">${message}</div>
+                                <div class="time">${newdate}</div>
+                            </div>
+                        </div>
+                    </div>`
+
+        msg_box.insertAdjacentHTML("beforeend", msg)
+        msg_box.scrollTop = msg_box.scrollHeight;
         resolve("메시지 전송됨")
-        let send_data = ({"username":nick,"message":message})
-        console.log(send_data)
     })
 }
 
@@ -113,8 +232,7 @@ async function get_online_user(room) {
         }else{
             requrl = `/chat/members?group=${room}`
         }
-
-        setTimeout(() => {               
+             
             fetch(requrl, {
                 method: 'GET',
             }).then(async function(res) {
@@ -124,7 +242,6 @@ async function get_online_user(room) {
                     get_users_info(members)
                 })
             })
-        }, 2000);
     })
 }
 

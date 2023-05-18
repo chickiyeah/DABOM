@@ -401,7 +401,14 @@ async def setinfomsg(data:setinfomsg ,authorized: bool = Depends(verify_tokenb))
                     return "same data"
         else:
             return "data updated"
-                
+
+@userapi.get("/get_user")
+async def get_users(id:str, authorized:bool = Depends(verify_admin_token)):
+    if authorized:
+        user = execute_sql("SELECT `Nickname`, `profile_image` FROM `user` WHERE `ID` = '"+id+"'")
+
+        return user
+
 @userapi.get("/get_users")
 async def get_users(id:str, authorized:bool = Depends(verify_admin_token)):
     if authorized:
@@ -416,7 +423,7 @@ async def get_users(id:str, authorized:bool = Depends(verify_admin_token)):
 
         users = execute_sql("SELECT `Nickname`, `profile_image` FROM `user` WHERE "+back)
 
-        return users  
+        return users 
 
 @userapi.post("/refresh_token")
 async def refresh_token(token: refresh_token, requset: Request):

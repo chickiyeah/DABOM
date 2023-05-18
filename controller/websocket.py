@@ -34,7 +34,7 @@ firebaseConfig = {
 
 Storage = Firebase(firebaseConfig).storage()
 
-r = redis.Redis(host="35.212.168.183", port=6379, decode_responses=True, db=0)
+r = redis.Redis(host="35.212.163.209", port=6379, decode_responses=True, db=0)
 
 chat = APIRouter(prefix="/chat", tags=['webSocket_chat'])
 
@@ -76,8 +76,9 @@ async def echo_message(websocket: WebSocket):
     await websocket.send_text(f"Message text was: {data}")
 
 async def send_time(websocket: WebSocket):
+    now = str(datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"))
     await asyncio.sleep(10)
-    await websocket.send_text(f"It is: {datetime.utcnow().isoformat()}")
+    await websocket.send_text(f"It is: {now}")
 
 API_TOKEN = "e[M[jUQ@PT7AMr(H],6Z/}Jil@bbFF&XO.x/>J00uf!^Cx~Q5d"
 
@@ -86,6 +87,8 @@ class MessageEvent(BaseModel):
     u_id: str
     username: str
     message: str
+    time: str
+    pf_image: str
 
 async def mutecheck():
     while True:
@@ -116,31 +119,35 @@ async def receive_message(websocket: WebSocket, username: str, channel: str, u_i
 
 async def send_message(websocket: WebSocket, username: str, channel: str, u_id: str):
     data = await websocket.receive_text()
+    user = execute_sql("SELECT `Nickname`, `profile_image` FROM `user` WHERE `ID` = '"+u_id+"'")
+    pf_image = user[0]['profile_image']
     curse = check_word(data, "ko")
-    now = str(datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"))
+    now = str(datetime.now(KST).strftime("%Y-%m-%dT%H:%M:%S"))
     msg = data
     if "file_message/*/" in msg and u_id == u_id:
         asyncio.create_task(logfile(u_id, msg, channel))
 
     if curse != None:
-        r.xadd(channel,{'time':datetime.utcnow().isoformat(), 'username':username, 'channel':channel, 'message' :curse, 'u_id':u_id})
-        event = MessageEvent(u_id=u_id, username=username, message=curse)
+        r.xadd(channel,{'time':now, 'username':username, 'channel':channel, 'message' :curse, 'u_id':u_id, 'pf_image':pf_image})
+        event = MessageEvent(u_id=u_id, username=username, message=curse, time=now, pf_image=pf_image)
         execute_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
         await broadcast.publish(channel, message=event.json())
     else:
-        r.xadd(channel,{'time':datetime.utcnow().isoformat(), 'username':username, 'channel':channel, 'message' :data, 'u_id':u_id})
-        event = MessageEvent(u_id=u_id, username=username, message=data)
+        r.xadd(channel,{'time':now, 'username':username, 'channel':channel, 'message' :data, 'u_id':u_id, 'pf_image':pf_image})
+        event = MessageEvent(u_id=u_id, username=username, message=data, time=now, pf_image=pf_image)
         execute_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
         await broadcast.publish(channel, message=event.json())
 
 async def join_channel(username: str, channel: str):
-    r.xadd(channel,{'time':datetime.utcnow().isoformat(), 'username':"userupdate", 'channel':channel, 'message' :f"{username}님이 채팅방에 참여했습니다.", 'u_id':"system"})
-    event = MessageEvent(u_id="system", username="userupdate", message=f"{username}님이 채팅방에 참여했습니다.")
+    now = str(datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"))
+    r.xadd(channel,{'time':now, 'username':"userupdate", 'channel':channel, 'message' :f"{username}님이 채팅방에 참여했습니다.", 'u_id':"system", 'pf_image':"../assets/images/default-profile.png"})
+    event = MessageEvent(u_id="system", username="userupdate", message=f"{username}님이 채팅방에 참여했습니다.", time=now, pf_image="../assets/images/default-profile.png")
     await broadcast.publish(channel, message=event.json())
 
 async def exit_channel(username: str, channel: str):
-    r.xadd(channel,{'time':datetime.utcnow().isoformat(), 'username':"userupdate", 'channel':channel, 'message' :f"{username}님이 채팅방에서 퇴장했습니다.", 'u_id':"system"})
-    event = MessageEvent(u_id="system", username="userupdate", message=f"{username}님이 채팅방에서 퇴장했습니다.")
+    now = str(datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"))
+    r.xadd(channel,{'time':now, 'username':"userupdate", 'channel':channel, 'message' :f"{username}님이 채팅방에서 퇴장했습니다.", 'u_id':"system", 'pf_image':"../assets/images/default-profile.png"})
+    event = MessageEvent(u_id="system", username="userupdate", message=f"{username}님이 채팅방에서 퇴장했습니다.", time=now, pf_image="../assets/images/default-profile.png")
     await broadcast.publish(channel, message=event.json())
 
 @chat.delete("/delete_all")
@@ -289,32 +296,11 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
     await join_channel(username, channel)
 
     await websocket.accept()
-    data = {
-        'u_id':"system",
-        'username' : "system",
-        'message' : f"{username}님 안녕하세요! {channel} 채널에 참여했습니다!"
-    }
-    await websocket.send_json(data)
-    data['message'] = "대화 내용을 불러오는 중입니다..."
-    await websocket.send_json(data)
-
     comments = r.xread(streams={channel: 0})
     if len(comments) != 0:
         c_data = comments[0][1]
         for id, value in c_data:
-            try:
-                data = {
-                    'u_id': value['u_id'],
-                    'username' : value['username'],
-                    'message' : value['message']
-                }
-            except KeyError:
-                data = {
-                    'username' : value['username'],
-                    'message' : value['message']
-                }
-
-            await websocket.send_json(data)
+            await websocket.send_json(value)
             
 
     try:
@@ -333,6 +319,7 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
                 task.result()
     except WebSocketDisconnect:
         guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{channel}'")
+        print(guilds)
         members = json.loads(guilds[0]['members'])
         members.remove(u_id)
         await exit_channel(username, channel)
