@@ -151,19 +151,15 @@ async function get_users_info(users) {
                 Authorization: "Bearer cncztSAt9m4JYA9"
             }
         }).then((res) => {
-            console.log(res.status)
             if (res.status != 200) {
                 reject("오류.")
             }else{
                 res.json().then(async (json) => {
-                    //players.setHTML("")
-                    console.log(json)
-                    json.forEach(data => {
-                        console.log(data.Nickname)
+                    players.setHTML("")
+                    json.reverse().forEach(data => {
                         let nick = data.Nickname
                         let profile = data.profile_image || "../assets/images/default-profile.png"
-                        console.log(nick, profile)
-                        players.insertAdjacentHTML("beforeend", userlist(nick.profile))
+                        players.insertAdjacentHTML("beforeend", userlist(nick, profile))
                     })
                 })
             }

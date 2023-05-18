@@ -138,6 +138,11 @@ async def join_channel(username: str, channel: str):
     event = MessageEvent(u_id="system", username="userupdate", message=f"{username}님이 채팅방에 참여했습니다.")
     await broadcast.publish(channel, message=event.json())
 
+async def exit_channel(username: str, channel: str):
+    r.xadd(channel,{'time':datetime.utcnow().isoformat(), 'username':"userupdate", 'channel':channel, 'message' :f"{username}님이 채팅방에서 퇴장했습니다.", 'u_id':"system"})
+    event = MessageEvent(u_id="system", username="userupdate", message=f"{username}님이 채팅방에서 퇴장했습니다.")
+    await broadcast.publish(channel, message=event.json())
+
 @chat.delete("/delete_all")
 async def delete_all(username: str, channel: str):
     if username != "ruddls030":
@@ -330,6 +335,7 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
         guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{channel}'")
         members = json.loads(guilds[0]['members'])
         members.remove(u_id)
+        await exit_channel(username, channel)
         execute_sql(f"UPDATE chatroom SET members = '{json.dumps(members)}' WHERE room = '{channel}'")
         print("socket closed")
 

@@ -13,8 +13,8 @@
 .chat_wrap .left_nav:before { content: ""; position: absolute; right:0; top: 0; width: 15px; height: 100vh; z-index: 10;
     background: url("../images/zigzag-02.svg") repeat-x; background-size: cover;}
 .chat_wrap .left_nav .nav_list { margin-top: 70px; display: flex; flex-flow: column; gap: 25px; }
-.chat_wrap .left_nav .nav_list li { display: flex; align-items: center; padding-left: 30px; }
-.chat_wrap .left_nav .nav_list li:first-child { padding-left: 0; }
+.chat_wrap .left_nav .nav_list li { display: flex; align-items: center; padding-left: 0; }
+/*.chat_wrap .left_nav .nav_list li:first-child { padding-left: 0; } */
 .chat_wrap .left_nav .nav_list li p { font-weight: 300; padding-left: 10px; }
 
 /* 채팅 */
