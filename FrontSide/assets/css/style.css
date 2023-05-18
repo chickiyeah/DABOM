@@ -44,8 +44,8 @@ align-items: center; gap: 15px; }
 .chat_wrap .chat_box .msg_btn_box input { font-weight: 300; width: calc(100% - 130px); }
 .chat_wrap .chat_box .msg_btn_box input:focus { outline:none; }
 .chat_wrap .chat_box .msg_btn_box a:last-child{ background: #F43B00; color: white; width: 60px; text-align: center; padding: 9px 0; border-radius: 6px; }
-.chat_wrap .chat_box .text_box .mag_in_out { justify-content: center; flex-flow: column; display: flex; gap: 5px; align-items: center; size: 10px; font-weight: 300; }
-.chat_wrap .chat_box .text_box .message { background: rgba(0,0,0,0.1); padding: 5px 10px; border-radius: 20px; size: 10px; font-weight: 300; }
+.chat_wrap .chat_box .text_box .mag_in_out { justify-content: center; flex-flow: column; display: flex; gap: 5px; align-items: center; font-size: 10px; font-weight: 300; }
+.chat_wrap .chat_box .text_box .message { background: rgba(0,0,0,0.1); padding: 5px 10px; border-radius: 20px; }
 
 .header_box.on { display: none; }
 .search_bar.on { display: block }
