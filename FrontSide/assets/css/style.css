@@ -5,7 +5,7 @@
 .chat_wrap  .profile_img { width: 30px; height: 30px; border-radius: 50%; overflow: hidden; }
 .chat_wrap .chat_box .msg_box .chat .time { font-size: 12px; font-weight: 300; color: #909090; }
 .chat_wrap .chat_box .msg_box .mag_info { display: flex; gap: 5px; align-items: flex-end; }
-.chat_image , .chat_video ,.chat_file { max-width: 300px; max-height: 300px; }
+.chat_image , .chat_video ,.chat_file { max-width: 300px; }
 
 /* 채팅 왼쪽 메뉴*/
 .chat_wrap .container { display: flex; box-sizing: border-box; height: 100vh; position: relative; padding-right: 0; }
