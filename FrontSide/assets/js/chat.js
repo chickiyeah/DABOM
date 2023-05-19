@@ -96,7 +96,7 @@ async function try_connect(room) {
                     var f_return
                     if (f_type == "image") {
                         f_return = `<img class='image' src="${f_link}">`
-                    } else if (f_type == "video") {
+                    } else if (f_type == "video" || f_type == "audio") {
                         f_return = `<video class='chat_video' src="${f_link}" alt="${f_name}" controls>`
                     } else {
                         f_return = `<div class='chat_file'><a href="${f_link}">${f_name}</a></div>`
@@ -173,11 +173,11 @@ async function try_connect(room) {
                         
                         var ytcode
                         if (msg.includes("youtu.be")) {
-                            ytcode = msg.split("youtu.be/")[1].split("/")[0]
+                            ytcode = msg.split("youtu.be/")[1].split("&")[0]
                         } else if (msg.includes("youtube.com/embed")) {
-                            ytcode = msg.split("youtube.com/embed/")[1].split("/")[0]
+                            ytcode = msg.split("youtube.com/embed/")[1].split("&")[0]
                         } else if (msg.includes("youtube.com/shorts/")){
-                            ytcode = msg.split("youtube.com/shorts/")[1].split("/")[0]
+                            ytcode = msg.split("youtube.com/shorts/")[1].split("&")[0]
                         } else if (msg.includes("youtube.com")) {
                             try {
                                 ytcode = msg.split("v=")[1].split("&")[0]
@@ -317,7 +317,7 @@ export async function send_message(message) {
 
             if (f_type == "image") {
                 f_return = `<img class='image' src="${f_link}">`
-            } else if (f_type == "video") {
+            } else if (f_type == "video" || f_type == "audio") {
                 f_return = `<video class='chat_video' src="${f_link}"  alt="${f_name}" controls>`
             } else {
                 f_return = `<div class='chat_file'><a href="${f_link}">${f_name}</a></div>`
@@ -340,17 +340,51 @@ export async function send_message(message) {
 
             console.log(f_return)
         }else{
-            let msg = `<div class="chat ch2">
-                            <div class="text_box">
-                                <div class="mag_info">
-                                    <div class="mag">${message}</div>
-                                    <div class="time">${newdate}</div>
-                                </div>
-                            </div>
-                        </div>`
+            if (message.includes("youtube.com") || message.includes("youtu.be")){
+                
+                var ytcode
+                if (message.includes("youtu.be")) {
+                    ytcode = message.split("youtu.be/")[1].split("&")[0]
+                } else if (message.includes("youtube.com/embed")) {
+                    ytcode = message.split("youtube.com/embed/")[1].split("&")[0]
+                } else if (message.includes("youtube.com/shorts/")){
+                    ytcode = message.split("youtube.com/shorts/")[1].split("&")[0]
+                } else if (message.includes("youtube.com")) {
+                    try {
+                        ytcode = message.split("v=")[1].split("&")[0]
+                    } catch (e) {
+                        new Error("Invalid YouTube URL")
+                    }
+                }
 
-            msg_box.insertAdjacentHTML("beforeend", msg)
-            msg_box.scrollTop = msg_box.scrollHeight;
+                let yt_ht = `<iframe width="300" height="170" src="https://www.youtube.com/embed/${ytcode}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`
+            
+                let msg = `<div class="chat ch2">
+                    <div class="text_box">
+                        <div class="mag_info">
+                            <div class="chat_image">
+                            ${yt_ht}
+                        </div>
+                            <div class="time">${newdate}</div>
+                        </div>
+                    </div>
+                </div>`
+
+                msg_box.insertAdjacentHTML("beforeend", msg)
+                msg_box.scrollTop = msg_box.scrollHeight;
+            }else{
+                let msg = `<div class="chat ch2">
+                                <div class="text_box">
+                                    <div class="mag_info">
+                                        <div class="mag">${message}</div>
+                                        <div class="time">${newdate}</div>
+                                    </div>
+                                </div>
+                            </div>`
+
+                msg_box.insertAdjacentHTML("beforeend", msg)
+                msg_box.scrollTop = msg_box.scrollHeight;
+            }
         }
         resolve("메시지 전송됨")
     })

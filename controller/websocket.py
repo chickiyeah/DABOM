@@ -296,11 +296,11 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
     await join_channel(username, channel)
 
     await websocket.accept()
-    comments = r.xread(streams={channel: 0})
-    if len(comments) != 0:
-        c_data = comments[0][1]
-        for id, value in c_data:
-            await websocket.send_json(value)
+    #comments = r.xread(streams={channel: 0})
+    #if len(comments) != 0:
+    #    c_data = comments[0][1]
+    #    for id, value in c_data:
+    #        await websocket.send_json(value)
             
 
     try:
