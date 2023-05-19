@@ -79,6 +79,7 @@ drag_drop.addEventListener('dragleave', function(e) {
 drag_drop.addEventListener('drop', async function(e) {
     e.preventDefault();
     drag_drop.style.display = 'none';
+    loading.style.display = 'flex';
     //console.log('drop');
     //this.style.backgroundColor = 'rgba(244,59,0 ,0.1 )';
 
@@ -117,6 +118,7 @@ drag_drop.addEventListener('drop', async function(e) {
         console.log(image)
         
         console.log(link)
+        loading.style.display = 'none';
 
     };
     xhr.send(formdata)  
@@ -139,6 +141,7 @@ function in_out_message(nick, status) {
 async function try_connect(room) {
     return new Promise(async function (resolve, reject) {
         if (location.href.includes('chat')) {
+            loading.style.display = 'flex';
             let user = await verify_token()
             u_id = user.uid
             console.log("token verified")
@@ -150,14 +153,17 @@ async function try_connect(room) {
             if (room == null) {
                 chat = new WebSocket(`ws://localhost:8000/chat/ws?username=${user.nick}&u_id=${user.uid}`) // 전역변수의 값을 바꿈   
                 document.querySelector("#room_title").textContent = "로비 채널"
+                document.querySelector("#room_title_m").textContent = "로비 채널"
             } else {
                 chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}&channel=${room}`) // 전역변수의 값을 바꿈
                 document.querySelector("#room_title").textContent = room
+                document.querySelector("#room_title_m").textContent = room
             }
 
             chat.onopen = async function() { //전역변수 사용
                 console.log("채팅서버 연결됨")
                 connnect = true
+                loading.style.display = 'none';
             }
 
             chat.onmessage = async function(event) { //전역변수 사용
@@ -210,6 +216,10 @@ async function try_connect(room) {
                         a = "오전"
                     } else if (hour == 12) {
                         a = "오후"
+                    }
+
+                    if (minute < 10) {
+                        minute = "0"+minute
                     }
                     let newdate = `${a} ${hour}:${minute}`
                     console.log(newdate)
@@ -399,6 +409,10 @@ export async function send_message(message) {
             a = "오전"
         } else if (hour == 12) {
             a = "오후"
+        }
+
+        if (minute < 10) {
+            minute = "0"+minute
         }
         let newdate = `${a} ${hour}:${minute}`
         //본인 메시지

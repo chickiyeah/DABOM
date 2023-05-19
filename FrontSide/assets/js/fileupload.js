@@ -16,6 +16,8 @@ async function handleFiles() {
         xhr.onload = xhr.onerror = async function () {
             let link = xhr.responseText.replace("\"","")
             if (location.href.includes('chat')) {
+                const loading = document.querySelector(".loading");
+                loading.style.display = 'flex';
                 var count = file.name.split('.').length - 1
                 let extentsion = file.name.split('.')[count]
                 let type = file.type
@@ -36,6 +38,7 @@ async function handleFiles() {
             console.log(image)
             
             console.log(link)
+            loading.style.display = 'none';
 
         };
         xhr.send(formdata)
