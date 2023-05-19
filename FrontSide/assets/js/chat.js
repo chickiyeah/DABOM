@@ -551,13 +551,13 @@ async function get_users_info(users) {
                 reject("오류.")
             }else{
                 res.json().then(async (json) => {
-                    document.querySelector('#online_players').setHTML("")
-                    document.querySelector('#online_players_m').setHTML("")
+                    players.innerHTML = ""
+                    players_m.innerHTML = ""
                     json.reverse().forEach(data => {
                         let nick = data.Nickname
                         let profile = data.profile_image || "../assets/images/default-profile.png"
-                        document.querySelector('#online_players').insertAdjacentHTML("beforeend", userlist(nick, profile))
-                        document.querySelector('#online_players_m').insertAdjacentHTML("beforeend", userlist(nick, profile))
+                        players.insertAdjacentHTML("beforeend", userlist(nick, profile))
+                        players_m.insertAdjacentHTML("beforeend", userlist(nick, profile))
                     })
                 })
             }
