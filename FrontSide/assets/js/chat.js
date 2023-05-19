@@ -151,7 +151,7 @@ async function try_connect(room) {
                 nick = user.nick
             }
             if (room == null) {
-                chat = new WebSocket(`ws://localhost:8000/chat/ws?username=${user.nick}&u_id=${user.uid}`) // 전역변수의 값을 바꿈   
+                chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}`) // 전역변수의 값을 바꿈   
                 document.querySelector("#room_title").textContent = "로비 채널"
                 document.querySelector("#room_title_m").textContent = "로비 채널"
             } else {
