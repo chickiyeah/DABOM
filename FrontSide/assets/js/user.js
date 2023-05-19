@@ -43,6 +43,8 @@ if (location.href.includes("register")) {
 async function login() { //메인함수가 동기상태에요. 기본으로요? ㄴㄴ 앞에다가 async 붙이면 비동기 ㅇ아부붙이면 동아 아아기기
   return new Promise(async function (resolve, reject) { // 예만 비동기된거임 아하
 
+    var email_val
+    var pw_val
     if (!loginEmail.value.match(reg_email)) {
       alert("아이디를 정확하게 입력하세요.");
       loginEmail.value = "";
@@ -54,10 +56,12 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
       loginPw.focus();
       reject("실패: 비밀번호 형식 오류");
     } else {
+      email_val = loginEmail.value
+      pw_val = loginPw.value
       loginEmail.value = "";
       loginPw.value = "";
     }
-
+    document.querySelector(".loading").style.display = 'flex';
     fetch("http://dabom.kro.kr/api/user/login", {
       method: "POST", 
       headers: {
@@ -76,6 +80,8 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
               sessionStorage.setItem("refresh_token", json.refresh_token)
               resolve(json);
               console.log(json);
+              document.querySelector(".loading").style.display = 'none';
+              location.href = "/"
           })
       } else if (data.status == 400 ) {
         data.json().then(async (json) => {
