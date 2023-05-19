@@ -91,19 +91,24 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
           if (detail.code == "ER008") {
             reject( new Error("아이디의 입력값이 이메일이 아니거나, 이메일이 유효하지 않습니다."));
             loginVal.insertAdjacentHTML('afterbegin', '<p>아이디의 입력값이 이메일이 아니거나, 이메일이 유효하지 않습니다.</p>' );
+            document.querySelector(".loading").style.display = 'none';
           }else if(detail.code == "ER009"){
             reject( new Error("비밀번호 불일치"));
             loginVal.insertAdjacentHTML('afterbegin', '<p>비밀번호 불일치</p>' );
+            document.querySelector(".loading").style.display = 'none';
           }else if(detail.code == "ER012"){
             reject( new Error("이메일 인증이 필요합니다"));
             loginVal.insertAdjacentHTML('afterbegin', '<p>이메일 인증이 필요합니다</p>' );
+            document.querySelector(".loading").style.display = 'none';
           }else if(detail.code == "ER040"){
             reject( new Error("너무 많은 시도가 있었습니다. 나중에 시도해주세요."));
             loginVal.insertAdjacentHTML('afterbegin', '');
             loginVal.insertAdjacentHTML('afterbegin', '<p>너무 많은 시도가 있었습니다. 나중에 시도해주세요.</p>');
+            document.querySelector(".loading").style.display = 'none';
           }else{ //여기서 뭐하심? 27줄보세유!
             reject("정의되지 않은 오류입니다");
             alert("정의되지 않은 오류입니다");
+            document.querySelector(".loading").style.display = 'none';
           }
         });
         // loginVal.remove();
