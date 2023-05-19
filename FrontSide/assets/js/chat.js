@@ -11,6 +11,10 @@ const chat_input = document.querySelector('#chat_input');
 const send_button = document.querySelector('#send_button');
 const players = document.querySelector('#online_players');
 const msg_box = document.querySelector('.msg_box');
+const inner = document.querySelector(".inner")
+
+const drag_drop = document.querySelector(".file_drag_drop")
+const loading = document.querySelector(".loading");
 
 if (location.href.includes('chat')) {
     clickEnter(chat_input, send_button);
@@ -24,6 +28,94 @@ var chat
 let connnect = false
 var nick
 var u_id
+
+function isValid(data){
+		
+    //파일인지 유효성 검사
+    if(data.types.indexOf('Files') < 0)
+        return false;
+    
+    //이미지인지 유효성 검사
+    /* if(data.files[0].type.indexOf('image') < 0){
+        alert('이미지 파일만 업로드 가능합니다.');
+        return false;
+    }*/
+    
+    //파일의 개수는 1개씩만 가능하도록 유효성 검사
+    if(data.files.length > 1){
+        alert('파일은 하나씩 전송이 가능합니다.');
+        return false;
+    }
+    
+    //파일의 사이즈는 50MB 미만
+    /*if(data.files[0].size >= 1024 * 1024 * 50){
+        alert('50MB 이상인 파일은 업로드할 수 없습니다.');
+        return false;
+    }*/
+    
+    return true;
+}
+
+inner.addEventListener('dragenter', function(e) {
+    e.preventDefault();
+    //console.log('dragenter');
+    drag_drop.style.display = 'flex';
+
+    //this.style.backgroundColor = 'green';
+});
+
+drag_drop.addEventListener('dragleave', function(e) {
+    //console.log('dragleave');
+    drag_drop.style.display = 'none';
+
+    //this.style.backgroundColor = 'rgba(244,59,0 ,0.1 )';
+});
+
+drag_drop.addEventListener('drop', async function(e) {
+    e.preventDefault();
+    drag_drop.style.display = 'none';
+    //console.log('drop');
+    //this.style.backgroundColor = 'rgba(244,59,0 ,0.1 )';
+
+    const data = e.dataTransfer;
+
+    if(!isValid(data)) return;
+    const formdata = new FormData();
+    let file = data.files[0]
+    formdata.append('image', file)
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', '/chat/uploadfile', true)
+
+    await verify_token()
+    let access_token = sessionStorage.getItem("access_token")
+    xhr.setRequestHeader('Authorization', access_token)
+    xhr.onload = xhr.onerror = async function () {
+        let link = xhr.responseText.replace("\"","")
+        if (location.href.includes('chat')) {
+            var count = file.name.split('.').length - 1
+            let extentsion = file.name.split('.')[count]
+            let type = file.type
+            var msg
+            if(type == '') {
+                if(extentsion == undefined){
+                    msg = "file_message/*/no_type/no_file_extension/no_custom_extension/"+file.name+"/_/"+link
+                } else {
+                    msg = "file_message/*/no_type/no_file_extension/"+extentsion+"/"+file.name+"/_/"+link
+                }
+            } else {
+                msg = "file_message/*/"+type+"/"+extentsion+"/"+file.name+"/_/"+link
+            }
+
+            send_message(msg)
+        }
+        let image = `<img src="${xhr.responseText}">`
+        console.log(image)
+        
+        console.log(link)
+
+    };
+    xhr.send(formdata)  
+});
 
 function in_out_message(nick, status) {
     let msg = `
