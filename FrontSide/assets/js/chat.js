@@ -10,6 +10,7 @@ import { clickEnter } from "./enterEvent.js";
 const chat_input = document.querySelector('#chat_input');
 const send_button = document.querySelector('#send_button');
 const players = document.querySelector('#online_players');
+const players_m = document.querySelector('#online_players_m');
 const msg_box = document.querySelector('.msg_box');
 const inner = document.querySelector(".inner")
 
@@ -551,10 +552,12 @@ async function get_users_info(users) {
             }else{
                 res.json().then(async (json) => {
                     players.setHTML("")
+                    players_m.setHTML("")
                     json.reverse().forEach(data => {
                         let nick = data.Nickname
                         let profile = data.profile_image || "../assets/images/default-profile.png"
                         players.insertAdjacentHTML("beforeend", userlist(nick, profile))
+                        players_m.insertAdjacentHTML("beforeend", userlist(nick, profile))
                     })
                 })
             }
