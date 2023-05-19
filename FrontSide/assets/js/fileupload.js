@@ -4,6 +4,8 @@ import { send_message } from './chat.js'
 
 async function handleFiles() {
     const filelist = this.files
+    const loading = document.querySelector(".loading");
+    loading.style.display = 'flex';
     for (let i = 0, numFiles = filelist.length; i < numFiles; i++) {
         let file = filelist[i]
         let formdata = new FormData()
@@ -16,8 +18,6 @@ async function handleFiles() {
         xhr.onload = xhr.onerror = async function () {
             let link = xhr.responseText.replace("\"","")
             if (location.href.includes('chat')) {
-                const loading = document.querySelector(".loading");
-                loading.style.display = 'flex';
                 var count = file.name.split('.').length - 1
                 let extentsion = file.name.split('.')[count]
                 let type = file.type
@@ -33,12 +33,13 @@ async function handleFiles() {
                 }
 
                 send_message(msg)
+                loading.style.display = 'none';
             }
             let image = `<img src="${xhr.responseText}">`
             console.log(image)
             
             console.log(link)
-            loading.style.display = 'none';
+            
 
         };
         xhr.send(formdata)

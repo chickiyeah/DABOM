@@ -97,6 +97,8 @@ align-items: center; gap: 15px; }
     .chat_wrap .left_nav { display: none !important; }
     .chat_wrap .chat_box { width: 100%; }
     .chat_wrap .chat_box .inner { max-width: inherit;  height: 100%; background: #feebe5; box-shadow: none; padding: 24px 0; border-radius: 0;}
+    .chat_wrap .chat_box .file_drag_drop { width:100%; max-width: inherit;  height: 100%; background: black; box-shadow: none; padding: 24px 0; border-radius: 0;}
+    .chat_wrap .chat_box .loading { width:100%; max-width: inherit;  height: 100%; background: black; box-shadow: none; padding: 24px 0; border-radius: 0;}
     .chat_wrap .chat_box .chat_header .header_box { display: none; }
     .chat_wrap .chat_box .msg_btn_box { gap: 5px; }
     .chat_wrap .chat_box .msg_btn_box .upload_img {  width: 40px; height: 40px; background-size: 24px; }
