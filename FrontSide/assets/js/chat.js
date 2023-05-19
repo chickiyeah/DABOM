@@ -64,6 +64,11 @@ inner.addEventListener('dragenter', function(e) {
     //this.style.backgroundColor = 'green';
 });
 
+drag_drop.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    console.log('dragover');
+});
+
 drag_drop.addEventListener('dragleave', function(e) {
     //console.log('dragleave');
     drag_drop.style.display = 'none';
