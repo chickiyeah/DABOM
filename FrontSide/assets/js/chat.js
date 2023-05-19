@@ -93,11 +93,11 @@ async function try_connect(room) {
                     let f_file_extension = f_data.split('/')[2]
                     let f_name = f_data.split('/')[3]
                     let f_link = f_data.split('/_/')[1].replace("\"","")
-
+                    var f_return
                     if (f_type == "image") {
-                        f_return = `<img class='chat_image' src="${f_link}">`
+                        f_return = `<img class='image' src="${f_link}">`
                     } else if (f_type == "video") {
-                        f_return = `<video class='chat_video' src="${f_link}">`
+                        f_return = `<video class='chat_video' src="${f_link}" alt="${f_name}" controls>`
                     } else {
                         f_return = `<div class='chat_file'><a href="${f_link}">${f_name}</a></div>`
                     }
@@ -118,15 +118,45 @@ async function try_connect(room) {
                     console.log(newdate)
                     console.log(chatdata)
                     if (chatdata.u_id != u_id) {
+                        let msg = `<div class="chat ch1">
+                            <div class="profile_img">
+                                <img src="../assets/images/default-profile.png" alt="프로필이미지">
+                            </div>
+                            <div class="text_box">
+                                <div class="name">${chatdata.username}</div>
+                                <div class="mag_info">
+                                    <div class="chat_image">
+                                        ${f_return}
+                                    </div>
+                                    <div class="time">${newdate}</div>
+                                </div>
+                            </div>
+                        </div>`
+
+                        msg_box.insertAdjacentHTML("beforeend", msg)
+                        msg_box.scrollTop = msg_box.scrollHeight;  
                         //타인 메시지
-                        other_message(msg, id, newdate)
+                        
                     } else {
                         //본인 메시지
+                        let msg = `<div class="chat ch2">
+                            <div class="text_box">
+                                <div class="mag_info">
+                                    <div class="chat_image">
+                                    ${f_return}
+                                </div>
+                                    <div class="time">${newdate}</div>
+                                </div>
+                            </div>
+                        </div>`
+
+                        msg_box.insertAdjacentHTML("beforeend", msg)
+                        msg_box.scrollTop = msg_box.scrollHeight;  
                     }
 
                     console.log(f_return)
                 }else{
-                    if (chatdata.username != "userupdate") {
+                    if (msg.includes("youtube.com") || msg.includes("youtu.be")){
                         let date = new Date(chatdata.time)
                         var hour = date.getHours()
                         let minute = date.getMinutes()
@@ -140,43 +170,110 @@ async function try_connect(room) {
                             a = "오후"
                         }
                         let newdate = `${a} ${hour}:${minute}`
-                        console.log(newdate)
-                        console.log(chatdata)
+                        
+                        var ytcode
+                        if (msg.includes("youtu.be")) {
+                            ytcode = msg.split("youtu.be/")[1].split("/")[0]
+                        } else if (msg.includes("youtube.com/embed")) {
+                            ytcode = msg.split("youtube.com/embed/")[1].split("/")[0]
+                        } else if (msg.includes("youtube.com/shorts/")){
+                            ytcode = msg.split("youtube.com/shorts/")[1].split("/")[0]
+                        } else if (msg.includes("youtube.com")) {
+                            try {
+                                ytcode = msg.split("v=")[1].split("&")[0]
+                            } catch (e) {
+                                new Error("Invalid YouTube URL")
+                            }
+                        }
+
+                        let yt_ht = `<iframe width="300" height="170" src="https://www.youtube.com/embed/${ytcode}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`
                         if (chatdata.u_id != u_id) {
-                            //타인 메시지
-                            let profile = chatdata.pf_image || "../assets/images/default-profile.png"
                             let msg = `<div class="chat ch1">
-                                     <div class="profile_img">
-                                        <img src="${profile}" alt="프로필이미지">
-                                    </div>
-                                    <div class="text_box">
-                                        <div class="name">${chatdata.username}</div>
-                                        <div class="mag_info">
-                                            <div class="mag">${chatdata.message}</div>
-                                            <div class="time">${newdate}</div>
+                                <div class="profile_img">
+                                    <img src="../assets/images/default-profile.png" alt="프로필이미지">
+                                </div>
+                                <div class="text_box">
+                                    <div class="name">${chatdata.username}</div>
+                                    <div class="mag_info">
+                                        <div class="chat_video">
+                                            ${yt_ht}
                                         </div>
+                                        <div class="time">${newdate}</div>
                                     </div>
-                                </div>`
-                                        
+                                </div>
+                            </div>`  
+                            
                             msg_box.insertAdjacentHTML("beforeend", msg)
-                            msg_box.scrollTop = msg_box.scrollHeight;                                    
-                                
-                        } else {
-                            //본인 메시지
-                            setTimeout(() => {
-                                let msg = `<div class="chat ch2">
-                                                <div class="text_box">
-                                                    <div class="mag_info">
-                                                        <div class="mag">${chatdata.message}</div>
-                                                        <div class="time">${newdate}</div>
-                                                    </div>
-                                                </div>
-                                            </div>`
-                                
-                                console.log(msg)
+                            msg_box.scrollTop = msg_box.scrollHeight; 
+                        }else{
+                            let msg = `<div class="chat ch2">
+                            <div class="text_box">
+                                <div class="mag_info">
+                                    <div class="chat_image">
+                                    ${yt_ht}
+                                </div>
+                                    <div class="time">${newdate}</div>
+                                </div>
+                            </div>
+                        </div>`
+
+                            msg_box.insertAdjacentHTML("beforeend", msg)
+                            msg_box.scrollTop = msg_box.scrollHeight; 
+                        }
+
+                    }else{
+                        if (chatdata.username != "userupdate") {
+                            let date = new Date(chatdata.time)
+                            var hour = date.getHours()
+                            let minute = date.getMinutes()
+                            var a
+                            if (hour > 12) {
+                                a = "오후"
+                                hour = hour - 12
+                            } else if (hour < 12) {
+                                a = "오전"
+                            } else if (hour == 12) {
+                                a = "오후"
+                            }
+                            let newdate = `${a} ${hour}:${minute}`
+                            console.log(newdate)
+                            console.log(chatdata)
+                            if (chatdata.u_id != u_id) {
+                                //타인 메시지
+                                let profile = chatdata.pf_image || "../assets/images/default-profile.png"
+                                let msg = `<div class="chat ch1">
+                                        <div class="profile_img">
+                                            <img src="${profile}" alt="프로필이미지">
+                                        </div>
+                                        <div class="text_box">
+                                            <div class="name">${chatdata.username}</div>
+                                            <div class="mag_info">
+                                                <div class="mag">${chatdata.message}</div>
+                                                <div class="time">${newdate}</div>
+                                            </div>
+                                        </div>
+                                    </div>`
+                                            
                                 msg_box.insertAdjacentHTML("beforeend", msg)
-                                msg_box.scrollTop = msg_box.scrollHeight;
-                            },100)
+                                msg_box.scrollTop = msg_box.scrollHeight;                                    
+                                    
+                            } else {
+                                //본인 메시지
+                                setTimeout(() => {
+                                    let msg = `<div class="chat ch2">
+                                                    <div class="text_box">
+                                                        <div class="mag_info">
+                                                            <div class="mag">${chatdata.message}</div>
+                                                            <div class="time">${newdate}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>`
+                                    
+                                    console.log(msg)
+                                    msg_box.insertAdjacentHTML("beforeend", msg)
+                                    msg_box.scrollTop = msg_box.scrollHeight;
+                                },100)
+                            }
                         }
                     }
                 }
@@ -208,17 +305,53 @@ export async function send_message(message) {
         }
         let newdate = `${a} ${hour}:${minute}`
         //본인 메시지
-        let msg = `<div class="chat ch2">
-                        <div class="text_box">
-                            <div class="mag_info">
-                                <div class="mag">${message}</div>
-                                <div class="time">${newdate}</div>
-                            </div>
-                        </div>
-                    </div>`
+        if (message.includes("file_message/*/")) {
+            let f_data = message.split('/*/')[1]
+            let f_type = f_data.split('/')[0]
+            let f_type_extension = f_data.split('/')[1]
+            let f_file_extension = f_data.split('/')[2]
+            let f_name = f_data.split('/')[3]
+            let f_link = f_data.split('/_/')[1].replace("\"","")
 
-        msg_box.insertAdjacentHTML("beforeend", msg)
-        msg_box.scrollTop = msg_box.scrollHeight;
+            var f_return
+
+            if (f_type == "image") {
+                f_return = `<img class='image' src="${f_link}">`
+            } else if (f_type == "video") {
+                f_return = `<video class='chat_video' src="${f_link}"  alt="${f_name}" controls>`
+            } else {
+                f_return = `<div class='chat_file'><a href="${f_link}">${f_name}</a></div>`
+            }
+
+                //본인 메시지
+                let msg = `<div class="chat ch2">
+                    <div class="text_box">
+                        <div class="mag_info">
+                            <div class="chat_image">
+                            ${f_return}
+                        </div>
+                            <div class="time">${newdate}</div>
+                        </div>
+                    </div>
+                </div>`
+
+                msg_box.insertAdjacentHTML("beforeend", msg)
+                msg_box.scrollTop = msg_box.scrollHeight;  
+
+            console.log(f_return)
+        }else{
+            let msg = `<div class="chat ch2">
+                            <div class="text_box">
+                                <div class="mag_info">
+                                    <div class="mag">${message}</div>
+                                    <div class="time">${newdate}</div>
+                                </div>
+                            </div>
+                        </div>`
+
+            msg_box.insertAdjacentHTML("beforeend", msg)
+            msg_box.scrollTop = msg_box.scrollHeight;
+        }
         resolve("메시지 전송됨")
     })
 }
