@@ -12,7 +12,9 @@ const joinName = document.querySelector("#join_name");
 const joinGender = document.querySelector("#join_gender");
 const joinTail = document.querySelector("#join_tail");
 const joinWeight = document.querySelector("#join_weight");
-const joinBir = document.querySelector("#join_bir");
+const joinBirmon = document.querySelector("#join_bir_mon");
+const joinBirday = document.querySelector("#join_bir_day");
+const joinBircol = document.querySelector("#join_bir_col");
 
 // 데이터 읽기
 let access_token = sessionStorage.getItem("access_token");
@@ -22,7 +24,20 @@ let refresh_token = sessionStorage.getItem("refresh_token");
 const reg_email = /[a-zA-Z0-9]+@[a-z]+\.[a-z]{2,3}$/i;
 const reg_pw = /(?=.*\d)(?=.*[a-zA-ZS]).{8,}/;
 const reg_pwre = /(?=.*\d)(?=.*[a-zA-ZS]).{8,}/;
+const reg_korean = /^[ㄱ-ㅎ|가-힣]+$/;
+const reg_num = /^[0-9]+$/; 
 
+// 라이도버튼 체크 해제
+var ele = document.getElementsByName('colors'); 
+const reg_radio = ele;
+var count = ele.length; // 라디오버튼 길이
+console.log('라디오버튼 갯수 ', count); // "라디오버튼 갯수 ", 4 출력
+
+for(var i=0; i < ele.length; i++) {
+	if(ele[i].checked === true) { // checked 속성이 true 와 같은지 비교합니다.
+  	console.log(ele[i].value); //blue 만 출력합니다.
+  }
+}
 
 // 로그인
 if (location.href.includes("login")) {
@@ -42,14 +57,13 @@ if (location.href.includes("register")) {
   // 로그인
 async function login() { //메인함수가 동기상태에요. 기본으로요? ㄴㄴ 앞에다가 async 붙이면 비동기 ㅇ아부붙이면 동아 아아기기
   return new Promise(async function (resolve, reject) { // 예만 비동기된거임 아하
-
     var email_val
     var pw_val
     if (!loginEmail.value.match(reg_email)) {
-      alert("아이디를 정확하게 입력하세요.");
+      alert("이메일을 정확하게 입력하세요.");
       loginEmail.value = "";
       loginEmail.focus();
-      reject("실패: 아이디 형식 오류");
+      reject("실패: 이메일 형식 오류");
     } else if (!loginPw.value.match(reg_pw)) {
       alert("비밀번호를 정확하게 입력하세요.");
       loginPw.value = ""; //여기에서 하는게아니라
@@ -89,8 +103,8 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
           // console.log(detail);
           loginVal.innerHTML = '';
           if (detail.code == "ER008") {
-            reject( new Error("아이디의 입력값이 이메일이 아니거나, 이메일이 유효하지 않습니다."));
-            loginVal.insertAdjacentHTML('afterbegin', '<p>아이디의 입력값이 이메일이 아니거나, 이메일이 유효하지 않습니다.</p>' );
+            reject( new Error("이메일의 입력값이 이메일이 아니거나, 이메일이 유효하지 않습니다."));
+            loginVal.insertAdjacentHTML('afterbegin', '<p>이메일의 입력값이 이메일이 아니거나, 이메일이 유효하지 않습니다.</p>' );
             document.querySelector(".loading").style.display = 'none';
           }else if(detail.code == "ER009"){
             reject( new Error("비밀번호 불일치"));
@@ -122,12 +136,13 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
 
 // 회원가입
 async function join() { 
-  return new Promise(async function (resolve, reject) { // 예만 비동기된거임 아하
+
+  return new Promise(async function (resolve, reject) { // 로그인은 다했을걸요?s]오키욤
     if (!loginEmail.value.match(reg_email)) {
-      alert("아이디를 정확하게 입력하세요.");
+      alert("이메일을 정확하게 입력하세요.");
       loginEmail.value = "";
       loginEmail.focus();
-      reject("실패: 아이디 형식 오류");
+      reject("실패: 이메일 형식 오류");
     } else if (!loginPw.value.match(reg_pw)) {
       alert("비밀번호를 정확하게 입력하세요.");
       loginPw.value = "";
@@ -137,13 +152,56 @@ async function join() {
       alert("비밀번호를 확인을 정확하게 입력하세요.");
       loginPwre.value = ""; 
       loginPwre.focus();
-      reject("실패: 비밀번호 형식 오류");
-    } else {
+      reject("실패: 비밀번호확인 형식 오류");
+    }else if(!joinName.value.match(reg_korean)){
+      alert("이름을 정확하게 입력하세요.");
+      joinName.value = ""; 
+      joinName.focus();
+      reject("실패: 이름 형식 오류");
+    }else if(!joinTail.value.match(reg_num)){
+      alert("키를 정확하게 입력하세요.");
+      joinTail.value = ""; 
+      joinTail.focus();
+      reject("실패: 키 형식 오류");
+    }else if(!joinWeight.value.match(reg_num)){
+      alert("몸무게를 정확하게 입력하세요.");
+      joinWeight.value = ""; 
+      joinWeight.focus();
+      reject("실패: 몸무게 형식 오류");
+    }else if(!joinBirmon.value.match(reg_num)){
+      alert("생년월일을 정확하게 입력하세요.");
+      joinBirmon.value = ""; 
+      joinBirmon.focus();
+      reject("실패: 생년월일 형식 오류");
+    }else if(joinBircol.options[joinBircol.selectedIndex].value  == ''){
+      alert("생년월일을 정확하게 입력하세요.");
+      joinBircol.focus();
+      reject("실패: 생년월일 형식 오류");
+    }else if(!joinBirday.value.match(reg_num)){
+      alert("생년월일을 정확하게 입력하세요.");
+      joinBirday.value = ""; 
+      joinBirday.focus();
+      reject("실패: 생년월일 형식 오류");
+    }else if(loginPw.value !== loginPwre.value){
+      alert("비밀번호가 일치 하지 않습니다.");
+      loginPw.value = ""; 
+      loginPw.focus();
+      loginPwre.value = ""; 
+      loginPwre.focus();
+      reject("실패: 비밀번호와 비밀번호 확인 불일치");
+    }else {
       loginEmail.value = "";
       loginPw.value = "";
       loginPwre.value = "";
+      joinName.value-"";
+      joinGender.value="";
+      joinTail.value="";
+      joinWeight.value="";
+      joinBirmon.value="";
+      joinBirday.value="";
     }
-    fetch("http://dabom.kro.kr/api/user/login", {
+
+    fetch("http://dabom.kro.kr/api/user/register", {
       method: "POST", 
       headers: {
         "Content-Type": "application/json",
@@ -153,10 +211,11 @@ async function join() {
         "email": email_val,
         "password": pw_val,
         "nickname": pw_valre,
-        "gender": gender,
-        "birthday": birthday,
-        "height": height,
-        "weight": weight,
+        "gender": gender_val,
+        "birthday": birthday_val,
+        "height": height_val,
+        "weight": weight_val,
+        "profie_image": h_f_link
       }),
     })
   });

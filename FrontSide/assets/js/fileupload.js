@@ -17,6 +17,13 @@ async function handleFiles() {
         xhr.setRequestHeader('Authorization', access_token)
         xhr.onload = xhr.onerror = async function () {
             let link = xhr.responseText.replace("\"","")
+            if (location.href.includes('register')) {
+                if (file.type.indexOf('image') < 0) {
+                    alert('프로필은 사진만 허용됩니다.')
+                    loading.style.display = 'none';
+                    return new Error('프로필은 사진만 허용됩니다.')
+                }
+            }
             if (location.href.includes('chat')) {
                 var count = file.name.split('.').length - 1
                 let extentsion = file.name.split('.')[count]
@@ -38,7 +45,8 @@ async function handleFiles() {
             let image = `<img src="${xhr.responseText}">`
             console.log(image)
             
-            console.log(link)
+            h_f_link = link.replace('\"',"")
+            loading.style.display = 'none';
             
 
         };

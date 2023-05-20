@@ -56,7 +56,7 @@ function isValid(data){
     
     return true;
 }
-
+if (location.href.includes('chat')) {
 inner.addEventListener('dragenter', function(e) {
     e.preventDefault();
     //console.log('dragenter');
@@ -124,7 +124,7 @@ drag_drop.addEventListener('drop', async function(e) {
     };
     xhr.send(formdata)  
 });
-
+}
 function in_out_message(nick, status) {
     let msg = `
     <div class="chat">
@@ -552,7 +552,7 @@ async function get_users_info(users) {
             }else{
                 res.json().then(async (json) => {
                     players.innerHTML = ""
-                    players_m.innerHTML = ""
+                    players_m.innerHTML = ""  
                     json.reverse().forEach(data => {
                         let nick = data.Nickname
                         let profile = data.profile_image || "../assets/images/default-profile.png"
@@ -583,8 +583,8 @@ async function verify_token() {
                     reject(new Error( "{\"code\": \"ER013\", \"message\": \"로그인이 필요합니다.\"}"))
                     localStorage.clear();
                     sessionStorage.clear();
-                    //$(".loading").hide()
-                    //location.href = "/login"
+                    loading.style.display = 'none';
+                    location.href = "/login"
                 }else{
                     response.json().then(async (json) => {
                         let detail_error = json.detail;
@@ -596,7 +596,7 @@ async function verify_token() {
                             reject(JSON.stringify(detail_error));
                             localStorage.clear();
                             sessionStorage.clear();
-                            $(".loading").hide()
+                            loading.style.display = 'none';
                             location.href = "/login"
                         }
                     });
@@ -624,18 +624,18 @@ async function refresh_token() {
             if (res.status !== 200) {
                 if (res.status === 422) {
                     reject(new Error("로그인이 필요합니다."))
-                    //localStorage.clear();
-                    //sessionStorage.clear();
-                    //$(".loading").hide()
-                    //location.href = "/login"
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    loading.style.display = 'none';
+                    location.href = "/login"
                 }else{
                     res.json().then((json) => {
                         let detail_error = json.detail;
                         reject(JSON.stringify(detail_error));
-                        //localStorage.clear();
-                        //sessionStorage.clear();
-                        //$(".loading").hide()
-                        //location.href = "/login"
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        loading.style.display = 'none';
+                        location.href = "/login"
                     });
                 }
             }else{

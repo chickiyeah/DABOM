@@ -27,6 +27,7 @@ input ,select { height: 50px; border-radius: 6px; border: 1px solid #E1E1E1; pad
 .birth_box { display: flex; width: 100%; box-sizing: border-box; gap: 10px; align-items: center;}
 .birth_box select { color: #909090; padding-top: 2px; }
 .birth_box input, .birth_box select { flex-grow: 1; width: 33%; }
+.birth_box select option[value=""][disabled] { display: none; }
 /* ==============================================================
   인풋 스타일 공통
 ==============================================================*/
