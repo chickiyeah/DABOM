@@ -23,5 +23,9 @@ async def register(request: Request):
     return templates.TemplateResponse("register.html", {"request":request})
 
 @ScreenRoute.get("/friend/request/{request_id}/{request_nickname}/{target_id}/{target_nickname}/{verify_id}")
-async def friend_accept_reject():
+async def friend_accept_reject(request: Request):
     return "."
+
+@ScreenRoute.get("/friend")
+async def friend(request: Request):
+    return templates.TemplateResponse("friend.html", {"request":request})

@@ -159,7 +159,7 @@ async def group_invite(group:invite_group, authorized: bool = Depends(verify_tok
 
         r_key = authorized[1]
 
-        link = "http://130.162.141.91/group/invite/{0}/{1}/{2}/{3}".format(group.group_id, r_key, group.target_id, verifykey)
+        link = "http://dabom.kro.kr/group/invite/{0}/{1}/{2}/{3}".format(group.group_id, r_key, group.target_id, verifykey)
 
         newno = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'log_invite'")[0]['no'])+1
 

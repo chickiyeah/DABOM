@@ -526,8 +526,6 @@ async def user_login(userdata: UserLogindata, request: Request):
     email = userdata.email
     password = userdata.password
 
-    print(email, password)
-
     if(len(email) == 0):
         raise HTTPException(status_code=400, detail=Missing_Email)
 
@@ -748,6 +746,7 @@ async def user_create(userdata: UserRegisterdata):
         d.login("noreply.dabom", "sxhmurnajtenjtbr")
         d.sendmail("noreply.dabom@gmail.com", email, msg.as_string())       
 
+    execute_sql(f"INSERT INTO info_msg (ID, message) VALUES ('{id}','없음')")
     sql = "INSERT INTO user VALUES (\""+email+"\",\""+id+"\",\""+nickname+"\",\""+str(now.strftime("%Y-%m-%d %H:%M:%S"))+"\",\""+gender+"\",\""+str(age)+"\",\""+height+"\",\""+weight+"\", \"[]\", 'False', '[]', '[]', \""+str(t_birthday.strftime("%Y-%m-%d"))+"\",'"+image+"')"
     res = execute_sql(sql)
     if res != 1:
@@ -769,7 +768,7 @@ async def user_logout(userdata: UserLogoutdata):
 async def user_findid(birthday: str):
     
     if birthday.count("/") != 2:
-        raise HTTPException(400, birthday_error)
+        raise HTTPException(400, er039)
     
     s_birthday = birthday.split("/")
 

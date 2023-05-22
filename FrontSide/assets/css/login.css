@@ -20,8 +20,12 @@
 .find_wrap .logo  { margin-bottom: 90px; }
 .find_wrap .logo a  { width: 78px; display: block; margin: 0 auto; }
 .find_wrap .tab_menu { font-weight: 300; display: flex; flex-wrap: wrap; margin-bottom: 50px; }
-.find_wrap .tab_menu li { flex: 1; text-align: center; padding: 15px 0; background: #E1E1E1; border-bottom: 1px solid #F43B00; }
-.find_wrap .tab_menu li.on { border: 1px solid #F43B00; border-bottom: none; background: white; color: #F43B00; }
+.find_wrap .tab_menu li { flex: 1; text-align: center; padding: 15px 0; background: #E1E1E1; border-bottom: 1px solid #F43B00; cursor: pointer;}
+.find_wrap .tab_menu li.on { border: 1px solid #F43B00; border-bottom: none; background: white; color: #F43B00; cursor: pointer;}
+.find_wrap .find_id{display: none;}
+.find_wrap .find_id.on {display: block;}
+.find_wrap .find_pw{display: none;}
+.find_wrap .find_pw.on {display: block;}
 .find_wrap .find_id .birth_box { margin-top: 5px; margin-bottom: 25px; }
 .find_wrap .find_id button, .find_wrap .find_pw button { color: white; background: #F43B00; text-align: center; height: 45px; border-radius: 6px;
     width: 100%; font-size: 18px; }

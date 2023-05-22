@@ -39,6 +39,7 @@ for(var i=0; i < ele.length; i++) {
   }
 }
 
+
 // 로그인
 if (location.href.includes("login")) {
   const loginBtn = document.getElementById("login_btn");
@@ -53,6 +54,15 @@ if (location.href.includes("register")) {
       await join();
     })
 }
+
+if (location.href.includes("findaccount")) {
+  const find_email = document.querySelector('#find_email');
+    find_email.addEventListener("click", async () => { //async function() {} () => 
+    await findaccount();
+  })
+}
+
+
 
   // 로그인
 async function login() { //메인함수가 동기상태에요. 기본으로요? ㄴㄴ 앞에다가 async 붙이면 비동기 ㅇ아부붙이면 동아 아아기기
@@ -138,6 +148,14 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
 async function join() { 
 
   return new Promise(async function (resolve, reject) { // 로그인은 다했을걸요?s]오키욤
+    var email_val
+    var pw_val
+    var name_val
+    var gender_val
+    var tail_val
+    var weight_val
+    var bir_val
+
     if (!loginEmail.value.match(reg_email)) {
       alert("이메일을 정확하게 입력하세요.");
       loginEmail.value = "";
@@ -190,15 +208,26 @@ async function join() {
       loginPwre.focus();
       reject("실패: 비밀번호와 비밀번호 확인 불일치");
     }else {
-      loginEmail.value = "";
-      loginPw.value = "";
-      loginPwre.value = "";
-      joinName.value-"";
+      email_val = loginEmail.value;
+      pw_val = loginPw.value;
+      pwre_val = loginPwre.value;
+      name_val = joinName.value;
+      gender_val = joinGender.value;
+      tail_val = joinTail.value;
+      weight_val = joinWeight.value;
+      bir_mon_val = joinBirmon.value;
+      bir_col_val = joinBircol.value;
+      bir_day_val = joinBirday.value;
+
+      loginPw.value="";
+      loginPwre.value="";
+      joinName.value="";
       joinGender.value="";
       joinTail.value="";
       joinWeight.value="";
-      joinBirmon.value="";
-      joinBirday.value="";
+      joinBirmon.value = "";
+      joinBircol.value = "";
+      joinBirday.value = "";
     }
 
     fetch("http://dabom.kro.kr/api/user/register", {
@@ -210,13 +239,110 @@ async function join() {
       body: JSON.stringify({
         "email": email_val,
         "password": pw_val,
-        "nickname": pw_valre,
+        "nickname": name_val,
         "gender": gender_val,
-        "birthday": birthday_val,
-        "height": height_val,
+        "birthday": `${bir_mon_val}/${bir_col_val}/${bir_day_val}`,
+        "height": tail_val,
         "weight": weight_val,
         "profie_image": h_f_link
       }),
     })
+  });
+}
+
+// 아이디, 비밀번호 찾기 탭 on 처리
+const tab_id = document.querySelector('#tab_id');
+const tab_pw = document.querySelector('#tab_pw');
+
+const tab_id_val = document.querySelector('.find_id');
+const tab_pw_val = document.querySelector('.find_pw');
+
+tab_id.addEventListener('click', () =>{
+  tab_id.classList.add("on");
+  tab_id_val.classList.add("on");
+  tab_pw_val.classList.remove('on');
+  tab_pw.classList.remove('on');
+});
+
+tab_pw.addEventListener('click', () =>{
+  tab_pw.classList.add("on");
+  tab_pw_val.classList.add("on");
+  tab_id_val.classList.remove('on');
+  tab_id.classList.remove('on');
+});
+
+
+
+// 아이디 찾기
+async function findaccount(){
+  return new Promise(async function (resolve, reject) {
+
+  var bir_mon_val
+  var bir_col_val
+  var bir_day_val
+
+  if(!joinBirmon.value.match(reg_num)){
+    alert("생년월일을 정확하게 입력하세요.");
+    joinBirmon.value = ""; 
+    joinBirmon.focus();
+    reject("실패: 생년월일 형식 오류");
+  }else if(joinBircol.options[joinBircol.selectedIndex].value  == ''){
+    alert("생년월일을 정확하게 입력하세요.");
+    joinBircol.focus();
+    reject("실패: 생년월일 형식 오류");
+  }else if(!joinBirday.value.match(reg_num)){
+    alert("생년월일을 정확하게 입력하세요.");
+    joinBirday.value = ""; 
+    joinBirday.focus();
+    reject("실패: 생년월일 형식 오류");
+  }else {
+    bir_mon_val = joinBirmon.value;
+    bir_col_val = joinBircol.value;
+    bir_day_val = joinBirday.value;
+    joinBirmon.value = "";
+    joinBircol.value = "";
+    joinBirday.value = "";
+  }
+
+fetch("http://dabom.kro.kr/api/user/findid", {
+  method: "POST", 
+  headers: {
+    "Content-Type": "application/json",
+    // "Authorization" : sessionStorage.getItem("access_token")
+  },
+  body: JSON.stringify({
+    "birthday": `${bir_mon_val}/${bir_col_val}/${bir_day_val}`,
+  }),
+})
+.then(async function(data) { {}
+      if (data.status == 200) {
+        data.json().then(async (json) => {
+              sessionStorage.setItem("access_token", json.access_token)
+              sessionStorage.setItem("refresh_token", json.refresh_token)
+              resolve(json);
+              console.log(json);
+              document.querySelector(".loading").style.display = 'none';
+              location.href = "/"
+          })
+      } else if (data.status == 400 ) {
+        data.json().then(async (json) => {
+          let detail = json.detail;
+          // console.log(detail);
+          loginVal.innerHTML = '';
+          if (detail.code == "ER039") {
+            reject( new Error("생일이 올바르지 않습니다."));
+            loginVal.insertAdjacentHTML('afterbegin', '<p>이메일의 입력값이 이메일이 아니거나, 이메일이 유효하지 않습니다.</p>' );
+            document.querySelector(".loading").style.display = 'none';
+          }else{ //여기서 뭐하심? 27줄보세유!ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ
+            reject("정의되지 않은 오류입니다");
+            alert("정의되지 않은 오류입니다");
+            document.querySelector(".loading").style.display = 'none';
+          }
+        });ㅋㅋ
+        // loginVal.remove();
+      }else{
+        reject("SERVICE ERROR WITH UNKNOWN ERROR : " + data)
+      }
+    });
   });
 }

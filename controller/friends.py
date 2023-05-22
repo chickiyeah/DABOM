@@ -61,17 +61,18 @@ unauthorized_userdisabled = {'code':'ER016','message':'UNAUTHORIZED (TOKENS FROM
 class request_friend(BaseModel):
     id: str
 
-@friendapi.get("/list/{page}")
+@friendapi.get("/list")
 async def friend_list(page: int, authorized: bool = Depends(verify_token)):
     if authorized:
         if page <= 0:
             raise HTTPException(400, "Page Must be greater than 0")
         
+        er042 = {"code":"ER042","message":"친구가 존재하지 않습니다."}
         uid = authorized[1]
         sql = "SELECT friends FROM user WHERE ID = '%s'" % uid
         res = json.loads(execute_sql(sql)[0]['friends'])
         if len(res) == 0:
-            return "친구가 존재하지 않습니다."
+            raise HTTPException(400, er042)
         
         sql = "SELECT * FROM infomsg WHERE"
         for e in res:
@@ -79,12 +80,19 @@ async def friend_list(page: int, authorized: bool = Depends(verify_token)):
 
         sql = sql[0:-3] + " LIMIT 10 OFFSET %s0" % (page - 1)
 
+        print(sql)
+        print(execute_sql(sql))
+
         return execute_sql(sql)
 
 @friendapi.post("/request")
-async def friend_request(data:request_friend, authorized: bool = Depends(verify_token)):
+async def friend_request(uid:str, authorized: bool = Depends(verify_token)):
     if authorized:
-        t_id = data.id
+        t_id = uid
+        er041 = {"code":"ER041","message":"본인에게 친구 요청을 할 수 없습니다."}
+
+        if uid == authorized[1]:
+            raise HTTPException(400, er041)
         
         try:
             target = auth.get_user(t_id)
@@ -139,7 +147,7 @@ async def friend_request(data:request_friend, authorized: bool = Depends(verify_
             add_verifykey = "INSERT INTO f_verify (code, req_id, tar_id, `type`) VALUES ('%s','%s','%s', 'friend')" % (verifykey, requestid, targetid)
             execute_sql(add_verifykey)
 
-            link = "http://130.162.141.91/friend/request/%s/%s/%s/%s/%s" % (requestid, requestnick, targetid, targetnick, verifykey)
+            link = "http://dabom.kro.kr/friend/request/%s/%s/%s/%s/%s" % (requestid, requestnick, targetid, targetnick, verifykey)
             text = "\n\n\n안녕하세요 다봄 입니다.\n\n%s 님이 유저님에게 친구요청을 보냈습니다.\n아래 링크를 클릭해서 수락/거절 여부를 선택해주세요!\n\n\n%s\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다."
             html = """\
 <html>
