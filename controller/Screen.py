@@ -22,6 +22,10 @@ async def findaccount(request: Request):
 async def register(request: Request):
     return templates.TemplateResponse("register.html", {"request":request})
 
+@ScreenRoute.get("/posts")
+async def posts(request: Request):
+    return templates.TemplateResponse("posts.html", {"request":request})
+
 @ScreenRoute.get("/friend/request/{request_id}/{request_nickname}/{target_id}/{target_nickname}/{verify_id}")
 async def friend_accept_reject(request: Request):
     return "."
