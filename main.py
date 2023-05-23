@@ -4,6 +4,7 @@ import sys
 from starlette.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 from controller.database import __init__
+from controller.onemsgdb import __init1__
 
 app = FastAPI()
 
@@ -15,6 +16,7 @@ app.add_middleware(
     allow_headers=["*"]
 )
 __init__()
+__init1__()
 
 from controller.nutrient import nutrientapi
 from controller import userapi, diary, friends, food, group, websocket, Screen

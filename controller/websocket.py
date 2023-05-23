@@ -12,6 +12,7 @@ from starlette.concurrency import run_until_first_complete
 import redis
 from controller.wordfilter import check_word
 from controller.database import execute_sql
+from controller.onemsgdb import execute_pri_sql
 from firebase_admin import auth
 import time
 from pytz import timezone
@@ -130,12 +131,20 @@ async def send_message(websocket: WebSocket, username: str, channel: str, u_id: 
     if curse != None:
         r.xadd(channel,{'time':now, 'username':username, 'channel':channel, 'message' :curse, 'u_id':u_id, 'pf_image':pf_image})
         event = MessageEvent(u_id=u_id, username=username, message=curse, time=now, pf_image=pf_image)
-        execute_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
+        if "pri" in channel:
+            execute_pri_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
+        else:
+            execute_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
+        
         await broadcast.publish(channel, message=event.json())
     else:
         r.xadd(channel,{'time':now, 'username':username, 'channel':channel, 'message' :data, 'u_id':u_id, 'pf_image':pf_image})
         event = MessageEvent(u_id=u_id, username=username, message=data, time=now, pf_image=pf_image)
-        execute_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
+        if "pri" in channel:
+            execute_pri_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
+        else:
+            execute_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
+        
         await broadcast.publish(channel, message=event.json())
 
 async def join_channel(username: str, channel: str):
