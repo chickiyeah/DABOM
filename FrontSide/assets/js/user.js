@@ -338,7 +338,7 @@ fetch("http://dabom.kro.kr/api/user/findid", {
             alert("정의되지 않은 오류입니다");
             document.querySelector(".loading").style.display = 'none';
           }
-        });ㅋㅋ
+        });
         // loginVal.remove();
       }else{
         reject("SERVICE ERROR WITH UNKNOWN ERROR : " + data)

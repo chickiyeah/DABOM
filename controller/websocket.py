@@ -305,6 +305,21 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
     await join_channel(username, channel)
 
     await websocket.accept()
+
+    if "pri" in channel:
+        comments = execute_pri_sql(f"SELECT * FROM chat WHERE `group` = '{channel}' ORDER BY send_at DESC LIMIT 100")
+        if len(comments) != 0:
+            for comment in comments:
+                user = execute_sql("SELECT `Nickname`, `profile_image` FROM `user` WHERE `ID` = '"+u_id+"'")
+                pf_image = user[0]['profile_image']
+                if comment['filter_message'] == "None":
+                    event = MessageEvent(u_id=comment['id'], username=comment['nickname'], message=comment['origin_message'], time=str(comment['send_at']), pf_image=pf_image)
+                else:
+                    event = MessageEvent(u_id=comment['id'], username=comment['nickname'], message=comment['filter_message'], time=str(comment['send_at']), pf_image=pf_image)
+                
+                await websocket.send_json(event.json())
+
+
     #comments = r.xread(streams={channel: 0})
     #if len(comments) != 0:
     #    c_data = comments[0][1]
