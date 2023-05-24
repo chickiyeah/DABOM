@@ -90,7 +90,7 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
       method: "POST", 
       headers: {
         "Content-Type": "application/json",
-        // "Authorization" : sessionStorage.getItem("access_token")
+        "Authorization" : sessionStorage.getItem("access_token")
       },
       body: JSON.stringify({
         "email": email_val,
