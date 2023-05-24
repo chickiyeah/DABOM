@@ -39,6 +39,19 @@ async function request(uid) {
     })
 }
 
+async function ban_friend(tar_id) {
+    return new Promise(async function(resolve, reject) {
+        await verify_token()
+        let access_token = sessionStorage.getItem("access_token")
+        fetch(`/api/friends/ban?user_id=${tar_id}`, {
+            method: "POST",
+            headers: {
+                Authorization: access_token
+            }
+        })
+    })
+}
+
 async function rm_friend(delid) {
     return new Promise(async function(resolve, reject) {
         await verify_token()
