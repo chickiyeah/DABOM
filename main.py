@@ -5,6 +5,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 from controller.database import __init__
 from controller.onemsgdb import __init1__
+from fastapi.responses import PlainTextResponse
 
 app = FastAPI()
 
@@ -21,6 +22,10 @@ __init1__()
 from controller.nutrient import nutrientapi
 from controller import userapi, diary, friends, food, group, websocket, Screen
 
+@app.get('/robots.txt', response_class=PlainTextResponse)
+def robots():
+    data = """User-agent: *\nAllow: /"""
+    return data
 
 app.include_router(nutrientapi.nutrient)
 app.include_router(userapi.userapi)
