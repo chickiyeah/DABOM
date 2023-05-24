@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 import sys
 
 from starlette.middleware.cors import CORSMiddleware
@@ -26,6 +26,28 @@ from controller import userapi, diary, friends, food, group, websocket, Screen
 def robots():
     data = """User-agent: *\nAllow: /"""
     return data
+
+@app.get('/sitemap.xml')
+async def get_sitemap():
+    my_sitemap = """<?xml version="1.0" encoding="UTF-8"?>
+                <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">"""
+
+    # Fetch your urls from database or somewhere else
+    # Then add to the urls array
+    urls = []
+    suburl = ['','login', 'posts', 'chat', 'findaccount']
+    for sub in suburl:
+        urls.append(f"""<url>
+              <loc>http://dabom.kro.kr/{sub}</loc>
+              <lastmod>2023-05-25T08:16:41+00:00</lastmod>
+              <changefreq>weekly</changefreq>
+              <priority>0.8</priority>
+          </url>""")
+
+    my_sitemap += "\n".join(urls)
+    my_sitemap += """</urlset>"""
+
+    return Response(content=my_sitemap, media_type="application/xml")
 
 app.include_router(nutrientapi.nutrient)
 app.include_router(userapi.userapi)
