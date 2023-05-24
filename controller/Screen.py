@@ -6,6 +6,10 @@ templates = Jinja2Templates(directory="FrontSide/templates")
 
 ScreenRoute = APIRouter(prefix="",tags=["Screens"])
 
+@ScreenRoute.get("/")
+async def Screen(request: Request):
+    return templates.TemplateResponse("index.html", {"request":request})
+
 @ScreenRoute.get("/chat")
 async def index(request: Request):
     return templates.TemplateResponse("chat.html", {"request":request})
