@@ -10,6 +10,8 @@
 ==============================================================*/
 .container { width: 100%; max-width: 1440px; margin: 0 auto; padding: 0 35px; }
 .show_mobile { display: none; }
+.hidden {overflow: hidden; border: 0; width: 1px; height: 1px; clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%); display: inline-block; }
 @media all and (max-width: 400px) {
     .container { padding: 0 24px; }
 }

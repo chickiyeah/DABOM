@@ -2,9 +2,9 @@
 로그인
 ==============================================================*/
 .loading { width: 100vw;height: 100vh ; display: none; z-index: 1; position: absolute; opacity: 0.5; background-color: black;}
-.login_wrap .container { width: 100%; max-width: 460px; padding-top: 200px; padding: 200px 24px 0; }
+.login_wrap .container { width: 100%; max-width: 460px; margin: 150px auto; padding: 0 24px; }
 .login_wrap .logo  { margin-bottom: 90px; }
-.login_wrap .logo a  { width: 78px; display: block; margin: 0 auto; }
+.login_wrap .logo a  { width: 80px; height: auto; display: block; margin: 0 auto; }
 .login_wrap .member_group input + input { margin-top: 10px; }
 .login_wrap .checkbox { margin: 15px auto; }
 .login_wrap .checkbox input[type=checkbox] + label { font-weight: 300; font-size: 12px; line-height: 2.1;}
@@ -16,7 +16,7 @@
 /* ==============================================================
 아이디, 비밀번호 찾기
 ==============================================================*/
-.find_wrap .container { width: 100%; max-width: 460px; margin: 200px auto; padding: 0 24px; }
+.find_wrap .container { width: 100%; max-width: 460px;  margin: 150px auto; padding: 0 24px; }
 .find_wrap .logo  { margin-bottom: 90px; }
 .find_wrap .logo a  { width: 78px; display: block; margin: 0 auto; }
 .find_wrap .tab_menu { font-weight: 300; display: flex; flex-wrap: wrap; margin-bottom: 50px; }
@@ -39,3 +39,8 @@ padding-left: 15px; background-position-y: 2px; }
 
 #login_val{background-color:#f43d0010; color:#F43B00; text-align: center; margin:20px 0; font-size: 12px; font-weight: 500;}
 #login_val p{padding:20px 10px;}
+
+@media all and (max-width: 400px) {
+    .login_wrap .container { margin: 100px auto; }
+    .find_wrap .container { margin: 100px auto; }
+}
