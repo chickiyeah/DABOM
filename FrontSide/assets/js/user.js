@@ -45,6 +45,7 @@ for(var i=0; i < ele.length; i++) {
 if (location.href.includes("login")) {
   const loginBtn = document.getElementById("login_btn");
   loginBtn.addEventListener("click", async () => { //async function() {} () => 
+      await is_checked();
       await login();
   });
 }
@@ -63,16 +64,23 @@ if (location.href.includes("findaccount")) {
   })
 }
 
-
-
   function is_checked() {
-    alert(1);
     const loginSave = document.querySelector('#save');
     const is_checked = loginSave.checked;
     console.log(is_checked); 
+
+    cookieSave();
   }
   
-is_checked();
+  function cookieSave(json) {
+        if (is_checked == true) {
+          // 액세스 토큰 쿠키 설정
+          document.cookie = "access_token=" + json.access_token + "; expires=" + expires.toUTCString() + "; path=/";
+                
+          // 리프레시 토큰 쿠키 설정
+          document.cookie = "refresh_token=" + json.refresh_token + "; expires=" + expires.toUTCString() + "; path=/";
+    }
+  }
 
   // 로그인
 async function login() { //메인함수가 동기상태에요. 기본으로요? ㄴㄴ 앞에다가 async 붙이면 비동기 ㅇ아부붙이면 동아 아아기기
@@ -117,15 +125,11 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
         data.json().then(async (json) => {
               sessionStorage.setItem("access_token", json.access_token)
               sessionStorage.setItem("refresh_token", json.refresh_token)
-              // 액세스 토큰 쿠키 설정
-              document.cookie = "access_token=" + json.access_token + "; expires=" + expires.toUTCString() + "; path=/";
-              
-              // 리프레시 토큰 쿠키 설정
-              document.cookie = "refresh_token=" + json.refresh_token + "; expires=" + expires.toUTCString() + "; path=/";
-
-              resolve(json);
+              //여기에 두면되죠 조건문 너어서
+              cookieSave(json);
               console.log(json);
               document.querySelector(".loading").style.display = 'none';
+              resolve(json);
               //location.href = "/"
           })
       } else if (data.status == 400 ) {
