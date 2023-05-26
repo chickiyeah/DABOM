@@ -1,5 +1,9 @@
 "use strict";
 
+window.addEventListener('DOMContentLoaded', async function () {
+  LoadCookie();
+});
+
 // 로그인
 const loginEmail = document.querySelector("#login_email");
 const loginPw = document.querySelector("#login_pw");
@@ -45,7 +49,6 @@ for(var i=0; i < ele.length; i++) {
 if (location.href.includes("login")) {
   const loginBtn = document.getElementById("login_btn");
   loginBtn.addEventListener("click", async () => { //async function() {} () => 
-      await is_checked();
       await login();
   });
 }
@@ -61,34 +64,156 @@ if (location.href.includes("findaccount")) {
   const find_email = document.querySelector('#find_email');
     find_email.addEventListener("click", async () => { //async function() {} () => 
     await findaccount();
-  })
-}
+    })
+  }
 
   function is_checked() {
     const loginSave = document.querySelector('#save');
     const is_checked = loginSave.checked;
-    console.log(is_checked); 
-
-    cookieSave();
+    return is_checked
   }
-  
-  function cookieSave(json) {
-        if (is_checked == true) {
-          // 액세스 토큰 쿠키 설정
-          document.cookie = "access_token=" + json.access_token + "; expires=" + expires.toUTCString() + "; path=/";
-                
-          // 리프레시 토큰 쿠키 설정
-          document.cookie = "refresh_token=" + json.refresh_token + "; expires=" + expires.toUTCString() + "; path=/";
+
+  function LoadCookie(){
+    let cookie = document.cookie
+    let access_token = sessionStorage.getItem('access_token');
+    let refresh_token = sessionStorage.getItem('refresh_token');
+    if (access_token == null || refresh_token == null) {
+      if(cookie == null) {
+        location.href = "/login";
+      }else{
+        let cookies = cookie.split(";");
+        let keys = [];
+        cookies.forEach(cookie => {
+          let key = cookie.split(" = ")[0];
+          keys.push(key);
+        })
+        if(keys.includes("access_token") && keys.includes("refresh_token")){
+          cookies.forEach(cookie => {
+            let key = cookie.split(" = ")[0];
+            if(key == "access_token") {
+              sessionStorage.setItem("access_token", cookie.split(" = ")[1]);
+            }
+
+            if(key == "refresh_token") {
+              sessionStorage.setItem("refresh_token", cookie.split(" = ")[1]);
+            }
+            
+            verify_token()
+            location.href = "/";
+          })
+        }else{
+          document.cookie = "access_token = ; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
+          document.cookie = "refresh_token = ; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
+          location.href = "/login";
+        }
+      }
+    }else{
     }
   }
 
+
+  async function verify_token() {
+    return new Promise(async function(resolve, reject) {
+        //토큰 검증
+        let access_token = sessionStorage.getItem("access_token")
+        fetch("/api/user/verify_token",{
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                access_token: access_token
+            })     
+        }).then(async function(response) {
+            if (response.status !== 200) {
+                if (response.status === 422) {
+                    reject(new Error( "{\"code\": \"ER013\", \"message\": \"로그인이 필요합니다.\"}"))
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    loading.style.display = 'none';
+                    location.href = "/login"
+                }else{
+                    response.json().then(async (json) => {
+                        let detail_error = json.detail;
+                        if (detail_error.code == "ER998") {
+                            console.log(refresh_token_fun())
+                            resolve(refresh_token_fun())
+                           
+                        }else{
+                            reject(JSON.stringify(detail_error));
+                            localStorage.clear();
+                            sessionStorage.clear();
+                            loading.style.display = 'none';
+                            location.href = "/login"
+                        }
+                    });
+                }
+            } else {
+                resolve(response.json())
+            }
+        })
+    })
+}
+
+async function refresh_token_fun() {
+    return new Promise(async function(resolve, reject) {
+        let refresh_token = sessionStorage.getItem('refresh_token');
+        fetch("/api/user/refresh_token", {
+            method: "post",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              refresh_token: refresh_token,
+            })
+        })
+        .then((res) => {
+            if (res.status !== 200) {
+                if (res.status === 422) {
+                    reject(new Error("로그인이 필요합니다."))
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    loading.style.display = 'none';
+                    location.href = "/login"
+                }else{
+                    res.json().then((json) => {
+                        let detail_error = json.detail;
+                        reject(JSON.stringify(detail_error));
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        loading.style.display = 'none';
+                        location.href = "/login"
+                    });
+                }
+            }else{
+                res.json().then((json) => {
+                    sessionStorage.setItem("access_token", json.access_token);
+                    sessionStorage.setItem("refresh_token", json.refresh_token);
+                    resolve("token refresed")
+                })
+            }
+        })
+    })
+}
+
+
+async function cookieSave(json) {
+     if (is_checked()) {
+        // 만료시간 7일
+        var expires = new Date();
+        expires.setDate(expires.getDate() + 7);
+       // 액세스 토큰 쿠키 설정
+        document.cookie = "access_token=" + json.access_token + "; expires=" + expires.toUTCString() + "; path=/";
+              
+        // 리프레시 토큰 쿠키 설정
+        document.cookie = "refresh_token=" + json.refresh_token + "; expires=" + expires.toUTCString() + "; path=/";
+    }
+}
+
+
+
   // 로그인
 async function login() { //메인함수가 동기상태에요. 기본으로요? ㄴㄴ 앞에다가 async 붙이면 비동기 ㅇ아부붙이면 동아 아아기기
-
-      // 만료시간 7일
-      var expires = new Date();
-      expires.setDate(expires.getDate() + 7);
-
   return new Promise(async function (resolve, reject) { // 예만 비동기된거임 아하
     var email_val
     var pw_val
@@ -126,11 +251,11 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
               sessionStorage.setItem("access_token", json.access_token)
               sessionStorage.setItem("refresh_token", json.refresh_token)
               //여기에 두면되죠 조건문 너어서
-              cookieSave(json);
+              await cookieSave(json)
               console.log(json);
               document.querySelector(".loading").style.display = 'none';
               resolve(json);
-              //location.href = "/"
+              location.href = "/"
           })
       } else if (data.status == 400 ) {
         data.json().then(async (json) => {

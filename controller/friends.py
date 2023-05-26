@@ -69,7 +69,8 @@ async def friend_list(page: int, authorized: bool = Depends(verify_token)):
         
         er042 = {"code":"ER042","message":"친구가 존재하지 않습니다."}
         uid = authorized[1]
-        sql = "SELECT friends FROM user WHERE ID = '%s'" % uid
+        page = page - 1
+        sql = "SELECT friends FROM user WHERE ID = '%s'" % (uid)
         res = json.loads(execute_sql(sql)[0]['friends'])
         if len(res) == 0:
             raise HTTPException(400, er042)
@@ -78,12 +79,15 @@ async def friend_list(page: int, authorized: bool = Depends(verify_token)):
         for e in res:
             sql = sql + " ID = '%s' OR" % e
 
-        sql = sql[0:-3] + " LIMIT 10 OFFSET %s0" % (page - 1)
+        sql = sql[0:-3] + " LIMIT 8 OFFSET %s" % (page * 8)
+        
+        res = {
+            'friends': execute_sql(sql),
+            'amount': len(res),
+            'page': page +1
+        }
 
-        print(sql)
-        print(execute_sql(sql))
-
-        return execute_sql(sql)
+        return res
 
 @friendapi.post("/request")
 async def friend_request(uid:str, authorized: bool = Depends(verify_token)):

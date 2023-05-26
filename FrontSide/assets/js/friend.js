@@ -48,6 +48,41 @@ async function ban_friend(tar_id) {
             headers: {
                 Authorization: access_token
             }
+        }).then(async (res) => {
+            if (res.status !== 200) {
+                res.json().then(async (json) => {
+                    let detail_error = json.detail;
+                    if(detail_error.code == "ER037") {
+                        reject(new Error("이미 차단된 유저입니다."))
+                    }
+                })
+            }else{
+                resolve("친구를 차단했습니다.")
+            }
+        })
+    })
+}
+
+async function pardon_friend(tar_id) {
+    return new Promise(async function(resolve, reject) {
+        await verify_token()
+        let access_token = sessionStorage.getItem("access_token")
+        fetch(`/api/friends/ban?user_id=${tar_id}`, {
+            method: "POST",
+            headers: {
+                Authorization: access_token
+            }
+        }).then(async (res) => {
+            if (res.status !== 200) {
+                res.json().then(async (json) => {
+                    let detail_error = json.detail;
+                    if(detail_error.code == "ER038") {
+                        reject(new Error("이미 차단되지 않은 유저입니다."))
+                    }
+                })
+            }else{
+                resolve("유저를 차단헤제 했습니다.")
+            }
         })
     })
 }
@@ -97,8 +132,8 @@ async function list(page) {
             }else{
                 res.json().then(async (json) => {
                     console.log(json)
-                    json.forEach(data => {
-                        get_user_info(data.ID, data.message)
+                    json.friends.forEach(data => {
+                        console.log(get_user_info(data.ID, data.message))
                     })
                     resolve(res)
                 })
