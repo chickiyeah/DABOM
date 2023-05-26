@@ -6,6 +6,7 @@ const loginPw = document.querySelector("#login_pw");
 // let loginPwre = document.getElementById("login_pwre"); //이걸
 const loginPwre = document.querySelector("#login_pwre"); //요로코롬 아이디는 # 클래스는 . 
 const loginVal = document.querySelector('#login_val');
+// const loginSave = document.querySelector('#save');
 
 // 회원가입
 const joinName = document.querySelector("#join_name");
@@ -64,8 +65,22 @@ if (location.href.includes("findaccount")) {
 
 
 
+  function is_checked() {
+    alert(1);
+    const loginSave = document.querySelector('#save');
+    const is_checked = loginSave.checked;
+    console.log(is_checked); 
+  }
+  
+is_checked();
+
   // 로그인
 async function login() { //메인함수가 동기상태에요. 기본으로요? ㄴㄴ 앞에다가 async 붙이면 비동기 ㅇ아부붙이면 동아 아아기기
+
+      // 만료시간 7일
+      var expires = new Date();
+      expires.setDate(expires.getDate() + 7);
+
   return new Promise(async function (resolve, reject) { // 예만 비동기된거임 아하
     var email_val
     var pw_val
@@ -102,10 +117,16 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
         data.json().then(async (json) => {
               sessionStorage.setItem("access_token", json.access_token)
               sessionStorage.setItem("refresh_token", json.refresh_token)
+              // 액세스 토큰 쿠키 설정
+              document.cookie = "access_token=" + json.access_token + "; expires=" + expires.toUTCString() + "; path=/";
+              
+              // 리프레시 토큰 쿠키 설정
+              document.cookie = "refresh_token=" + json.refresh_token + "; expires=" + expires.toUTCString() + "; path=/";
+
               resolve(json);
               console.log(json);
               document.querySelector(".loading").style.display = 'none';
-              location.href = "/"
+              //location.href = "/"
           })
       } else if (data.status == 400 ) {
         data.json().then(async (json) => {
@@ -142,6 +163,30 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
     });
   });
 }
+
+
+
+// 아이디, 비밀번호 찾기 탭 on 처리
+const tab_id = document.querySelector('#tab_id');
+const tab_pw = document.querySelector('#tab_pw');
+
+const tab_id_val = document.querySelector('.find_id');
+const tab_pw_val = document.querySelector('.find_pw');
+
+tab_id.addEventListener('click', () =>{
+  tab_id.classList.add("on");
+  tab_id_val.classList.add("on");
+  tab_pw_val.classList.remove('on');
+  tab_pw.classList.remove('on');
+});
+
+tab_pw.addEventListener('click', () =>{
+  tab_pw.classList.add("on");
+  tab_pw_val.classList.add("on");
+  tab_id_val.classList.remove('on');
+  tab_id.classList.remove('on');
+});
+
 
 
 // 회원가입
@@ -249,28 +294,6 @@ async function join() {
     })
   });
 }
-
-// 아이디, 비밀번호 찾기 탭 on 처리
-const tab_id = document.querySelector('#tab_id');
-const tab_pw = document.querySelector('#tab_pw');
-
-const tab_id_val = document.querySelector('.find_id');
-const tab_pw_val = document.querySelector('.find_pw');
-
-tab_id.addEventListener('click', () =>{
-  tab_id.classList.add("on");
-  tab_id_val.classList.add("on");
-  tab_pw_val.classList.remove('on');
-  tab_pw.classList.remove('on');
-});
-
-tab_pw.addEventListener('click', () =>{
-  tab_pw.classList.add("on");
-  tab_pw_val.classList.add("on");
-  tab_id_val.classList.remove('on');
-  tab_id.classList.remove('on');
-});
-
 
 
 // 아이디 찾기
