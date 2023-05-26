@@ -5,7 +5,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 from controller.database import __init__
 from controller.onemsgdb import __init1__
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import PlainTextResponse, FileResponse
 
 app = FastAPI()
 
@@ -26,6 +26,10 @@ from controller import userapi, diary, friends, food, group, websocket, Screen
 def robots():
     data = """User-agent: *\nAllow: /"""
     return data
+
+@app.get('/favicon.ico')
+async def favicon():
+    return FileResponse(path="/assets/images/favico.ico", headers={"Content-Disposition": "attachment; filename=" + "favicon.ico"})
 
 @app.get('/sitemap.xml')
 async def get_sitemap():

@@ -1,0 +1,35 @@
+{
+    "short_name": "Dabom",
+    "name": "App",
+    "icons": [
+     {
+      "src": "/assets/images/favicon.ico",
+      "sizes": "16x16",
+      "type": "image/x-icon"
+     },
+     {
+      "src": "/assets/images/apple-icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+     },
+     {
+      "src": "/assets/images/apple-icon-114x114.png",
+      "sizes": "114x114",
+      "type": "image/png"
+     },
+     {
+      "src": "/assets/images/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+     },
+     {
+      "src": "/assets/images/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+     }
+    ],
+    "start_url": "https://dabom.kro.kr",
+    "display": "standalone",
+    "theme_color": "#000000",
+    "background_color": "#ffffff"
+   }
