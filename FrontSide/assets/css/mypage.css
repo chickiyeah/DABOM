@@ -22,6 +22,11 @@
 .mypage_wrap .post_nav .prev,
 .mypage_wrap .post_nav .next { display: inline-flex; align-items: center; justify-content: center; }
 
+#error {background-color:#f43d0010; color:#F43B00; text-align: center; margin:20px 0; font-size: 12px; font-weight: 500;}
+#error p{padding:20px 10px;}
+#success {background-color:#f43d0010; color:#67df7b; text-align: center; margin:20px 0; font-size: 12px; font-weight: 500;}
+#success p{padding:20px 10px;}
+
 /* 마이다봄 */
 .mypage_wrap .right_box .form_group { max-width: 460px; margin: 100px auto; }
 .mypage_wrap .right_box .filebox .profile_img { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; display: inline-block; }

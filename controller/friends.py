@@ -99,7 +99,7 @@ async def friend_request(uid:str, authorized: bool = Depends(verify_token)):
             raise HTTPException(400, er041)
         
         try:
-            target = auth.get_user(t_id)
+            target = auth.get_user_by_email(t_id)
             targetmail = target.email
             targetid = target.uid
             target = target.email_verified

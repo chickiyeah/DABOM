@@ -30,12 +30,37 @@ window.addEventListener('DOMContentLoaded', async function() {
     }
 })
 
+import { clickEnter } from "./enterEvent.js";
+
 const loading = document.querySelector(".loading");
 const pagediv = document.querySelector(".numdiv");
 const friend_list_div = document.querySelector(".bottom");
 
+const friend_req_input = document.querySelector("#friend_req_input");
+const friend_req_button = document.querySelector("#friend_req_button");
+
+const error = document.querySelector("#error");
+const success = document.querySelector("#success");
+
+const reg_email = /[a-zA-Z0-9]+@[a-z]+\.[a-z]{2,3}$/i;
+
+clickEnter(friend_req_input, friend_req_button)
+
+friend_req_button.addEventListener("click", async (event) => {
+    if (!friend_req_input.value.match(reg_email)) {
+        friend_req_input.focus();
+        try {document.querySelector("#detail_msg").remove()} catch {}
+        try {document.querySelector("#success_msg").remove()} catch {}
+        error.insertAdjacentHTML('afterbegin', '<p id="detail_msg">이메일을 확인해주세요.</p>' );
+        reject(new Error("이메일 형식 오류"));
+    }else{
+        request(friend_req_input.value)
+    }
+})
+
 async function request(uid) {
     return new Promise(async function(resolve, reject) {
+        loading.style.display = "flex"
         await verify_token()
         let access_token = sessionStorage.getItem("access_token")
         fetch(`/api/friends/request?uid=${uid}`,{
@@ -48,19 +73,48 @@ async function request(uid) {
                 res.json().then(async (json) => {
                     let detail_error = json.detail;
                     if (detail_error.code == "ER029") {
+                        friend_req_input.focus();
+                        try {document.querySelector("#detail_msg").remove()} catch {}
+                        try {document.querySelector("#success_msg").remove()} catch {}
+                        error.insertAdjacentHTML('afterbegin', '<p id="detail_msg">해당 유저와 이미 친구관계입니다.</p>' );
                         reject(new Error("해당 유저와 이미 친구입니다."))
+                        loading.style.display = "none"
                     }
 
                     if (detail_error.code == "ER027") {
+                        friend_req_input.focus();
+                        try {document.querySelector("#detail_msg").remove()} catch {}
+                        try {document.querySelector("#success_msg").remove()} catch {}
+                        error.insertAdjacentHTML('afterbegin', '<p id="detail_msg">인증키에 저장된 정보와 상이힙니다.</p>' );
                         reject(new Error("인증키에 저장된 정보와 상이합니다."))
+                        loading.style.display = "none"
                     }
 
                     if (detail_error.code == "ER041") {
+                        friend_req_input.focus();
+                        try {document.querySelector("#detail_msg").remove()} catch {}
+                        try {document.querySelector("#success_msg").remove()} catch {}
+                        error.insertAdjacentHTML('afterbegin', '<p id="detail_msg">자기 자신에게 친구요청을 할순 없습니다.</p>' );
                         reject(new Error("본인에게 친구요청을 할순 없습니다"))
+                        loading.style.display = "none"
+                    }
+
+                    if (detail_error.code == "ER011") {
+                        friend_req_input.focus();
+                        try {document.querySelector("#detail_msg").remove()} catch {}
+                        try {document.querySelector("#success_msg").remove()} catch {}
+                        error.insertAdjacentHTML('afterbegin', '<p id="detail_msg">해당 이메일의 유저는 존재하지 않습니다.</p>' );
+                        reject(new Error("존재하지 않는 유저입니다."))
+                        loading.style.display = "none"
                     }
                 })
             }else{
+                try {document.querySelector("#detail_msg").remove()} catch {}
+                try {document.querySelector("#success_msg").remove()} catch {}
+                friend_req_input.value = ""
+                success.insertAdjacentHTML('afterbegin', '<p id="success_msg">친구요청을 전송했습니다.</p>' );
                 resolve("친구요청을 전송했습니다.")
+                loading.style.display = "none"
             }
         })
     })
@@ -145,6 +199,7 @@ function goto(obj) {
 
 async function list(page) {
     return new Promise(async function(resolve, reject) {
+        loading.style.display = "flex"
         await verify_token()
         let access_token = sessionStorage.getItem("access_token")
         fetch(`/api/friends/list?page=${page}`,{
@@ -158,6 +213,7 @@ async function list(page) {
                     let detail = json.detail
                     if (detail.code == "ER042") {
                         resolve([])
+                        loading.style.display = "none"
                     }
                 })
             }else{
@@ -201,6 +257,7 @@ async function list(page) {
                     json.friends.forEach(data => {
                         get_user_info(data.ID, data.message)
                     })
+                    loading.style.display = "none"
                     resolve(res)
                 })
             }
