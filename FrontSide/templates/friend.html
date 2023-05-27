@@ -5,12 +5,43 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="apple-mobile-web-app-title" content="다봄">
+    <meta name="robots" content="index,nofollow">
+    <meta property="og:title" content="다봄">
+    <meta property="og:site_name" content="다봄 | 다이어트 하는거 다 지켜봄">
+    <meta property="og:url" content="http://dabom.kro.kr">
+    <meta property="og:description" content="음식정보를 조회 저장하고 자기에게 필요한 칼로리를 계산해보세요!">
+    <meta property="og:image" content="./assets/images/logo.png">
+    <meta name="keywords" content="dabom, 다봄, 다이어트, 다이어트 하는거 다 지켜봄, 다 지켜봄, 다이어트 어플, 식단 어플, 식단 조절, 식단 프로그램, 다이어트관리, 친구와 함께 공유하는 식단관리">
+    <meta name="author" content="gyung won">
+    <meta name="description" content="음식정보를 조회 저장하고 자기에게 필요한 칼로리를 계산해보세요!">
+    <meta name="robots" content="all">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="다봄">
+    <meta name="twitter:description" content="다이어트하는거 다 지켜봄">
+    <meta name="twitter:image" content="./assets/images/logo.png">
+    <meta name="twitter:url" content="http://dabom.kro.kr">
+    <link rel="apple-touch-icon" sizes="72x72" href="./assets/images/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="./assets/images/apple-icon-114x114.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="./assets/images/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/images/favicon-16x16.png">
+    <link rel="shortcut icon" href="./assets/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="./assets/images/favicon.ico" type="image/x-icon">
+    <link rel="manifest" href="./assets/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="./assets/images/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
     <title>마이페이지 다봄친구</title>
     <link rel="stylesheet" href="/assets/css/reset.css">
     <link rel="stylesheet" href="/assets/css/layout.css">
     <script type="module" src="/assets/js/friend.js"></script>
 </head>
 <body>
+    <div class="loading">
+        <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F236288455424EE5D2D" style="margin:auto"/>
+    </div>
 <div class="mypage_wrap">
     <div class="container">
         <nav class="left_box">
@@ -46,117 +77,18 @@
                 </div>
                 <ul class="bottom">
                     <li>
-                        <input type="text" placeholder="친구이메일">
+                        <input id="friend_req_input" type="text" placeholder="친구이메일">
                         <a href="javascript:">추가</a>
                     </li>
-                    <li>
-                        <div class="checkbox">
-                            <input type="checkbox" id="check1">
-                            <label for="check1">
-                                <span class="profile_img">
-                                    <img src="/assets/images/default-profile.png" alt="프로필이미지">
-                               </span>
-                            </label>
-                        </div>
-                        <div class="txt_box">
-                            <p class="name">김철수 <em class="data">(올해는 살을 꼭 뺄거야!!!!!!)</em></p>
-                        </div>
-                        <a href="javascript:">식단보기</a>
-                    </li>
-                    <li>
-                        <div class="checkbox">
-                            <input type="checkbox" id="check2">
-                            <label for="check2">
-                                <span class="profile_img">
-                                    <img src="/assets/images/default-profile.png" alt="프로필이미지">
-                               </span>
-                            </label>
-                        </div>
-                        <div class="txt_box">
-                            <p class="name">김철수 <em class="data">(올해는 살을 꼭 뺄거야!!!!!!)</em></p>
-                        </div>
-                        <a href="javascript:">식단보기</a>
-                    </li>
-                    <li>
-                        <div class="checkbox">
-                            <input type="checkbox" id="check3">
-                            <label for="check3">
-                                <span class="profile_img">
-                                    <img src="/assets/images/default-profile.png" alt="프로필이미지">
-                               </span>
-                            </label>
-                        </div>
-                        <div class="txt_box">
-                            <p class="name">김철수 <em class="data">(올해는 살을 꼭 뺄거야!!!!!!)</em></p>
-                        </div>
-                        <a href="javascript:">식단보기</a>
-                    </li>
-                    <li>
-                        <div class="checkbox">
-                            <input type="checkbox" id="check5">
-                            <label for="check5">
-                                <span class="profile_img">
-                                    <img src="/assets/images/default-profile.png" alt="프로필이미지">
-                               </span>
-                            </label>
-                        </div>
-                        <div class="txt_box">
-                            <p class="name">김철수 <em class="data">(올해는 살을 꼭 뺄거야!!!!!!)</em></p>
-                        </div>
-                        <a href="javascript:">식단보기</a>
-                    </li>
-                    <li>
-                        <div class="checkbox">
-                            <input type="checkbox" id="check6">
-                            <label for="check6">
-                                <span class="profile_img">
-                                    <img src="/assets/images/default-profile.png" alt="프로필이미지">
-                               </span>
-                            </label>
-                        </div>
-                        <div class="txt_box">
-                            <p class="name">김철수 <em class="data">(올해는 살을 꼭 뺄거야!!!!!!)</em></p>
-                        </div>
-                        <a href="javascript:">식단보기</a>
-                    </li>
-                    <li>
-                        <div class="checkbox">
-                            <input type="checkbox" id="check7">
-                            <label for="check7">
-                                <span class="profile_img">
-                                    <img src="/assets/images/default-profile.png" alt="프로필이미지">
-                               </span>
-                            </label>
-                        </div>
-                        <div class="txt_box">
-                            <p class="name">김철수 <em class="data">(올해는 살을 꼭 뺄거야!!!!!!)</em></p>
-                        </div>
-                        <a href="javascript:">식단보기</a>
-                    </li>
-                    <li>
-                        <div class="checkbox">
-                            <input type="checkbox" id="check8">
-                            <label for="check8">
-                                <span class="profile_img">
-                                    <img src="/assets/images/default-profile.png" alt="프로필이미지">
-                               </span>
-                            </label>
-                        </div>
-                        <div class="txt_box">
-                            <p class="name">김철수 <em class="data">(올해는 살을 꼭 뺄거야!!!!!!)</em></p>
-                        </div>
-                        <a href="javascript:">식단보기</a>
-                    </li>
+                    <!-- js 추가구역 -->
                 </ul>
                 <div class="post_nav">
                     <a class="prev" href="javascript:"> <object data="/assets/images/arrow-left.svg" type="image/svg+xml" aria-label="왼쪽 화살표"></object></a>
-                    <a class="num" href="javascript:">1</a>
-                    <a class="num" href="javascript:">2</a>
-                    <a class="num" href="javascript:">3</a>
-                    <a class="num" href="javascript:">4</a>
-                    <a class="num" href="javascript:">5</a>
+                    <div class="numdiv">
+                        <!-- js 추가구역 -->
+                    </div>
                     <a class="next" href="javascript:">
-                        <object data="/assets/images/arrow-right.svg" type="image/svg+xml" aria-label="오른쪽 화살표"></object>
+                    <object data="/assets/images/arrow-right.svg" type="image/svg+xml" aria-label="오른쪽 화살표"></object>
                     </a>
                 </div>
             </div>

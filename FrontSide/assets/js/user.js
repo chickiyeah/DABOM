@@ -77,6 +77,7 @@ if (location.href.includes("findaccount")) {
     let cookie = document.cookie
     let access_token = sessionStorage.getItem('access_token');
     let refresh_token = sessionStorage.getItem('refresh_token');
+    if (!location.href.includes("login")) {
     if (access_token == null || refresh_token == null) {
       if(cookie == null) {
         location.href = "/login";
@@ -109,7 +110,7 @@ if (location.href.includes("findaccount")) {
       }
     }else{
     }
-  }
+  }}
 
 
   async function verify_token() {

@@ -27,10 +27,6 @@ def robots():
     data = """User-agent: *\nAllow: /"""
     return data
 
-@app.get('/favicon.ico')
-async def favicon():
-    return FileResponse(path="/assets/images/favico.ico", headers={"Content-Disposition": "attachment; filename=" + "favicon.ico"})
-
 @app.get('/sitemap.xml')
 async def get_sitemap():
     my_sitemap = """<?xml version="1.0" encoding="UTF-8"?>

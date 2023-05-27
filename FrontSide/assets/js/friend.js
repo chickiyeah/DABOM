@@ -1,11 +1,38 @@
 window.addEventListener('DOMContentLoaded', async function() {
-    if(location.href.includes('friend')){
-        console.log(await list(1))
+    if(this.location.href.includes('friend')){
+        if(location.href.includes('?')){
+            let param = this.location.href.split('?')[1];
+            let params = param.split('&');
+            var keys = [];
+            params.forEach(async (data) => {       
+                let key = data.split('=')[0]
+                let value = data.split('=')[1]
+                keys.push(key)
+                if (key == "page") {
+                    if (!isNaN(value)) {
+                        if (value < 1) {
+                            location.href = "/friend?page=1"
+                        }else{
+                            await list(value)
+                        }
+                    } else {
+                        this.location.href = "/friend?page=1"
+                    }
+                }
+            })
 
+            if (!keys.includes("page")){
+                this.location.href = "/friend?page=1"
+            }
+        }else{
+            this.location.href = "/friend?page=1"
+        }
     }
 })
 
 const loading = document.querySelector(".loading");
+const pagediv = document.querySelector(".numdiv");
+const friend_list_div = document.querySelector(".bottom");
 
 async function request(uid) {
     return new Promise(async function(resolve, reject) {
@@ -112,6 +139,10 @@ async function rm_friend(delid) {
     })
 }
 
+function goto(obj) {
+    console.log(obj)
+}
+
 async function list(page) {
     return new Promise(async function(resolve, reject) {
         await verify_token()
@@ -132,8 +163,43 @@ async function list(page) {
             }else{
                 res.json().then(async (json) => {
                     console.log(json)
+                    let amount = json.amount
+                    let to_page = amount / 7
+                    var maxpage
+                    if (Number.isInteger(to_page)) {
+                        maxpage = to_page
+                    } else {
+                        maxpage = Math.floor(to_page) + 1
+                    }
+
+                    console.log(page)
+                    console.log(maxpage)
+                    var startpage
+                    var endpage
+                    if (page / 10 > 1) {
+                        startpage = Math.floor((page/10))*10
+                        endpage = Math.floor((page/10))*10 + 1 + 10
+                    }else{
+                        startpage = 1
+                        endpage = 11
+                    }
+                    document.querySelector(".prev").href = `javascript:location.href='/friend?page=${page-1}'`
+                    document.querySelector(".next").href = `javascript:location.href='/friend?page=${page+1}'`
+
+                    if (page > maxpage) {
+                        location.href = "/friend?page="+maxpage
+                    }else{
+                        for (let i = startpage; i < maxpage+1; i++) {
+                            if (i == page) {
+                                pagediv.insertAdjacentHTML("beforeend", `<a class="selected" href="javascript:location.href='/friend?page=${i}'">${i}</a>`)
+                            }else{
+                                pagediv.insertAdjacentHTML("beforeend", `<a class="num" href="javascript:location.href='/friend?page=${i}'">${i}</a>`)
+                            }
+                        }
+                    }
+
                     json.friends.forEach(data => {
-                        console.log(get_user_info(data.ID, data.message))
+                        get_user_info(data.ID, data.message)
                     })
                     resolve(res)
                 })
@@ -155,14 +221,29 @@ async function get_user_info(user, imsg) {
                 reject("오류.")
             }else{
                 res.json().then(async (json) => {
-                    let nick = json.Nickname
-                    let profile = json.profile_image || "../assets/images/default-profile.png"
+                    let u_data = json[0]
+                    let nick = u_data.Nickname
+                    let profile = u_data.profile_image || "../assets/images/default-profile.png"
+                    let infomsg = u_data.infomsg
                     //players.insertAdjacentHTML("beforeend", userlist(nick, profile))
                     //players_m.insertAdjacentHTML("beforeend", userlist(nick, profile))
-                    json[0].infomsg = imsg
-                    //data = json[0]
+                    
+                    let html = `<li>
+                        <div class="checkbox">
+                            <input type="checkbox" id="check1">
+                            <label for="check1">
+                                <span class="profile_img">
+                                    <img src="${profile}" alt="프로필이미지">
+                            </span>
+                            </label>
+                        </div>
+                        <div class="txt_box">
+                            <p class="name">${nick} <em class="data">(${imsg})</em></p>
+                        </div>
+                        <a href="javascript:">식단보기</a>
+                    </li>`
 
-                    console.log(json[0])
+                    friend_list_div.insertAdjacentHTML("beforeend", html)
                 })
             }
         })

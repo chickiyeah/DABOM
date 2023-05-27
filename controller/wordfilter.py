@@ -41,7 +41,6 @@ def check_word(originword:str, lang:str):
 						if i == 0:
 							r_text = r_text + r_word[:space_start] + space + r_word[space_start:]
 						else:
-							r_len = len(r_text) - (space_start+1)
 							r_text = r_text[:space_start] + space + r_text[space_start:]
 
 					return r_text

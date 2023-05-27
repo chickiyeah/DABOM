@@ -79,7 +79,7 @@ async def friend_list(page: int, authorized: bool = Depends(verify_token)):
         for e in res:
             sql = sql + " ID = '%s' OR" % e
 
-        sql = sql[0:-3] + " LIMIT 8 OFFSET %s" % (page * 8)
+        sql = sql[0:-3] + " LIMIT 7 OFFSET %s" % (page * 7)
         
         res = {
             'friends': execute_sql(sql),

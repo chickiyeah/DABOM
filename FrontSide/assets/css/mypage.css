@@ -16,7 +16,9 @@
 .mypage_wrap .left_box .nav_list li p { font-weight: 300; padding-left: 10px; }
 .mypage_wrap .right_box { width: calc(100% - 20%); }
 .mypage_wrap .post_nav { display: flex; justify-content: center; gap: 10px;  margin: 50px auto;}
-.mypage_wrap .post_nav a { border: 1px solid #222; border-radius: 3px; width: 25px; height: 20px; text-align: center; line-height: 1.5; font-size: 14px;  }
+.mypage_wrap .post_nav .numdiv { display: flex; justify-content: center; gap: 10px;}
+.mypage_wrap .post_nav .numdiv a { border: 1px solid #222; border-radius: 3px; width: 25px; height: 20px; text-align: center; line-height: 1.5; font-size: 14px;  }
+.mypage_wrap .post_nav .numdiv .selected { border: 2px solid red; border-radius: 3px; width: 25px; height: 20px; text-align: center; line-height: 1.5; font-size: 14px; font-weight: 700; }
 .mypage_wrap .post_nav .prev,
 .mypage_wrap .post_nav .next { display: inline-flex; align-items: center; justify-content: center; }
 
