@@ -595,7 +595,7 @@ async def user_create(userdata: UserRegisterdata):
     birthday = userdata.birthday
     height = userdata.height
     weight = userdata.weight
-    image = userdata.profie_image
+    image = userdata.profile_image
     #이메일이 공란이면
     if(len(email) == 0):
         raise HTTPException(status_code=400, detail=Missing_Email)
@@ -746,7 +746,7 @@ async def user_create(userdata: UserRegisterdata):
         d.login("noreply.dabom", "sxhmurnajtenjtbr")
         d.sendmail("noreply.dabom@gmail.com", email, msg.as_string())       
 
-    execute_sql(f"INSERT INTO info_msg (ID, message) VALUES ('{id}','없음')")
+    execute_sql(f"INSERT INTO infomsg (ID, message) VALUES ('{id}','없음')")
     sql = "INSERT INTO user VALUES (\""+email+"\",\""+id+"\",\""+nickname+"\",\""+str(now.strftime("%Y-%m-%d %H:%M:%S"))+"\",\""+gender+"\",\""+str(age)+"\",\""+height+"\",\""+weight+"\", \"[]\", 'False', '[]', '[]', \""+str(t_birthday.strftime("%Y-%m-%d"))+"\",'"+image+"')"
     res = execute_sql(sql)
     if res != 1:

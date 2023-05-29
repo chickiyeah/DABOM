@@ -1,11 +1,9 @@
 "use strict";
 
 window.addEventListener('DOMContentLoaded', async function () {
-  try {
+    loading.style.display = "flex"
     verify_token();
-  } catch (e) {
-    LoadCookie()
-  }
+
 });
 
 // 로그인
@@ -79,13 +77,14 @@ if (location.href.includes("findaccount")) {
     return is_checked
   }
 
-  function LoadCookie(){
+  async function LoadCookie(){
     let cookie = document.cookie
     let access_token = sessionStorage.getItem('access_token');
     let refresh_token = sessionStorage.getItem('refresh_token');
     if (location.href.includes("login") == false) {
     if (access_token == null || refresh_token == null) {
       if(cookie == null) {
+        console.log("here?")
         location.href = "/login";
       }else{
         let cookies = cookie.split(";");
@@ -113,7 +112,9 @@ if (location.href.includes("findaccount")) {
             }
             
             await verify_token()
-            //location.href = "/";
+            console.log("자동로그인 및 토큰 검증 성공.")
+            loading.style.display = 'none';
+            location.reload()
           })
         }else{
           document.cookie = "access_token = ; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
@@ -140,12 +141,9 @@ if (location.href.includes("findaccount")) {
             })     
         }).then(async function(response) {
             if (response.status !== 200) {
-                if (response.status === 422) {
-                    reject(new Error( "{\"code\": \"ER013\", \"message\": \"로그인이 필요합니다.\"}"))
-                    localStorage.clear();
-                    sessionStorage.clear();
+                if (response.status === 422) {                   
+                    await LoadCookie();
                     loading.style.display = 'none';
-                    location.href = "/login"
                 }else{
                     response.json().then(async (json) => {
                         let detail_error = json.detail;
@@ -154,7 +152,7 @@ if (location.href.includes("findaccount")) {
                             resolve(refresh_token_fun())
                            
                         }else{
-                            reject(JSON.stringify(detail_error));
+                            reject(JSON.stringify(detail_error))
                             localStorage.clear();
                             sessionStorage.clear();
                             loading.style.display = 'none';
@@ -163,6 +161,7 @@ if (location.href.includes("findaccount")) {
                     });
                 }
             } else {
+              loading.style.display = "none"
                 resolve(response.json())
             }
         })
@@ -432,7 +431,7 @@ async function join() {
         "birthday": `${bir_mon_val}/${bir_col_val}/${bir_day_val}`,
         "height": tail_val,
         "weight": weight_val,
-        "profie_image": h_f_link
+        "profile_image": h_f_link
       }),
     })
   });
