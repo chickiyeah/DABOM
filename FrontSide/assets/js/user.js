@@ -1,7 +1,11 @@
 "use strict";
 
 window.addEventListener('DOMContentLoaded', async function () {
-  LoadCookie();
+  try {
+    verify_token();
+  } catch (e) {
+    LoadCookie()
+  }
 });
 
 // 로그인
@@ -11,6 +15,8 @@ const loginPw = document.querySelector("#login_pw");
 const loginPwre = document.querySelector("#login_pwre"); //요로코롬 아이디는 # 클래스는 . 
 const loginVal = document.querySelector('#login_val');
 // const loginSave = document.querySelector('#save');
+
+const loading = document.querySelector(".loading");
 
 // 회원가입
 const joinName = document.querySelector("#join_name");
@@ -77,7 +83,7 @@ if (location.href.includes("findaccount")) {
     let cookie = document.cookie
     let access_token = sessionStorage.getItem('access_token');
     let refresh_token = sessionStorage.getItem('refresh_token');
-    if (!location.href.includes("login")) {
+    if (location.href.includes("login") == false) {
     if (access_token == null || refresh_token == null) {
       if(cookie == null) {
         location.href = "/login";
@@ -85,22 +91,29 @@ if (location.href.includes("findaccount")) {
         let cookies = cookie.split(";");
         let keys = [];
         cookies.forEach(cookie => {
-          let key = cookie.split(" = ")[0];
+          let key = cookie.split("=")[0];
           keys.push(key);
         })
-        if(keys.includes("access_token") && keys.includes("refresh_token")){
-          cookies.forEach(cookie => {
-            let key = cookie.split(" = ")[0];
-            if(key == "access_token") {
-              sessionStorage.setItem("access_token", cookie.split(" = ")[1]);
+        console.log(keys)
+        if((keys.includes("access_token") && keys.includes("refresh_token")) || (keys.includes(" access_token") && keys.includes(" refresh_token"))){
+          cookies.forEach(async (cookie) => {
+            let key = cookie.split("=")[0];
+            if(key == "access_token" || key == " access_token") {
+              sessionStorage.setItem("access_token", cookie.split("=")[1]);
+              console.log("Access")
+              console.log(cookie.split("=")[1])
+              let access = sessionStorage.getItem("access_token")
+              console.log(access)
             }
 
-            if(key == "refresh_token") {
-              sessionStorage.setItem("refresh_token", cookie.split(" = ")[1]);
+            if(key == "refresh_token" || key == " refresh_token") {
+              sessionStorage.setItem("refresh_token", cookie.split("=")[1]);
+              console.log("refresh")
+              console.log(cookie.split("=")[1])
             }
             
-            verify_token()
-            location.href = "/";
+            await verify_token()
+            //location.href = "/";
           })
         }else{
           document.cookie = "access_token = ; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
