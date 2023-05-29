@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>친구요청 팝업</title>
+    <link rel="stylesheet" href="/assets/css/reset.css">
+    <link rel="stylesheet" href="/assets/css/popup.css">
+    <script>
+
+        var data
+        window.addEventListener("DOMContentLoaded", function () {
+            data = document.location.href.split("/request/")[1];
+        })
+
+        function progress(type) {
+            fetch(`http://localhost:8000/api/friends/${type}/${data}`, )
+            //여기부터
+        }
+    </script>
+</head>
+<body>
+<main>
+    <div class="email_friend_wrap">
+        <div class="inner">
+            <div class="content_box">
+                <h2><em class="name">김철수</em>님의 친구요청을<br>수락하시겠습니까?</h2>
+                <div class="btn_box">
+                    <a href="javascript:">친구수락</a>
+                    <a href="javascript:">친구거절</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

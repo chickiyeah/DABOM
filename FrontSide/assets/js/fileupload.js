@@ -1,4 +1,5 @@
 const inputElement = document.getElementById("input").addEventListener("change", handleFiles)
+const loading = document.querySelector(".loading");
 
 import { send_message } from './chat.js'
 
@@ -72,8 +73,8 @@ async function verify_token() {
                     reject(new Error( "{\"code\": \"ER013\", \"message\": \"로그인이 필요합니다.\"}"))
                     localStorage.clear();
                     sessionStorage.clear();
-                    //$(".loading").hide()
-                    //location.href = "/login"
+                    loading.style.display = 'none';
+                    location.href = "/login"
                 }else{
                     response.json().then(async (json) => {
                         let detail_error = json.detail;
@@ -83,7 +84,7 @@ async function verify_token() {
                             reject(JSON.stringify(detail_error));
                             localStorage.clear();
                             sessionStorage.clear();
-                            $(".loading").hide()
+                            loading.style.display = 'none';
                             location.href = "/login"
                         }
                     });
@@ -111,18 +112,18 @@ async function refresh_token() {
             if (res.status !== 200) {
                 if (res.status === 422) {
                     reject(new Error("로그인이 필요합니다."))
-                    //localStorage.clear();
-                    //sessionStorage.clear();
-                    //$(".loading").hide()
-                    //location.href = "/login"
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    loading.style.display = 'none';
+                    location.href = "/login"
                 }else{
                     res.json().then((json) => {
                         let detail_error = json.detail;
                         reject(JSON.stringify(detail_error));
-                        //localStorage.clear();
-                        //sessionStorage.clear();
-                        //$(".loading").hide()
-                        //location.href = "/login"
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        loading.style.display = 'none';
+                        location.href = "/login"
                     });
                 }
             }else{
