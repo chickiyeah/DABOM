@@ -81,7 +81,7 @@ if (location.href.includes("findaccount")) {
     let cookie = document.cookie
     let access_token = sessionStorage.getItem('access_token');
     let refresh_token = sessionStorage.getItem('refresh_token');
-    if (location.href.includes("login") == false) {
+    if (location.href.includes("login") == false && location.href.includes("register") == false) {
     if (access_token == null || refresh_token == null) {
       if(cookie == null) {
         console.log("here?")
