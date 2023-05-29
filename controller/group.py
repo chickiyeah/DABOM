@@ -361,6 +361,33 @@ async def appoint_operator(group_id:int, user_id:str, authorized: bool = Depends
         await group_log(group_id, "appoint", authorized[1] or "admin", user_id)
 
         return "%s 님을 %s 모임의 관리자로 임명했습니다."
+    
+@groupapi.post("be_deprived")
+async def be_deprived(group_id:int, user_id:str, authorized: bool = Depends(verify_token)):
+    if authorized:
+        group = execute_sql("SELECT `id`, `owner`,`operator`,`members` FROM `group` WHERE `id` = %s" % group_id)
+
+        if len(group) == 0:
+            raise HTTPException(404, er031)    
+
+        d_group = group[0]
+
+        if authorized[1] != d_group['owner'] and not authorized[1] in json.loads(d_group['operator']) and not authorized[1] == "admin":
+            raise HTTPException(403, er024)
+        
+        if not user_id in json.loads(d_group['members']):
+            raise HTTPException(400, er033)
+        
+        operators = json.loads(d_group['operator'])
+
+        if user_id in operators or user_id == d_group['owner']:
+            raise HTTPException(400, er034)
+        
+        operators = operators.remove(user_id)
+        execute_sql("UPDATE `group` SET `operator` = '%s' WHERE `id` = %s" % operators, group_id)
+        await group_log(group_id, "be_deprived", authorized[1] or "admin", user_id)
+
+        return "%s 님을 %s 모임의 관리자로 임명했습니다."
 
 class group_warn(BaseModel):
     group_id:int

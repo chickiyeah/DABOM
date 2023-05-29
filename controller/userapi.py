@@ -278,7 +278,7 @@ class UserRegisterdata(BaseModel):
     birthday: str
     height: Optional[str]
     weight: Optional[str]
-    profie_image: Optional[str]
+    profile_image: Optional[str] = "../"
 
 class LoginResponse(BaseModel):
     ID: str
