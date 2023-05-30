@@ -11,12 +11,42 @@
     <script>
 
         var data
+        var nick
         window.addEventListener("DOMContentLoaded", function () {
             data = document.location.href.split("/request/")[1];
+            let datas = data.split("/")
+            console.log(datas)
+            document.querySelector(".name").innerText = datas[1]
         })
 
         function progress(type) {
-            fetch(`http://localhost:8000/api/friends/${type}/${data}`, )
+            document.querySelector(".btn_box").innerHTML = ""
+            var msg
+            if (type == "accept") {
+                msg = "수락"
+            } else {
+                msg = "거절"
+            }
+            fetch(`http://localhost:8000/api/friends/${type}/${data}`, {
+                method: "POST"
+            }).then(function (res) {
+                if (res.statusCode == 200){
+                    document.querySelector("#res").innerText = msg+"했습니다."
+                }else{
+                    res.json().then(async (json) => {
+                        let detail = json.detail
+                        if (detail.code == "ER026") {
+                            document.querySelector("#res").innerText = msg+"하는중에 오류가 발생했습니다."
+                            document.querySelector(".btn_box").innerText = "만료된 친구요청입니다. 이미 친구처리가 되었거나 친구요청이 중복되었을수 있습니다."
+                        }
+
+                        if (detail.code == "ER027") {
+                            document.querySelector("#res").innerText = msg+"하는중에 오류가 발생했습니다."
+                            document.querySelector(".btn_box").innerText = "손상된 링크입니다. 친구요청을 새로 요청하거나 메일의 링크를 다시 클릭하세요."
+                        }
+                    })
+                }
+            })
             //여기부터
         }
     </script>
@@ -26,10 +56,10 @@
     <div class="email_friend_wrap">
         <div class="inner">
             <div class="content_box">
-                <h2><em class="name">김철수</em>님의 친구요청을<br>수락하시겠습니까?</h2>
+                <h2><em class="name">datas</em>님의 친구요청을<br><span id="res">수락하시겠습니까?</span></h2>
                 <div class="btn_box">
-                    <a href="javascript:">친구수락</a>
-                    <a href="javascript:">친구거절</a>
+                    <a href="javascript:progress('accept')">친구수락</a>
+                    <a href="javascript:progress('reject')">친구거절</a>
                 </div>
             </div>
         </div>

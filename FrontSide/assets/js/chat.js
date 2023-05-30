@@ -89,9 +89,10 @@ drag_drop.addEventListener('drop', async function(e) {
     if(!isValid(data)) return;
     const formdata = new FormData();
     let file = data.files[0]
+    let extentsion = file.name
     formdata.append('image', file)
         let xhr = new XMLHttpRequest();
-        xhr.open('POST', '/chat/uploadfile', true)
+        xhr.open('POST', `/chat/uploadfile?ext=${extentsion}`, true)
 
     await verify_token()
     let access_token = sessionStorage.getItem("access_token")
@@ -203,7 +204,7 @@ async function try_connect(room) {
                     } else if (f_type == "video" || f_type == "audio") {
                         f_return = `<video class='chat_video' src="${f_link}" alt="${f_name}" controls>`
                     } else {
-                        f_return = `<div class='chat_file'><a href="${f_link}">${f_name}</a></div>`
+                        f_return = `<div class='chat_file'><a href="${f_link}" target='_blank'>${f_name}</a></div>`
                     }
 
                     let date = new Date(chatdata.time)
@@ -432,7 +433,7 @@ export async function send_message(message) {
             } else if (f_type == "video" || f_type == "audio") {
                 f_return = `<video class='chat_video' src="${f_link}"  alt="${f_name}" controls>`
             } else {
-                f_return = `<div class='chat_file'><a href="${f_link}">${f_name}</a></div>`
+                f_return = `<div class='chat_file'><a href="${f_link}" download='${f_name}' target='_blank'>${f_name}</a></div>`
             }
 
                 //본인 메시지

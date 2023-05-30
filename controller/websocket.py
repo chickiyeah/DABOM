@@ -133,6 +133,18 @@ async def send_message(websocket: WebSocket, username: str, channel: str, u_id: 
         event = MessageEvent(u_id=u_id, username=username, message=curse, time=now, pf_image=pf_image)
         if "pri" in channel:
             execute_pri_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
+        elif "Va8%r@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr" in channel:
+            if data.count("/") == 3:
+                datas = data.split("/")
+                if datas[0] != "alert":
+                    raise HTTPException(403)
+                else:
+                    type = datas[1]
+                    tar_id = datas[2]
+                    tar_msg = datas[3]
+                    execute_pri_sql(f"INSERT INTO `alert` (`id`, `msg`, `read`, `send_at`, `type`, `target_id`) VALUES ('{u_id}','{tar_msg}', 'False', '{now}', '{type}', '{tar_id}')")
+            else:
+                raise HTTPException(403)
         else:
             execute_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
         
@@ -142,6 +154,18 @@ async def send_message(websocket: WebSocket, username: str, channel: str, u_id: 
         event = MessageEvent(u_id=u_id, username=username, message=data, time=now, pf_image=pf_image)
         if "pri" in channel:
             execute_pri_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
+        elif "Va8%r@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr" in channel:
+            if data.count("/") == 3:
+                datas = data.split("/")
+                if datas[0] != "alert":
+                    raise HTTPException(403)
+                else:
+                    type = datas[1]
+                    tar_id = datas[2]
+                    tar_msg = datas[3]
+                    execute_pri_sql(f"INSERT INTO `alert` (`id`, `msg`, `read`, `send_at`, `type`, `target_id`) VALUES ('{u_id}','{tar_msg}', 'False', '{now}', '{type}', '{tar_id}')")
+            else:
+                raise HTTPException(403)
         else:
             execute_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
         
@@ -172,13 +196,13 @@ async def delete_all(username: str, channel: str):
     return "all message delete"
 
 @chat.post("/uploadfile")
-async def upload(image: UploadFile = File(), authorized:bool = Depends(verify_token)):
+async def upload(ext:str, image: UploadFile = File(), authorized:bool = Depends(verify_token)):
     now = str(datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"))
-    #print(image.file)
-    a = Storage.child("/dabom/"+authorized[1]+"/"+str(now)).put(image.file)
+    print(ext)
+    a = Storage.child("/dabom/"+authorized[1]+"/"+ext).put(image.file)
     #print(a)
     #print("https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+authorized[1]+"%2F"+str(now)+"?alt=media&token="+a['downloadTokens'])
-    return "https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+authorized[1]+"%2F"+str(now)+"?alt=media&token="+a['downloadTokens']
+    return "https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+authorized[1]+"%2F"+ext+"?alt=media&token="+a['downloadTokens']
 
 
 @chat.get("/members")
@@ -305,6 +329,15 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
     await join_channel(username, channel)
 
     await websocket.accept()
+
+    if "Va8%r@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr" in channel:
+        alerts = execute_pri_sql(f"SELECT * FROM alert WHERE `id` = '{u_id}' AND `read` = 'False'")
+        if len(alerts) > 0:
+            for alert in alerts:
+                user = execute_sql("SELECT `Nickname`, `profile_image` FROM `user` WHERE `ID` = '"+alert['id']+"'")
+                msg = 'alert/'+alert['type']+'/'+alert['target_id']+'/'+alert['msg']
+                event = MessageEvent(u_id=alert['id'], username=user[0]['Nickname'], message=msg, time=str(alert['send_at']), pf_image=user[0]['profile_image'])
+                await websocket.send_json(event.json())
 
     if "pri" in channel:
         comments = execute_pri_sql(f"SELECT * FROM chat WHERE `group` = '{channel}' ORDER BY send_at DESC LIMIT 100")

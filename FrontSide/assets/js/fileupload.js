@@ -11,8 +11,9 @@ async function handleFiles() {
         let file = filelist[i]
         let formdata = new FormData()
         formdata.append('image', file)
+        let extentsion = file.name
         let xhr = new XMLHttpRequest();
-        xhr.open('POST', '/chat/uploadfile', true)
+        xhr.open('POST', `/chat/uploadfile?ext=${extentsion}`, true)
         await verify_token()
         let access_token = sessionStorage.getItem("access_token")
         xhr.setRequestHeader('Authorization', access_token)

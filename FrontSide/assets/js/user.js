@@ -203,6 +203,7 @@ async function refresh_token_fun() {
                     sessionStorage.setItem("access_token", json.access_token);
                     sessionStorage.setItem("refresh_token", json.refresh_token);
                     resolve("token refresed")
+                    document.querySelector(".loading").style.display = 'none';
                 })
             }
         })

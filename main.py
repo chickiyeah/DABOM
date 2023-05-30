@@ -20,7 +20,7 @@ __init__()
 __init1__()
 
 from controller.nutrient import nutrientapi
-from controller import userapi, diary, friends, food, group, websocket, Screen
+from controller import userapi, diary, friends, food, group, websocket, Screen, alert
 
 @app.get('/robots.txt', response_class=PlainTextResponse)
 def robots():
@@ -57,4 +57,5 @@ app.include_router(food.foodapi)
 app.include_router(group.groupapi)
 app.include_router(websocket.chat)
 app.include_router(Screen.ScreenRoute)
+app.include_router(alert.alert)
 app.mount("/assets", StaticFiles(directory="FrontSide/assets"))

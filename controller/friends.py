@@ -283,7 +283,8 @@ async def pardon_friend(user_id: str, authorized: bool = Depends(verify_token)):
 
 @friendapi.post("/{f_type}/{req_id}/{req_nick}/{tar_id}/{tar_nick}/{verify_id}")
 async def edit_friend(f_type: str, req_id: str, req_nick:str, tar_id: str, tar_nick:str, verify_id: str):
-    if not f_type == "accept" or f_type == "reject":
+    print(f_type == "reject")
+    if f_type != "accept" and f_type != "reject":
         raise HTTPException(403, er028)
     
     versql = "SELECT * FROM f_verify WHERE code = '%s'" % verify_id
