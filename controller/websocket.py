@@ -330,15 +330,6 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
 
     await websocket.accept()
 
-    if "Va8%r@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr" in channel:
-        alerts = execute_pri_sql(f"SELECT * FROM alert WHERE `id` = '{u_id}' AND `read` = 'False'")
-        if len(alerts) > 0:
-            for alert in alerts:
-                user = execute_sql("SELECT `Nickname`, `profile_image` FROM `user` WHERE `ID` = '"+alert['id']+"'")
-                msg = 'alert/'+alert['type']+'/'+alert['target_id']+'/'+alert['msg']
-                event = MessageEvent(u_id=alert['id'], username=user[0]['Nickname'], message=msg, time=str(alert['send_at']), pf_image=user[0]['profile_image'])
-                await websocket.send_json(event.json())
-
     if "pri" in channel:
         comments = execute_pri_sql(f"SELECT * FROM chat WHERE `group` = '{channel}' ORDER BY send_at DESC LIMIT 100")
         if len(comments) != 0:
@@ -394,6 +385,10 @@ async def start_up():
 @chat.on_event("shutdown")
 async def shutdown():
     await broadcast.disconnect()
+
+
+
+
 
     """
     try:
@@ -478,3 +473,13 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
         await manager.broadcast(f"Client #{client_id} left the chat")
 """
 
+"""
+    if "Va8%r@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr" in channel:
+        alerts = execute_pri_sql(f"SELECT * FROM alert WHERE `id` = '{u_id}' AND `read` = 'False'")
+        if len(alerts) > 0:
+            for alert in alerts:
+                user = execute_sql("SELECT `Nickname`, `profile_image` FROM `user` WHERE `ID` = '"+alert['id']+"'")
+                msg = 'alert/'+alert['type']+'/'+alert['target_id']+'/'+alert['msg']
+                event = MessageEvent(u_id=alert['id'], username=user[0]['Nickname'], message=msg, time=str(alert['send_at']), pf_image=user[0]['profile_image'])
+                await websocket.send_json(event.json())
+"""
