@@ -125,7 +125,7 @@ async function refresh_token() {
 //알림 채널명 : Va8%r@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr
 async function connnect() {
     let user = await verify_token()
-    alertsocket = new WebSocket(`ws://localhost:8000/chat/ws?username=${user.nick}&u_id=${user.uid}&channel=Va8%r@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr`)
+    alertsocket = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}&channel=Va8%r@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr`)
 
     alertsocket.onopen = async () => {
         console.log("알림 소켓 연결됨.")
