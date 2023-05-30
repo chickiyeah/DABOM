@@ -34,7 +34,7 @@ async def get_unread_amount(Authorized: bool = Depends(verify_token)):
     if Authorized:
         uid = Authorized[1]
 
-        unread_amount = execute_pri_sql(f"SELECT count(id) as `amount` FROM food.alert WHERE `read` = 'False' AND `id` = '{uid}'")
+        unread_amount = execute_pri_sql(f"SELECT count(id) as `amount` FROM food.alert WHERE `read` = 'False' AND `target_id` = '{uid}'")
         return unread_amount[0]
     
 @alert.get('/alerts')
@@ -44,5 +44,5 @@ async def get_alerts(page:int, Authorized: bool = Depends(verify_token)):
 
         curpage = (page - 1) * 10
 
-        alerts = execute_pri_sql(f"SELECT * FROM food.alert WHERE `id` = '{uid}' LIMIT 10 OFFSET {curpage}")
+        alerts = execute_pri_sql(f"SELECT * FROM food.alert WHERE `target_id` = '{uid}' LIMIT 10 OFFSET {curpage}")
         return alerts
