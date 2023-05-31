@@ -217,10 +217,10 @@ async function cookieSave(json) {
         var expires = new Date();
         expires.setDate(expires.getDate() + 7);
        // 액세스 토큰 쿠키 설정
-        document.cookie = "access_token=" + json.access_token + "; expires=" + expires.toUTCString() + "; path=/ ;max-age=604800; SameSite=None; Secure";
+        document.cookie = "access_token=" + json.access_token + "; expires=" + expires.toUTCString() + "; path=/ ;max-age=604800; SameSite=Lax; domain='dabom.kro.kr'";
               
         // 리프레시 토큰 쿠키 설정
-        document.cookie = "refresh_token=" + json.refresh_token + "; expires=" + expires.toUTCString() + "; path=/ ;max-age=604800; SameSite=None; Secure";
+        document.cookie = "refresh_token=" + json.refresh_token + "; expires=" + expires.toUTCString() + "; path=/ ;max-age=604800; SameSite=Lax; domain='dabom.kro.kr'";
     }
 }
 
