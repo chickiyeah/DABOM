@@ -316,19 +316,21 @@ const tab_pw = document.querySelector('#tab_pw');
 const tab_id_val = document.querySelector('.find_id');
 const tab_pw_val = document.querySelector('.find_pw');
 
-tab_id.addEventListener('click', () =>{
-  tab_id.classList.add("on");
-  tab_id_val.classList.add("on");
-  tab_pw_val.classList.remove('on');
-  tab_pw.classList.remove('on');
-});
+if (document.location.href.includes("findaccount")) {
+  tab_id.addEventListener('click', () =>{
+    tab_id.classList.add("on");
+    tab_id_val.classList.add("on");
+    tab_pw_val.classList.remove('on');
+    tab_pw.classList.remove('on');
+  });
 
-tab_pw.addEventListener('click', () =>{
-  tab_pw.classList.add("on");
-  tab_pw_val.classList.add("on");
-  tab_id_val.classList.remove('on');
-  tab_id.classList.remove('on');
-});
+  tab_pw.addEventListener('click', () =>{
+    tab_pw.classList.add("on");
+    tab_pw_val.classList.add("on");
+    tab_id_val.classList.remove('on');
+    tab_id.classList.remove('on');
+  });
+}
 
 
 
