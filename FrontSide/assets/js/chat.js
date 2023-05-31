@@ -582,7 +582,7 @@ async function verify_token() {
             if (response.status !== 200) {
                 if (response.status === 422) {
                     reject(new Error( "{\"code\": \"ER013\", \"message\": \"로그인이 필요합니다.\"}"))
-                    localStorage.clear();
+                    //localStorage.clear();
                     sessionStorage.clear();
                     loading.style.display = 'none';
                     location.href = "/login"
@@ -595,7 +595,7 @@ async function verify_token() {
                            
                         }else{
                             reject(JSON.stringify(detail_error));
-                            localStorage.clear();
+                            //localStorage.clear();
                             sessionStorage.clear();
                             loading.style.display = 'none';
                             location.href = "/login"
@@ -625,7 +625,7 @@ async function refresh_token() {
             if (res.status !== 200) {
                 if (res.status === 422) {
                     reject(new Error("로그인이 필요합니다."))
-                    localStorage.clear();
+                    //localStorage.clear();
                     sessionStorage.clear();
                     loading.style.display = 'none';
                     location.href = "/login"
@@ -633,7 +633,7 @@ async function refresh_token() {
                     res.json().then((json) => {
                         let detail_error = json.detail;
                         reject(JSON.stringify(detail_error));
-                        localStorage.clear();
+                        //localStorage.clear();
                         sessionStorage.clear();
                         loading.style.display = 'none';
                         location.href = "/login"
