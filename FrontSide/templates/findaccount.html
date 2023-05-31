@@ -13,6 +13,9 @@
 <body>
 <main>
     <!--    각각 .tab_menu > li에 on 들어 올때 .find_id, find_pw display: none 처리 해주세요 -->
+    <div class="loading">
+        <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F236288455424EE5D2D" style="margin:auto"  alt="로딩이미지"/>
+    </div>
     <div class="find_wrap">
         <div class="container">
             <h1 class="logo">
@@ -46,13 +49,21 @@
                 </div>
                 <button type="submit" id="find_email">아이디 찾기</button>
             </div>
+            <div class="res_find_id" style="display:none; justify-content: center;">
+                <div><Strong id="r_id_amount"> 검색된 아이디의 갯수 : X 개 </Strong></div>
+                <div style="position:absolute; padding-top: 2rem;">
+                    <ul id="r_ids">
+                        <!-- JS -->
+                    </ul>
+                </div>
+            </div>
             <div class="find_pw">
                 <h2 class="text_hide">비밀번호 찾기</h2>
                 <p>비밀번호의 경우 <em>암호화</em> 저장되어 분실 시 찾아드릴 수 없는 정보 입니다.</p>
                 <p><em>본인 확인</em>을 통해 비밀번호를 재설정 하실 수 있습니다.</p>
                 <span>이메일<em>가입된 계정 이메일을 정확히 기입해주시길 바랍니다</em></span>
-                <input type="text" placeholder="가입한 이메일">
-                <button type="submit">비밀번호 찾기</button>
+                <input id="rstpw_email" type="text" placeholder="가입한 이메일">
+                <button id="rstpw_submit" type="submit">비밀번호 찾기</button>
             </div>
         </div>
     </div>

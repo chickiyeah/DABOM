@@ -833,7 +833,7 @@ async def user_reset_password(userdata: UserResetPWdata):
                                     <a style="text-decoration: none; color: rgba(0,0,0,0.87);" rel="noreferrer noopener"target="_blank"></a> 계정 비밀번호 초기화
                                 </div>
                                     <div style="font-family: Roboto-Regular,Helvetica,Arial,sans-serif; font-size: 14px; color: rgba(0,0,0,0.87); line-height: 20px;padding-top: 20px; text-align: center;">    
-                                        <p> 비밀번호 초기화를 요청이 접수되어 비밀번호 초기화 링크를 보내드립니다.</p>
+                                        <p> 비밀번호 초기화 요청이 접수되어 비밀번호 초기화 링크를 보내드립니다.</p>
                                         <p> 아래 링크를 클릭하여 비밀번호를 새로 설정하실 수 있습니다. </p>
                                         <br>
                                         <a href='{0}'> 비밀번호 재설정하기 </a>

@@ -29,26 +29,46 @@ const male_radio = document.querySelector("#male_radio");
 const female_radio = document.querySelector("#female_radio");
 const private_radio = document.querySelector("#private_radio");
 
-male_radio.addEventListener("click", (e) => {
-  e.preventDefault()
-  male_radio.children[0].checked = true
-  joinGender.attributes.value.value = "male"
-  console.log("남성 클릭 감지")
-})
+const rstpw_button = document.querySelector("#rstpw_submit");
+const rstpw_email = document.querySelector("#rstpw_email");
 
-female_radio.addEventListener("click", (e) => {
-  e.preventDefault()
-  female_radio.children[0].checked = true
-  joinGender.attributes.value.value = "female"
-  console.log("여성 클릭 감지")
-})
 
-private_radio.addEventListener("click", (e) => {
-  e.preventDefault()
-  private_radio.children[0].checked = true
-  joinGender.attributes.value.value = "private"
-  console.log("비공개 클릭 감지")
-})
+if (location.href.includes("findaccount")) {
+  rstpw_button.addEventListener("click", (event) => {
+    event.preventDefault();
+    rstpw()
+  })
+
+  rstpw_email.addEventListener("keydown", function (e) {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      rstpw()
+    }
+  });
+}
+
+if (location.href.includes("register")) {
+  male_radio.addEventListener("click", (e) => {
+    e.preventDefault()
+    male_radio.children[0].checked = true
+    joinGender.attributes.value.value = "male"
+    console.log("남성 클릭 감지")
+  })
+
+  female_radio.addEventListener("click", (e) => {
+    e.preventDefault()
+    female_radio.children[0].checked = true
+    joinGender.attributes.value.value = "female"
+    console.log("여성 클릭 감지")
+  })
+
+  private_radio.addEventListener("click", (e) => {
+    e.preventDefault()
+    private_radio.children[0].checked = true
+    joinGender.attributes.value.value = "private"
+    console.log("비공개 클릭 감지")
+  })
+}
 
 // 데이터 읽기
 let access_token = sessionStorage.getItem("access_token");
@@ -91,7 +111,8 @@ if (location.href.includes("register")) {
 
 if (location.href.includes("findaccount")) {
   const find_email = document.querySelector('#find_email');
-    find_email.addEventListener("click", async () => { //async function() {} () => 
+
+  find_email.addEventListener("click", async () => { //async function() {} () => 
     await findaccount();
     })
   }
@@ -475,7 +496,7 @@ async function join() {
       }),
     })
     .then(async (res) => {
-      if (res.statusCode == 201) {
+      if (res.status == 201) {
         location.href = "/login"
       }else{
         res.json().then(async (json) => {
@@ -527,26 +548,30 @@ async function findaccount(){
     joinBircol.value = "";
     joinBirday.value = "";
   }
-
-fetch("http://dabom.kro.kr/api/user/findid", {
+  document.querySelector(".loading").style.display = 'flex';
+fetch("http://dabom.kro.kr/api/user/findid?birthday="+`${bir_mon_val}/${bir_col_val}/${bir_day_val}`, {
   method: "POST", 
   headers: {
     "Content-Type": "application/json",
-    // "Authorization" : sessionStorage.getItem("access_token")
-  },
-  body: JSON.stringify({
-    "birthday": `${bir_mon_val}/${bir_col_val}/${bir_day_val}`,
-  }),
+  }
 })
 .then(async function(data) { {}
       if (data.status == 200) {
         data.json().then(async (json) => {
-              sessionStorage.setItem("access_token", json.access_token)
-              sessionStorage.setItem("refresh_token", json.refresh_token)
-              resolve(json);
+            document.querySelector("#r_id_amount").innerText = "검색된 아이디의 갯수 " + json.amount + "개"
+            document.querySelector('.tab_menu').remove()
+            document.querySelector('.find_id').remove()
+            document.querySelector('.find_pw').remove()
+            
+            const id_ul = document.querySelector("#r_ids")
+            json.data.forEach(element => {
+              console.log(element)
+              id_ul.insertAdjacentHTML("beforeend", `<li>${element.email}</li>`)
+            });
               console.log(json);
+              document.querySelector('.res_find_id').style.display = "flex"
               document.querySelector(".loading").style.display = 'none';
-              location.href = "/"
+              resolve(json);
           })
       } else if (data.status == 400 ) {
         data.json().then(async (json) => {
@@ -569,4 +594,43 @@ fetch("http://dabom.kro.kr/api/user/findid", {
       }
     });
   });
+}
+
+async function rstpw() {
+  let val = rstpw_email.value
+  if (!rstpw_email.value.match(reg_email)) {
+    alert("이메일을 정확하게 입력하세요.");
+    rstpw_email.value = "";
+    rstpw_email.focus();
+    reject("실패: 이메일 형식 오류");
+  }else{
+    loading.style.display = "flex"
+    fetch("/api/user/resetpw", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        "email":val
+      })
+    }).then(function(response) {
+      if (response.status == 200) {
+        alert("비밀번호 재설정 이메일을 전송했습니다.")
+        location.href = "/login"
+      }else{
+        response.json().then(async (json) => {
+          let detail = json.detail;
+          if (detail.code == "ER008") {
+            alert("이메일이 올바르지 않습니다.");
+            loading.style.display = "none"
+          }
+
+          if (detail.code == "ER011") {
+            alert("해당 이메일의 유저는 존재하지 않습니다.");
+            loading.style.display = "none"
+          }
+        })
+      }
+    })
+  }
 }
