@@ -612,6 +612,19 @@ async def user_create(userdata: UserRegisterdata):
             if(re.search('(([a-zA-Z0-9])\\2{3,})', password)):
                 raise HTTPException(status_code=400, detail=Too_Many_Duplicate_Characters)
 
+    if not gender == "male" or gender == "female" or gender == "private":
+        raise HTTPException(400, gender_choose_error)
+    
+    if birthday.count("/") != 2:
+        raise HTTPException(400, birthday_error)
+    
+    s_birthday = birthday.split("/")
+
+    try:
+        t_birthday = datetime.datetime(int(s_birthday[0]), int(s_birthday[1]), int(s_birthday[2]))
+    except SyntaxError:
+        raise HTTPException(400, er039)
+
     #닉네임이 공란이면
     if(len(nickname) == 0):
         raise HTTPException(status_code=400, detail=Missing_Nickname)
@@ -641,19 +654,6 @@ async def user_create(userdata: UserRegisterdata):
 
         if "EMAIL_EXISTS" in res:
             raise HTTPException(status_code=400, detail=Email_Exists)
-
-    if not gender == "male" or gender == "female" or gender == "private":
-        raise HTTPException(400, gender_choose_error)
-    
-    if birthday.count("/") != 2:
-        raise HTTPException(400, birthday_error)
-    
-    s_birthday = birthday.split("/")
-
-    try:
-        t_birthday = datetime.datetime(int(s_birthday[0]), int(s_birthday[1]), int(s_birthday[2]))
-    except SyntaxError:
-        raise HTTPException(400, er039)
     
     age = int(datetime.datetime.now().strftime("%Y")) - int(birthday.split("/")[0])
     

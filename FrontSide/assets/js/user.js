@@ -371,8 +371,7 @@ if (document.location.href.includes("findaccount")) {
 
 // 회원가입
 async function join() { 
-
-  return new Promise(async function (resolve, reject) { // 로그인은 다했을걸요?s]오키욤
+  return new Promise(async function (resolve, reject) { 
     var email_val
     var pw_val
     var pwre_val
@@ -457,7 +456,7 @@ async function join() {
       joinBircol.value = "";
       joinBirday.value = "";
     }
-
+    loading.style.display = 'flex';
     fetch("http://dabom.kro.kr/api/user/register", {
       method: "POST", 
       headers: {
@@ -475,19 +474,23 @@ async function join() {
         "profile_image": h_f_link
       }),
     })
-    .then(async (response) => {
-      let data = JSON.stringify({
-        "email": email_val,
-        "password": pw_val,
-        "nickname": name_val,
-        "gender": gender_val,
-        "birthday": `${bir_mon_val}/${bir_col_val}/${bir_day_val}`,
-        "height": tail_val,
-        "weight": weight_val,
-        "profile_image": h_f_link
-      })
+    .then(async (res) => {
+      if (res.statusCode == 201) {
+        location.href = "/login"
+      }else{
+        res.json().then(async (json) => {
+          let detail = json.detail
+          if (detail.code == "ER010") {
+            alert("이미 사용중인 이메일입니다. 다른 이메일을 사용해주세요.")
+            loading.style.display = 'none';
+          }
 
-      console.log(data)
+          if (detail.code == "ER020") {
+            alert("성별 선택 오류입니다. 성별을 다시 선택해주세요.")
+            loading.style.display = 'none';
+          }
+        })
+      }
     })
     .catch(reject);
   });
@@ -554,7 +557,7 @@ fetch("http://dabom.kro.kr/api/user/findid", {
             reject( new Error("생일이 올바르지 않습니다."));
             loginVal.insertAdjacentHTML('afterbegin', '<p>이메일의 입력값이 이메일이 아니거나, 이메일이 유효하지 않습니다.</p>' );
             document.querySelector(".loading").style.display = 'none';
-          }else{ //여기서 뭐하심? 27줄보세유!ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ
+          }else{
             reject("정의되지 않은 오류입니다");
             alert("정의되지 않은 오류입니다");
             document.querySelector(".loading").style.display = 'none';
