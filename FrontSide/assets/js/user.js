@@ -25,6 +25,31 @@ const joinBirmon = document.querySelector("#join_bir_mon");
 const joinBirday = document.querySelector("#join_bir_day");
 const joinBircol = document.querySelector("#join_bir_col");
 
+const male_radio = document.querySelector("#male_radio");
+const female_radio = document.querySelector("#female_radio");
+const private_radio = document.querySelector("#private_radio");
+
+male_radio.addEventListener("click", (e) => {
+  e.preventDefault()
+  male_radio.children[0].checked = true
+  joinGender.attributes.value.value = "male"
+  console.log("남성 클릭 감지")
+})
+
+female_radio.addEventListener("click", (e) => {
+  e.preventDefault()
+  female_radio.children[0].checked = true
+  joinGender.attributes.value.value = "female"
+  console.log("여성 클릭 감지")
+})
+
+private_radio.addEventListener("click", (e) => {
+  e.preventDefault()
+  private_radio.children[0].checked = true
+  joinGender.attributes.value.value = "private"
+  console.log("비공개 클릭 감지")
+})
+
 // 데이터 읽기
 let access_token = sessionStorage.getItem("access_token");
 let refresh_token = sessionStorage.getItem("refresh_token");
@@ -303,7 +328,7 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
             loginVal.insertAdjacentHTML('afterbegin', '');
             loginVal.insertAdjacentHTML('afterbegin', '<p>너무 많은 시도가 있었습니다. 나중에 시도해주세요.</p>');
             document.querySelector(".loading").style.display = 'none';
-          }else{ //여기서 뭐하심? 27줄보세유!
+          }else{
             reject("정의되지 않은 오류입니다");
             alert("정의되지 않은 오류입니다");
             document.querySelector(".loading").style.display = 'none';
@@ -350,11 +375,14 @@ async function join() {
   return new Promise(async function (resolve, reject) { // 로그인은 다했을걸요?s]오키욤
     var email_val
     var pw_val
+    var pwre_val
     var name_val
     var gender_val
     var tail_val
     var weight_val
-    var bir_val
+    var bir_mon_val
+    var bir_col_val
+    var bir_day_val
 
     if (!loginEmail.value.match(reg_email)) {
       alert("이메일을 정확하게 입력하세요.");
@@ -412,7 +440,7 @@ async function join() {
       pw_val = loginPw.value;
       pwre_val = loginPwre.value;
       name_val = joinName.value;
-      gender_val = joinGender.value;
+      gender_val = joinGender.attributes.value.value;
       tail_val = joinTail.value;
       weight_val = joinWeight.value;
       bir_mon_val = joinBirmon.value;
@@ -422,7 +450,7 @@ async function join() {
       loginPw.value="";
       loginPwre.value="";
       joinName.value="";
-      joinGender.value="";
+      joinGender.attributes.value.value = ""
       joinTail.value="";
       joinWeight.value="";
       joinBirmon.value = "";
@@ -447,6 +475,21 @@ async function join() {
         "profile_image": h_f_link
       }),
     })
+    .then(async (response) => {
+      let data = JSON.stringify({
+        "email": email_val,
+        "password": pw_val,
+        "nickname": name_val,
+        "gender": gender_val,
+        "birthday": `${bir_mon_val}/${bir_col_val}/${bir_day_val}`,
+        "height": tail_val,
+        "weight": weight_val,
+        "profile_image": h_f_link
+      })
+
+      console.log(data)
+    })
+    .catch(reject);
   });
 }
 

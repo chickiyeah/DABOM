@@ -46,16 +46,16 @@
                     </div>
                     <div class="from_group">
                         <h3>성별</h3>
-                        <div class="radio-list" id="join_gender">
-                            <div class="radio-box">
-                                <input type="radio" name="colors" id="man" checked/>
-                                <label for="man">남자</label>
+                        <div class="radio-list" id="join_gender" value="male">
+                            <div class="radio-box" id="male_radio">
+                                <input type="radio" name="colors" id="male" checked/>
+                                <label for="male">남자</label>
                             </div>
-                            <div class="radio-box">
-                                <input type="radio" name="colors" id="woman"/>
-                                <label for="woman">여자</label>
+                            <div class="radio-box" id="female_radio">
+                                <input type="radio" name="colors" id="female"/>
+                                <label for="female">여자</label>
                             </div>
-                            <div class="radio-box">
+                            <div class="radio-box" id="private_radio">
                                 <input type="radio" name="colors" id="private" />
                                 <label for="private">비공개</label>
                             </div>
@@ -75,18 +75,18 @@
                             <input type="number" placeholder="년" id="join_bir_mon">
                             <select id="join_bir_col" required>
                                 <option value="" disabled selected>월</option>
-                                <option value="1월">1월</option>
-                                <option value="2월">2월</option>
-                                <option value="3월">3월</option>
-                                <option value="4월">4월</option>
-                                <option value="5월">5월</option>
-                                <option value="6월">6월</option>
-                                <option value="7월">7월</option>
-                                <option value="8월">8월</option>
-                                <option value="9월">9월</option>
-                                <option value="10월">10월</option>
-                                <option value="11월">11월</option>
-                                <option value="12월">12월</option>
+                                <option value="1">1월</option>
+                                <option value="2">2월</option>
+                                <option value="3">3월</option>
+                                <option value="4">4월</option>
+                                <option value="5">5월</option>
+                                <option value="6">6월</option>
+                                <option value="7">7월</option>
+                                <option value="8">8월</option>
+                                <option value="9">9월</option>
+                                <option value="10">10월</option>
+                                <option value="11">11월</option>
+                                <option value="12">12월</option>
                             </select>
                             <input type="number" placeholder="일" id="join_bir_day">
                         </div>
@@ -101,4 +101,3 @@
 </body>
 <script src="/assets/js/user.js"></script>
 </html>
-<script type="module" src="/assets/js/fileupload.js"></script>

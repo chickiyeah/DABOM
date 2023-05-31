@@ -107,7 +107,7 @@ email_provider_error = {'code':'ER018','message':'Unable to sign up using this e
 
 login_ip_diffrent = {'code':'ER019','message':'Unable to renew the access token. The IP is different.'}
 
-gender_choose_error = {'code':'ER020', 'message':'Gender Must be male or female.'}
+gender_choose_error = {'code':'ER020', 'message':'Gender Must be male or female or private.'}
 age_type_error = {'code':'ER021', 'message':'Age must be Integer'}
 height_type_error = {'code':'ER022', 'message':'Height must be Integer'}
 weight_type_error = {'code':'ER023', 'message':'Weight must be Integer'}
@@ -278,7 +278,7 @@ class UserRegisterdata(BaseModel):
     birthday: str
     height: Optional[str]
     weight: Optional[str]
-    profile_image: Optional[str] = "../"
+    profile_image: Optional[str] = "../assets/images/default-profile.png"
 
 class LoginResponse(BaseModel):
     ID: str
@@ -642,7 +642,7 @@ async def user_create(userdata: UserRegisterdata):
         if "EMAIL_EXISTS" in res:
             raise HTTPException(status_code=400, detail=Email_Exists)
 
-    if not gender == "male" or gender == "female":
+    if not gender == "male" or gender == "female" or gender == "private":
         raise HTTPException(400, gender_choose_error)
     
     if birthday.count("/") != 2:
