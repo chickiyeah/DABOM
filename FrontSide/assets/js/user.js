@@ -79,36 +79,34 @@ if (location.href.includes("findaccount")) {
 
   async function LoadCookie(){
     let cookie = document.cookie
+    let lo_access_token = localStorage.getItem("access_token")
+    let lo_refresh_token = localStorage.getItem("refresh_token")
     let access_token = sessionStorage.getItem('access_token');
     let refresh_token = sessionStorage.getItem('refresh_token');
     if (location.href.includes("login") == false && location.href.includes("register") == false) {
     if (access_token == null || refresh_token == null) {
-      if(cookie == null) {
+      if(lo_access_token == null || lo_refresh_token == null) {
         console.log("here?")
+        localStorage.clear()
         location.href = "/login";
       }else{
-        let cookies = cookie.split(";");
-        let keys = [];
-        cookies.forEach(cookie => {
-          let key = cookie.split("=")[0];
-          keys.push(key);
-        })
-        console.log(keys)
+        /*let cookies = cookie.split(";");
+        //let keys = [];
+        //cookies.forEach(cookie => {
+        //  let key = cookie.split("=")[0];
+        //  keys.push(key);
+        //})
+        //console.log(keys)
         if((keys.includes("access_token") && keys.includes("refresh_token")) || (keys.includes(" access_token") && keys.includes(" refresh_token"))){
           cookies.forEach(async (cookie) => {
             let key = cookie.split("=")[0];
             if(key == "access_token" || key == " access_token") {
-              sessionStorage.setItem("access_token", cookie.split("=")[1]);
-              console.log("Access")
-              console.log(cookie.split("=")[1])
+              sessionStorage.setItem("access_token", lo_access_token);
               let access = sessionStorage.getItem("access_token")
-              console.log(access)
             }
 
             if(key == "refresh_token" || key == " refresh_token") {
-              sessionStorage.setItem("refresh_token", cookie.split("=")[1]);
-              console.log("refresh")
-              console.log(cookie.split("=")[1])
+              sessionStorage.setItem("refresh_token", lo_refresh_token);
             }
             
             await verify_token()
@@ -120,9 +118,19 @@ if (location.href.includes("findaccount")) {
           document.cookie = "access_token = ; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
           document.cookie = "refresh_token = ; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
           location.href = "/login";
-        }
+        }*/
+
+        sessionStorage.setItem("refresh_token", lo_refresh_token);
+        sessionStorage.setItem("access_token", lo_access_token);
+        console.log(sessionStorage.getItem("refresh_token"));
+        console.log(sessionStorage.getItem("access_token"));
+        await verify_token()
+            console.log("자동로그인 및 토큰 검증 성공.")
+            loading.style.display = 'none';
+            location.reload()
       }
     }else{
+      location.href = "/login";
     }
   }}
 
@@ -368,16 +376,16 @@ async function join() {
       joinName.value = ""; 
       joinName.focus();
       reject("실패: 이름 형식 오류");
-    }else if(!joinTail.value.match(reg_num)){
-      alert("키를 정확하게 입력하세요.");
-      joinTail.value = ""; 
-      joinTail.focus();
-      reject("실패: 키 형식 오류");
-    }else if(!joinWeight.value.match(reg_num)){
-      alert("몸무게를 정확하게 입력하세요.");
-      joinWeight.value = ""; 
-      joinWeight.focus();
-      reject("실패: 몸무게 형식 오류");
+    // }else if(!joinTail.value.match(reg_num)){
+    //   alert("키를 정확하게 입력하세요.");
+    //   joinTail.value = ""; 
+    //   joinTail.focus();
+    //   reject("실패: 키 형식 오류");
+    // }else if(!joinWeight.value.match(reg_num)){
+    //   alert("몸무게를 정확하게 입력하세요.");
+    //   joinWeight.value = ""; 
+    //   joinWeight.focus();
+    //   reject("실패: 몸무게 형식 오류");
     }else if(!joinBirmon.value.match(reg_num)){
       alert("생년월일을 정확하게 입력하세요.");
       joinBirmon.value = ""; 

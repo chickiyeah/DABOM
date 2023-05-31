@@ -6,11 +6,13 @@ window.addEventListener('DOMContentLoaded', async function() {
 
 var alertsocket
 
+const loading = document.querySelector(".loading");
+
 var page = 1
 
 async function get_alerts(page) {
-    loading.style.display = 'flex';
     await verify_token()
+    loading.style.display = 'flex';
     let access_token = sessionStorage.getItem("access_token")
     fetch(`/api/alert/alerts?page=${page}`, {
         method: 'GET',
@@ -40,7 +42,65 @@ async function get_unread_amount() {
     })
 }
 
-async function verify_token() {
+async function LoadCookie(){
+    let cookie = document.cookie
+    let lo_access_token = localStorage.getItem("access_token")
+    let lo_refresh_token = localStorage.getItem("refresh_token")
+    let access_token = sessionStorage.getItem('access_token');
+    let refresh_token = sessionStorage.getItem('refresh_token');
+    if (location.href.includes("login") == false && location.href.includes("register") == false) {
+    if (access_token == null || refresh_token == null) {
+      if(lo_access_token == null || lo_refresh_token == null) {
+        console.log("here?")
+        localStorage.clear()
+        location.href = "/login";
+      }else{
+        /*let cookies = cookie.split(";");
+        //let keys = [];
+        //cookies.forEach(cookie => {
+        //  let key = cookie.split("=")[0];
+        //  keys.push(key);
+        //})
+        //console.log(keys)
+        if((keys.includes("access_token") && keys.includes("refresh_token")) || (keys.includes(" access_token") && keys.includes(" refresh_token"))){
+          cookies.forEach(async (cookie) => {
+            let key = cookie.split("=")[0];
+            if(key == "access_token" || key == " access_token") {
+              sessionStorage.setItem("access_token", lo_access_token);
+              let access = sessionStorage.getItem("access_token")
+            }
+
+            if(key == "refresh_token" || key == " refresh_token") {
+              sessionStorage.setItem("refresh_token", lo_refresh_token);
+            }
+            
+            await verify_token()
+            console.log("자동로그인 및 토큰 검증 성공.")
+            loading.style.display = 'none';
+            location.reload()
+          })
+        }else{
+          document.cookie = "access_token = ; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
+          document.cookie = "refresh_token = ; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
+          location.href = "/login";
+        }*/
+
+        sessionStorage.setItem("refresh_token", lo_refresh_token);
+        sessionStorage.setItem("access_token", lo_access_token);
+        console.log(sessionStorage.getItem("refresh_token"));
+        console.log(sessionStorage.getItem("access_token"));
+        await verify_token()
+            console.log("자동로그인 및 토큰 검증 성공.")
+            loading.style.display = 'none';
+            location.reload()
+      }
+    }else{
+      location.href = "/login";
+    }
+  }}
+
+
+  async function verify_token() {
     return new Promise(async function(resolve, reject) {
         //토큰 검증
         let access_token = sessionStorage.getItem("access_token")
@@ -54,19 +114,18 @@ async function verify_token() {
             })     
         }).then(async function(response) {
             if (response.status !== 200) {
-                if (response.status === 422) {
-                    reject(new Error( "{\"code\": \"ER013\", \"message\": \"로그인이 필요합니다.\"}"))
-                    //localStorage.clear();
-                    sessionStorage.clear();
+                if (response.status === 422) {                   
+                    await LoadCookie();
                     loading.style.display = 'none';
-                    location.href = "/login"
                 }else{
                     response.json().then(async (json) => {
                         let detail_error = json.detail;
                         if (detail_error.code == "ER998") {
-                            resolve(refresh_token())
+                            console.log(refresh_token_fun())
+                            resolve(refresh_token_fun())
+                           
                         }else{
-                            reject(JSON.stringify(detail_error));
+                            reject(JSON.stringify(detail_error))
                             //localStorage.clear();
                             sessionStorage.clear();
                             loading.style.display = 'none';
@@ -75,6 +134,7 @@ async function verify_token() {
                     });
                 }
             } else {
+              loading.style.display = "none"
                 resolve(response.json())
             }
         })
