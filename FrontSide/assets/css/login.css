@@ -1,7 +1,6 @@
 /* ==============================================================
 로그인
 ==============================================================*/
-.loading { width: 100vw;height: 100vh ; display: none; z-index: 1; position: absolute; opacity: 0.5; background-color: black;}
 .login_wrap .container { width: 100%; max-width: 460px; padding: 0 24px; margin: 150px auto 150px; }
 .login_wrap .logo  { margin-bottom: 90px; }
 .login_wrap .logo a  { width: 80px; height: auto; display: block; margin: 0 auto; }

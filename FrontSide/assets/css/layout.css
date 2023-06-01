@@ -16,6 +16,11 @@
     clip-path: inset(50%); display: inline-block; }
 
 /* 고정 알림 */
+.loading.fix { position: fixed; left: 0; top: 0; width: 100%; height: 100%; z-index: 2000;
+    background: black; opacity: 0.3; }
+.loading.fix img { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);}
+
+/* 고정 알림 */
 .right_menu { position: fixed; right: 35px; top: 25px; z-index: 500;}
 .right_menu .bell { display: inline-flex; position: relative; width: 40px; height: 40px;background: white;
     border-radius: 50%; box-shadow: 0 4px 4px rgba(204, 204, 204, 0.25); justify-content: center; align-items: center; padding-right: 2px; }

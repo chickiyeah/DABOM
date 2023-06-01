@@ -2,8 +2,6 @@
 
 window.addEventListener('DOMContentLoaded', async function () {
     if (this.location.href.includes("login") || this.location.href.includes("register") || this.location.href.includes("findaccount")){}else{loading.style.display = "flex";verify_token();}
-
-    
 });
 
 // 로그인
