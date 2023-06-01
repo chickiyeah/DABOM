@@ -170,32 +170,49 @@ async function request(uid) {
     })
 }
 
-async function ban_friend(tar_id) {
+async function ban_friend(pointerevent) {
     return new Promise(async function(resolve, reject) {
-        await verify_token()
-        let access_token = sessionStorage.getItem("access_token")
-        fetch(`/api/friends/ban?user_id=${tar_id}`, {
-            method: "POST",
-            headers: {
-                Authorization: access_token
-            }
-        }).then(async (res) => {
-            if (res.status !== 200) {
-                res.json().then(async (json) => {
-                    let detail_error = json.detail;
-                    if(detail_error.code == "ER037") {
-                        reject(new Error("이미 차단된 유저입니다."))
-                    }
-                })
-            }else{
-                resolve("친구를 차단했습니다.")
+        var checked = false
+        var tar_id
+        Array.prototype.forEach.call(friend_list_div.children,(element) => {
+            let s_checkbox = element.children[0].children[0]
+            if (s_checkbox.checked == true) {
+                checked = true
+                tar_id = s_checkbox.id.split('-')[1];
             }
         })
+
+        if (checked == true) {
+            await verify_token()
+            let access_token = sessionStorage.getItem("access_token")
+            fetch(`/api/friends/ban?user_id=${tar_id}`, {
+                method: "POST",
+                headers: {
+                    Authorization: access_token
+                }
+            }).then(async (res) => {
+                if (res.status !== 200) {
+                    res.json().then(async (json) => {
+                        let detail_error = json.detail;
+                        if(detail_error.code == "ER037") {
+                            reject(new Error("이미 차단된 유저입니다."))
+                        }
+                    })
+                }else{
+                    alert("친구를 차단했습니다.")
+                    resolve("친구를 차단했습니다.")
+                    location.reload()
+                }
+            })
+        } else {
+            alert("먼저 친구를 선택해주세요.")
+        }
     })
 }
 
-async function pardon_friend(tar_id) {
+async function pardon_friend(pointerevent) {
     return new Promise(async function(resolve, reject) {
+        let tar_id = pointerevent.target.id.split('-')[1];
         await verify_token()
         let access_token = sessionStorage.getItem("access_token")
         fetch(`/api/friends/ban?user_id=${tar_id}`, {
@@ -212,34 +229,50 @@ async function pardon_friend(tar_id) {
                     }
                 })
             }else{
+                alert("유저를 차단헤제 했습니다")
                 resolve("유저를 차단헤제 했습니다.")
             }
         })
     })
 }
 
-async function rm_friend(delid) {
+async function rm_friend(pointerevent) {
     return new Promise(async function(resolve, reject) {
-        await verify_token()
-        let access_token = sessionStorage.getItem("access_token")
-        fetch(`/api/friends/remove?delid=${delid}`,{
-            method: "DELETE",
-            headers: {
-                Authorization: access_token
-            }
-        }).then(async (res) => {
-            if (res.status !== 200) {
-                res.json().then(async (json) => {
-                    let detail_error = json.detail;
-                    if (detail_error.code == "ER030") {
-                        reject(new Error("친구 관계가 아닙니다."))
-                    }
-                })
-            }else{
-                resolve("친구를 삭제했습니다.")
-                location.reload()
+        var checked = false
+        var delid
+        Array.prototype.forEach.call(friend_list_div.children,(element) => {
+            let s_checkbox = element.children[0].children[0]
+            if (s_checkbox.checked == true) {
+                checked = true
+                delid = s_checkbox.id.split('-')[1];
             }
         })
+        
+        if (checked == true) {
+            await verify_token()
+            let access_token = sessionStorage.getItem("access_token")
+            fetch(`/api/friends/remove?delid=${delid}`,{
+                method: "DELETE",
+                headers: {
+                    Authorization: access_token
+                }
+            }).then(async (res) => {
+                if (res.status !== 200) {
+                    res.json().then(async (json) => {
+                        let detail_error = json.detail;
+                        if (detail_error.code == "ER030") {
+                            reject(new Error("친구 관계가 아닙니다."))
+                        }
+                    })
+                }else{
+                    alert("친구를 삭제했습니다.")
+                    resolve("친구를 삭제했습니다.")
+                    location.reload()
+                }
+            })
+        } else {
+            alert("먼저 친구를 선택해주세요.")
+        }
     })
 }
 
@@ -270,6 +303,7 @@ async function list(page) {
                 res.json().then(async (json) => {
                     console.log(json)
                     let amount = json.amount
+                    document.querySelector("#friend_amount").innerText = `친구 (${amount} 명)`
                     let to_page = amount / 7
                     var maxpage
                     if (Number.isInteger(to_page)) {
