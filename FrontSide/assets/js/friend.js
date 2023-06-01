@@ -42,6 +42,8 @@ const friend_req_button = document.querySelector("#friend_req_button");
 const error = document.querySelector("#error");
 const success = document.querySelector("#success");
 
+const delete_ban = document.querySelector(".friend_box .top .btn");
+
 const reg_email = /[a-zA-Z0-9]+@[a-z]+\.[a-z]{2,3}$/i;
 
 clickEnter(friend_req_input, friend_req_button)
@@ -63,12 +65,42 @@ function checkbox_event(pointerevent) {
     console.log("체크박스 이벤트"+target.id);
     console.log(target.id)
     if (target.checked == true) {
-        Array.prototype.forEach.call(friend_list_div.children,(element) =>{
+        Array.prototype.forEach.call(friend_list_div.children,(element) => {
             let s_checkbox = element.children[0].children[0]
             if (s_checkbox.id != target.id) {
                 s_checkbox.checked = false
             }
         })
+
+        Array.prototype.forEach.call(delete_ban.children, (element) => {
+            if (element.innerText == '차단') {
+                element.style.backgroundColor = "white"
+                element.style.color = "black"
+                element.removeEventListener("click", ban_friend);
+                element.addEventListener("click", ban_friend);
+            }
+
+            if (element.innerText == "삭제") {
+                element.style.backgroundColor = "white"
+                element.style.color = "black"
+                element.removeEventListener("click", rm_friend);
+                element.addEventListener("click", rm_friend);
+            }
+        });
+    } else  {
+        Array.prototype.forEach.call(delete_ban.children, (element) => {
+            if (element.innerText == '차단') {
+                element.style.backgroundColor = ""
+                element.style.color = ""
+                element.removeEventListener("click", ban_friend)
+            }
+
+            if (element.innerText == "삭제") {
+                element.style.backgroundColor = ""
+                element.style.color = ""
+                element.removeEventListener("click", rm_friend)
+            }
+        });
     }
 }
 
