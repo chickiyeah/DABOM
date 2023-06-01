@@ -76,7 +76,7 @@
 .friend_box .bottom li .txt_box .name { font-size: 20px; }
 .friend_box .bottom li .txt_box .data { color: #909090; }
 .friend_box .bottom li a { display: inline-block;  height: 25px; line-height: 2; background: #F43B00; color: white;
-    border-radius: 3px; font-size: 14px; padding: 0 15px;  border: 1px solid #F43B00; text-align: center; }
+    border-radius: 3px; font-size: 14px; padding: 0 15px;  border: 1px solid #F43B00; text-align: center; width: 90px;}
 
 
     /* 회원탈퇴 */

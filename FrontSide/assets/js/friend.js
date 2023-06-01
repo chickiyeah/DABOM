@@ -34,7 +34,7 @@ import { clickEnter } from "./enterEvent.js";
 
 const loading = document.querySelector(".loading");
 const pagediv = document.querySelector(".numdiv");
-const friend_list_div = document.querySelector(".bottom");
+const friend_list_div = document.querySelector(".friends");
 
 const friend_req_input = document.querySelector("#friend_req_input");
 const friend_req_button = document.querySelector("#friend_req_button");
@@ -57,6 +57,24 @@ friend_req_button.addEventListener("click", async (event) => {
         request(friend_req_input.value)
     }
 })
+
+function checkbox_event(pointerevent) {
+    let target = pointerevent.target
+    console.log("체크박스 이벤트"+target.id);
+    console.log(target.id)
+    if (target.checked == true) {
+        Array.prototype.forEach.call(friend_list_div.children,(element) =>{
+            let s_checkbox = element.children[0].children[0]
+            if (s_checkbox.id != target.id) {
+                s_checkbox.checked = false
+            }
+        })
+    }
+}
+
+function apply_event() {
+    Array.prototype.forEach.call(friend_list_div.children,(element) =>{element.children[0].children[0].removeEventListener("click", checkbox_event) ;element.children[0].children[0].addEventListener("click", checkbox_event)})
+}
 
 async function request(uid) {
     return new Promise(async function(resolve, reject) {
@@ -279,7 +297,9 @@ async function get_user_info(user, imsg) {
             }else{
                 res.json().then(async (json) => {
                     let u_data = json[0]
+                    console.log(u_data)
                     let nick = u_data.Nickname
+                    let id = u_data.ID
                     let profile = u_data.profile_image || "../assets/images/default-profile.png"
                     let infomsg = u_data.infomsg
                     //players.insertAdjacentHTML("beforeend", userlist(nick, profile))
@@ -287,8 +307,8 @@ async function get_user_info(user, imsg) {
                     
                     let html = `<li>
                         <div class="checkbox">
-                            <input type="checkbox" id="check1">
-                            <label for="check1">
+                            <input type="checkbox" id="check-${id}">
+                            <label for="check-${id}">
                                 <span class="profile_img">
                                     <img src="${profile}" alt="프로필이미지">
                             </span>
@@ -301,6 +321,7 @@ async function get_user_info(user, imsg) {
                     </li>`
 
                     friend_list_div.insertAdjacentHTML("beforeend", html)
+                    apply_event()
                 })
             }
         })
@@ -387,4 +408,4 @@ async function refresh_token() {
             }
         })
     })
-}
+} 

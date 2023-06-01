@@ -405,7 +405,7 @@ async def setinfomsg(data:setinfomsg ,authorized: bool = Depends(verify_tokenb))
 @userapi.get("/get_user")
 async def get_users(id:str, authorized:bool = Depends(verify_admin_token)):
     if authorized:
-        user = execute_sql("SELECT `Nickname`, `profile_image` FROM `user` WHERE `ID` = '"+id+"'")
+        user = execute_sql("SELECT `Nickname`, `profile_image`, `ID` FROM `user` WHERE `ID` = '"+id+"'")
 
         return user
 

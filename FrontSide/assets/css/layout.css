@@ -1,9 +1,11 @@
 @charset "UTF-8";
+
 @import "main.css";
 @import "login.css";
 @import "join.css";
 @import "mypage.css";
 @import "style.css";
+@import "diary.css";
 
 /* ==============================================================
   공통
@@ -12,9 +14,41 @@
 .show_mobile { display: none; }
 .hidden {overflow: hidden; border: 0; width: 1px; height: 1px; clip: rect(1px, 1px, 1px, 1px);
     clip-path: inset(50%); display: inline-block; }
-@media all and (max-width: 400px) {
-    .container { padding: 0 24px; }
-}
+
+/* 고정 알림 */
+.right_menu { position: fixed; right: 35px; top: 25px; z-index: 500;}
+.right_menu .bell { display: inline-flex; position: relative; width: 40px; height: 40px;background: white;
+    border-radius: 50%; box-shadow: 0 4px 4px rgba(204, 204, 204, 0.25); justify-content: center; align-items: center; padding-right: 2px; }
+.right_menu .bell:before { content: ""; display: block; width: 5px; height: 5px; background: #F43B00; border-radius: 50%;
+    position: absolute; right: 8px; top: 7px; z-index: 500; }
+
+/* ==============================================================
+해더
+==============================================================*/
+header .pc_header { display: flex; align-items: center; margin: 0 35px; height: 60px; border: 1px solid #FDDE58; background: white;
+    border-radius: 50px; padding: 0 24px; position: fixed; width: calc(100% - 70px); top: 8px; z-index: 1000; }
+header .pc_header .menu { display: flex; gap: 10px; font-size: 14px; }
+header .pc_header .logo { position: absolute; left: 50%; transform: translateX(-50%); }
+header .pc_header .logo a { display: block; width: 60px;}
+header .pc_header .login { margin-left: auto; }
+header .pc_header .login a { display: block; width: 25px; }
+
+/* 모바일 해더 */
+.m_header {
+    padding: 0 24px; position: fixed; width: 100%; top: 20px; z-index: 1000;
+    display: flex; justify-content: space-between; align-items: center; }
+.m_header .logo a { display: block; width: 60px; }
+
+/* 모바일 햄버거 버튼*/
+.hamburger { display: block; width: 35px; height: 15px; border: none; background: transparent; position: relative; z-index: 20; }
+.hamburger .line{ width: 100%; height: 3px; position: absolute; display: block;background: #222222; border-radius: 3px; }
+.hamburger .line.top { top: 0; left: 0;  transition: all 0.3s; }
+.hamburger .line.center { width: 0; top: 0; left: 0; }
+.hamburger .line.bottom { bottom: 0; left: 0;  transition: all 0.3s;  transition-delay: 0.2s; }
+.hamburger.on .line.top { width: 0; right: 0; transition: all 0.15s; }
+.hamburger.on .line.center { width: 100%; left: 0; transition: 0.2s width 0.4s; }
+.hamburger.on .line.bottom { width: 0; right: 0; transition: all 0.15s; transition-delay: 0.1s; }
+
 *:focus { outline-color: #F43B00; }
 input[type=search]:focus { outline:none; }
 /* IE */
@@ -40,8 +74,8 @@ input[type="text"],input[type="password"] { width: 100%; }
 .checkbox input[type=checkbox] ,.radio-box input[type=radio] { display:none; }
 .checkbox input[type=checkbox] + label { display: inline-block; padding-left: 30px; background-repeat: no-repeat;
     background-image:url("../images/disabled.svg"); cursor: pointer; background-size: 24px; line-height: 1.5; transition: all 0.2s ease-in-out; }
-.checkbox input[type=checkbox]:disabled + label { background-image: url("../images/disabled.svg");}
-.checkbox input[type=checkbox]:checked + label { background-image: url("../images/checkd.svg");}
+.checkbox input[type=checkbox]:disabled + label { background-image: url("../images/disabled.svg"); }
+.checkbox input[type=checkbox]:checked + label { background-image: url("../images/checkd.svg");  }
 .radio-box input + label { cursor: pointer; padding-left: 35px; position: relative; display: inline-block; }
 .radio-box label:before { content: ""; top: -4px; left: 0; width: 22px; height: 22px; position: absolute; background: white;
     border: 1px solid #e1e1e1;
@@ -49,3 +83,7 @@ input[type="text"],input[type="password"] { width: 100%; }
 .radio-box input:checked + label:before { border: 1px solid #F43B00; box-shadow: inset 0 0 0 4px #fff; background: #F43B00; }
 .filebox input[type="file"] { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
     clip:rect(0,0,0,0); border: 0; }
+
+@media all and (max-width: 400px) {
+    .container { padding: 0 24px; }
+}

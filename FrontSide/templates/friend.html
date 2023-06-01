@@ -39,8 +39,8 @@
     <script type="module" src="/assets/js/friend.js"></script>
 </head>
 <body>
-    <div class="loading">
-        <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F236288455424EE5D2D" style="margin:auto"/>
+    <div class="loading fix">
+        <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F236288455424EE5D2D" alt="로딩이미지"/>
     </div>
 <div class="mypage_wrap">
     <div class="container">
@@ -67,7 +67,7 @@
             <div class="friend_box">
                 <div class="top">
                     <div class="checkbox">
-                        <input type="checkbox" id="checkall">
+                        <!--<input type="checkbox" id="checkall">-->
                         <label for="checkall">전체선택</label>
                     </div>
                     <div class="btn">
@@ -82,7 +82,9 @@
                     </li>
                     <div id="error"></div>
                     <div id="success"></div>
-                    <!-- js 추가구역 -->
+                    <ul class = "friends">
+                        <!-- js 추가구역 -->
+                    </ul>
                 </ul>
                 <div class="post_nav">
                     <a class="prev" href="javascript:"> <object data="/assets/images/arrow-left.svg" type="image/svg+xml" aria-label="왼쪽 화살표"></object></a>
@@ -96,6 +98,11 @@
             </div>
         </div>
     </div>
+</div>
+<div class="right_menu">
+    <a class="bell" href="javascript:">
+        <img src="/assets/images/bell-icon.svg" alt="종아이콘">
+    </a>
 </div>
 </body>
 </html>

@@ -41,16 +41,6 @@ align-items: center; gap: 15px; }
 .chat_wrap .chat_box .chat_header .m_header_box > a { transform: rotate(180deg); }
 .chat_wrap .chat_box .chat_header .m_header_box object { filter: brightness(0.2); }
 
-/* 모바일 햄버거 버튼*/
-.hamburger { width: 35px; height: 15px; border: none; background: transparent; position: relative; z-index: 20; }
-.hamburger .line{ width: 100%; height: 3px; position: absolute; display: block;background: #222222; border-radius: 3px; }
-.hamburger .line.top { top: 0; left: 0;  transition: all 0.3s; }
-.hamburger .line.center { width: 0; top: 0; left: 0; }
-.hamburger .line.bottom { bottom: 0; left: 0;  transition: all 0.3s;  transition-delay: 0.2s; }
-.hamburger.on .line.top { width: 0; right: 0; transition: all 0.15s; }
-.hamburger.on .line.center { width: 100%; left: 0; transition: 0.2s width 0.4s; }
-.hamburger.on .line.bottom { width: 0; right: 0; transition: all 0.15s; transition-delay: 0.1s; }
-
 .chat_wrap .m_nav { visibility: hidden; position: fixed; right: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.2); z-index: 10;
     transition: all .4s ease-in-out; overflow: hidden; }
 .chat_wrap .m_nav .m_nav_item { position: fixed; right: -100%;top: 0; width: 80%; height: 100%; background: #fff;

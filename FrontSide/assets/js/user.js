@@ -1,9 +1,9 @@
 "use strict";
 
 window.addEventListener('DOMContentLoaded', async function () {
-    loading.style.display = "flex"
-    verify_token();
+    if (this.location.href.includes("login") || this.location.href.includes("register") || this.location.href.includes("findaccount")){}else{loading.style.display = "flex";verify_token();}
 
+    
 });
 
 // 로그인

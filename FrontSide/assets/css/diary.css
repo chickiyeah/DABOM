@@ -1,0 +1,29 @@
+/* ==============================================================
+오늘일지
+==============================================================*/
+.diary_warp { height: 100vh; overflow: hidden; }
+.diary_warp .container { position: relative; display: flex; flex-flow: column; align-items: center; text-align: center; }
+.diary_warp .info_box { margin-top: 150px; margin-bottom: 50px; }
+.diary_warp .info_box .add_img { width: 50px; height: 50px; background: #F43B00; border-radius: 50%; cursor: pointer; display: inline-flex;
+    justify-content: center; align-items: center; }
+.diary_warp .info_box .add_img object { width: 34px; pointer-events: none; }
+.diary_warp .info_box .line { width: 2px; height: 65px; background: #F43B00; display: block;
+    position: relative; left: calc(50% - -3px); transform: translateX(-50%); margin: 15px 0; }
+.diary_warp .info_box p { font-size: 28px;}
+.diary_warp .info_box p em { color: #F43B00; }
+.diary_warp .img_box { display: block; max-width: 420px; }
+
+/* ==============================================================
+  미디어 쿼리 시작
+==============================================================*/
+@media all and (max-width: 800px) {
+    .pc_header { display: none !important; }
+    .diary_warp .info_box p { font-size: 22px; }
+}
+@media all and (max-width: 400px) {
+    .diary_warp .info_box { margin-top: 120px; }
+    .diary_warp .info_box .add_img { width: 40px; height: 40px; }
+    .diary_warp .info_box .add_img object { width: 24px; pointer-events: none; }
+    .diary_warp .info_box p { font-size: 20px; }
+
+}
