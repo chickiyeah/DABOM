@@ -34,6 +34,10 @@ async def posts(request: Request):
 async def diary_add(request: Request):
     return templates.TemplateResponse("diary_add.html", {"request":request})
 
+@ScreenRoute.get("/diary_Add")
+async def dowry_add(request: Request):
+    return templates.TemplateResponse("diary_update.html", {"request":request})
+
 @ScreenRoute.get("/friend/request/{request_id}/{request_nickname}/{target_id}/{target_nickname}/{verify_id}")
 async def friend_accept_reject(request: Request):
     return templates.TemplateResponse("email_friend_req.html", {"request":request})
