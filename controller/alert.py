@@ -29,6 +29,9 @@ async def verify_token(req: Request):
     except KeyError:
         raise HTTPException(status_code=400, detail=unauthorized)
 
+Invalid_Token = {"code":"ER998", "message":"INVALID TOKEN"}
+User_NotFound = {"code":"ER011", "message":"USER_NOT_FOUND"}
+
 @alert.get('/u_amount')
 async def get_unread_amount(Authorized: bool = Depends(verify_token)):
     if Authorized:

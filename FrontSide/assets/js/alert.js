@@ -208,3 +208,54 @@ async function connnect() {
         }
     }
 }
+
+/** 알림 전송 ( 알림 종류, 목표의 유저 아이디, 알림을 클릭하면 이동할 링크, 메시지(선택) ) */
+export async function send_alert(type, tar_id, url) {
+    let user = get_user_info(tar_id);
+    let nick = user.Nickname
+    let id = user.ID
+    let profile_image = user.profile_image || "../assets/images/default-profile.png"
+    let alerts = ['friend_request', 'guild_invite']
+
+    if (alerts.includes(type)) {
+        var msg
+        var title
+        if (type === "friend_request") {
+            msg = `${nick} 님으로부터 친구요청이 도착했습니다!`
+            title = "친구요청이 도착했습니다."
+        }
+
+        if (type === "guild_invite") {
+            msg = `${nick} 님으로부터 모임초대가 도착했습니다!`
+            title = "모임초대가 도착했습니다."
+        }
+
+        msg = `alert/${type}/${id}/${profile_image}/${url}/${title}/${msg}`
+        alertsocket.send(msg)
+    }else{
+        throw new Error("알수 없는 알림 타입입니다. 타입을 확인하세요.")
+    }
+} 
+
+
+/** 단일 유저정보 조회 (유저 아이디 ) */
+async function get_user_info(user) {
+    return new Promise((resolve, reject) => {
+        let url = `/api/user/get_user?id=${user}`;
+        fetch(url, {
+            headers: {
+                Authorization: "Bearer cncztSAt9m4JYA9"
+            }
+        }).then((res) => {
+            if (res.status != 200) {
+                reject("오류.")
+            }else{
+                res.json().then(async (json) => {
+                    let u_data = json[0];
+                    console.log(u_data);
+                    return u_data
+                });
+            };
+        })
+    });
+}
