@@ -43,9 +43,10 @@ header .pc_header.active { top: -60px; transition: all 0.25s ease;}
 
 /* 모바일 해더 */
 .m_header { padding: 0 24px; position: fixed; width: 100%; top: 20px; z-index: 1000;
-    display: flex; justify-content: space-between; align-items: center; }
+    display: flex; justify-content: space-between; align-items: center;  }
 .m_header .logo object { pointer-events: none; display: block; width: 60px; }
 .slide_header .logo object { pointer-events: none; display: block; width: 60px;  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(324deg) brightness(106%) contrast(101%); }
+
 
 /* 모바일 햄버거 버튼 */
 .hamburger { display: block; width: 35px; height: 15px; border: none; background: transparent; position: relative; z-index: 1000; }
