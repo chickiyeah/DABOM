@@ -133,16 +133,18 @@ async def send_message(websocket: WebSocket, username: str, channel: str, u_id: 
         event = MessageEvent(u_id=u_id, username=username, message=curse, time=now, pf_image=pf_image)
         if "pri" in channel:
             execute_pri_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
-        elif "Va8%r@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr" in channel:
-            if data.count("/") == 3:
-                datas = data.split("/")
+        elif "@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr" in channel:
+            print(data)
+            if data.count("/*/") == 6:
+                datas = data.split("/*/")
+                print(datas)
                 if datas[0] != "alert":
                     raise HTTPException(403)
                 else:
                     type = datas[1]
                     tar_id = datas[2]
                     tar_msg = datas[3]
-                    execute_pri_sql(f"INSERT INTO `alert` (`id`, `msg`, `read`, `send_at`, `type`, `target_id`) VALUES ('{u_id}','{tar_msg}', 'False', '{now}', '{type}', '{tar_id}')")
+                    execute_pri_sql(f"INSERT INTO `alert` (`id`, `msg`, `read`, `send_at`, `type`, `target_id`, `url`, `title`, `profile_image`)) VALUES ('{u_id}','{tar_msg}', 'False', '{now}', '{type}', '{tar_id}', '{url}', '{title}', '{profile_image}')")
             else:
                 raise HTTPException(403)
         else:
@@ -154,16 +156,19 @@ async def send_message(websocket: WebSocket, username: str, channel: str, u_id: 
         event = MessageEvent(u_id=u_id, username=username, message=data, time=now, pf_image=pf_image)
         if "pri" in channel:
             execute_pri_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
-        elif "Va8%r@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr" in channel:
-            if data.count("/") == 3:
-                datas = data.split("/")
+        elif "@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr" in channel:
+            if data.count("/*/") == 6:
+                datas = data.split("/*/")
                 if datas[0] != "alert":
                     raise HTTPException(403)
                 else:
                     type = datas[1]
                     tar_id = datas[2]
-                    tar_msg = datas[3]
-                    execute_pri_sql(f"INSERT INTO `alert` (`id`, `msg`, `read`, `send_at`, `type`, `target_id`) VALUES ('{u_id}','{tar_msg}', 'False', '{now}', '{type}', '{tar_id}')")
+                    profile_image = datas[3]
+                    url = datas[4]
+                    title = datas[5]
+                    tar_msg = datas[6]
+                    execute_pri_sql(f"INSERT INTO `alert` (`id`, `msg`, `read`, `send_at`, `type`, `target_id`, `url`, `title`, `profile_image`) VALUES ('{u_id}','{tar_msg}', 'False', '{now}', '{type}', '{tar_id}', '{url}', '{title}', '{profile_image}')")
             else:
                 raise HTTPException(403)
         else:
@@ -365,9 +370,10 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
                 task.cancel()
             for task in done:
                 task.result()
-    except WebSocketDisconnect:
+    except WebSocketDisconnect as close:
+
         guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{channel}'")
-        print(guilds)
+        print(close.code)
         members = json.loads(guilds[0]['members'])
         members.remove(u_id)
         await exit_channel(username, channel)

@@ -31,6 +31,7 @@ window.addEventListener('DOMContentLoaded', async function() {
 })
 
 import { clickEnter } from "./enterEvent.js";
+import { send_alert } from "./alert.js";
 
 const loading = document.querySelector(".loading");
 const pagediv = document.querySelector(".numdiv");
@@ -111,7 +112,7 @@ function apply_event() {
 async function request(uid) {
     return new Promise(async function(resolve, reject) {
         loading.style.display = "flex"
-        await verify_token()
+        let user_data = await verify_token()
         let access_token = sessionStorage.getItem("access_token")
         fetch(`/api/friends/request?uid=${uid}`,{
             method: 'POST',
@@ -162,6 +163,10 @@ async function request(uid) {
                 try {document.querySelector("#detail_msg").remove()} catch {}
                 try {document.querySelector("#success_msg").remove()} catch {}
                 friend_req_input.value = ""
+                console.log(user_data)
+                res.json().then(async (json) => {
+                    send_alert('friend_request', user_data.uid, json)
+                })
                 success.insertAdjacentHTML('afterbegin', '<p id="success_msg">친구요청을 전송했습니다.</p>' );
                 resolve("친구요청을 전송했습니다.")
                 loading.style.display = "none"

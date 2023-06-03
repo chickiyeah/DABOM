@@ -216,7 +216,7 @@ async def friend_request(uid:str, authorized: bool = Depends(verify_token)):
                 d.login("noreply.dabom", "sxhmurnajtenjtbr")
                 d.sendmail("noreply.dabom@gmail.com", targetmail, msg.as_string())   
             
-            return "friend request send"
+            return link
         except auth.UserNotFoundError:
             raise HTTPException(400, User_NotFound)
         

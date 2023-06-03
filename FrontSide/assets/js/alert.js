@@ -211,13 +211,14 @@ async function connnect() {
 
 /** 알림 전송 ( 알림 종류, 목표의 유저 아이디, 알림을 클릭하면 이동할 링크, 메시지(선택) ) */
 export async function send_alert(type, tar_id, url) {
-    let user = get_user_info(tar_id);
+    let user = await get_user_info(tar_id);
+    console.log(user);
     let nick = user.Nickname
     let id = user.ID
     let profile_image = user.profile_image || "../assets/images/default-profile.png"
     let alerts = ['friend_request', 'guild_invite']
 
-    if (alerts.includes(type)) {
+    if (alerts.includes(type) === true) {
         var msg
         var title
         if (type === "friend_request") {
@@ -230,9 +231,12 @@ export async function send_alert(type, tar_id, url) {
             title = "모임초대가 도착했습니다."
         }
 
-        msg = `alert/${type}/${id}/${profile_image}/${url}/${title}/${msg}`
+        msg = `alert/*/${type}/*/${id}/*/${profile_image}/*/${url}/*/${title}/*/${msg}`
+        console.log(msg)
         alertsocket.send(msg)
+        console.log("알림 전송됨")
     }else{
+        console.log("알림 타입 포함 오류")
         throw new Error("알수 없는 알림 타입입니다. 타입을 확인하세요.")
     }
 } 
@@ -253,7 +257,7 @@ async function get_user_info(user) {
                 res.json().then(async (json) => {
                     let u_data = json[0];
                     console.log(u_data);
-                    return u_data
+                    resolve(u_data)
                 });
             };
         })
