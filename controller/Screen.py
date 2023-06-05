@@ -46,6 +46,14 @@ async def diary_bar_scan(request: Request):
 async def diary_kcal(request: Request):
     return templates.TemplateResponse("diary_kcal.html", {"request":request})
 
+@ScreenRoute.get("/diary_food_data_add")
+async def diary_food_data_add(request: Request):
+    return templates.TemplateResponse("diary_food_data_add.html", {"request":request})
+
+@ScreenRoute.get("/diary_food_manualy_add")
+async def diary_food_manualy_add(request: Request):
+    return templates.TemplateResponse("diary_food_manualy_add.html", {"request":request})
+
 @ScreenRoute.get("/friend/request/{request_id}/{request_nickname}/{target_id}/{target_nickname}/{verify_id}")
 async def friend_accept_reject(request: Request):
     return templates.TemplateResponse("email_friend_req.html", {"request":request})

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>다봄일지(음식데이터추가)</title>
+    <link rel="stylesheet" href="/assets/css/reset.css">
+    <link rel="stylesheet" href="/assets/css/layout.css">
+</head>
+<body>
+<header>
+    <div class="pc_header">
+        <nav class="menu">
+            <a href="javascript:">다봄섭취</a>
+            <a href="javascript:">오늘일지</a>
+            <a href="javascript:">다봄기록</a>
+            <a href="javascript:">다봄모임</a>
+            <a href="javascript:">다봄달력</a>
+        </nav>
+        <h1 class="logo">
+            <a href="javascript:"><img src="/assets/images/logo.svg" alt="로고"></a>
+        </h1>
+        <div class="login">
+            <a href="javascript:">
+                <img src="/assets/images/login-icon.svg" alt="로그인 아이콘">
+            </a>
+        </div>
+    </div>
+    <div class="show_mobile">
+        <div class="mobile_header">
+            <div class="m_header">
+                <h1 class="logo">
+                    <a href="javascript:">
+                        <object data="/assets/images/logo.svg" type="image/svg+xml" aria-label="로고"></object>
+                    </a>
+                </h1>
+                <a class="hamburger" href="javascript:">
+                    <div class="line top"></div>
+                    <div class="line bottom"></div>
+                    <div class="line center"></div>
+                </a>
+            </div>
+            <div class="slide_nav">
+                <div class="slide_header">
+                    <h1 class="logo">
+                        <a href="javascript:">
+                            <object data="/assets/images/logo.svg" type="image/svg+xml" aria-label="로고"></object>
+                        </a>
+                    </h1>
+                </div>
+                <div class="slide_content">
+                    <a href="javascript:">다봄섭취</a>
+                    <a href="javascript:">오늘일지</a>
+                    <a href="javascript:">다봄기록</a>
+                    <a href="javascript:">다봄모임</a>
+                    <a href="javascript:">다봄달력</a>
+                </div>
+                <div class="slide_bottom">
+                    <a href="javascript:"><i class="mypage-icon"></i>마이페이지</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<main>
+    <div class="food_add_wrap">
+        <div class="container">
+            <form class="info_box" action="">
+                <ul class="group">
+                    <li>
+                        <label>바코드(GTIN)</label>
+                        <input type="text" placeholder="내용을 입력해주세요">
+                    </li>
+                    <li>
+                        <label>음식</label>
+                        <input type="text" placeholder="내용을 입력해주세요">
+                    </li>
+                    <li>
+                        <label> 카테고리 </label>
+                        <select>
+                            <optgroup label="선택하세요">
+                                <option>과자류</option>
+                                <option>음료류</option>
+                                <option>베이커리</option>
+                                <option>즉석식품</option>
+                                <option>면류</option>
+                                <option>장류 및 양념류</option>
+                                <option>묵류</option>
+                                <option>신선식품</option>
+                                <option>특수식품</option>
+                                <option>반찬</option>
+                                <option>농수산물</option>
+                                <option>두부/김치/빵/국/김/밥</option>
+                                <option>견과류</option>
+                                <option>기타</option>
+                                <option>잼류</option>
+                                <option>소스</option>
+                                <option>가루</option>
+                                <option>튀김류</option>
+                                <option>건강식품</option>
+                                <option>당류</option>
+                                <option>쨈류</option>
+                                <option>주류</option>
+                                <option>건식품</option>
+                                <option>편의식품</option>
+                            </optgroup>
+                        </select>
+                    </li>
+                    <li>
+                        <label>칼로리</label>
+                        <input type="text" placeholder="내용을 입력해주세요">
+                    </li>
+                </ul>
+                <button>추가하기</button>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+<script src="/assets/js/header.js"></script>
+</html>

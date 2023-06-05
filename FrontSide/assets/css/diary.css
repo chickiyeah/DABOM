@@ -83,6 +83,13 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
 .update_wrap .info_box .text_item button { width: 100%; max-width: 300px; background: #F43B00; color: white; height: 45px;
     font-size: 18px; font-weight: 700; line-height: 2.8; border-radius: 6px; text-align: center; display: block; margin: 30px auto 60px;}
 
+ /* 음식 수동 , 음식 데이터 추가 */
+.food_add_wrap .info_box { display: flex; flex-flow: column; width: 100%; max-width: 400px; margin: 200px auto 0; }
+.food_add_wrap .info_box .group li { margin-bottom: 20px; }
+.food_add_wrap .info_box .group label {display: block; margin-bottom: 5px; }
+.food_add_wrap .info_box .group select { cursor: pointer; width: 100%;}
+.food_add_wrap .info_box button { cursor: pointer; width: 100%; background: #F43B00; color: white; height: 45px; border-radius: 6px; font-size: 18px; margin-bottom: 65px; }
+
 
 /* ==============================================================
   미디어 쿼리 시작
