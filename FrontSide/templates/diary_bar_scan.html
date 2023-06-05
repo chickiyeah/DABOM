@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>다봄일지(바코더)</title>
+    <link rel="stylesheet" href="/assets/css/reset.css">
+    <link rel="stylesheet" href="/assets/css/layout.css">
+</head>
+<body>
+<header>
+    <div class="pc_header">
+        <nav class="menu">
+            <a href="javascript:">다봄섭취</a>
+            <a href="javascript:">오늘일지</a>
+            <a href="javascript:">다봄기록</a>
+            <a href="javascript:">다봄모임</a>
+            <a href="javascript:">다봄달력</a>
+        </nav>
+        <h1 class="logo">
+            <a href="javascript:"><img src="/assets/images/logo.svg" alt="로고"></a>
+        </h1>
+        <div class="login">
+            <a href="javascript:">
+                <img src="/assets/images/login-icon.svg" alt="로그인 아이콘">
+            </a>
+        </div>
+    </div>
+    <div class="show_mobile">
+        <div class="mobile_header">
+            <div class="m_header">
+                <h1 class="logo">
+                    <a href="javascript:">
+                        <object data="/assets/images/logo.svg" type="image/svg+xml" aria-label="로고"></object>
+                    </a>
+                </h1>
+                <a class="hamburger" href="javascript:">
+                    <div class="line top"></div>
+                    <div class="line bottom"></div>
+                    <div class="line center"></div>
+                </a>
+            </div>
+            <div class="slide_nav">
+                <div class="slide_header">
+                    <h1 class="logo">
+                        <a href="javascript:">
+                            <object data="/assets/images/logo.svg" type="image/svg+xml" aria-label="로고"></object>
+                        </a>
+                    </h1>
+                </div>
+                <div class="slide_content">
+                    <a href="javascript:">다봄섭취</a>
+                    <a href="javascript:">오늘일지</a>
+                    <a href="javascript:">다봄기록</a>
+                    <a href="javascript:">다봄모임</a>
+                    <a href="javascript:">다봄달력</a>
+                </div>
+                <div class="slide_bottom">
+                    <a href="javascript:"><i class="mypage-icon"></i>마이페이지</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- .info_box a태그 .on 들어갈때로 스타일 줬어요 -->
+<main>
+    <div class="scan_wrap">
+        <div class="container">
+            <div class="content_box">
+                <a class="bar_scan" href="javascript:">
+                    <object data="/assets/images/bar-scan-icon.svg" type="image/svg+xml" aria-label="바코더"></object>
+                </a>
+                <div class="txt_box">
+                    <!--  바코드 인식오류-->
+                    <p class="error">바코드 인식에 실패했습니다. <br class="show_mobile">인식을 다시 시도하시거나 수동으로 입력해주세요.</p>
+                    <!--  바코드 정보오류-->
+                    <p class="error">인식된 바코드 번호 : 8806265000685</p>
+                </div>
+                <div class="input_box">
+                    <label>바코드 번호 검색</label>
+                    <input type="text" placeholder="바코드 번호를 입력해주세요">
+                </div>
+                <a class="red_btn" href="javascript:">등록하기</a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+<script src="/assets/js/header.js"></script>
+</html>
