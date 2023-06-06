@@ -187,6 +187,11 @@ async function connnect() {
     let user = await verify_token()
     alertsocket = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}&channel=Va8%r@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr`)
 
+    alertsocket.onerror = async () => {
+        console.error("웹소켓 연결실패 새로고침으로 문제 해결을 시도합니다.")
+        location.reload()
+    }
+
     alertsocket.onopen = async () => {
         console.log("알림 소켓 연결됨.")
     }

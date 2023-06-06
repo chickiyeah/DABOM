@@ -162,6 +162,11 @@ async function try_connect(room) {
                 document.querySelector("#room_title_m").textContent = room
             }
 
+            chat.onerror = async () => {
+                console.error("웹소켓 연결실패 새로고침으로 문제 해결을 시도합니다.")
+                location.reload()
+            }
+
             chat.onopen = async function() { //전역변수 사용
                 console.log("채팅서버 연결됨")
                 connnect = true
