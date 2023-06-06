@@ -5,7 +5,7 @@ window.addEventListener('DOMContentLoaded', async function() {
             let params = param.split('&');
             let keys = [];
             let values = []
-            if (params.length != 2) {this.document.body.innerHTML="";return new Error('invalid parameters');}else{
+            if (params.length != 2) {this.location.href = "/groups?page=1&type=public"}else{
                 params.forEach(async (data) => {
                     let key = data.split('=')[0]
                     let value = data.split('=')[1]
@@ -26,16 +26,15 @@ window.addEventListener('DOMContentLoaded', async function() {
                         if (page < 1) {
                             location.href = "/groups?page=1&type=public"
                         }else{
-                            if (q_data['type'] === "public" || q_data['type'] === "private") {
-                                this.document.body.innerHTML="";
-                                return new Error('invalid parameters');
+                            if (q_data['type'] === "public" || q_data['type'] === "owned") {
+                                this.location.href = "/groups?page=1&type=public"
                             } else {
                                 if (q_data['type'] === "public") {
                                     await list_public_no_joined(page)
                                 }
 
-                                if (q_data['type'] === "private") {
-                                    await list_private_no_joined(page)
+                                if (q_data['type'] === "owned") {
+                                    await list_owned(page)
                                 }
                             }
                                 
@@ -45,8 +44,7 @@ window.addEventListener('DOMContentLoaded', async function() {
                     }
                     
                 } else {
-                    this.document.body.innerHTML="";
-                    return new Error('invalid parameters');
+                    this.location.href = "/groups?page=1&type=public"
                 }
             }
         }else{

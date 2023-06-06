@@ -134,7 +134,7 @@ async function LoadCookie(){
                     });
                 }
             } else {
-              loading.style.display = "none"
+                loading.style.display = "none"
                 resolve(response.json())
             }
         })
