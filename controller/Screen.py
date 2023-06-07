@@ -34,10 +34,6 @@ async def posts(request: Request):
 async def diary_add(request: Request):
     return templates.TemplateResponse("diary_add.html", {"request":request})
 
-@ScreenRoute.get("/diary_Add")
-async def dowry_add(request: Request):
-    return templates.TemplateResponse("diary_update.html", {"request":request})
-
 @ScreenRoute.get("/diary_bar_scan")
 async def diary_bar_scan(request: Request):
     return templates.TemplateResponse("diary_bar_scan.html", {"request":request})
@@ -53,6 +49,10 @@ async def diary_food_data_add(request: Request):
 @ScreenRoute.get("/diary_food_manualy_add")
 async def diary_food_manualy_add(request: Request):
     return templates.TemplateResponse("diary_food_manualy_add.html", {"request":request})
+
+@ScreenRoute.get("/diary_update")
+async def diary_update(request: Request):
+    return templates.TemplateResponse("diary_update.html", {"request": request})
 
 @ScreenRoute.get("/groups")
 async def groups(request: Request):

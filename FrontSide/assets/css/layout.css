@@ -18,7 +18,7 @@
 
 /* 고정 알림 */
 .loading.fix { position: fixed; left: 0; top: 0; width: 100%; height: 100%; z-index: 2000;
-    background: black; opacity: 0.3; }
+    background: black; opacity: 0.3; display: none }
 .loading.fix img { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);}
 
 /* 고정 알림 */

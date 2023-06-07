@@ -35,8 +35,8 @@
     <title>다봄 : 오늘의 일지 (업로드)</title>
     <link rel="stylesheet" href="/assets/css/reset.css">
     <link rel="stylesheet" href="/assets/css/layout.css">
-    
-    <script defer src="../assets/js/fileupload.js"></script>
+
+    <script type="module" src="../assets/js/fileupload.js"></script>
 </head>
 <body>
 <header>
@@ -69,17 +69,20 @@
                     <div class="line center"></div>
                 </a>
             </div>
-            <div class=slide_nav"></div>
+            <div class="slide_nav"></div>
         </div>
     </div>
 </header>
 <main>
+    <div class="loading fix">
+        <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F236288455424EE5D2D" style="margin:auto"/>
+    </div>
     <div class="diary_warp">
         <div class="container">
             <div class="info_box">
                 <div class="filebox">
                     <form action='/chat/uploadfile' method="POST" entype="multipart/form-data">
-                        <input type="file" name="file" id="input">
+                        <input type="file" name="file" id="input" multiple="mutiple">
                         <label class="profile_img_box" for="input">
                             <h2 class="hidden">파일 업로드</h2>
                             <div class="add_img">

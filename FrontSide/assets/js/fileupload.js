@@ -7,14 +7,28 @@ async function handleFiles() {
     const filelist = this.files
     const loading = document.querySelector(".loading");
     loading.style.display = 'flex';
+    var files = []
+    await verify_token()
     for (let i = 0, numFiles = filelist.length; i < numFiles; i++) {
         let file = filelist[i]
         let formdata = new FormData()
         formdata.append('image', file)
         let extentsion = file.name
+        let url = await makeRequest(extentsion, file, formdata)
+        files.push(url)
+    }
+    console.log(files)
+    loading.style.display = 'none';
+    sessionStorage.setItem("da_u_files", files)
+    if (location.href.includes("diary_add")) {
+        location.href = "/diary_update"
+    }
+}
+
+function makeRequest(extentsion, file, formdata) {
+    return new Promise(function(resolve, reject) {
         let xhr = new XMLHttpRequest();
         xhr.open('POST', `/chat/uploadfile?ext=${extentsion}`, true)
-        await verify_token()
         let access_token = sessionStorage.getItem("access_token")
         xhr.setRequestHeader('Authorization', access_token)
         xhr.onload = xhr.onerror = async function () {
@@ -26,6 +40,8 @@ async function handleFiles() {
                     return new Error('프로필은 사진만 허용됩니다.')
                 }
             }
+
+            //채팅 구역
             if (location.href.includes('chat')) {
                 var count = file.name.split('.').length - 1
                 let extentsion = file.name.split('.')[count]
@@ -47,13 +63,16 @@ async function handleFiles() {
             let image = `<img src="${xhr.responseText}">`
             console.log(image)
             
-            h_f_link = link.replace('\"',"")
-            loading.style.display = 'none';
             
-
+            let h_f_link = link.replace('\"',"") // 여기가 단일 파일의 다운로드 링크(URL)
+            console.log(h_f_link)
+            // 단일 다운로드 링크(URL) 을 files 변수의 리스트에 추가한다.
+            resolve(h_f_link)
+            //console.log(files)
+            
         };
         xhr.send(formdata)
-    }
+    })
 }
 
 async function verify_token() {
@@ -72,7 +91,6 @@ async function verify_token() {
             if (response.status !== 200) {
                 if (response.status === 422) {
                     reject(new Error( "{\"code\": \"ER013\", \"message\": \"로그인이 필요합니다.\"}"))
-                    //localStorage.clear();
                     sessionStorage.clear();
                     loading.style.display = 'none';
                     location.href = "/login"
@@ -83,7 +101,6 @@ async function verify_token() {
                             resolve(refresh_token())
                         }else{
                             reject(JSON.stringify(detail_error));
-                            //localStorage.clear();
                             sessionStorage.clear();
                             loading.style.display = 'none';
                             location.href = "/login"

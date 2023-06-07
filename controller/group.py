@@ -77,7 +77,7 @@ async def group_log(group_id:int, type:string, req_id:string, tar_id:string):
 @groupapi.get('/list/{page}')
 async def list_group(page:int):
     spage = 9 * (page-1)
-    groups = execute_sql("SELECT id as no, name, description, members, groupimg FROM `group` WHERE `deleted` = 'false' AND `banned` = 'false' LIMIT 9 OFFSET {0}".format(spage))
+    groups = execute_sql("SELECT id as no, name, description, members, groupimg FROM `group` WHERE `deleted` = 'false' AND `banned` = 'false' AND `type` = 'Public' LIMIT 9 OFFSET {0}".format(spage))
     return groups
 
 @groupapi.get('/detail/{group_id}')

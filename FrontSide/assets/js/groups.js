@@ -20,22 +20,23 @@ window.addEventListener('DOMContentLoaded', async function() {
                 }
 
                 if (keys.includes("page") && keys.includes("type")) {
-
                     if (!isNaN(q_data['page'])) {
+                        console.log("page numm")
                         let page = q_data['page']
                         if (page < 1) {
                             location.href = "/groups?page=1&type=public"
                         }else{
-                            if (q_data['type'] === "public" || q_data['type'] === "owned") {
-                                this.location.href = "/groups?page=1&type=public"
-                            } else {
-                                if (q_data['type'] === "public") {
-                                    await list_public_no_joined(page)
+                            let type = q_data['type']
+                            if (type === "public" || type === "owned") {
+                                if (type === "public") {
+                                    await list_public(page)
                                 }
 
-                                if (q_data['type'] === "owned") {
+                                if (type === "owned") {
                                     await list_owned(page)
                                 }
+                            } else {
+                                this.location.href = "/groups?page=1&type=public"
                             }
                                 
                         }
@@ -63,6 +64,16 @@ var element_invite_group_email_input = document.createElement("input");
 
 clickEnter(element_invite_group_email_input, element_invite_group_button);
 
-async function list(page) {
-
+async function list_public(page) {
+    if (page <= 0) {
+        return new Error("wrong page")
+    }else{
+        fetch(`/api/group/list/${page}`, {
+            method: 'GET'
+        }).then((res) => {
+            res.json().then((data) => {
+                console.log(data);
+            })
+        })
+    }
 }
