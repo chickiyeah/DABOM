@@ -229,13 +229,19 @@ async def get_object_with_barcode(barcode:str):
                 div = soup.select_one('div.background')
                 datasa = div.select('div > div.popup.pop-warp > div.pop-body > table > tbody > tr:nth-child(n+2) > td')
                 div2 = soup.select_one('div.sub_content2')
-                bizno = div2.select('div > div.pdv_korchamDetail > div.pdv_wrap_korcham > table > tbody > tr:nth-child(4) > td > div > button')[0]['data-biz-no']
-                weight = int(str(re.sub(r'[^0-9]', '', str(div2.select('div > div.pdv_korchamDetail > div.pdv_wrap_korcham > table > tbody > tr:nth-child(8) > td')),0).strip()))
-                r_res = json.loads(requests.get("http://www.allproductkorea.or.kr/platform/nicednb/companies/biz-no/%s/credit-information" % bizno).text)
-                front = "`유통사`"
-                back = "'{0}'".format(r_res['cmpNm'])
                 rdata = []
-                s_company = r_res['cmpNm']
+                try:
+                    bizno = div2.select('div > div.pdv_korchamDetail > div.pdv_wrap_korcham > table > tbody > tr:nth-child(4) > td > div > button')[0]['data-biz-no']
+                    r_res = json.loads(requests.get("http://www.allproductkorea.or.kr/platform/nicednb/companies/biz-no/%s/credit-information" % bizno).text)
+                    front = "`유통사`"
+                    back = "'{0}'".format(r_res['cmpNm'])
+                    s_company = r_res['cmpNm']
+                except IndexError:
+                    s_company = "None"
+                    front = "`유통사`"
+                    back = "'None'"
+                weight = int(str(re.sub(r'[^0-9]', '', str(div2.select('div > div.pdv_korchamDetail > div.pdv_wrap_korcham > table > tbody > tr:nth-child(8) > td')),0).strip()))
+                
                 
                 
                 resdata[re.sub('<.+?>', '', str(title[k]), 0).strip()] = {}
@@ -307,9 +313,9 @@ async def get_object_with_barcode(barcode:str):
                         back = back + ",{0},{0},'{1}'".format(weight,"g")                        
                     
 
-                    b_food_num = str(execute_sql("SELECT no FROM food_no WHERE fetch = 'food_db'")[0]['no'])
+                    b_food_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'food_db'")[0]['no'])
                     n_food_num = int(b_food_num)+1
-                    b_num = str(execute_sql("SELECT no FROM food_no WHERE fetch = 'custom_food'")[0]['no'])
+                    b_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'custom_food'")[0]['no'])
                     b_num_len = "0"*(6-(len(str(int(b_num)+1))))
                     n_num = "C{0}{1}-ZZ-AVG".format(b_num_len, int(b_num)+1)
                     n_code ="C{0}{1}".format(b_num_len, int(b_num)+1)
