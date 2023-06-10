@@ -37,25 +37,27 @@ function init() {
                   </li>
                   `
                   imgItem.insertAdjacentHTML("beforeend", html); // 땡 해당 스트링은 투입 위치를 지정하는것임 ( beforestart 요소가 위로 올라감 , afterstart 요소가 올라가지만 beforestart보다는 아래 , beforeend 요소가 아래로감 , afterend beforeend보다 더 아래로감 틀을 벗어날수잇음 )           
-    }
+                  remove_event()
+                }
   });
 
-  if(imglist.length > 0){
-    imglist[0].remove();
+
+  imgUl = imglist.getElementsByTagName('ul');
+
+  function closeevent() {
+    let target = pointerevent.target;
+    if(target == imgId){
+      
+    }
+  }
+
+  function remove_event() {
+    Array.prototype.forEach.call(img_data.children,(element) =>{
+      element.children[0].children[0].removeEventListener("click", closeevent());
+      element.children[0].children[0].addEventListener("click", closeevent())})
   }
 
 
-  function remove_event() {
-    Array.prototype.forEach.call(imglist.children,(element) =>{
-      element.children[0].children[0].removeEventListener("click", checkbox_event);
-      element.children[0].children[0].addEventListener("click", checkbox_event)})
-}
-
-
-  closeBtn.addEventListener("click", () => {
-    function remove_event();
-    console.log("close 감지");
-  })
 
 }
 

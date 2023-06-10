@@ -106,7 +106,9 @@ function checkbox_event(pointerevent) {
 }
 
 function apply_event() {
-    Array.prototype.forEach.call(friend_list_div.children,(element) =>{element.children[0].children[0].removeEventListener("click", checkbox_event) ;element.children[0].children[0].addEventListener("click", checkbox_event)})
+    Array.prototype.forEach.call(friend_list_div.children,(element) =>{
+        element.children[0].children[0].removeEventListener("click", checkbox_event);
+        element.children[0].children[0].addEventListener("click", checkbox_event)})
 }
 
 async function request(uid) {
