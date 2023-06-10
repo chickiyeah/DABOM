@@ -47,7 +47,7 @@ function init() {
   function closeevent() {
     let target = pointerevent.target;
     if(target == imgId){
-      
+      console.log(1);
     }
   }
 
