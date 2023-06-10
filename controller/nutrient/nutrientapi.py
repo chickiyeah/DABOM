@@ -536,7 +536,7 @@ async def get_object_with_barcode(barcode:str):
                                     back = back + ", " + num
 
                         sql = "INSERT INTO foodb ({0}) VALUES ({1})".format(front, back)
-                        print(sql)
+                        #print(sql)
                         res = execute_sql(sql)
                         execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'custom_food'".format(int(b_num)+1))
                         execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'food_db'".format(n_food_num))
@@ -788,7 +788,7 @@ async def get_object_with_barcode(barcode:str):
                                     back = back + ", " + num
 
                         sql = "INSERT INTO foodb ({0}) VALUES ({1})".format(front, back)
-                        print(sql)
+                        #print(sql)
                         res = execute_sql(sql)
                         execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'custom_food'".format(int(b_num)+1))
                         execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'food_db'".format(n_food_num))

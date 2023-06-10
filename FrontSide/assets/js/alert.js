@@ -21,7 +21,9 @@ async function get_alerts(page) {
         }
     }).then(function(res) {
         res.json().then((json) => {
-            console.log(json)
+            json.forEach((item) => {
+                console.log(item)
+            })
             loading.style.display = 'none';
         })
     })

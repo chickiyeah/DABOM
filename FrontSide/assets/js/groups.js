@@ -27,9 +27,13 @@ window.addEventListener('DOMContentLoaded', async function() {
                             location.href = "/groups?page=1&type=public"
                         }else{
                             let type = q_data['type']
-                            if (type === "public" || type === "owned") {
+                            if (type === "public" || type === "owned" || type === "joined") {
                                 if (type === "public") {
-                                    await list_public(page)
+                                    await list_public(page)   
+                                }
+
+                                if (type === "joined") {
+                                    await mygroups(page)
                                 }
 
                                 if (type === "owned") {
@@ -72,7 +76,27 @@ async function list_public(page) {
             method: 'GET'
         }).then((res) => {
             res.json().then((data) => {
-                console.log(data);
+                data.forEach((item) => {
+                    console.log(item)
+                })
+            })
+        })
+    }
+}
+
+async function mygroups(page) {
+    let access_token = sessionStorage.getItem("access_token")
+    if (page <= 0) {
+        return new Error("wrong page")
+    }else{
+        fetch(`/api/group/mygroups/${page}`, {
+            method: 'GET',
+            headers: {
+                Authorization: access_token
+            }
+        }).then((res) => {
+            res.json().then((data) => {
+                console.log(data)
             })
         })
     }

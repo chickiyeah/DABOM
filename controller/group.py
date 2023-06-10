@@ -80,6 +80,26 @@ async def list_group(page:int):
     groups = execute_sql("SELECT id as no, name, description, members, groupimg FROM `group` WHERE `deleted` = 'false' AND `banned` = 'false' AND `type` = 'Public' LIMIT 9 OFFSET {0}".format(spage))
     return groups
 
+@groupapi.get('/mygroups/{page}')
+async def list_mygroups(page:int, authorized: bool = Depends(verify_token)):
+
+    spage = 9 * (page-1)
+    p_groups = execute_sql(f"SELECT `groups` FROM `user` WHERE `ID` = '{authorized[1]}'")[0]
+    groups = json.loads(p_groups['groups'])
+    if len(groups) == 0:
+        return groups
+    else:
+        gql = ""
+        for group in groups:
+            if gql == "":
+                gql = f'`id`= {group}'
+            else:
+                gql = gql + f' OR `id`= {group}'
+
+
+        rgroups = execute_sql(f"SELECT id as no, name, description, members, groupimg FROM `group` WHERE ({gql}) AND (`deleted` = 'false' AND `banned` = 'false' AND `type` = 'Public') LIMIT 9 OFFSET {spage}")
+        return rgroups
+
 @groupapi.get('/detail/{group_id}')
 async def detail_group(group_id:int):
     
