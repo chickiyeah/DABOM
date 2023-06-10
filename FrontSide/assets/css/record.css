@@ -1,0 +1,69 @@
+/* ==============================================================
+다봄 기록
+==============================================================*/
+/*내기록*/
+.record_wrap { margin: 200px auto; }
+.record_wrap .tab_menu { max-width: 600px; margin: auto; display: flex; gap: 10px; margin-bottom: 10px; }
+.record_wrap .tab_menu li { flex: 1; }
+.record_wrap .tab_menu li a { display: block; border: 1px solid#F43B00; color: #F43B00; background: white;
+    text-align: center; height: 45px; border-radius: 6px; font-size: 18px; line-height: 2.5; }
+.record_wrap .tab_menu li.on a { background: #F43B00; color: white; transition: all 0.3s; }
+.record_wrap .year_box { max-width: 600px; margin: auto; text-align: center; }
+.record_wrap .year_box input { height: 45px; text-align: center; border: 1px solid #F43B00; color: #F43B00; cursor: pointer;}
+
+.record_wrap .check_item { max-width: 600px; margin: auto; }
+.record_wrap .check_item .checkbox input[type=checkbox] + label { background-size: 20px; }
+.record_wrap .check_item  { display: flex; justify-content: space-between; border-bottom: 1px solid #e1e1e1; padding-bottom: 10px; margin-bottom: 30px; }
+.record_wrap .check_item .checkbox { font-size: 14px; }
+.record_wrap .check_item  .btn a { display: inline-block;  background: #E1E1E1; border: 1px solid #909090; color: #909090;
+    text-align: center; border-radius: 3px; font-size: 12px; padding: 0 15px; height: 25px; line-height: 2; }
+
+.record_wrap .month_item { white-space: nowrap; overflow-x: auto; overflow-y: hidden;
+  width: 100%; max-width: 720px; margin: 30px  auto 20px; text-align: center; padding-bottom: 10px; }
+.record_wrap .month_item a { display: inline-block; width: 50px; height: 50px; border-radius: 50%; border: 1px solid #909090;
+    color: #909090; text-align: center; line-height: 3.3; }
+.record_wrap .month_item a + a { margin-left: 5px; }
+.record_wrap .month_item a.on { border: 1px solid #222222; color: #222; transition: all 0.3s; }
+
+/* 달월 스크롤바 */
+.record_wrap .month_item::-webkit-scrollbar { width: 2px; height: 5px; }
+.record_wrap .month_item::-webkit-scrollbar-thumb { background: rgba(244, 59, 0, .8); border-radius: 10px; }
+.record_wrap .month_item::-webkit-scrollbar-track { background: rgba(244, 59, 0, .1); }
+
+
+.record_wrap .record_box { width: 100%; max-width: 600px; margin: auto; }
+.record_wrap .record_box ul li + li { margin-top: 10px; }
+.record_wrap .record_box ul li .img_box { width: 100%; max-width: 180px; max-height: 180px; position: relative;  display: block; padding-bottom: 180px; box-sizing: border-box;}
+.record_wrap .record_box ul li .img_box img { width: 100%; height: 100%; object-fit: cover; position: absolute; left: 0; top: 0; }
+.record_wrap .record_box ul li .info_box { width: calc(100% - 200px); display: flex; flex-flow: column;}
+.record_wrap .record_box ul li { display: flex; border: 1px solid #E1E1E1; border-radius: 6px; padding: 15px; gap: 20px; }
+.record_wrap .record_box ul li .info_box h2 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 15px 0 20px; }
+.record_wrap .record_box ul li .info_box .date { color: #909090; font-size: 14px; margin-bottom: 5px;}
+.record_wrap .record_box ul li .info_box .txt_info { color: #909090; font-size: 14px; overflow: hidden;
+    text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.5; }
+
+.record_wrap .record_box ul li .info_box .bottom { display: flex; justify-content: space-between; align-items: center;  margin-top: auto; }
+.record_wrap .record_box ul li .info_box .bottom .txt { font-size: 12px; display: inline-flex; align-items: center; gap: 5px; font-weight: 400;}
+.record_wrap .record_box ul li .info_box .bottom .txt .y_txt { display: inline-block; width: 70px; text-align: center; background: #FDDE58; border-radius: 3px; padding: 5px 0;; }
+.record_wrap .record_box ul li .info_box .bottom .txt .r_txt {display: inline-block; width: 70px; text-align: center; background: #F43B00; color: white; border-radius: 3px; padding: 5px 0; }
+.record_wrap .record_box ul li .info_box .bottom .txt .kcal { color: #F43B00;}
+.record_wrap .record_box ul li .info_box .bottom .right_box { display: flex; gap: 10px; align-items: flex-start; }
+.record_wrap .record_box ul li .info_box .bottom .right_box .comment { display: flex; align-items: center;  color: #909090; font-size: 12px;}
+.record_wrap .record_box ul li .info_box .bottom .right_box .comment i { margin-right: 5px; }
+.record_wrap .record_box ul li .info_box .bottom .checkbox input[type=checkbox] + label { text-indent: -9999px; padding-left: 25px; background-size: 20px; }
+
+/* ==============================================================
+  미디어 쿼리 시작
+==============================================================*/
+@media all and (max-width: 800px) {
+    /*내기록*/
+    .record_wrap { margin: 120px auto; }
+    .record_wrap .record_box ul li { flex-flow: column; gap: 0; }
+    .record_wrap .record_box ul li .img_box { width: 100%; max-width: 100%; max-height: 180px; position: relative;
+        display: block; padding-bottom: 180px; box-sizing: border-box; }
+    .record_wrap .record_box ul li .info_box { width: 100%; }
+    .record_wrap .record_box ul li .info_box h2 { margin: 15px 0 15px; }
+    .record_wrap .record_box ul li .info_box .txt_info { margin-bottom: 5px; }
+    .record_wrap .month_item a { width: 45px; height: 45px; line-height: 3; }
+}
+@media all and (max-width: 400px) {}

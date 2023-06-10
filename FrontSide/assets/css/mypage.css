@@ -2,10 +2,6 @@
 마이페이지
 ==============================================================*/
 /* 공통 */
-.btn_box { display: flex; max-width: 500px; margin: 0 auto; gap: 10px; }
-.red_btn { width: 100%; cursor: pointer; color: white; background: #F43B00; border: 1px solid #F43B00; text-align: center; height: 45px; border-radius: 6px; font-size: 18px; display: block; line-height: 2.5;}
-.red_line_btn { width: 100%; cursor: pointer; color: #F43B00; background: white; border: 1px solid #F43B00; text-align: center; height: 45px; border-radius: 6px; font-size: 18px; display: block; line-height: 2.5; }
-.black_line_btn { width: 100%; cursor: pointer; color: #222; background: white; border: 1px solid #222; text-align: center; height: 45px; border-radius: 6px; font-size: 18px; display: block; line-height: 2.5; }
 .mypage_wrap .container { display: flex; box-sizing: border-box;  }
 .mypage_wrap .left_box { width: 20%; display: flex; flex-flow: column; align-items: center; padding-top: 110px; position: relative; z-index: 20;}
 .mypage_wrap .left_box:before { content: ""; position: absolute; right:0; top: 0; width: 20px; height: 100%; z-index: 10;
