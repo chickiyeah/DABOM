@@ -392,10 +392,14 @@ async function try_connect(room) {
                     }
                 }
             }
-
-            window.onbeforeunload = async function() {
+            
+            window.onunload = async function(event) {
                 connnect = false
-                chat.close()
+                chat.close();
+            }
+
+            window.onbeforeunload = async function(event) {
+                
             }
         }
     })  
