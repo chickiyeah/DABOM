@@ -76,8 +76,48 @@ async function list_public(page) {
             method: 'GET'
         }).then((res) => {
             res.json().then((data) => {
-                data.forEach((item) => {
-                    console.log(item)
+                let groups = data.groups
+                let count = data.count
+
+                // 페이징
+                document.querySelector("#group_amount").innerText = `공개 그룹 (${count} 개)`
+                let to_page = count / 9
+                var maxpage
+                if (Number.isInteger(to_page)) {
+                    maxpage = to_page
+                } else {
+                    maxpage = Math.floor(to_page) + 1
+                }
+
+                console.log(page)
+                console.log(maxpage)
+                var startpage
+                var endpage
+                if (page / 10 > 1) {
+                    startpage = Math.floor((page/10))*10
+                    endpage = Math.floor((page/10))*10 + 1 + 10
+                }else{
+                    startpage = 1
+                    endpage = 11
+                }
+                document.querySelector(".prev").href = `javascript:location.href='/groups?page=${page-1}&type=public'`
+                document.querySelector(".next").href = `javascript:location.href='/groups?page=${page+1}&type=public'`
+
+                if (page > maxpage) {
+                    location.href = "/groups?page="+maxpage+"&type=public"
+                }else{
+                    for (let i = startpage; i < maxpage+1; i++) {
+                        if (i == page) {
+                            pagediv.insertAdjacentHTML("beforeend", `<a class="selected" href="javascript:location.href='/groups?page=${i}&type=public'">${i}</a>`)
+                        }else{
+                            pagediv.insertAdjacentHTML("beforeend", `<a class="num" href="javascript:location.href='/groups?page=${i}&type=public'">${i}</a>`)
+                        }
+                    }
+                }
+
+                console.log("all public groups: "+count)
+                groups.forEach((group) => {
+                    console.log(group)
                 })
             })
         })
@@ -96,7 +136,109 @@ async function mygroups(page) {
             }
         }).then((res) => {
             res.json().then((data) => {
-                console.log(data)
+                let groups = data.groups
+                let count = data.count
+                
+                // 페이징
+                document.querySelector("#group_amount").innerText = `공개 그룹 (${count} 개)`
+                let to_page = count / 9
+                var maxpage
+                if (Number.isInteger(to_page)) {
+                    maxpage = to_page
+                } else {
+                    maxpage = Math.floor(to_page) + 1
+                }
+
+                console.log(page)
+                console.log(maxpage)
+                var startpage
+                var endpage
+                if (page / 10 > 1) {
+                    startpage = Math.floor((page/10))*10
+                    endpage = Math.floor((page/10))*10 + 1 + 10
+                }else{
+                    startpage = 1
+                    endpage = 11
+                }
+                document.querySelector(".prev").href = `javascript:location.href='/groups?page=${page-1}&type=joined'`
+                document.querySelector(".next").href = `javascript:location.href='/groups?page=${page+1}&type=joined'`
+
+                if (page > maxpage) {
+                    location.href = "/groups?page="+maxpage+"&type=joined"
+                }else{
+                    for (let i = startpage; i < maxpage+1; i++) {
+                        if (i == page) {
+                            pagediv.insertAdjacentHTML("beforeend", `<a class="selected" href="javascript:location.href='/groups?page=${i}&type=joined'">${i}</a>`)
+                        }else{
+                            pagediv.insertAdjacentHTML("beforeend", `<a class="num" href="javascript:location.href='/groups?page=${i}&type=joined'">${i}</a>`)
+                        }
+                    }
+                }
+
+                console.log("total joined groups: "+ count)
+                groups.forEach((group) => {
+                    console.log(group)
+                })
+            })
+        })
+    }
+}
+
+async function list_owned(page) {
+    let access_token = sessionStorage.getItem("access_token")
+    if (page <= 0) {
+        return new Error("wrong page")
+    }else{
+        fetch(`/api/group/owned_groups/${page}`, {
+            method: 'GET',
+            headers: {
+                Authorization: access_token
+            }
+        }).then((res) => {
+            res.json().then((data) => {
+                let groups = data.groups
+                let count = data.count
+                
+                /*// 페이징
+                document.querySelector("#group_amount").innerText = `공개 그룹 (${count} 개)`
+                let to_page = count / 9
+                var maxpage
+                if (Number.isInteger(to_page)) {
+                    maxpage = to_page
+                } else {
+                    maxpage = Math.floor(to_page) + 1
+                }
+
+                console.log(page)
+                console.log(maxpage)
+                var startpage
+                var endpage
+                if (page / 10 > 1) {
+                    startpage = Math.floor((page/10))*10
+                    endpage = Math.floor((page/10))*10 + 1 + 10
+                }else{
+                    startpage = 1
+                    endpage = 11
+                }
+                document.querySelector(".prev").href = `javascript:location.href='/groups?page=${page-1}&type=joined'`
+                document.querySelector(".next").href = `javascript:location.href='/groups?page=${page+1}&type=joined'`
+
+                if (page > maxpage) {
+                    location.href = "/groups?page="+maxpage+"&type=joined"
+                }else{
+                    for (let i = startpage; i < maxpage+1; i++) {
+                        if (i == page) {
+                            pagediv.insertAdjacentHTML("beforeend", `<a class="selected" href="javascript:location.href='/groups?page=${i}&type=joined'">${i}</a>`)
+                        }else{
+                            pagediv.insertAdjacentHTML("beforeend", `<a class="num" href="javascript:location.href='/groups?page=${i}&type=joined'">${i}</a>`)
+                        }
+                    }
+                }*/
+
+                console.log("total owned groups: "+ count)
+                groups.forEach((group) => {
+                    console.log(group)
+                })
             })
         })
     }

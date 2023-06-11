@@ -77,28 +77,41 @@ async def group_log(group_id:int, type:string, req_id:string, tar_id:string):
 @groupapi.get('/list/{page}')
 async def list_group(page:int):
     spage = 9 * (page-1)
+    cgroups = execute_sql("SELECT count(id) as count FROM `group` WHERE `deleted` = 'false' AND `banned` = 'false' AND `type` = 'Public'")[0]['count']
     groups = execute_sql("SELECT id as no, name, description, members, groupimg FROM `group` WHERE `deleted` = 'false' AND `banned` = 'false' AND `type` = 'Public' LIMIT 9 OFFSET {0}".format(spage))
-    return groups
+    res = {'groups': groups, 'count': cgroups}
+    return res
 
 @groupapi.get('/mygroups/{page}')
 async def list_mygroups(page:int, authorized: bool = Depends(verify_token)):
+    if authorized:
+        spage = 9 * (page-1)
+        p_groups = execute_sql(f"SELECT `groups` FROM `user` WHERE `ID` = '{authorized[1]}'")[0]
+        groups = json.loads(p_groups['groups'])
+        if len(groups) == 0:
+            return groups
+        else:
+            gql = ""
+            for group in groups:
+                if gql == "":
+                    gql = f'`id`= {group}'
+                else:
+                    gql = gql + f' OR `id`= {group}'
 
-    spage = 9 * (page-1)
-    p_groups = execute_sql(f"SELECT `groups` FROM `user` WHERE `ID` = '{authorized[1]}'")[0]
-    groups = json.loads(p_groups['groups'])
-    if len(groups) == 0:
-        return groups
-    else:
-        gql = ""
-        for group in groups:
-            if gql == "":
-                gql = f'`id`= {group}'
-            else:
-                gql = gql + f' OR `id`= {group}'
-
-
-        rgroups = execute_sql(f"SELECT id as no, name, description, members, groupimg FROM `group` WHERE ({gql}) AND (`deleted` = 'false' AND `banned` = 'false' AND `type` = 'Public') LIMIT 9 OFFSET {spage}")
-        return rgroups
+            cgroups = execute_sql(f"SELECT COUNT(id) as count FROM `group` WHERE ({gql}) AND (`deleted` = 'false' AND `banned` = 'false' AND `type` = 'Public')")[0]['count']
+            rgroups = execute_sql(f"SELECT id as no, name, description, members, groupimg FROM `group` WHERE ({gql}) AND (`deleted` = 'false' AND `banned` = 'false' AND `type` = 'Public') LIMIT 9 OFFSET {spage}")
+            res = {'groups': rgroups, 'count': cgroups}
+            return res
+    
+@groupapi.get('/owned_groups/{page}')
+async def list_mygroups(page:int, authorized: bool = Depends(verify_token)):
+    if authorized:
+        spage = 9 * (page-1)
+        
+        cgroups = execute_sql(f"SELECT COUNT(id) as count FROM `group` WHERE (`owner` = '{authorized[1]}') AND (`deleted` = 'false' AND `banned` = 'false' AND `type` = 'Public')")[0]['count']
+        rgroups = execute_sql(f"SELECT id as no, name, description, members, groupimg FROM `group` WHERE (`owner` = '{authorized[1]}') AND (`deleted` = 'false' AND `banned` = 'false' AND `type` = 'Public') LIMIT 9 OFFSET {spage}")
+        res = {'groups': rgroups, 'count': cgroups}
+        return res
 
 @groupapi.get('/detail/{group_id}')
 async def detail_group(group_id:int):
