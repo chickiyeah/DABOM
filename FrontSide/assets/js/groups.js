@@ -61,10 +61,14 @@ window.addEventListener('DOMContentLoaded', async function() {
 import { clickEnter } from "./enterEvent.js";
 import { send_alert } from "./alert.js";
 
+const pagediv = document.querySelector("#page_div")
+
 const reg_email = /[a-zA-Z0-9]+@[a-z]+\.[a-z]{2,3}$/i;
 
 var element_invite_group_button = document.createElement("button");
 var element_invite_group_email_input = document.createElement("input");
+
+
 
 clickEnter(element_invite_group_email_input, element_invite_group_button);
 

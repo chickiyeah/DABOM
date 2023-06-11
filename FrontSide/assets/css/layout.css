@@ -6,6 +6,7 @@
 @import "mypage.css";
 @import "style.css";
 @import "diary.css";
+@import "group.css";
 
 /* ==============================================================
   공통
@@ -121,6 +122,9 @@ input[type="text"],input[type="password"] { width: 100%; }
 .red_btn { width: 100%; cursor: pointer; color: white; background: #F43B00; border: 1px solid #F43B00; text-align: center; height: 45px; border-radius: 6px; font-size: 18px; display: block; line-height: 2.5;}
 .red_line_btn { width: 100%; cursor: pointer; color: #F43B00; background: white; border: 1px solid #F43B00; text-align: center; height: 45px; border-radius: 6px; font-size: 18px; display: block; line-height: 2.5; }
 .black_line_btn { width: 100%; cursor: pointer; color: #222; background: white; border: 1px solid #222; text-align: center; height: 45px; border-radius: 6px; font-size: 18px; display: block; line-height: 2.5; }
+.black_btn { width: 100%; cursor: pointer; color: white !important; background: #222 !important; border: 1px solid #222 !important; text-align: center; height: 45px; border-radius: 6px; font-size: 18px; display: block; line-height: 2.5; }
+.gray_btn { width: 100%; cursor: pointer; color: #222; background: #E1E1E1; border: 1px solid #E1E1E1; text-align: center; height: 45px; border-radius: 6px; font-size: 18px; display: block; line-height: 2.5; }
+
 
 /* ==============================================================
   네비게이션 공통
