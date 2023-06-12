@@ -6,6 +6,7 @@ const images = sessionStorage.getItem("da_u_files"); //세션 스토리지에서
 const imgBox = document.querySelector('.img_box'); // 고정 요소는 최대한 const로 
 const imgItem = document.querySelector('.img_item');
 const closeBtn = document.querySelector('.close_btn');
+const buttons = document.querySelectorAll('#on');
 
 
 var beforex = -1
@@ -18,16 +19,16 @@ window.addEventListener('DOMContentLoaded', function() {
     var curx = document.querySelector('.img_item').scrollLeft
     if (beforex != -1) {
       if (beforex < onx) {
-        console.log('going right');
+        //console.log('going right');
         document.querySelector('.img_item').scrollLeft = curx - 30
       }
 
       if (beforex == onx) {
-        console.log('staying')
+        //console.log('staying')
       }
 
       if (beforex > onx) {
-        console.log('going left');
+        //console.log('going left');
         document.querySelector('.img_item').scrollLeft = curx + 30
       }
     }
@@ -90,3 +91,16 @@ function init() {
 }
 
 
+// 버튼 선택하기
+buttons.forEach(function(button) {
+  button.addEventListener('click', function(event) {
+    event.preventDefault(); // 기본 동작 (페이지 이동) 방지
+
+          // 모든 버튼의 'on' 클래스 제거
+          buttons.forEach(function(btn) {
+            btn.classList.remove('on');
+          });
+    // 클릭한 버튼에 'on' 클래스 추가
+    button.classList.add('on');
+  });
+});

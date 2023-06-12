@@ -6,6 +6,7 @@
 @import "mypage.css";
 @import "style.css";
 @import "diary.css";
+@import "group.css";
 
 /* ==============================================================
   공통
@@ -44,9 +45,9 @@ header .pc_header.active { top: -60px; transition: all 0.25s ease;}
 
 /* 모바일 해더 */
 .m_header { padding: 0 24px; position: fixed; width: 100%; top: 20px; z-index: 1000;
-    display: flex; justify-content: space-between; align-items: center;  }
-.m_header .logo object { pointer-events: none; display: block; width: 60px; }
-.slide_header .logo object { pointer-events: none; display: block; width: 60px;  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(324deg) brightness(106%) contrast(101%); }
+    display: flex; justify-content: space-between; align-items: center; }
+.m_header .logo object { pointer-events: none; display: block; width: 55px; }
+.slide_header .logo object { pointer-events: none; display: block; width: 55px; filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(324deg) brightness(106%) contrast(101%); }
 
 
 /* 모바일 햄버거 버튼 */
@@ -60,8 +61,10 @@ header .pc_header.active { top: -60px; transition: all 0.25s ease;}
 .hamburger.on .line.bottom { width: 0; right: 0; transition: all 0.15s; transition-delay: 0.1s; }
 
 /* 모바일 슬라이드 메뉴*/
-.mobile_header { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; }
-.mobile_header .slide_nav {  position: absolute; left: 50%;  top: -100%; visibility: hidden; width: calc(100% - 20px); height: auto;
+.m_header { padding: 12px 24px; position: fixed; width: calc(100% - 24px); top: 8px; z-index: 1000;
+    display: flex; justify-content: space-between; align-items: center; background: white; border: 1px solid #FFCC00;
+    border-radius: 30px; left: 50%; transform: translateX(-50%); }
+.mobile_header .slide_nav { position: fixed; left: 50%;  top: -100%; visibility: hidden; width: calc(100% - 20px); height: auto;
     transform: translateX(-50%); background: #FDDE58; display: flex; flex-flow: column; padding: 24px; border-radius: 20px;
     transition: all .15s cubic-bezier(.25, .46, .45, .94) 0s; z-index: 999; }
 .mobile_header .slide_nav .slide_content { margin-top: 50px; display: flex; flex-flow: column; font-size: 18px; gap: 24px; }
@@ -71,7 +74,7 @@ header .pc_header.active { top: -60px; transition: all 0.25s ease;}
     width: 24px; height: 50px; display: inline-block; background-size: 24px; }
 
 /* 모바일 슬라이드 메뉴 on 클래스 넣었을때 */
-.mobile_header.on .m_header { padding: 0 34px; top: 30px;}
+.mobile_header.on .m_header { padding: 0 24px; top: 30px; background: transparent; border-color: transparent;}
 .mobile_header.on .m_header .logo { visibility: hidden; }
 .mobile_header.on .hamburger .line { background: white; }
 .mobile_header.on .slide_nav { visibility: visible; top: 8px; transition: all 0.4s cubic-bezier(.25, .46, .45, .94) 0s; }
@@ -121,12 +124,17 @@ input[type="text"],input[type="password"] { width: 100%; }
 .red_btn { width: 100%; cursor: pointer; color: white; background: #F43B00; border: 1px solid #F43B00; text-align: center; height: 45px; border-radius: 6px; font-size: 18px; display: block; line-height: 2.5;}
 .red_line_btn { width: 100%; cursor: pointer; color: #F43B00; background: white; border: 1px solid #F43B00; text-align: center; height: 45px; border-radius: 6px; font-size: 18px; display: block; line-height: 2.5; }
 .black_line_btn { width: 100%; cursor: pointer; color: #222; background: white; border: 1px solid #222; text-align: center; height: 45px; border-radius: 6px; font-size: 18px; display: block; line-height: 2.5; }
+.black_btn { width: 100%; cursor: pointer; color: white !important; background: #222 !important; border: 1px solid #222 !important; text-align: center; height: 45px; border-radius: 6px; font-size: 18px; display: block; line-height: 2.5; }
+.gray_btn { width: 100%; cursor: pointer; color: #222; background: #E1E1E1; border: 1px solid #E1E1E1; text-align: center; height: 45px; border-radius: 6px; font-size: 18px; display: block; line-height: 2.5; }
+
 
 /* ==============================================================
   네비게이션 공통
 ==============================================================*/
 .post_nav { display: flex; justify-content: center; gap: 10px;  margin: 50px auto;}
-.post_nav a { border: 1px solid #222; border-radius: 3px; width: 25px; height: 20px; text-align: center; line-height: 1.5; font-size: 14px;  }
+.post_nav a { border: 1px solid #222; border-radius: 3px; width: 25px; height: 20px; text-align: center; line-height: 1.5; font-size: 14px; display: block; }
+.post_nav .num { border: 1px solid #222; border-radius: 3px; width: 25px; height: 20px; text-align: center; line-height: 1.5; font-size: 14px; display: block; }
+.post_nav .selected { border: 1px solid #222; border-radius: 3px; width: 25px; height: 20px; text-align: center; line-height: 1.5; font-size: 14px; color:white; background-color: black; display: block; }
 .post_nav .prev,
 .post_nav .next { display: inline-flex; align-items: center; justify-content: center; }
 

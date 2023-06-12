@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="apple-mobile-web-app-title" content="다봄">
+    <meta name="robots" content="index,nofollow">
+    <meta property="og:title" content="다봄">
+    <meta property="og:site_name" content="다봄 | 다이어트 하는거 다 지켜봄">
+    <meta property="og:url" content="http://dabom.kro.kr">
+    <meta property="og:description" content="음식정보를 조회 저장하고 자기에게 필요한 칼로리를 계산해보세요!">
+    <meta property="og:image" content="./assets/images/logo.png">
+    <meta name="keywords" content="dabom, 다봄, 다이어트, 다이어트 하는거 다 지켜봄, 다 지켜봄, 다이어트 어플, 식단 어플, 식단 조절, 식단 프로그램, 다이어트관리, 친구와 함께 공유하는 식단관리">
+    <meta name="author" content="gyung won">
+    <meta name="description" content="음식정보를 조회 저장하고 자기에게 필요한 칼로리를 계산해보세요!">
+    <meta name="robots" content="all">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="다봄">
+    <meta name="twitter:description" content="다이어트하는거 다 지켜봄">
+    <meta name="twitter:image" content="./assets/images/logo.png">
+    <meta name="twitter:url" content="http://dabom.kro.kr">
+    <link rel="apple-touch-icon" sizes="72x72" href="./assets/images/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="./assets/images/apple-icon-114x114.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="./assets/images/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/images/favicon-16x16.png">
+    <link rel="shortcut icon" href="./assets/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="./assets/images/favicon.ico" type="image/x-icon">
+    <link rel="manifest" href="./assets/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="./assets/images/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <title>다봄: 모임 (그룹) </title>
+    <script type="module" src="/assets/js/groups.js"></script>
+    <link href="/assets/css/reset.css" rel="stylesheet">
+    <link href="/assets/css/layout.css" rel="stylesheet">
+</head>
+<body>
+    <div class="loading fix">
+        <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F236288455424EE5D2D" alt="로딩이미지"/>
+    </div>
+<header>
+    <div class="pc_header">
+        <nav class="menu">
+            <a href="javascript:">다봄섭취</a>
+            <a href="javascript:">오늘일지</a>
+            <a href="javascript:">다봄기록</a>
+            <a href="javascript:">다봄모임</a>
+            <a href="javascript:">다봄달력</a>
+        </nav>
+        <h1 class="logo">
+            <a href="javascript:"><img alt="로고" src="/assets/images/logo.svg"></a>
+        </h1>
+        <div class="login">
+            <a href="javascript:">
+                <img alt="로그인 아이콘" src="/assets/images/login-icon.svg">
+            </a>
+        </div>
+    </div>
+    <div class="show_mobile">
+        <div class="mobile_header">
+            <div class="m_header">
+                <h1 class="logo">
+                    <a href="javascript:">
+                        <object aria-label="로고" data="/assets/images/logo.svg" type="image/svg+xml"></object>
+                    </a>
+                </h1>
+                <a class="hamburger" href="javascript:">
+                    <div class="line top"></div>
+                    <div class="line bottom"></div>
+                    <div class="line center"></div>
+                </a>
+            </div>
+            <div class="slide_nav">
+                <div class="slide_header">
+                    <h1 class="logo">
+                        <a href="javascript:">
+                            <object aria-label="로고" data="/assets/images/logo.svg" type="image/svg+xml"></object>
+                        </a>
+                    </h1>
+                </div>
+                <div class="slide_content">
+                    <a href="javascript:">다봄섭취</a>
+                    <a href="javascript:">오늘일지</a>
+                    <a href="javascript:">다봄기록</a>
+                    <a href="javascript:">다봄모임</a>
+                    <a href="javascript:">다봄달력</a>
+                </div>
+                <div class="slide_bottom">
+                    <a href="javascript:"><i class="mypage-icon"></i>마이페이지</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<main>
+    <!--    각각 .tab_menu > li에 on 들어 올때 .more, my , my_more display: none 처리 해주세요 -->
+    <div class="group_wrap">
+        <div class="container">
+            <div>
+                <ul class="tab_menu">
+                    <li id="public_btn">
+                        <a href="/groups?page=1&type=public">찾아보기</a>
+                    </li>
+                    <li id="joined_btn"><a href="/groups?page=1&type=joined">내모임</a></li>
+                    <li id="owned_btn"><a href="/groups?page=1&type=owned">내가만든모임</a></li>
+                </ul>
+                <div class="search_box">
+                    <input placeholder="내 모임 찾기" type="search">
+                    <button>
+                        <object aria-label="검색아이콘" data="/assets/images/search-icon.svg"
+                                type="image/svg+xml"></object>
+                    </button>
+                </div>
+                <div>
+                    <ul id="public" class="more group" style="display: none">
+                        <!-- JS 동적 추가 구역 -->
+                    </ul>
+                    <ul id="joined" class="my group" style="display: none">
+                        <!-- JS 동적 추가 구역 -->
+                    </ul>
+                    <div class="my_more">
+                        <ul id="owned" class="group">
+                            <!-- JS 동적 추가 구역-->
+                        </ul>
+                        <a class="more_btn" href="javascript:">모임 만들기</a>
+                    </div>
+                </div>
+                <div class="post_nav">
+                    <a class="prev" href="javascript:">
+                        <object aria-label="왼쪽 화살표" data="/assets/images/arrow-left.svg"
+                                type="image/svg+xml"></object>
+                    </a>
+                    <div id="page_div">
+                        <!-- JS 동적 추가 구역 -->
+                    </div>
+                    <a class="next" href="javascript:">
+                        <object aria-label="오른쪽 화살표" data="/assets/images/arrow-right.svg"
+                                type="image/svg+xml"></object>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+<script src="/assets/js/header.js"></script>
+</html>
