@@ -1,5 +1,5 @@
 /* ==============================================================
-다봄 모임
+다봄 그룹
 ==============================================================*/
 /* 찾아보기 ,내모임 , 내가 만든 모임*/
 .group_wrap { margin: 180px auto; }
@@ -33,6 +33,38 @@
 .group_wrap .more_btn:before { content: ""; position: absolute; left: 12px;top: 50%; transform: translateY(-50%);
  background: url("../images/add-icon.svg") no-repeat; width: 20px; height: 20px; }
 
+/* 모임 목록 */
+.group_list_wrap { margin: 180px auto; }
+.group_list_wrap .banner_img { width: 100%; height: 350px; padding-bottom: 350px; box-sizing: border-box;
+    position: relative; margin-bottom: 50px; }
+.group_list_wrap .banner_img img { width: 100%; height: 100%; object-fit: cover; position: absolute; left: 0; top: 0;}
+.group_list_wrap .bottom_box { max-width: 720px; margin: auto; }
+.group_list_wrap .bottom_box .top_txt { text-align: center; margin-bottom: 100px; }
+.group_list_wrap .bottom_box .top_txt h2 { font-size: 36px; }
+.group_list_wrap .bottom_box .top_txt p { font-size: 18px; margin: 25px auto; color: #909090;}
+.group_list_wrap .bottom_box .top_txt .btn_box { max-width: 720px; }
+.group_list_wrap .bottom_box .top_txt .btn_box a { font-size: 16px; height: 40px; }
+
+.group_list_wrap .bottom_box .list_box li { display: flex; border: 1px solid #E1E1E1; border-radius: 6px;
+    padding: 15px; gap: 20px; }
+.group_list_wrap .bottom_box .list_box li + li { margin-top: 10px; }
+.group_list_wrap .bottom_box .list_box .img_box { width: 100%; max-width: 180px; max-height: 180px; position: relative;
+    display: block; padding-bottom: 180px; box-sizing: border-box;}
+.group_list_wrap .bottom_box .list_box .img_box img { width: 100%; height: 100%; object-fit: cover; position: absolute; left: 0; top: 0; }
+.group_list_wrap .bottom_box .list_box .info_box { width: calc(100% - 200px); display: flex; flex-flow: column; }
+.group_list_wrap .bottom_box .list_box .info_box h2 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 15px 0;}
+.group_list_wrap .bottom_box .list_box .info_box .meal { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
+.group_list_wrap .bottom_box .list_box .info_box .txt_info { color: #909090; font-size: 14px; overflow: hidden;
+    text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.5; }
+
+.group_list_wrap .bottom_box .list_box .info_box .bottom { display: flex; justify-content: space-between; align-items: flex-end;}
+.group_list_wrap .bottom_box .list_box .info_box .bottom .txt { font-size: 12px; display: inline-flex; align-items: center; gap: 5px; font-weight: 400;}
+.group_list_wrap .bottom_box .list_box .info_box .bottom .txt span { background: #222; color: white;  padding: 6px 18px; border-radius: 3px; }
+.group_list_wrap .bottom_box .list_box .info_box .bottom .right_box .date { color: #909090; font-size: 10px; text-align: right; margin: 5px 0; }
+.group_list_wrap .bottom_box .list_box .info_box .bottom .right_box .comment { display: flex; border-radius: 3px; border: 1px solid #909090;
+    padding: 4px 5px; color: #909090; font-size: 12px; align-items: center; }
+.group_list_wrap .bottom_box .list_box .info_box .bottom .right_box .comment i { width: 18px; padding-right: 5px; }
+.group_list_wrap .bottom_box .list_box .info_box .bottom .right_box .comment em { padding-left: 5px; }
 
 
 /* ==============================================================
@@ -44,6 +76,16 @@
     .group_wrap .group li { width: calc(50% - 5px);}
     .group_wrap .group li .info_box a { height: 25px; line-height: 2; }
     .group_wrap .tab_menu li a { height: 40px; font-size: 16px; line-height: 2.5; }
+    /* 모임 목록 */
+    .group_list_wrap { margin: 120px auto; }
+    .group_list_wrap .banner_img { height: 250px; padding-bottom: 250px; margin-bottom: 50px; }
+    .group_list_wrap .bottom_box .top_txt { margin-bottom: 50px; }
+    .group_list_wrap .bottom_box .top_txt h2 { font-size: 30px;}
+    .group_list_wrap .bottom_box .top_txt p { font-size: 16px; }
+    .group_list_wrap .bottom_box .top_txt .btn_box a { font-size: 14px; }
+    .group_list_wrap .bottom_box .list_box li { gap: 0; flex-flow: column; }
+    .group_list_wrap .bottom_box .list_box li .img_box { max-width: 100%; }
+    .group_list_wrap .bottom_box .list_box .info_box { width: 100%;}
 
 }
 @media all and (max-width: 400px) {
@@ -53,4 +95,8 @@
     .group_wrap .search_box input { height: 40px; }
     .group_wrap .search_box button object { width: 20px; }
     .group_wrap .more_btn { font-size: 16px; max-width: 140px; line-height: 2.4; }
+    /* 모임 목록 */
+    .group_list_wrap .banner_img { height: 200px; padding-bottom: 200px; margin-bottom: 50px; }
+    .group_list_wrap .bottom_box .list_box .info_box h2 { font-size: 20px; }
+    .group_list_wrap .bottom_box .list_box .info_box .meal { font-size: 16px; }
 }

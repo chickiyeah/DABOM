@@ -58,6 +58,10 @@ async def diary_update(request: Request):
 async def groups(request: Request):
     return templates.TemplateResponse("group.html", {"request":request})
 
+@ScreenRoute.get("/group/detail")
+async def group_detail(request: Request):
+    return templates.TemplateResponse("group_list.html", {"request":request})
+
 @ScreenRoute.get("/friend/request/{request_id}/{request_nickname}/{target_id}/{target_nickname}/{verify_id}")
 async def friend_accept_reject(request: Request):
     return templates.TemplateResponse("email_friend_req.html", {"request":request})

@@ -66,4 +66,7 @@
     .record_wrap .record_box ul li .info_box .txt_info { margin-bottom: 5px; }
     .record_wrap .month_item a { width: 45px; height: 45px; line-height: 3; }
 }
-@media all and (max-width: 400px) {}
+@media all and (max-width: 400px) {
+    /*내기록*/
+    .record_wrap .record_box ul li .info_box h2 { font-size: 20px; }
+}

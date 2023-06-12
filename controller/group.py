@@ -82,6 +82,13 @@ async def list_group(page:int):
     res = {'groups': groups, 'count': cgroups}
     return res
 
+@groupapi.get('/p_groups')
+async def p_groups(authorized: bool = Depends(verify_token)):
+    if authorized:
+        p_groups = execute_sql(f"SELECT `groups` FROM `user` WHERE `ID` = '{authorized[1]}'")[0]
+
+        return p_groups
+
 @groupapi.get('/mygroups/{page}')
 async def list_mygroups(page:int, authorized: bool = Depends(verify_token)):
     if authorized:

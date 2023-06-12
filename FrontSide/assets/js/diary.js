@@ -19,16 +19,16 @@ window.addEventListener('DOMContentLoaded', function() {
     var curx = document.querySelector('.img_item').scrollLeft
     if (beforex != -1) {
       if (beforex < onx) {
-        console.log('going right');
+        //console.log('going right');
         document.querySelector('.img_item').scrollLeft = curx - 30
       }
 
       if (beforex == onx) {
-        console.log('staying')
+        //console.log('staying')
       }
 
       if (beforex > onx) {
-        console.log('going left');
+        //console.log('going left');
         document.querySelector('.img_item').scrollLeft = curx + 30
       }
     }
