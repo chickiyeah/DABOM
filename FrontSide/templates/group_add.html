@@ -33,6 +33,7 @@
     <meta name="theme-color" content="#ffffff">
     <title>다봄: 모임 (그룹) 만들기 </title>
     <script type="module" src="/assets/js/fileupload.js"></script>
+    <script type="module" src="/assets/js/group/add.js"></script>
     <link href="/assets/css/reset.css" rel="stylesheet">
     <link href="/assets/css/layout.css" rel="stylesheet">
 </head>
@@ -113,13 +114,13 @@
             <div class="info_box">
                 <div class="top_box">
                     <label class="hidden">제목</label>
-                    <input type="text" placeholder="제목을 입력하세요">
+                    <input id="title" type="text" placeholder="제목을 입력하세요">
                 </div>
                 <div class="btn_box">
                     <a class="red_btn" href="javascript:">전체공개</a>
                     <a class="red_line_btn" href="javascript:">비공개</a>
                 </div>
-                <button class="red_btn">모임만들기</button>
+                <button id="submit" class="red_btn">모임만들기</button>
             </div>
         </div>
     </div>
