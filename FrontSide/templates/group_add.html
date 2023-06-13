@@ -2,9 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="apple-mobile-web-app-title" content="다봄">
     <meta name="robots" content="index,nofollow">
@@ -31,10 +29,11 @@
     <link rel="icon" href="../assets/images/favicon.ico" type="image/x-icon">
     <link rel="manifest" href="../assets/manifest.json">
     <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="./assets/images/ms-icon-144x144.png">
+    <meta name="msapplication-TileImage" content="../assets/images/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
-    <title>다봄: 모임 (그룹) </title>
-    <script type="module" src="/assets/js/groups.js"></script>
+    <title>다봄: 모임 (그룹) 만들기 </title>
+    <script type="module" src="/assets/js/fileupload.js"></script>
+    <script type="module" src="/assets/js/group/add.js"></script>
     <link href="/assets/css/reset.css" rel="stylesheet">
     <link href="/assets/css/layout.css" rel="stylesheet">
 </head>
@@ -97,51 +96,31 @@
     </div>
 </header>
 <main>
-    <!--    각각 .tab_menu > li에 on 들어 올때 .more, my , my_more display: none 처리 해주세요 -->
-    <div class="group_wrap">
+    <div class="group_write_wrap">
         <div class="container">
-            <div>
-                <ul class="tab_menu">
-                    <li id="public_btn">
-                        <a href="/groups?page=1&type=public">찾아보기</a>
-                    </li>
-                    <li id="joined_btn"><a href="/groups?page=1&type=joined">내모임</a></li>
-                    <li id="owned_btn"><a href="/groups?page=1&type=owned">내가만든모임</a></li>
-                </ul>
-                <div class="search_box">
-                    <input placeholder="내 모임 찾기" type="search">
-                    <button>
-                        <object aria-label="검색아이콘" data="/assets/images/search-icon.svg"
-                                type="image/svg+xml"></object>
-                    </button>
+            <div class="upload_box">
+                <div class="filebox">
+                    <form action='' method="POST" entype="multipart/form-data">
+                        <input type="file" name="file" id="input">
+                        <label class="profile_img_box" for="input">
+                            <div class="upload_img">
+                                <img src="/assets/images/group-add-bg.png" alt="파일 업로드 이미지">
+                            </div>
+                        </label>
+                    </form>
                 </div>
-                <div>
-                    <ul id="public" class="more group" style="display: none">
-                        <!-- JS 동적 추가 구역 -->
-                    </ul>
-                    <ul id="joined" class="my group" style="display: none">
-                        <!-- JS 동적 추가 구역 -->
-                    </ul>
-                    <div class="my_more">
-                        <ul id="owned" class="group">
-                            <!-- JS 동적 추가 구역-->
-                        </ul>
-                        <a class="more_btn" href="/group/add">모임 만들기</a>
-                    </div>
+                <p class="upload_txt"><i><object data="/assets/images/img-icon.svg" type="image/svg+xml" aria-label="이미지아이콘"></object></i>사진을 <em>업로드</em> 해주세요</p>
+            </div>
+            <div class="info_box">
+                <div class="top_box">
+                    <label class="hidden">제목</label>
+                    <input id="title" type="text" placeholder="제목을 입력하세요">
                 </div>
-                <div class="post_nav">
-                    <a class="prev" href="javascript:">
-                        <object aria-label="왼쪽 화살표" data="/assets/images/arrow-left.svg"
-                                type="image/svg+xml"></object>
-                    </a>
-                    <div id="page_div">
-                        <!-- JS 동적 추가 구역 -->
-                    </div>
-                    <a class="next" href="javascript:">
-                        <object aria-label="오른쪽 화살표" data="/assets/images/arrow-right.svg"
-                                type="image/svg+xml"></object>
-                    </a>
+                <div class="btn_box">
+                    <a class="red_btn" href="javascript:">전체공개</a>
+                    <a class="red_line_btn" href="javascript:">비공개</a>
                 </div>
+                <button id="submit" class="red_btn">모임만들기</button>
             </div>
         </div>
     </div>

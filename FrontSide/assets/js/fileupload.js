@@ -60,6 +60,8 @@ function makeRequest(extentsion, file, formdata) {
                 send_message(msg)
                 loading.style.display = 'none';
             }
+
+            
             let image = `<img src="${xhr.responseText}">`
             console.log(image)
             
@@ -67,6 +69,10 @@ function makeRequest(extentsion, file, formdata) {
             let h_f_link = link.replace('\"',"") // 여기가 단일 파일의 다운로드 링크(URL)
             console.log(h_f_link)
             // 단일 다운로드 링크(URL) 을 files 변수의 리스트에 추가한다.
+            if (location.href.includes('group/add')) {
+                let img = document.querySelector('.upload_img').children[0]
+                img.src = h_f_link
+            }
             resolve(h_f_link)
             //console.log(files)
             

@@ -66,6 +66,25 @@
 .group_list_wrap .bottom_box .list_box .info_box .bottom .right_box .comment i { width: 18px; padding-right: 5px; }
 .group_list_wrap .bottom_box .list_box .info_box .bottom .right_box .comment em { padding-left: 5px; }
 
+/* 모임 만들기 작성*/
+.group_write_wrap { margin: 180px auto; }
+.group_write_wrap .container { max-width: 720px; }
+.group_write_wrap .upload_box { display: flex; flex-flow: column; align-items: center; gap: 10px; margin-bottom: 20px; }
+.group_write_wrap .upload_box .filebox .upload_img { cursor: pointer; }
+.group_write_wrap .upload_box .upload_txt { display: flex; align-items: center; font-size: 14px; font-weight: 100;}
+.group_write_wrap .upload_box .upload_txt em { font-weight: 400; }
+.group_write_wrap .upload_box .upload_txt object { filter: brightness(0.2); width: 18px; margin-right: 5px; }
+.group_write_wrap .btn_box { max-width: 720px; margin: 20px 0 30px; }
+
+/* 모임 만들기 작성상세 */
+.group_write_wrap .banner_img { width: 100%; height: 350px; padding-bottom: 350px; box-sizing: border-box;
+    position: relative; margin-bottom: 50px; display: block; }
+.group_write_wrap .banner_img img { width: 100%; height: 100%; object-fit: cover; position: absolute; left: 0; top: 0; }
+.group_write_wrap .banner_img .pencil_icon { position: absolute; right: 10px; top: 10px; width: 50px; height: 50px;; border-radius: 50%;
+    background: rgba(244, 59, 0, 0.7); display: inline-flex; align-items: center; justify-content: center; }
+.group_write_wrap .banner_img .pencil_icon object { pointer-events: none; }
+.group_write_wrap .bottom_box .input_box input { margin-bottom: 10px; }
+
 
 /* ==============================================================
   미디어 쿼리 시작
@@ -76,6 +95,7 @@
     .group_wrap .group li { width: calc(50% - 5px);}
     .group_wrap .group li .info_box a { height: 25px; line-height: 2; }
     .group_wrap .tab_menu li a { height: 40px; font-size: 16px; line-height: 2.5; }
+
     /* 모임 목록 */
     .group_list_wrap { margin: 120px auto; }
     .group_list_wrap .banner_img { height: 250px; padding-bottom: 250px; margin-bottom: 50px; }
@@ -87,6 +107,14 @@
     .group_list_wrap .bottom_box .list_box li .img_box { max-width: 100%; }
     .group_list_wrap .bottom_box .list_box .info_box { width: 100%;}
 
+    /* 모임 만들기 작성 */
+    .group_write_wrap { margin: 120px auto; }
+    .group_write_wrap .upload_box .filebox .upload_img { max-width: 300px; }
+    .group_write_wrap .upload_box { margin-bottom: 30px; }
+
+    /* 모임 만들기 작성상세 */
+    .group_write_wrap .banner_img { height: 250px; padding-bottom: 250px; }
+    .group_write_wrap .banner_img .pencil_icon { width: 45px; height: 45px; }
 }
 @media all and (max-width: 400px) {
     /* 찾아보기 ,내모임 , 내가 만든 모임*/
@@ -95,8 +123,16 @@
     .group_wrap .search_box input { height: 40px; }
     .group_wrap .search_box button object { width: 20px; }
     .group_wrap .more_btn { font-size: 16px; max-width: 140px; line-height: 2.4; }
+
     /* 모임 목록 */
     .group_list_wrap .banner_img { height: 200px; padding-bottom: 200px; margin-bottom: 50px; }
     .group_list_wrap .bottom_box .list_box .info_box h2 { font-size: 20px; }
     .group_list_wrap .bottom_box .list_box .info_box .meal { font-size: 16px; }
+
+    /* 모임 만들기 작성 */
+    .group_write_wrap .upload_box .filebox .upload_img { max-width: 250px;}
+
+    /* 모임 만들기 작성상세 */
+    .group_write_wrap .banner_img .pencil_icon { width: 40px; height: 40px; }
+    .group_write_wrap .banner_img .pencil_icon object { width: 20px; }
 }
