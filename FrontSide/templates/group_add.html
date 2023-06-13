@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+          name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <title>모임만들기 사진업로드</title>
+    <link href="/assets/css/reset.css" rel="stylesheet">
+    <link href="/assets/css/layout.css" rel="stylesheet">
+</head>
+<body>
+<header>
+    <div class="pc_header">
+        <nav class="menu">
+            <a href="javascript:">다봄섭취</a>
+            <a href="javascript:">오늘일지</a>
+            <a href="javascript:">다봄기록</a>
+            <a href="javascript:">다봄모임</a>
+            <a href="javascript:">다봄달력</a>
+        </nav>
+        <h1 class="logo">
+            <a href="javascript:"><img alt="로고" src="/assets/images/logo.svg"></a>
+        </h1>
+        <div class="login">
+            <a href="javascript:">
+                <img alt="로그인 아이콘" src="/assets/images/login-icon.svg">
+            </a>
+        </div>
+    </div>
+    <div class="show_mobile">
+        <div class="mobile_header">
+            <div class="m_header">
+                <h1 class="logo">
+                    <a href="javascript:">
+                        <object aria-label="로고" data="/assets/images/logo.svg" type="image/svg+xml"></object>
+                    </a>
+                </h1>
+                <a class="hamburger" href="javascript:">
+                    <div class="line top"></div>
+                    <div class="line bottom"></div>
+                    <div class="line center"></div>
+                </a>
+            </div>
+            <div class="slide_nav">
+                <div class="slide_header">
+                    <h1 class="logo">
+                        <a href="javascript:">
+                            <object aria-label="로고" data="/assets/images/logo.svg" type="image/svg+xml"></object>
+                        </a>
+                    </h1>
+                </div>
+                <div class="slide_content">
+                    <a href="javascript:">다봄섭취</a>
+                    <a href="javascript:">오늘일지</a>
+                    <a href="javascript:">다봄기록</a>
+                    <a href="javascript:">다봄모임</a>
+                    <a href="javascript:">다봄달력</a>
+                </div>
+                <div class="slide_bottom">
+                    <a href="javascript:"><i class="mypage-icon"></i>마이페이지</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<main>
+    <div class="group_write_wrap">
+        <div class="container">
+            <div class="upload_box">
+                <div class="filebox">
+                    <form action='' method="POST" entype="multipart/form-data">
+                        <input type="file" name="file" id="input">
+                        <label class="profile_img_box" for="input">
+                            <div class="upload_img">
+                                <img src="/assets/images/group-add-bg.png" alt="파일 업로드 이미지">
+                            </div>
+                        </label>
+                    </form>
+                </div>
+                <p class="upload_txt"><i><object data="/assets/images/img-icon.svg" type="image/svg+xml" aria-label="이미지아이콘"></object></i>사진을 <em>업로드</em> 해주세요</p>
+            </div>
+            <div class="info_box">
+                <div class="top_box">
+                    <label class="hidden">제목</label>
+                    <input type="text" placeholder="제목을 입력하세요">
+                </div>
+                <div class="btn_box">
+                    <a class="red_btn" href="javascript:">전체공개</a>
+                    <a class="red_line_btn" href="javascript:">비공개</a>
+                </div>
+                <button class="red_btn">모임만들기</button>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+<script src="/assets/js/header.js"></script>
+</html>
