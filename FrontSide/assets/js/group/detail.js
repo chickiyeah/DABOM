@@ -40,12 +40,12 @@ function get_group_data(id) {
             let mem = JSON.parse(group.members).length
             let name = group.name
             let img = group.groupimg
-            let no = group.no
+            let no = group.id
             banner_img.src = img
             title.innerText = name
             members.innerText = "멤버 : "+mem+" 명"
             document.querySelector(".red_btn").style.display = "block"
-            document.querySelector(".red_btn").href = `javascript:sessionStorage.setItem('chat_room', ${no});window.open('http://dabom.kro.kr/chat', '채팅')`
+            document.querySelector(".red_btn").href = `javascript:sessionStorage.setItem('chat_room', ${no});sessionStorage.setItem('chat_title', '${name} 모임의 채팅방');window.open('/chat', '채팅')`
         })
     })
 }

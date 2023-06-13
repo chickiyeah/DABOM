@@ -1,7 +1,8 @@
-window.addEventListener('DOMContentLoaded', async function() {
+window.addEventListener('DOMContentLoaded', function() {
     if (location.href.includes('chat')) {
         let room = sessionStorage.getItem("chat_room")
         try_connect(room)
+        get_online_user(room)
         console.log("비동기 동작중.")
     }
 });
@@ -158,8 +159,9 @@ async function try_connect(room) {
                 document.querySelector("#room_title_m").textContent = "로비 채널"
             } else {
                 chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}&channel=${room}`) // 전역변수의 값을 바꿈
-                document.querySelector("#room_title").textContent = room
-                document.querySelector("#room_title_m").textContent = room
+                let c_title = sessionStorage.getItem("chat_title")
+                document.querySelector("#room_title").textContent = c_title
+                document.querySelector("#room_title_m").textContent = c_title
             }
 
             chat.onerror = async () => {
