@@ -140,6 +140,7 @@ async def create_group(data: create_group, authorized: bool = Depends(verify_tok
     er025 = {'code': 'ER025', 'message': '그룹타입은 Public, Private 만 허용됩니다.'}
     if authorized:
         ban = execute_sql("SELECT group_create_ban FROM user WHERE `ID` = '%s'" % authorized[1])[0]['group_create_ban']
+
         if ban == "True":
             raise HTTPException(403, er022)
         
@@ -148,12 +149,14 @@ async def create_group(data: create_group, authorized: bool = Depends(verify_tok
         
         baseimage = "https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2Fdabom_guild_default.png?alt=media&token=23ed15dd-f22a-4178-b42d-bb42d0a489e5&_gl=1*ktpbe2*_ga*MTAzODYxMDc2OS4xNjgzODYyNjY2*_ga_CW55HF8NVT*MTY4NjQ2OTg3Ni4yMi4xLjE2ODY0NzAwMDAuMC4wLjA."
 
+        pl_groups = execute_sql("SELECT `groups` FROM user WHERE `ID` = '%s'" % authorized[1])[0]['groups']
+
         id = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'group_id'")[0]['no'])+1
         owner = authorized[1]
         name = data.name
         description = data.description
         operator = "[]"
-        members = "[]"
+        members = f'["{owner}"]'
         warn = 0
         if data.image == "" or data.image == None:
             image = baseimage
@@ -162,6 +165,7 @@ async def create_group(data: create_group, authorized: bool = Depends(verify_tok
 
         res = execute_sql("INSERT INTO `group` (`id`, `name`, `description`, `owner`, `operator`, `members`, `warn`, `type`, `groupimg`, `deleted`, `banned`) VALUES ({0},'{1}','{2}','{3}','{4}', '{5}', {6},'{7}','{8}','false','false')".format(id, name, description, owner, operator, members, warn, data.type, image))
         execute_sql("UPDATE food_no SET `no` = {0} WHERE `fetch` = 'group_id'".format(id))
+
         await group_log(id, "create", authorized[1], "None")
         return "그룹을 생성했습니다."
     

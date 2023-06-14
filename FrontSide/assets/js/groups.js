@@ -194,8 +194,14 @@ async function list_public(page) {
                         }
 
                         console.log("all public groups: "+count)
+                        console.log(groups)
                         groups.forEach((group) => {
                             var html
+                            let mem_s = group.members
+                            console.log(mem_s)
+                            console.log(JSON.parse(mem_s))
+                            console.log(Array.isArray(group.members))
+                            
                             let mem = JSON.parse(group.members).length
                             let name = group.name
                             let img = group.groupimg

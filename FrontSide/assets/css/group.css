@@ -41,7 +41,8 @@
 .group_list_wrap .bottom_box { max-width: 720px; margin: auto; }
 .group_list_wrap .bottom_box .top_txt { text-align: center; margin-bottom: 100px; }
 .group_list_wrap .bottom_box .top_txt h2 { font-size: 36px; }
-.group_list_wrap .bottom_box .top_txt p { font-size: 18px; margin: 25px auto; color: #909090;}
+.group_list_wrap .bottom_box .top_txt .member { font-size: 18px; color: #909090; display: flex; justify-content: center; align-items: center; gap: 5px; margin: 15px 0 20px; }
+.group_list_wrap .bottom_box .top_txt .member .user_List_icon object { width: 30px; display: inline-block; }
 .group_list_wrap .bottom_box .top_txt .btn_box { max-width: 720px; }
 .group_list_wrap .bottom_box .top_txt .btn_box a { font-size: 16px; height: 40px; }
 

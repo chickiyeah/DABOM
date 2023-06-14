@@ -43,7 +43,7 @@ function get_group_data(id) {
             let no = group.id
             banner_img.src = img
             title.innerText = name
-            members.innerText = "멤버 : "+mem+" 명"
+            members.innerHTML = "멤버 : "+mem+" 명 <i class=\"user_List_icon\"><object data=\"../assets/images/user-list-icon.svg\" type=\"image/svg+xml\" aria-label=\"왼쪽 화살표\"></object></i>"
             document.querySelector(".red_btn").style.display = "block"
             document.querySelector(".red_btn").href = `javascript:sessionStorage.setItem('chat_room', ${no});sessionStorage.setItem('chat_title', '${name} 모임의 채팅방');window.open('/chat', '채팅')`
         })
