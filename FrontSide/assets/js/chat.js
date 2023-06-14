@@ -16,7 +16,7 @@ const msg_box = document.querySelector('.msg_box');
 const inner = document.querySelector(".inner")
 
 const drag_drop = document.querySelector(".file_drag_drop")
-const loading = document.querySelector(".loading");
+const loading = document.querySelector(".loading_box");
 
 if (location.href.includes('chat')) {
     clickEnter(chat_input, send_button);

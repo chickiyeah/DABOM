@@ -20,17 +20,18 @@
 .chat_wrap .chat_box { width: calc(100% - 20%); display: flex; justify-content: center; align-items: center; }
 .chat_wrap .chat_box .inner { width: 100%; max-width: 90%; height: calc(100% - 30%); background: rgba(244,59,0 ,0.1 );
     padding: 15px 30px; position: relative; display: flex; flex-flow: column; justify-content: start; overflow: hidden;
-    box-shadow: 10px 10px 20px 0 rgba(34, 34, 34, 0.15); border-radius: 30px;}
-.chat_wrap .chat_box .file_drag_drop { width: 70%; max-width: 90%; height: calc(100% - 30%); background: black;
-    padding: 15px 30px; position: absolute; display: none; flex-flow: column; justify-content: start; overflow: hidden;
-    box-shadow: 10px 10px 20px 0 rgba(34, 34, 34, 0.15); border-radius: 30px; opacity: 0.8; z-index: 1;}
-.chat_wrap .chat_box .loading { width: 70%; max-width: 90%; height: calc(100% - 30%); background: black;
-    padding: 15px 30px; position: absolute; display: none; flex-flow: column; justify-content: start; overflow: hidden;
-    box-shadow: 10px 10px 20px 0 rgba(34, 34, 34, 0.15); border-radius: 30px; opacity: 0.8; z-index: 2;}
+    box-shadow: 10px 10px 20px 0 rgba(34, 34, 34, 0.15); border-radius: 30px; z-index: 100;}
+.chat_wrap .chat_box .file_drag_drop {  width: 100%; height: 100%; left: 0; top: 0; background: black;
+    padding: 15px 30px; position: absolute; display: none; overflow: hidden;
+    box-shadow: 10px 10px 20px 0 rgba(34, 34, 34, 0.15); border-radius: 30px; opacity: 0.8; z-index: 99;}
+.chat_wrap .chat_box .loading_box { display: none; }
+.chat_wrap .chat_box .loading_box .loading { width: 100%; height: 100%; left: 0; top: 0; background: black;
+    padding: 15px 30px; position: absolute;  overflow: hidden;
+    box-shadow: 10px 10px 20px 0 rgba(34, 34, 34, 0.15); border-radius: 30px; opacity: 0.8; z-index: 100;}
 .chat_wrap .chat_box .chat_header { padding-bottom: 10px; position: relative; border-bottom: 1px solid #909090; margin-bottom: 20px; }
 .chat_wrap .chat_box .chat_header .header_box { position: relative; height: 50px; }
 .chat_wrap .chat_box .chat_header h2 { font-size: 28px; text-align: center; font-weight: 500; letter-spacing: -1.5px; padding-top: 10px;
-    text-overflow: ellipsis; white-space: nowrap; overflow: hidden; width: calc(100% - 80px); }
+    text-overflow: ellipsis; white-space: nowrap; overflow: hidden;  }
 .chat_wrap .chat_box .chat_header .utile_list { position: absolute; right: 0; top: 50%; transform: translateY(-50%); display: flex;
 align-items: center; gap: 15px; }
 /* 채팅 상단 모바일 */
@@ -39,7 +40,7 @@ align-items: center; gap: 15px; }
 .chat_wrap .chat_box .chat_header .m_header_box h2 { font-size: 20px; padding-top: 5px; text-align: left;}
 .chat_wrap .chat_box .chat_header .m_header_box .utile_list { top: calc(50% - 4px); gap: 10px; z-index: 20; }
 .chat_wrap .chat_box .chat_header .m_header_box > a { transform: rotate(180deg); }
-.chat_wrap .chat_box .chat_header .m_header_box object { filter: brightness(0.2); }
+.chat_wrap .chat_box .chat_header .m_header_box object { filter: brightness(0.2); pointer-events: none; }
 
 .chat_wrap .m_nav { visibility: hidden; position: fixed; right: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.2); z-index: 10;
     transition: all .4s ease-in-out; overflow: hidden; }
@@ -56,7 +57,7 @@ align-items: center; gap: 15px; }
 .chat_wrap .m_nav .m_nav_item .nav_list li { display: flex; align-items: center; gap: 10px; font-weight: 300; }
 .chat_wrap .m_nav .m_nav_item .nav_list li + li { margin-top: 20px; }
 .chat_wrap .m_nav .m_nav_item > a { display: flex; align-items: center; gap: 5px; margin-top: auto; padding: 0 24px; }
-.chat_wrap .m_nav .m_nav_item > a  object { filter: brightness(0.2); }
+.chat_wrap .m_nav .m_nav_item > a  object { filter: brightness(0.2); pointer-events: none;}
 
 .chat_wrap .chat_box .msg_box { overflow-y: auto; display: flex; flex-flow: column;}
 .chat_wrap .chat_box .msg_box .chat + .chat { margin-top: 5px; }
