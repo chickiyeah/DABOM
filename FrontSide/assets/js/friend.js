@@ -332,22 +332,26 @@ async function list(page) {
                     }
                     document.querySelector(".prev").href = `javascript:location.href='/friend?page=${page-1}'`
                     document.querySelector(".next").href = `javascript:location.href='/friend?page=${page+1}'`
-
-                    if (page > maxpage) {
-                        location.href = "/friend?page="+maxpage
+                    if (amount === 0) {
+                        pagediv.insertAdjacentHTML("beforeend", `<a class="selected" href="javascript:location.href='/friend?page=1'">1</a>`)
                     }else{
-                        for (let i = startpage; i < maxpage+1; i++) {
-                            if (i == page) {
-                                pagediv.insertAdjacentHTML("beforeend", `<a class="selected" href="javascript:location.href='/friend?page=${i}'">${i}</a>`)
-                            }else{
-                                pagediv.insertAdjacentHTML("beforeend", `<a class="num" href="javascript:location.href='/friend?page=${i}'">${i}</a>`)
-                            }
+                        if (page > maxpage) {
+                            location.href = "/friend?page="+maxpage
+                        }else{                     
+                            for (let i = startpage; i < maxpage+1; i++) {
+                                if (i == page) {
+                                    pagediv.insertAdjacentHTML("beforeend", `<a class="selected" href="javascript:location.href='/friend?page=${i}'">${i}</a>`)
+                                }else{
+                                    pagediv.insertAdjacentHTML("beforeend", `<a class="num" href="javascript:location.href='/friend?page=${i}'">${i}</a>`)
+                                }
+                            }   
                         }
                     }
-
-                    json.friends.forEach(data => {
-                        get_user_info(data.ID, data.message)
-                    })
+                    if (amount != 0) {
+                        json.friends.forEach(data => {
+                            get_user_info(data.ID, data.message)
+                        })
+                    }
                     loading.style.display = "none"
                     resolve(res)
                 })

@@ -73,7 +73,13 @@ async def friend_list(page: int, authorized: bool = Depends(verify_token)):
         sql = "SELECT friends FROM user WHERE ID = '%s'" % (uid)
         res = json.loads(execute_sql(sql)[0]['friends'])
         if len(res) == 0:
-            raise HTTPException(400, er042)
+            e_res = {
+                'friends': [],
+                'amount': 0,
+                'page': page +1
+            }
+
+            return e_res
         
         sql = "SELECT * FROM infomsg WHERE"
         for e in res:

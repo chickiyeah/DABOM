@@ -101,6 +101,7 @@ background: url("/assets/images/ckeck-icon.svg") no-repeat; width: 12px; height:
     .mypage_wrap .container { flex-flow: column; }
     .mypage_wrap .left_box { width: 100%; padding: 50px 0; }
     .mypage_wrap .left_box .logo { margin-bottom: 40px; }
+    .mypage_wrap .left_box .logo a { width: 60px; }
     .mypage_wrap .left_box:before { display: none; }
     .mypage_wrap .nav_lis { overflow-y: hidden; }
     .mypage_wrap .nav_list:before { content: ""; position: absolute; right:0; bottom: 0; width: 100%; height: 20px; z-index: 10;

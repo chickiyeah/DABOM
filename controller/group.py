@@ -163,12 +163,27 @@ async def create_group(data: create_group, authorized: bool = Depends(verify_tok
         else:
             image = data.image
 
+        pl_groups.append(id)
+        execute_sql(f"UPDATE user SET `groups` = '{pl_groups}' WHERE `ID` = '{authorized[1]}'")
+        
         res = execute_sql("INSERT INTO `group` (`id`, `name`, `description`, `owner`, `operator`, `members`, `warn`, `type`, `groupimg`, `deleted`, `banned`) VALUES ({0},'{1}','{2}','{3}','{4}', '{5}', {6},'{7}','{8}','false','false')".format(id, name, description, owner, operator, members, warn, data.type, image))
         execute_sql("UPDATE food_no SET `no` = {0} WHERE `fetch` = 'group_id'".format(id))
 
         await group_log(id, "create", authorized[1], "None")
         return "그룹을 생성했습니다."
-    
+
+@groupapi.post('/join/{group_id}')
+async def group_join(group_id: int, authorized = Depends(verify_token)):
+    if authorized:
+        p_group = json.loads(execute_sql("SELECT `groups` FROM `user` WHERE `ID` = '%s'" % authorized[1])[0]['groups'])
+        p_group.append(group_id)
+        execute_sql("UPDATE user SET `groups` = '{0}' WHERE ID = '{1}'".format(json.dumps(p_group), authorized[1]))
+        g_members = json.loads(execute_sql("SELECT `members` FROM `group` WHERE id = '%s'" % group_id)[0]['members'])
+        g_members.append(authorized[1])
+        execute_sql("UPDATE `group` SET members = '{0}' WHERE id = '{1}'".format(json.dumps(g_members), group_id))
+
+        return p_group
+  
 @groupapi.post('/invite')
 async def group_invite(group:invite_group, authorized: bool = Depends(verify_token)):
     if authorized:

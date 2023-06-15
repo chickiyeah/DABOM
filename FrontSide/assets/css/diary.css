@@ -7,7 +7,7 @@
 .diary_warp .info_box { margin-top: 150px; margin-bottom: 50px; }
 .diary_warp .info_box .add_img { width: 50px; height: 50px; background: #F43B00; border-radius: 50%; cursor: pointer; display: inline-flex;
     justify-content: center; align-items: center; }
-.diary_warp .info_box .add_img object { width: 31px; pointer-events: none; }
+.diary_warp .info_box .add_img object { width: 31px; }
 .diary_warp .info_box .line { width: 2px; height: 65px; background: #F43B00; display: block;
     position: relative; left: calc(50% - -3px); transform: translateX(-50%); margin: 15px 0; }
 .diary_warp .info_box p { font-size: 28px;}
@@ -25,7 +25,7 @@
 .update_wrap .top_box .img_item li { width: calc(33.333% - 10px); display: inline-block; position: relative; }
 .update_wrap .top_box .img_item li + li { margin-left: 10px;}
 .update_wrap .top_box .img_item li .close_btn { position: absolute; right: 5px; top: 5px; background: #F43B00; border-radius: 20px; padding-right: 5px; padding-left: 5px; padding-top: 5px;}
-.update_wrap .top_box .img_item li .close_btn object { pointer-events: none; filter: brightness(0) invert(1); }
+.update_wrap .top_box .img_item li .close_btn object { filter: brightness(0) invert(1); }
 .update_wrap .top_box .img_item li .img_box { display: block; position: relative; width: 100%; height: auto; box-sizing: border-box; padding-bottom: 100%; }
 .update_wrap .top_box .img_item li .img_box img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover;
     border-radius: 6px;}
@@ -37,7 +37,7 @@
 .kcal_wrap .top_box .search_box a { position: absolute; top: 50%; right: 0;transform: translateY(-50%);}
 .kcal_wrap .top_box .search_box .search_icon { right: 50px; }
 .kcal_wrap .top_box .search_box .search_icon object { width: 26px; }
-.kcal_wrap .top_box .search_box a object { pointer-events: none; width: 34px; }
+.kcal_wrap .top_box .search_box a object { width: 34px; }
 .kcal_wrap .top_box .search_info { max-height: 360px; overflow-y: auto; }
 .kcal_wrap .top_box .search_info li { display: flex; justify-content: space-between; align-items: center; }
 .kcal_wrap .top_box .search_info li + li { margin-top: 15px; }
@@ -59,7 +59,7 @@
 /* 바코더 */
 .scan_wrap .content_box { display: flex; flex-flow: column; align-items: center;  margin-top: 200px; }
 .scan_wrap .content_box .bar_scan { margin-bottom: 40px; }
-.scan_wrap .content_box .bar_scan object { width: 100px; pointer-events: none; }
+.scan_wrap .content_box .bar_scan object { width: 100px; }
 .scan_wrap .content_box .txt_box { text-align: center; margin-bottom: 40px;}
 .scan_wrap .content_box .txt_box .error { color: #F43B00; font-weight: 700; line-height: 1.8; }
 .scan_wrap .content_box .input_box { display: flex; flex-flow: column; width: 100%; max-width: 400px; margin: auto; }
@@ -79,7 +79,7 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
 .update_wrap .info_box .search_box { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; }
 .update_wrap .info_box .search_box .search_item { display: inline-flex; align-items: center; gap: 5px; background: #F43B00;
     color: white; font-size: 14px; border-radius: 3px; padding: 6px 10px 5px 10px; }
-.update_wrap .info_box .search_box a object { display: block; width: 14px; pointer-events: none; filter: brightness(0) invert(1); margin-bottom: 2px; }
+.update_wrap .info_box .search_box a object { display: block; width: 14px; filter: brightness(0) invert(1); margin-bottom: 2px; }
 .update_wrap .info_box .text_item input { margin-bottom: 10px; }
 .update_wrap .info_box .text_item button { width: 100%; max-width: 300px; background: #F43B00; color: white; height: 45px;
     font-size: 18px; font-weight: 700; line-height: 2.8; border-radius: 6px; text-align: center; display: block; margin: 30px auto 60px;}
@@ -123,7 +123,7 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
     .update_wrap .top_box .date_item .img_box { max-width: 60px; }
     .diary_warp .info_box { margin-top: 120px; }
     .diary_warp .info_box .add_img { width: 40px; height: 40px; }
-    .diary_warp .info_box .add_img object { width: 24px; pointer-events: none; }
+    .diary_warp .info_box .add_img object { width: 24px; }
     .diary_warp .info_box p { font-size: 20px; margin-bottom: 50px; }
 
     /* 기록, 칼로리 공통 */
@@ -138,7 +138,7 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
     .kcal_wrap .bottom_box .info_box p { font-size: 22px; }
     .kcal_wrap .top_box .search_box .search_icon { right: 40px; }
     .kcal_wrap .top_box .search_box .search_icon object { width: 22px; }
-    .kcal_wrap .top_box .search_box a object { pointer-events: none; width: 28px; }
+    .kcal_wrap .top_box .search_box a object { width: 28px; }
 
     /* 바코더 */
     .scan_wrap .content_box .bar_scan { margin-bottom: 25px; }

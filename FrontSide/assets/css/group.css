@@ -14,7 +14,7 @@
 .group_wrap .search_box input { width: 100%; border: 1px solid #909090; border-radius: 25px; padding: 0 50px 0 20px; height: 45px;}
 .group_wrap .search_box input::placeholder { transform:translate3d(0,1px,0);}
 .group_wrap .search_box button { cursor: pointer; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); }
-.group_wrap .search_box button object { pointer-events: none; width: 22px; }
+.group_wrap .search_box button object { width: 22px; }
 
 .group_wrap .group { width: 100%; display: flex; flex-wrap: wrap; gap: 10px; box-sizing: border-box; margin: 0 auto; }
 .group_wrap .group li { border: 1px solid #E1E1E1; background: white; position: relative; padding: 15px 10px;
@@ -41,7 +41,7 @@
 .group_list_wrap .bottom_box { max-width: 720px; margin: auto; }
 .group_list_wrap .bottom_box .top_txt { text-align: center; margin-bottom: 100px; }
 .group_list_wrap .bottom_box .top_txt h2 { font-size: 36px; }
-.group_list_wrap .bottom_box .top_txt .member { font-size: 18px; color: #909090; display: flex; justify-content: center; align-items: center; gap: 5px; margin: 15px 0 20px; }
+.group_list_wrap .bottom_box .top_txt .member { font-size: 18px; color: #909090; display: flex; justify-content: center; align-items: center; gap: 5px; margin: 15px 0 20px;}
 .group_list_wrap .bottom_box .top_txt .member .user_List_icon object { width: 30px; display: inline-block; }
 .group_list_wrap .bottom_box .top_txt .btn_box { max-width: 720px; }
 .group_list_wrap .bottom_box .top_txt .btn_box a { font-size: 16px; height: 40px; }
@@ -83,7 +83,6 @@
 .group_write_wrap .banner_img img { width: 100%; height: 100%; object-fit: cover; position: absolute; left: 0; top: 0; }
 .group_write_wrap .banner_img .pencil_icon { position: absolute; right: 10px; top: 10px; width: 50px; height: 50px;; border-radius: 50%;
     background: rgba(244, 59, 0, 0.7); display: inline-flex; align-items: center; justify-content: center; }
-.group_write_wrap .banner_img .pencil_icon object { pointer-events: none; }
 .group_write_wrap .bottom_box .input_box input { margin-bottom: 10px; }
 
 

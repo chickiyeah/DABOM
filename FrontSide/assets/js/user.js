@@ -1,7 +1,19 @@
 "use strict";
 
+import { toast } from "./toast.js";
+
 window.addEventListener('DOMContentLoaded', async function () {
-    if (this.location.href.includes("login") || this.location.href.includes("register") || this.location.href.includes("findaccount")){document.querySelector(".loading").style.display = "none"}else{loading.style.display = "flex";verify_token();}
+    if (this.location.href.includes("login") || this.location.href.includes("register") || this.location.href.includes("findaccount")){
+      document.querySelector(".loading").style.display = "none"
+      if (this.location.href.includes("login")) {
+        if (this.location.href.includes("?")) {
+          let r = this.location.href.split("?")[1]
+          if (r === "t=r") {
+            toast("인증 이메일이 발송되었으니 확인해주세요!")
+          }
+        }
+      }
+    }else{loading.style.display = "flex";verify_token();}
 });
 
 // 로그인
@@ -495,7 +507,7 @@ async function join() {
     })
     .then(async (res) => {
       if (res.status == 201) {
-        location.href = "/login"
+        location.href = "/login?t=r"
       }else{
         res.json().then(async (json) => {
           let detail = json.detail

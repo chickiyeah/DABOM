@@ -1,6 +1,7 @@
 window.addEventListener('DOMContentLoaded', function() {
     if (location.href.includes('chat')) {
         let room = sessionStorage.getItem("chat_room")
+        toast("로딩중입니다.")
         try_connect(room)
         get_online_user(room)
         console.log("비동기 동작중.")
@@ -8,6 +9,7 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 
 import { clickEnter } from "./enterEvent.js";
+import { toast } from "./toast.js";
 const chat_input = document.querySelector('#chat_input');
 const send_button = document.querySelector('#send_button');
 const players = document.querySelector('#online_players');
