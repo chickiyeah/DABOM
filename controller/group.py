@@ -106,7 +106,7 @@ async def list_mygroups(page:int, authorized: bool = Depends(verify_token)):
                     gql = gql + f' OR `id`= {group}'
 
             cgroups = execute_sql(f"SELECT COUNT(id) as count FROM `group` WHERE ({gql}) AND (`deleted` = 'false' AND `banned` = 'false' AND `type` = 'Public')")[0]['count']
-            rgroups = execute_sql(f"SELECT id as no, name, description, members, groupimg FROM `group` WHERE ({gql}) AND (`deleted` = 'false' AND `banned` = 'false' AND `type` = 'Public') LIMIT 9 OFFSET {spage}")
+            rgroups = execute_sql(f"SELECT id as no, name, description, members, groupimg, owner FROM `group` WHERE ({gql}) AND (`deleted` = 'false' AND `banned` = 'false' AND `type` = 'Public') LIMIT 9 OFFSET {spage}")
             res = {'groups': rgroups, 'count': cgroups}
             return res
     
@@ -174,15 +174,42 @@ async def create_group(data: create_group, authorized: bool = Depends(verify_tok
 
 @groupapi.post('/join/{group_id}')
 async def group_join(group_id: int, authorized = Depends(verify_token)):
+    er041 = {"code": "ER041", "message": "이미 가입된 그룹입니다."}
     if authorized:
         p_group = json.loads(execute_sql("SELECT `groups` FROM `user` WHERE `ID` = '%s'" % authorized[1])[0]['groups'])
-        p_group.append(group_id)
-        execute_sql("UPDATE user SET `groups` = '{0}' WHERE ID = '{1}'".format(json.dumps(p_group), authorized[1]))
-        g_members = json.loads(execute_sql("SELECT `members` FROM `group` WHERE id = '%s'" % group_id)[0]['members'])
-        g_members.append(authorized[1])
-        execute_sql("UPDATE `group` SET members = '{0}' WHERE id = '{1}'".format(json.dumps(g_members), group_id))
+        if group_id in p_group:
+            raise HTTPException(400, er041)
+        else:
+            p_group.append(group_id)
+            execute_sql("UPDATE user SET `groups` = '{0}' WHERE ID = '{1}'".format(json.dumps(p_group), authorized[1]))
+            g_members = json.loads(execute_sql("SELECT `members` FROM `group` WHERE id = '%s'" % group_id)[0]['members'])
+            g_members.append(authorized[1])
+            execute_sql("UPDATE `group` SET members = '{0}' WHERE id = '{1}'".format(json.dumps(g_members), group_id))
 
         return p_group
+    
+@groupapi.post('/exit/{group_id}')
+async def group_join(group_id: int, authorized = Depends(verify_token)):
+    er040 = {"code": "ER040", "message":"가입된 그룹이 아닙니다."}
+    er042 = {"code": "ER042", "message":"그룹장은 탈퇴할 수 없습니다."}
+    if authorized:
+        try:
+            g = execute_sql("SELECT `members`, `owner` FROM `group` WHERE id = '%s'" % group_id)[0]
+            print(g)
+            g_owner = g['owner']
+            if authorized[1] == g_owner:
+                raise HTTPException(400, er042)
+            else:
+                g_members = json.loads(g["members"])
+                g_members.remove(authorized[1])
+                p_group = json.loads(execute_sql("SELECT `groups` FROM `user` WHERE `ID` = '%s'" % authorized[1])[0]['groups'])
+                p_group.remove(group_id)
+                execute_sql("UPDATE user SET `groups` = '{0}' WHERE ID = '{1}'".format(json.dumps(p_group), authorized[1]))
+                execute_sql("UPDATE `group` SET members = '{0}' WHERE id = '{1}'".format(json.dumps(g_members), group_id))
+
+                return p_group
+        except ValueError:
+            raise HTTPException(400, er040)
   
 @groupapi.post('/invite')
 async def group_invite(group:invite_group, authorized: bool = Depends(verify_token)):

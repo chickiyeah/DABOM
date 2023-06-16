@@ -13,3 +13,17 @@ export function toast(string) {
     toast.classList.add("reveal"),
         toast.innerText = string
 }
+
+/** 상대 위치 조정 */
+
+/*
+const toast_s = document.getElementById("toast")
+
+window.onresize = function() {
+    const height = window.innerHeight;	
+    
+    let dh = height - 100
+    toast_s.style.bottom = "auto"
+    toast_s.style.top = dh + "px"
+}
+*/
