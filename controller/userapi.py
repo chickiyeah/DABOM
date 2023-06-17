@@ -96,7 +96,7 @@ User_NotFound = {"code":"ER011", "message":"USER_NOT_FOUND"}
 
 Email_Not_Verified = {"code":"ER012", "message":"EMAIL_NOT_VERIFIED"}
 
-unauthorized = {'code':'ER013','message':'UNAUTHORIZED'}
+unauthorized = {'code':'ER013','message':'UNAUTHORIZED (Authorzation Header Not Found)'}
 unauthorized_revoked = {'code':'ER014','message':'UNAUTHORIZED (REVOKED TOKEN)'}
 unauthorized_invaild = {'code':'ER015','message':'UNAUTHORIZED (TOKEN INVALID)'}
 unauthorized_userdisabled = {'code':'ER016','message':'UNAUTHORIZED (TOKENS FROM DISABLED USERS)'}

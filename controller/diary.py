@@ -30,7 +30,7 @@ async def verify_token(req: Request):
         # Token is invalid
         raise HTTPException(status_code=401, detail=unauthorized_invaild)
     except KeyError:
-        raise HTTPException(status_code=400, detail=unauthorized)
+        raise HTTPException(status_code=401, detail=unauthorized)
 
 class add_diary(BaseModel):
     food_name:str
@@ -56,7 +56,7 @@ class update_diary(BaseModel):
 class delete_diary(BaseModel):
     no:int
 
-unauthorized = {'code':'ER013','message':'UNAUTHORIZED'}
+unauthorized = {'code':'ER013','message':'UNAUTHORIZED (Authorzation Header Not Found)'}
 unauthorized_revoked = {'code':'ER014','message':'UNAUTHORIZED (REVOKED TOKEN)'}
 unauthorized_invaild = {'code':'ER015','message':'UNAUTHORIZED (TOKEN INVALID)'}
 unauthorized_userdisabled = {'code':'ER016','message':'UNAUTHORIZED (TOKENS FROM DISABLED USERS)'}

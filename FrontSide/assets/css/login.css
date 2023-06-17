@@ -8,7 +8,7 @@
 .login_wrap .checkbox { margin: 15px auto; }
 .login_wrap .checkbox input[type=checkbox] + label { font-weight: 300; font-size: 12px; line-height: 2.1;}
 .login_wrap .btn { margin-bottom: 10px; }
-.login_wrap .btn input[type=submit] { width: 100%; border-color: #F43B00; background: #F43B00;}
+.login_wrap .btn input[type=submit] { width: 100%; border-color: #F43B00; background: #F43B00; cursor: pointer;}
 .login_wrap .btn input[type=submit]:valid { color: white; font-size: 18px; }
 .login_wrap .util_box {font-weight: 300; font-size: 12px; letter-spacing: -1px; display: flex; justify-content: space-between;}
 .login_wrap .util_box a:last-child em { font-weight: 500; }

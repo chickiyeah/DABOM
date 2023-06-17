@@ -43,6 +43,7 @@ const rstpw_button = document.querySelector("#rstpw_submit");
 const rstpw_email = document.querySelector("#rstpw_email");
 
 
+
 if (location.href.includes("findaccount")) {
   rstpw_button.addEventListener("click", (event) => {
     event.preventDefault();
@@ -133,8 +134,8 @@ if (location.href.includes("findaccount")) {
     return is_checked
   }
 
+
   async function LoadCookie(){
-    let cookie = document.cookie
     let lo_access_token = localStorage.getItem("access_token")
     let lo_refresh_token = localStorage.getItem("refresh_token")
     let access_token = sessionStorage.getItem('access_token');
@@ -146,36 +147,6 @@ if (location.href.includes("findaccount")) {
         localStorage.clear()
         location.href = "/login";
       }else{
-        /*let cookies = cookie.split(";");
-        //let keys = [];
-        //cookies.forEach(cookie => {
-        //  let key = cookie.split("=")[0];
-        //  keys.push(key);
-        //})
-        //console.log(keys)
-        if((keys.includes("access_token") && keys.includes("refresh_token")) || (keys.includes(" access_token") && keys.includes(" refresh_token"))){
-          cookies.forEach(async (cookie) => {
-            let key = cookie.split("=")[0];
-            if(key == "access_token" || key == " access_token") {
-              sessionStorage.setItem("access_token", lo_access_token);
-              let access = sessionStorage.getItem("access_token")
-            }
-
-            if(key == "refresh_token" || key == " refresh_token") {
-              sessionStorage.setItem("refresh_token", lo_refresh_token);
-            }
-            
-            await verify_token()
-            console.log("자동로그인 및 토큰 검증 성공.")
-            loading.style.display = 'none';
-            location.reload()
-          })
-        }else{
-          document.cookie = "access_token = ; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
-          document.cookie = "refresh_token = ; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
-          location.href = "/login";
-        }*/
-
         sessionStorage.setItem("refresh_token", lo_refresh_token);
         sessionStorage.setItem("access_token", lo_access_token);
         console.log(sessionStorage.getItem("refresh_token"));
@@ -188,8 +159,8 @@ if (location.href.includes("findaccount")) {
     }else{
       location.href = "/login";
     }
-  }}
-
+  }
+}
 
   async function verify_token() {
     return new Promise(async function(resolve, reject) {
@@ -210,10 +181,12 @@ if (location.href.includes("findaccount")) {
                     loading.style.display = 'none';
                 }else{
                     response.json().then(async (json) => {
+                      
                         let detail_error = json.detail;
-                        if (detail_error.code == "ER998") {
-                            console.log(refresh_token_fun())
-                            resolve(refresh_token_fun())
+                        console.log(detail_error)
+                        if (detail_error.code == "ER998" || detail_error.code == "ER999") {
+                            console.log(await refresh_token_fun())
+                            resolve(await refresh_token_fun())
                            
                         }else{
                             reject(JSON.stringify(detail_error))
@@ -266,6 +239,8 @@ async function refresh_token_fun() {
                 res.json().then((json) => {
                     sessionStorage.setItem("access_token", json.access_token);
                     sessionStorage.setItem("refresh_token", json.refresh_token);
+                    localStorage.setItem("access_token", json.access_token);
+                    localStorage.setItem("refresh_token", json.refresh_token);
                     resolve("token refresed")
                     document.querySelector(".loading").style.display = 'none';
                 })
@@ -365,7 +340,9 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
             document.querySelector(".loading").style.display = 'none';
           }
         });
-        // loginVal.remove();
+      } else if (data.status == 422) {
+        toast("이메일 혹은 비밀번호가 입력되지 않았습니다.")
+        document.querySelector(".loading").style.display = 'none';
       }else{
         reject("SERVICE ERROR WITH UNKNOWN ERROR : " + data)
       }
