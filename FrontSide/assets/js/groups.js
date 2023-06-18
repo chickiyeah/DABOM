@@ -244,6 +244,7 @@ async function list_public(page) {
                         document.querySelector(".next").href = `javascript:location.href='/groups?page=${page+1}&type=public'`
 
                         if (page > maxpage) {
+                            toast("검색 결과가 없습니다.")
                             location.href = "/groups?page="+maxpage+"&type=public"
                         }else{
                             for (let i = startpage; i < maxpage+1; i++) {
