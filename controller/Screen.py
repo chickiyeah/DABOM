@@ -74,6 +74,10 @@ async def group_edit(request: Request):
 async def friend_accept_reject(request: Request):
     return templates.TemplateResponse("email_friend_req.html", {"request":request})
 
+@ScreenRoute.get("/record_my")
+async def record_my(request: Request):
+    return templates.TemplateResponse("record_my.html", {"request":request})
+
 @ScreenRoute.get("/friend")
 async def friend(request: Request):
     return templates.TemplateResponse("friend.html", {"request":request})
