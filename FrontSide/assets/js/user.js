@@ -293,7 +293,7 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
       loginPw.value = "";
     }
     document.querySelector(".loading").style.display = 'flex';
-    fetch("http://localhost:8000/api/user/login", {
+    fetch("http://dabom.kro.kr/api/user/login", {
       method: "POST", 
       headers: {
         "Content-Type": "application/json",
