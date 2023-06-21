@@ -82,6 +82,7 @@
 .record_wrap .comment_box .top_info a object { display: block; width: 24px; margin-right: 5px; }
 .record_wrap .comment_box .write_info { display: flex; gap: 15px;align-items: center; margin-bottom: 50px; }
 .record_wrap .comment_box .write_info input { width: calc(100% - 110px);}
+.record_wrap .comment_box .write_info input::placeholder { transform:translate3d(0,1px,0); }
 .record_wrap .comment_box .write_info a { border: 1px solid #222; height: 40px; border-radius: 3px; line-height: 2.5; padding: 0 14px; }
 .record_wrap .comment_box .comment_list {}
 .record_wrap .comment_box .comment_list li + li { padding-top: 10px; border-top: 1px solid #909090; }
@@ -90,7 +91,7 @@
 .record_wrap .comment_box .comment_list .nick_box .profile_img { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; border: 1px solid #E1E1E1; }
 .record_wrap .comment_box .comment_list .nick_box .info .nick { font-size: 14px; }
 .record_wrap .comment_box .comment_list .nick_box .info .date { font-size: 12px; color: #909090; margin-top: 5px; }
-.record_wrap .comment_box .comment_list .text_box { font-weight: 100; padding-bottom: 15px; font-size: 14px; }
+.record_wrap .comment_box .comment_list .text_box { font-weight: 100; padding-bottom: 15px; font-size: 14px; line-height: 1.5;}
 .record_wrap .comment_box .comment_list .comment_btn { display: flex; gap: 5px; font-size: 14px; line-height: 1.4; padding-bottom: 5px; }
 .record_wrap .comment_box .comment_list .comment_btn i object { pointer-events: none; width: 16px; display: block; }
 
@@ -116,9 +117,31 @@
     .record_wrap .record_box ul li .info_box h2 { margin: 15px 0 15px; }
     .record_wrap .record_box ul li .info_box .txt_info { margin-bottom: 5px; }
     .record_wrap .month_item a { width: 45px; height: 45px; line-height: 3; }
+
+    /* 내기록 상세 */
+    .record_wrap .date_item .img_box { max-width: 70px; padding-bottom: 10px; }
+    .record_wrap .date_item .title { font-size: 30px; }
+    .record_wrap .record_slide .swiper-pagination { font-size: 10px; height: 25px;line-height: 2.5; }
+    .record_wrap .bottom_box .meal_box h2 { font-size: 18px;}
+    .record_wrap .bottom_box .meal_box .kcal { font-size: 16px;}
+    .record_wrap .bottom_box .info_box p { font-size: 16px; }
+    .record_wrap .bottom_box .btn_box a { font-size: 14px; }
+    .record_wrap .comment_box .top_info a { padding: 0 10px; height: 35px; font-size: 12px; font-weight: 500; }
+    .record_wrap .comment_box .top_info a object { width: 22px; }
+    .record_wrap .comment_box .write_info input { width: calc(100% - 95px);}
+    .record_wrap .comment_box .write_info { margin-bottom: 30px; }
+    .record_wrap .comment_box .write_info a { font-size: 14px; height: 35px; padding: 0 10px; }
 }
+
 @media all and (max-width: 400px) {
     /*내기록*/
     .record_wrap .record_box ul li .info_box h2 { font-size: 20px; }
+
+    /* 내기록 상세 */
+    .record_wrap .date_item .img_box { max-width: 60px; }
+    .record_wrap .date_item .title { font-size: 28px; margin-bottom: 30px; }
+    .record_wrap .date_item .date { margin-bottom: 15px; font-size: 14px; }
+    .record_wrap .comment_box .write_info input { width: calc(100% - 85px); }
+    .record_wrap .comment_box .write_info a { font-size: 12px; line-height: 3;}
 
 }

@@ -1,6 +1,7 @@
 import json
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi import APIRouter, HTTPException, Depends, Request, Response, Cookie
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import os
 from pymysql import IntegrityError
@@ -402,6 +403,10 @@ async def setinfomsg(data:setinfomsg ,authorized: bool = Depends(verify_tokenb))
         else:
             return "data updated"
 
+@userapi.get('/cookie_get')
+async def reading(refresh_token: Optional[str] = Cookie(None)):
+    return refresh_token
+
 @userapi.get("/get_user")
 async def get_users(id:str, authorized:bool = Depends(verify_admin_token)):
     if authorized:
@@ -522,7 +527,7 @@ async def user_delete(authorized:bool = Depends(verify_tokena)):
 er040 = {"code":"ER040", "message":"너무 많은 시도가 있었습니다. 나중에 시도해주세요."}
 
 @userapi.post('/login', response_model=LoginResponse, responses=login_responses)
-async def user_login(userdata: UserLogindata, request: Request):
+async def user_login(userdata: UserLogindata, request: Request, response: Response):
     email = userdata.email
     password = userdata.password
 
@@ -580,7 +585,8 @@ async def user_login(userdata: UserLogindata, request: Request):
     login_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     ip = request.client.host
     execute_sql("INSERT INTO loginlog VALUES ('{0}','{1}','{2}','{3}')".format(id, login_at, ip, userjson['Nickname']))
-
+    response.set_cookie(key="access_token", value=currentuser['idToken'], httponly=True)
+    response.set_cookie(key="refresh_token", value=currentuser['refreshToken'], httponly=True)
     return userjson
 
 er039 = {"code": "ER039", "message": "생일이 올바르지 않습니다."}

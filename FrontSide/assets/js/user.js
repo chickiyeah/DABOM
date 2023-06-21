@@ -152,9 +152,9 @@ if (location.href.includes("findaccount")) {
         console.log(sessionStorage.getItem("refresh_token"));
         console.log(sessionStorage.getItem("access_token"));
         await verify_token()
-            console.log("자동로그인 및 토큰 검증 성공.")
-            loading.style.display = 'none';
-            location.reload()
+        console.log("자동로그인 및 토큰 검증 성공.")
+        loading.style.display = 'none';
+        location.reload()
       }
     }else{
       location.href = "/login";
@@ -165,7 +165,7 @@ if (location.href.includes("findaccount")) {
   async function verify_token() {
     return new Promise(async function(resolve, reject) {
         //토큰 검증
-        let access_token = sessionStorage.getItem("access_token")
+        let access_token = localStorage.getItem("access_token")
         fetch("/api/user/verify_token",{
             method: 'POST',
             headers: {
@@ -184,9 +184,13 @@ if (location.href.includes("findaccount")) {
                       
                         let detail_error = json.detail;
                         console.log(detail_error)
-                        if (detail_error.code == "ER998" || detail_error.code == "ER999") {
-                            console.log(await refresh_token_fun())
-                            resolve(await refresh_token_fun())
+                        if (detail_error.code == "ER998") {
+                          await LoadCookie();
+                        }
+
+                        if (detail_error.code == "ER999") {
+                            await refresh_token_fun()
+                            //resolve(await refresh_token_fun())
                            
                         }else{
                             reject(JSON.stringify(detail_error))
@@ -207,7 +211,7 @@ if (location.href.includes("findaccount")) {
 
 async function refresh_token_fun() {
     return new Promise(async function(resolve, reject) {
-        let refresh_token = sessionStorage.getItem('refresh_token');
+        let refresh_token = localStorage.getItem('refresh_token');
         fetch("/api/user/refresh_token", {
             method: "post",
             headers: {
@@ -218,7 +222,7 @@ async function refresh_token_fun() {
             })
         })
         .then((res) => {
-            if (res.status !== 200) {
+            if (res.status != 200) {
                 if (res.status === 422) {
                     reject(new Error("로그인이 필요합니다."))
                     //localStorage.clear();
@@ -289,7 +293,7 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
       loginPw.value = "";
     }
     document.querySelector(".loading").style.display = 'flex';
-    fetch("http://dabom.kro.kr/api/user/login", {
+    fetch("http://localhost:8000/api/user/login", {
       method: "POST", 
       headers: {
         "Content-Type": "application/json",

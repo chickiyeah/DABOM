@@ -41,8 +41,7 @@
 .kcal_wrap .top_box .search_info { max-height: 360px; overflow-y: auto; }
 .kcal_wrap .top_box .search_info li { display: flex; justify-content: space-between; align-items: center; }
 .kcal_wrap .top_box .search_info li + li { margin-top: 15px; }
-.kcal_wrap .top_box .search_info li .info_txt { margin-right: auto; font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
- padding-left: 15px; width: calc(100% - 200px); margin-top: 2px; }
+.kcal_wrap .top_box .search_info li .info_txt { margin-right: auto; font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 15px; width: calc(100% - 220px); margin-top: 2px; }
 .kcal_wrap .top_box .search_info li .info_txt em { font-size: 16px; }
 .kcal_wrap .top_box .search_info li .checkbox  label { text-indent: -9999px; }
 .kcal_wrap .top_box .search_info li .right_box { display: flex; gap: 10px; align-items: center;}
@@ -81,8 +80,8 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
     color: white; font-size: 14px; border-radius: 3px; padding: 6px 10px 5px 10px; }
 .update_wrap .info_box .search_box a object { display: block; width: 14px; filter: brightness(0) invert(1); margin-bottom: 2px; }
 .update_wrap .info_box .text_item input { margin-bottom: 10px; }
-.update_wrap .info_box .text_item button { width: 100%; max-width: 300px; background: #F43B00; color: white; height: 45px;
-    font-size: 18px; font-weight: 700; line-height: 2.8; border-radius: 6px; text-align: center; display: block; margin: 30px auto 60px;}
+.update_wrap .info_box .text_item button { width: 100%; max-width: 300px; background: #F43B00; color: white; height: 45px; font-size: 18px; font-weight: 700; line-height: 2.8; border-radius: 6px; text-align: center; display: block; margin: 30px auto 60px;}
+ .update_wrap .info_box .btn_box { max-width: 900px; margin: 30px auto 60px; }
 
  /* 음식 수동 , 음식 데이터 추가 */
 .food_add_wrap .info_box { display: flex; flex-flow: column; width: 100%; max-width: 400px; margin: 200px auto 0; }
@@ -111,6 +110,9 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
 
     /* 칼로리 */
     .kcal_wrap .top_box { margin-top: 120px; margin-bottom: 50px; }
+    .kcal_wrap .top_box .search_info li .right_box p { font-size: 14px;}
+    .kcal_wrap .top_box .search_info li .right_box .more_btn { width: 80px; font-size: 12px; }
+    .kcal_wrap .top_box .search_info li .info_txt { padding-left: 10px; width: calc(100% - 200px); }
     .kcal_wrap .bottom_box .info_box .add_img { width: 45px; height: 45px; }
     .kcal_wrap .bottom_box .info_box .add_img object { width: 28px; }
     .kcal_wrap .bottom_box .info_box p { font-size: 24px; }
@@ -136,6 +138,10 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
 
     /* 칼로리 */
     .kcal_wrap .bottom_box .info_box p { font-size: 22px; }
+    .kcal_wrap .top_box .search_info li .checkbox input[type=checkbox] + label { background-size: 20px; }
+    .kcal_wrap .top_box .search_info li .info_txt { font-size: 16px; padding-left: 5px; width: calc(100% - 165px);}
+    .kcal_wrap .top_box .search_info li .right_box p { font-size: 12px; }
+    .kcal_wrap .top_box .search_info li .right_box .more_btn {  width: 60px; font-size: 10px;}
     .kcal_wrap .top_box .search_box .search_icon { right: 40px; }
     .kcal_wrap .top_box .search_box .search_icon object { width: 22px; }
     .kcal_wrap .top_box .search_box a object { width: 28px; }

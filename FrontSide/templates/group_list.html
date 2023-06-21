@@ -195,20 +195,122 @@
             </div>
         </div>
     </div>
-        <!-- .member 클릭했을때 나오는 팝업 -->
-        <div class="group_list_popup">
-            <div class="inner">
-                <div class="pop_close_head">
-                    <h2 id="mem_ul_title" class="title">그룹 맴버 138</h2>
-                    <a class="close_btn" href="javascript:">
-                        <object aria-label="닫기 아이콘" data="../assets/images/close-icon.svg" type="image/svg+xml"></object>
-                    </a>
-                </div>
-                <ul class="content_box">
-                    <!-- JS 추가 구역 -->
-                </ul>
+      <!-- .member 클릭했을때 나오는 팝업 -->
+      <div class="group_list_popup">
+        <div class="inner">
+            <div class="pop_close_head">
+                <h2 class="title">그룹 맴버 138</h2>
+                <a class="admin_check" href="javascript:">관리자 지정</a>
             </div>
+            <ul class="content_box">
+                <li>
+                    <label class="hidden">유저 이메일</label>
+                    <input type="text" placeholder="유저 이메일">
+                    <a href="javascript:">초대</a>
+                </li>
+                <li>
+                    <div class="img_box">
+                        <img alt="프로필이미지" src="../assets/images/default-profile.png">
+                    </div>
+                    <p class="name">다봄어터</p>
+                    <span><i class="crown_icon"></i>그룹장</span>
+                </li>
+                <li>
+                    <div class="img_box">
+                        <img alt="프로필이미지" src="../assets/images/default-profile.png">
+                    </div>
+                    <p class="name">다봄어터</p>
+                    <span><i class="crown_icon"></i>그룹장</span>
+                    <div class="checkbox">
+                        <input id="check2" type="checkbox">
+                        <label for="check2">선택</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="img_box">
+                        <img alt="프로필이미지" src="../assets/images/default-profile.png">
+                    </div>
+                    <p class="name">다봄어터</p>
+                    <div class="checkbox">
+                        <input id="check3" type="checkbox">
+                        <label for="check3">선택</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="img_box">
+                        <img alt="프로필이미지" src="../assets/images/default-profile.png">
+                    </div>
+                    <p class="name">다봄어터</p>
+                    <div class="checkbox">
+                        <input id="check4" type="checkbox">
+                        <label for="check4">선택</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="img_box">
+                        <img alt="프로필이미지" src="../assets/images/default-profile.png">
+                    </div>
+                    <p class="name">다봄어터</p>
+                    <div class="checkbox">
+                        <input id="check5" type="checkbox">
+                        <label for="check5">선택</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="img_box">
+                        <img alt="프로필이미지" src="../assets/images/default-profile.png">
+                    </div>
+                    <p class="name">다봄어터</p>
+                    <div class="checkbox">
+                        <input id="check6" type="checkbox">
+                        <label for="check6">선택</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="img_box">
+                        <img alt="프로필이미지" src="../assets/images/default-profile.png">
+                    </div>
+                    <p class="name">다봄어터</p>
+                    <div class="checkbox">
+                        <input id="check7" type="checkbox">
+                        <label for="check7">선택</label>
+                    </div>
+                </li>
+            </ul>
+            <button class="black_line_btn">뒤로가기</button>
         </div>
+    </div>
+    <!-- 수정하기 클릭했을때 나오는 팝업 -->
+    <div class="group_change_popup">
+        <div class="inner">
+            <div class="pop_close_head">
+                <h2 class="title">그룹 정보 수정</h2>
+                <a class="close_btn" href="javascript:">
+                    <object aria-label="닫기 아이콘" data="../assets/images/close-icon.svg" type="image/svg+xml"></object>
+                </a>
+            </div>
+            <div class="content_box">
+                <div class="filebox">
+                    <form action='' method="POST" entype="multipart/form-data">
+                        <input type="file" name="file" id="input">
+                        <label class="profile_img_box" for="input">
+                            <div class="upload_img">
+                                <img src="../assets/images/group-add-bg.png" alt="파일 업로드 이미지">
+                            </div>
+                        </label>
+                    </form>
+                </div>
+                <p class="upload_txt"><i><object data="../assets/images/img-icon.svg" type="image/svg+xml" aria-label="이미지아이콘"></object></i>사진을 <em>업로드</em> 해주세요</p>
+                <div class="info_box">
+                    <label class="hidden">그룹명</label>
+                    <input type="text">
+                    <label class="hidden">그룹 소개</label>
+                    <textarea name="" id="" rows="8"></textarea>
+                </div>
+            </div>
+            <button class="red_btn">수정하기</button>
+        </div>
+    </div>
 </main>
 </body>
 <script src="/assets/js/header.js"></script>
