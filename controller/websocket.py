@@ -201,13 +201,15 @@ async def delete_all(username: str, channel: str):
     return "all message delete"
 
 @chat.post("/uploadfile")
-async def upload(ext:str, image: UploadFile = File(), authorized:bool = Depends(verify_token)):
+async def upload(ext:str, image: UploadFile = File(), access_token: Optional[str] = Cookie(None)):
+    user = auth.verify_id_token(access_token, check_revoked=True)
+    uid = user['user_id']
     now = str(datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"))
     print(ext)
-    a = Storage.child("/dabom/"+authorized[1]+"/"+ext).put(image.file)
+    a = Storage.child("/dabom/"+uid+"/"+ext).put(image.file)
     #print(a)
     #print("https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+authorized[1]+"%2F"+str(now)+"?alt=media&token="+a['downloadTokens'])
-    return "https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+authorized[1]+"%2F"+ext+"?alt=media&token="+a['downloadTokens']
+    return "https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+uid+"%2F"+ext+"?alt=media&token="+a['downloadTokens']
 
 
 @chat.get("/members")
@@ -222,6 +224,7 @@ async def members(group: str):
 
     return res
 er036 = {"code":"ER036","message":"뮤트 시간 타입이 올바르지 않습니다. (m, h ,d)"}
+
 @chat.post("/mute")
 async def mute(group: str, num: int, time_type: str, user_id: str, reason: Optional[str] = None, authorized: bool = Depends(verify_token)):
     if authorized:

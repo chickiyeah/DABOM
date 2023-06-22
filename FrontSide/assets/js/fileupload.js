@@ -84,79 +84,60 @@ function makeRequest(extentsion, file, formdata) {
 async function verify_token() {
     return new Promise(async function(resolve, reject) {
         //토큰 검증
-        let access_token = sessionStorage.getItem("access_token")
-        fetch("/api/user/verify_token",{
-            method: 'POST',
+        fetch("/api/user/cookie/verify",{
+            method: 'GET',
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-                access_token: access_token
-            })     
+            credentials: "include"
         }).then(async function(response) {
             if (response.status !== 200) {
-                if (response.status === 422) {
-                    reject(new Error( "{\"code\": \"ER013\", \"message\": \"로그인이 필요합니다.\"}"))
-                    sessionStorage.clear();
+                if (response.status === 422) {                   
+                    await LoadCookie();
                     loading.style.display = 'none';
-                    location.href = "/login"
                 }else{
                     response.json().then(async (json) => {
                         let detail_error = json.detail;
+                        console.log(detail_error)
                         if (detail_error.code == "ER998") {
-                            resolve(refresh_token())
-                        }else{
-                            reject(JSON.stringify(detail_error));
-                            sessionStorage.clear();
-                            loading.style.display = 'none';
-                            location.href = "/login"
+                          await LoadCookie();
                         }
                     });
                 }
             } else {
-                resolve(response.json())
+              response.json().then(async (json) => {
+                loading.style.display = "none"
+                resolve(json[1])
+              })
             }
         })
     })
-}
+  }
 
-async function refresh_token() {
-    return new Promise(async function(resolve, reject) {
-        let refresh_token = sessionStorage.getItem('refresh_token');
-        fetch("/api/user/refresh_token", {
-            method: "post",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              refresh_token: refresh_token,
+  async function LoadCookie(){
+    let lo_access_token = localStorage.getItem("access_token")
+    let lo_refresh_token = localStorage.getItem("refresh_token")
+    if (location.href.includes("login") == false && location.href.includes("register") == false) {
+      if(lo_access_token == null || lo_refresh_token == null) {
+        console.log("here?")
+        localStorage.clear()
+        location.href = "/login";
+      }else{
+        fetch(`/api/user/cookie/autologin?access_token=${lo_access_token}&refresh_token=${lo_refresh_token}`, {method: 'GET'}).then((res) => {
+          if (res.status === 200) {
+            console.log("자동로그인 및 토큰 검증 성공.")
+            loading.style.display = 'none';
+            location.reload()
+          } else {
+            res.json().then((data) => {
+              let detail = data.detail
+              if (detail.code === "ER015") {
+                localStorage.clear();
+                location.href = "/login";
+              }
             })
-        })
-        .then((res) => {
-            if (res.status !== 200) {
-                if (res.status === 422) {
-                    reject(new Error("로그인이 필요합니다."))
-                    //localStorage.clear();
-                    sessionStorage.clear();
-                    loading.style.display = 'none';
-                    location.href = "/login"
-                }else{
-                    res.json().then((json) => {
-                        let detail_error = json.detail;
-                        reject(JSON.stringify(detail_error));
-                        //localStorage.clear();
-                        sessionStorage.clear();
-                        loading.style.display = 'none';
-                        location.href = "/login"
-                    });
-                }
-            }else{
-                res.json().then((json) => {
-                    sessionStorage.setItem("access_token", json.access_token);
-                    sessionStorage.setItem("refresh_token", json.refresh_token);
-                    resolve("token refresed")
-                })
-            }
-        })
-    })
-}
+          }
+        })  
+      }
+    }
+  }

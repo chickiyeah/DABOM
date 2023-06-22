@@ -138,138 +138,76 @@ if (location.href.includes("findaccount")) {
   async function LoadCookie(){
     let lo_access_token = localStorage.getItem("access_token")
     let lo_refresh_token = localStorage.getItem("refresh_token")
-    let access_token = sessionStorage.getItem('access_token');
-    let refresh_token = sessionStorage.getItem('refresh_token');
     if (location.href.includes("login") == false && location.href.includes("register") == false) {
-    if (access_token == null || refresh_token == null) {
       if(lo_access_token == null || lo_refresh_token == null) {
         console.log("here?")
         localStorage.clear()
         location.href = "/login";
       }else{
-        sessionStorage.setItem("refresh_token", lo_refresh_token);
-        sessionStorage.setItem("access_token", lo_access_token);
-        console.log(sessionStorage.getItem("refresh_token"));
-        console.log(sessionStorage.getItem("access_token"));
-        await verify_token()
-        console.log("자동로그인 및 토큰 검증 성공.")
-        loading.style.display = 'none';
-        location.reload()
+        fetch(`/api/user/cookie/autologin?access_token=${lo_access_token}&refresh_token=${lo_refresh_token}`, {method: 'GET'}).then((res) => {
+          if (res.status === 200) {
+            console.log("자동로그인 및 토큰 검증 성공.")
+            loading.style.display = 'none';
+            location.reload()
+          } else {
+            res.json().then((data) => {
+              let detail = data.detail
+              if (detail.code === "ER015") {
+                localStorage.clear();
+                location.href = "/login";
+              }
+            })
+          }
+        })  
       }
-    }else{
-      location.href = "/login";
     }
   }
-}
-
-  async function verify_token() {
-    return new Promise(async function(resolve, reject) {
-        //토큰 검증
-        let access_token = localStorage.getItem("access_token")
-        fetch("/api/user/verify_token",{
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                access_token: access_token
-            })     
-        }).then(async function(response) {
-            if (response.status !== 200) {
-                if (response.status === 422) {                   
-                    await LoadCookie();
-                    loading.style.display = 'none';
-                }else{
-                    response.json().then(async (json) => {
-                      
-                        let detail_error = json.detail;
-                        console.log(detail_error)
-                        if (detail_error.code == "ER998") {
-                          await LoadCookie();
-                        }
-
-                        if (detail_error.code == "ER999") {
-                            await refresh_token_fun()
-                            //resolve(await refresh_token_fun())
-                           
-                        }else{
-                            reject(JSON.stringify(detail_error))
-                            //localStorage.clear();
-                            sessionStorage.clear();
-                            loading.style.display = 'none';
-                            location.href = "/login"
-                        }
-                    });
-                }
-            } else {
-              loading.style.display = "none"
-                resolve(response.json())
-            }
-        })
-    })
-}
-
-async function refresh_token_fun() {
-    return new Promise(async function(resolve, reject) {
-        let refresh_token = localStorage.getItem('refresh_token');
-        fetch("/api/user/refresh_token", {
-            method: "post",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              refresh_token: refresh_token,
-            })
-        })
-        .then((res) => {
-            if (res.status != 200) {
-                if (res.status === 422) {
-                    reject(new Error("로그인이 필요합니다."))
-                    //localStorage.clear();
-                    sessionStorage.clear();
-                    loading.style.display = 'none';
-                    location.href = "/login"
-                }else{
-                    res.json().then((json) => {
-                        let detail_error = json.detail;
-                        reject(JSON.stringify(detail_error));
-                        //localStorage.clear();
-                        sessionStorage.clear();
-                        loading.style.display = 'none';
-                        location.href = "/login"
-                    });
-                }
-            }else{
-                res.json().then((json) => {
-                    sessionStorage.setItem("access_token", json.access_token);
-                    sessionStorage.setItem("refresh_token", json.refresh_token);
-                    localStorage.setItem("access_token", json.access_token);
-                    localStorage.setItem("refresh_token", json.refresh_token);
-                    resolve("token refresed")
-                    document.querySelector(".loading").style.display = 'none';
-                })
-            }
-        })
-    })
-}
 
 
 async function cookieSave(json) {
      if (is_checked()) {
-        // 만료시간 7일
-        var expires = new Date();
-        expires.setDate(expires.getDate() + 7);
-        localStorage.setItem("access_token", json.access_token)
-        localStorage.setItem("refresh_token", json.refresh_token);
-       // 액세스 토큰 쿠키 설정
-        //document.cookie = "access_token=" + json.access_token + "; expires=" + expires.toUTCString() + "; path=/ ;max-age=604800; SameSite=Lax;";
-              
-        // 리프레시 토큰 쿠키 설정
-        //document.cookie = "refresh_token=" + json.refresh_token + "; expires=" + expires.toUTCString() + "; path=/ ;max-age=604800; SameSite=Lax;";
+        fetch("/api/user/cookie/get_all", {method: "GET"}).then((res) => {
+          res.json().then((data) => {
+            console.log(data)
+            localStorage.setItem("access_token", data.access_token)
+            localStorage.setItem("refresh_token", data.refresh_token);
+          })
+        })
     }
 }
 
-
+async function verify_token() {
+  return new Promise(async function(resolve, reject) {
+      //토큰 검증
+      fetch("/api/user/cookie/verify",{
+          method: 'GET',
+          headers: {
+              "Content-Type": "application/json",
+          },
+          credentials: "include"
+      }).then(async function(response) {
+          if (response.status !== 200) {
+              if (response.status === 422) {                   
+                  await LoadCookie();
+                  loading.style.display = 'none';
+              }else{
+                  response.json().then(async (json) => {
+                      let detail_error = json.detail;
+                      console.log(detail_error)
+                      if (detail_error.code == "ER998") {
+                        await LoadCookie();
+                      }
+                  });
+              }
+          } else {
+            response.json().then(async (json) => {
+              loading.style.display = "none"
+              resolve(json[1])
+            })
+          }
+      })
+  })
+}
 
   // 로그인
 async function login() { //메인함수가 동기상태에요. 기본으로요? ㄴㄴ 앞에다가 async 붙이면 비동기 ㅇ아부붙이면 동아 아아기기
@@ -293,7 +231,7 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
       loginPw.value = "";
     }
     document.querySelector(".loading").style.display = 'flex';
-    fetch("http://dabom.kro.kr/api/user/login", {
+    fetch("http://localhost:8000/api/user/login", {
       method: "POST", 
       headers: {
         "Content-Type": "application/json",
@@ -307,14 +245,14 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
     .then(async function(data) { {}
       if (data.status == 200) {
         data.json().then(async (json) => {
-              sessionStorage.setItem("access_token", json.access_token)
-              sessionStorage.setItem("refresh_token", json.refresh_token)
-              //여기에 두면되죠 조건문 너어서
-              await cookieSave(json)
-              console.log(json);
-              document.querySelector(".loading").style.display = 'none';
-              resolve(json);
-              location.href = "/"
+            //sessionStorage.setItem("access_token", json.access_token)
+            //sessionStorage.setItem("refresh_token", json.refresh_token)
+            //여기에 두면되죠 조건문 너어서
+            await cookieSave(json)
+            console.log(json);
+            document.querySelector(".loading").style.display = 'none';
+            resolve(json);
+            location.href = "/"
           })
       } else if (data.status == 400 ) {
         data.json().then(async (json) => {

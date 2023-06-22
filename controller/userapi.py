@@ -1,7 +1,7 @@
 import json
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends, Request, Response, Cookie
-from fastapi.responses import JSONResponse
+from starlette.responses import RedirectResponse
 from pydantic import BaseModel
 import os
 from pymysql import IntegrityError
@@ -330,6 +330,39 @@ class refresh_token(BaseModel):
 class setinfomsg(BaseModel):
     msg: str
 
+async def verify_tokenc(access_token: str, refresh_token: str):
+    try:
+        # Verify the ID token while checking if the token is revoked by
+        # passing check_revoked=True.
+        user = auth.verify_id_token(access_token, check_revoked=True)
+        print(user)
+        # Token is valid and not revoked.
+        return True, user['email_verified']
+    except auth.RevokedIdTokenError:
+        # Token revoked, inform the user to reauthenticate or signOut().
+        raise HTTPException(status_code=401, detail=unauthorized_revoked)
+    except auth.UserDisabledError:
+        # Token belongs to a disabled user record.
+        raise HTTPException(status_code=401, detail=unauthorized_userdisabled)
+    except auth.InvalidIdTokenError:
+        # Token is invalid
+        if refresh_token == None:
+            return RedirectResponse(url= "/login")
+
+        try:
+            currentuser = Auth.refresh(refresh_token)
+            user = auth.verify_id_token(currentuser['idToken'], check_revoked=True)
+            return True, user['email_verified']
+        except requests.HTTPError as e:
+            error = json.loads(e.args[1])['error']['message']
+            if error == "TOKEN_EXPIRED":
+                raise HTTPException(status_code=401, detail=unauthorized_invaild)
+        
+    except auth.UserNotFoundError:
+        raise HTTPException(status_code=401, detail=User_NotFound)
+    except KeyError:
+        raise HTTPException(status_code=400, detail=unauthorized)
+
 async def verify_tokenb(req: Request): 
     try:
         token = req.headers["Authorization"]  
@@ -403,9 +436,109 @@ async def setinfomsg(data:setinfomsg ,authorized: bool = Depends(verify_tokenb))
         else:
             return "data updated"
 
-@userapi.get('/cookie_get')
+@userapi.get('/cookie/refresh')
 async def reading(refresh_token: Optional[str] = Cookie(None)):
     return refresh_token
+
+@userapi.get('/cookie/access')
+async def reading(access_token: Optional[str] = Cookie(None)):
+    return access_token
+
+@userapi.get('/cookie/get_all')
+async def get_all(access_token: Optional[str] = Cookie(None), refresh_token: Optional[str] = Cookie(None)):
+    res = {
+        "access_token": access_token,
+        "refresh_token": refresh_token
+    }
+
+    return res
+
+@userapi.get('/cookie/autologin')
+async def f_verify_token(response: Response, access_token: str, refresh_token:str):
+    try:
+        # Verify the ID token while checking if the token is revoked by
+        # passing check_revoked=True.
+        user = auth.verify_id_token(access_token, check_revoked=True)
+        print(user)
+        # Token is valid and not revoked.
+        return True, user['email_verified']
+    except auth.RevokedIdTokenError:
+        # Token revoked, inform the user to reauthenticate or signOut().
+        raise HTTPException(status_code=401, detail=unauthorized_revoked)
+    except auth.UserDisabledError:
+        # Token belongs to a disabled user record.
+        raise HTTPException(status_code=401, detail=unauthorized_userdisabled)
+    except auth.InvalidIdTokenError:
+        # Token is invalid
+        if refresh_token == None:
+            return RedirectResponse(url= "/login")
+
+        try:
+            currentuser = Auth.refresh(refresh_token)
+
+            response.set_cookie(key="access_token", value=currentuser['idToken'], httponly=True)
+            response.set_cookie(key="refresh_token", value=currentuser['refreshToken'], httponly=True)
+            response.set_cookie(key="userId", value=currentuser['userId'], httponly=True)
+            user = auth.verify_id_token(currentuser['idToken'], check_revoked=True)
+
+            return True, user['email_verified']
+        except requests.HTTPError as e:
+            error = json.loads(e.args[1])['error']['message']
+            if error == "TOKEN_EXPIRED":
+                raise HTTPException(status_code=401, detail=unauthorized_invaild)
+            
+            if error == "INVALID_REFRESH_TOKEN":
+                raise HTTPException(status_code=401, detail=unauthorized_invaild)
+            
+            print("Auto_Login_Error "+error)
+        
+    except auth.UserNotFoundError:
+        raise HTTPException(status_code=401, detail=User_NotFound)
+    except KeyError:
+        raise HTTPException(status_code=400, detail=unauthorized)
+
+@userapi.get('/cookie/verify')
+async def f_verify_token(response: Response, access_token: Optional[str] = Cookie(None), refresh_token: Optional[str] = Cookie(None)):
+    try:
+        # Verify the ID token while checking if the token is revoked by
+        # passing check_revoked=True.
+        user = auth.verify_id_token(access_token, check_revoked=True)
+        print(user)
+        # Token is valid and not revoked.
+        return True, user['email_verified']
+    except auth.RevokedIdTokenError:
+        # Token revoked, inform the user to reauthenticate or signOut().
+        raise HTTPException(status_code=401, detail=unauthorized_revoked)
+    except auth.UserDisabledError:
+        # Token belongs to a disabled user record.
+        raise HTTPException(status_code=401, detail=unauthorized_userdisabled)
+    except auth.InvalidIdTokenError:
+        # Token is invalid
+        if refresh_token == None:
+            return RedirectResponse(url= "/login")
+
+        try:
+            currentuser = Auth.refresh(refresh_token)
+
+            response.set_cookie(key="access_token", value=currentuser['idToken'], httponly=True)
+            response.set_cookie(key="refresh_token", value=currentuser['refreshToken'], httponly=True)
+            response.set_cookie(key="userId", value=currentuser['userId'], httponly=True)
+            user = auth.verify_id_token(currentuser['idToken'], check_revoked=True)
+            return True, user['email_verified']
+        except requests.HTTPError as e:
+            error = json.loads(e.args[1])['error']['message']
+            if error == "TOKEN_EXPIRED":
+                raise HTTPException(status_code=401, detail=unauthorized_invaild)
+            
+            if error == "INVALID_REFRESH_TOKEN":
+                raise HTTPException(status_code=401, detail=unauthorized_invaild)
+            
+            print("Verify_Error "+error)
+        
+    except auth.UserNotFoundError:
+        raise HTTPException(status_code=401, detail=User_NotFound)
+    except KeyError:
+        raise HTTPException(status_code=400, detail=unauthorized)
 
 @userapi.get("/get_user")
 async def get_users(id:str, authorized:bool = Depends(verify_admin_token)):
@@ -429,63 +562,6 @@ async def get_users(id:str, authorized:bool = Depends(verify_admin_token)):
         users = execute_sql("SELECT `Nickname`, `profile_image` FROM `user` WHERE "+back)
 
         return users 
-
-@userapi.post("/refresh_token")
-async def refresh_token(token: refresh_token, requset: Request):
-    client = requset.client.host
-
-    try:
-        refreshtoken = token.refresh_token
-    except AttributeError as e:
-        refreshtoken = token['refresh_token']
-
-    try:
-        currentuser = Auth.refresh(refreshtoken)
-    except requests.HTTPError as e:
-        error = json.loads(e.args[1])['error']['message']
-        if error == "TOKEN_EXPIRED":
-            raise HTTPException(400, Invalid_Token)
-        
-
-    userjson = {}
-    userjson['id'] = currentuser['userId']
-    userjson['access_token'] = currentuser['idToken']
-    userjson['refresh_token'] = currentuser['refreshToken']  
-
-    sql = "SELECT Login_IP FROM loginlog WHERE ID = \"%s\"" % userjson['id']
-    lastip = execute_sql(sql)[0]['Login_IP']
-
-    if lastip == client:
-        return userjson
-    else:
-        auth.revoke_refresh_tokens(userjson['id'])
-        raise HTTPException(401, login_ip_diffrent)
-
-@userapi.post("/verify_token", response_model=verify_token_res, responses=token_verify_responses)
-async def verify_token(token: verify_token):
-
-    try:
-        usertoken = token.access_token
-    except AttributeError as e:
-        usertoken = token['access_token']
-
-    try:
-        # Verify the ID token while checking if the token is revoked by
-        # passing check_revoked=True.
-        decoded_token = auth.verify_id_token(usertoken, check_revoked=True)
-        # Token is valid and not revoked.
-        nick = execute_sql(f"SELECT Nickname FROM user WHERE `ID` = '{decoded_token['uid']}'")[0]['Nickname']
-        decoded_token['nick'] = nick
-        return decoded_token
-    except auth.RevokedIdTokenError:
-        # Token revoked, inform the user to reauthenticate or signOut().
-        raise HTTPException(status_code=400, detail=Token_Revoke)
-    except auth.UserDisabledError:
-        # Token belongs to a disabled user record.
-        raise HTTPException(status_code=400, detail=User_Disabled)
-    except auth.InvalidIdTokenError:
-        # Token is invalid
-        raise HTTPException(status_code=400, detail=Invalid_Token)
     
 @userapi.post("/revoke_token", response_model=token_revoke_res, responses=token_revoke_responses)
 async def revoke_token(token: token_revoke):
@@ -566,8 +642,8 @@ async def user_login(userdata: UserLogindata, request: Request, response: Respon
     userjson['access_token'] = currentuser['idToken']
     userjson['refresh_token'] = currentuser['refreshToken']
     userjson['expires_in'] = currentuser['expiresIn']
-    verify = await verify_token(userjson)
-    if verify['email_verified'] == False:
+    verify = await verify_tokenc(access_token=currentuser['idToken'], refresh_token=currentuser['refreshToken'])
+    if verify[1] == False:
         """
         res = auth.generate_email_verification_link(email, action_code_settings=None, app=None)
         message = res.replace("lang=en", "lang=ko")
@@ -587,6 +663,7 @@ async def user_login(userdata: UserLogindata, request: Request, response: Respon
     execute_sql("INSERT INTO loginlog VALUES ('{0}','{1}','{2}','{3}')".format(id, login_at, ip, userjson['Nickname']))
     response.set_cookie(key="access_token", value=currentuser['idToken'], httponly=True)
     response.set_cookie(key="refresh_token", value=currentuser['refreshToken'], httponly=True)
+    response.set_cookie(key="userId", value=currentuser['localId'], httponly=True)
     return userjson
 
 er039 = {"code": "ER039", "message": "생일이 올바르지 않습니다."}
@@ -1021,3 +1098,58 @@ async def admin_send_email(userdata: EmailSend, authorized: bool = Depends(verif
         return {"detail":"Email Sent"}
     else:
         raise HTTPException(status_code=401, detail=unauthorized)
+    
+    """@userapi.post("/verify_token", response_model=verify_token_res, responses=token_verify_responses)
+async def verify_token(token: verify_token):
+
+    try:
+        usertoken = token.access_token
+    except AttributeError as e:
+        usertoken = token['access_token']
+
+    try:
+        # Verify the ID token while checking if the token is revoked by
+        # passing check_revoked=True.
+        decoded_token = auth.verify_id_token(usertoken, check_revoked=True)
+        # Token is valid and not revoked.
+        nick = execute_sql(f"SELECT Nickname FROM user WHERE `ID` = '{decoded_token['uid']}'")[0]['Nickname']
+        decoded_token['nick'] = nick
+        return decoded_token
+    except auth.RevokedIdTokenError:
+        # Token revoked, inform the user to reauthenticate or signOut().
+        raise HTTPException(status_code=400, detail=Token_Revoke)
+    except auth.UserDisabledError:
+        # Token belongs to a disabled user record.
+        raise HTTPException(status_code=400, detail=User_Disabled)
+    except auth.InvalidIdTokenError:
+        # Token is invalid
+        raise HTTPException(status_code=400, detail=Invalid_Token)"""
+    
+
+"""@userapi.post("/refresh_token")
+async def refresh_token(requset: Request, refresh_token: Optional[str] = Cookie(None)):
+    client = requset.client.host
+    if refresh_token == None:
+        return RedirectResponse(url= "/login")
+
+    try:
+        currentuser = Auth.refresh(refresh_token)
+    except requests.HTTPError as e:
+        error = json.loads(e.args[1])['error']['message']
+        if error == "TOKEN_EXPIRED":
+            raise HTTPException(400, Invalid_Token)
+        
+
+    userjson = {}
+    userjson['id'] = currentuser['userId']
+    userjson['access_token'] = currentuser['idToken']
+    userjson['refresh_token'] = currentuser['refreshToken']  
+
+    sql = "SELECT Login_IP FROM loginlog WHERE ID = \"%s\"" % userjson['id']
+    lastip = execute_sql(sql)[0]['Login_IP']
+
+    if lastip == client:
+        return userjson
+    else:
+        auth.revoke_refresh_tokens(userjson['id'])
+        raise HTTPException(401, login_ip_diffrent)"""
