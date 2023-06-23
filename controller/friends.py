@@ -1,7 +1,8 @@
 import json
 import string
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Depends, Request, File, UploadFile
+from fastapi import APIRouter, HTTPException, Depends, Request, File, UploadFile, Cookie, Response, requests
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from controller.database import execute_sql
 from firebase_admin import auth
@@ -30,6 +31,18 @@ s.login("noreply.dabom", "sxhmurnajtenjtbr")
 bitly = pyshorteners.Shortener(api_key='6099ddc45ca69789ca421d865572f3d89c3c34ca')
 
 friendapi = APIRouter(prefix="/api/friends", tags=["friend"])
+
+firebaseConfig = {
+    "apiKey": "AIzaSyC58Oh7Lyb7EoB0FWZQ-qMqfqLtiTJIIFw",
+    "authDomain": "dabom-ca6fe.firebaseapp.com",
+    "projectId": "dabom-ca6fe",
+    "storageBucket": "dabom-ca6fe.appspot.com",
+    "messagingSenderId": "607249280151",
+    "appId": "1:607249280151:web:abcff56e0b43b1abb00dd2",
+    "databaseURL":"https://dabom-ca6fe-default-rtdb.firebaseio.com/"
+}
+
+Auth = Firebase(firebaseConfig).auth()
 
 async def verify_token(req: Request): 
     try:
@@ -62,13 +75,16 @@ class request_friend(BaseModel):
     id: str
 
 @friendapi.get("/list")
-async def friend_list(page: int, authorized: bool = Depends(verify_token)):
-    if authorized:
+async def friend_list(response: Response, page: int, access_token: Optional[str] = Cookie(None), refresh_token: Optional[str] = Cookie(None)):
+    try:
+        # Verify the ID token while checking if the token is revoked by
+        # passing check_revoked=True.
+        user = auth.verify_id_token(access_token, check_revoked=True)
+        print(user)
         if page <= 0:
             raise HTTPException(400, "Page Must be greater than 0")
         
-        er042 = {"code":"ER042","message":"친구가 존재하지 않습니다."}
-        uid = authorized[1]
+        uid = user['user_id']
         page = page - 1
         sql = "SELECT friends FROM user WHERE ID = '%s'" % (uid)
         res = json.loads(execute_sql(sql)[0]['friends'])
@@ -94,6 +110,70 @@ async def friend_list(page: int, authorized: bool = Depends(verify_token)):
         }
 
         return res
+    except auth.RevokedIdTokenError:
+        # Token revoked, inform the user to reauthenticate or signOut().
+        raise HTTPException(status_code=401, detail=unauthorized_revoked)
+    except auth.UserDisabledError:
+        # Token belongs to a disabled user record.
+        raise HTTPException(status_code=401, detail=unauthorized_userdisabled)
+    except auth.InvalidIdTokenError:
+        # Token is invalid
+        if refresh_token == None:
+            return RedirectResponse(url= "/login")
+
+        try:
+            currentuser = Auth.refresh(refresh_token)
+
+            response.set_cookie(key="access_token", value=currentuser['idToken'], httponly=True)
+            response.set_cookie(key="refresh_token", value=currentuser['refreshToken'], httponly=True)
+            response.set_cookie(key="userId", value=currentuser['userId'], httponly=True)
+            user = auth.verify_id_token(currentuser['idToken'], check_revoked=True)
+
+            if page <= 0:
+                raise HTTPException(400, "Page Must be greater than 0")
+        
+            uid = user['user_id']
+            page = page - 1
+            sql = "SELECT friends FROM user WHERE ID = '%s'" % (uid)
+            res = json.loads(execute_sql(sql)[0]['friends'])
+            if len(res) == 0:
+                e_res = {
+                    'friends': [],
+                    'amount': 0,
+                    'page': page +1
+                }
+
+                return e_res
+            
+            sql = "SELECT * FROM infomsg WHERE"
+            for e in res:
+                sql = sql + " ID = '%s' OR" % e
+
+            sql = sql[0:-3] + " LIMIT 7 OFFSET %s" % (page * 7)
+            
+            res = {
+                'friends': execute_sql(sql),
+                'amount': len(res),
+                'page': page +1
+            }
+
+            return res
+        except requests.HTTPError as e:
+            error = json.loads(e.args[1])['error']['message']
+            if error == "TOKEN_EXPIRED":
+                raise HTTPException(status_code=401, detail=unauthorized_invaild)
+            
+            if error == "INVALID_REFRESH_TOKEN":
+                raise HTTPException(status_code=401, detail=unauthorized_invaild)
+            
+            print("Auto_Login_Error "+error)
+        
+    except auth.UserNotFoundError:
+        raise HTTPException(status_code=401, detail=User_NotFound)
+    except KeyError:
+        raise HTTPException(status_code=400, detail=unauthorized)
+    except ValueError:
+        raise HTTPException(status_code=422)
 
 @friendapi.post("/request")
 async def friend_request(uid:str, authorized: bool = Depends(verify_token)):

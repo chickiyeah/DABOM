@@ -294,6 +294,8 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
 
 
 
+
+
 // 아이디, 비밀번호 찾기 탭 on 처리
 const tab_id = document.querySelector('#tab_id');
 const tab_pw = document.querySelector('#tab_pw');

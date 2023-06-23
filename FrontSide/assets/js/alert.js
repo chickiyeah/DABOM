@@ -44,76 +44,15 @@ async function get_unread_amount() {
     })
 }
 
-async function LoadCookie(){
-    let cookie = document.cookie
-    let lo_access_token = localStorage.getItem("access_token")
-    let lo_refresh_token = localStorage.getItem("refresh_token")
-    let access_token = sessionStorage.getItem('access_token');
-    let refresh_token = sessionStorage.getItem('refresh_token');
-    if (location.href.includes("login") == false && location.href.includes("register") == false) {
-    if (access_token == null || refresh_token == null) {
-      if(lo_access_token == null || lo_refresh_token == null) {
-        console.log("here?")
-        localStorage.clear()
-        location.href = "/login";
-      }else{
-        /*let cookies = cookie.split(";");
-        //let keys = [];
-        //cookies.forEach(cookie => {
-        //  let key = cookie.split("=")[0];
-        //  keys.push(key);
-        //})
-        //console.log(keys)
-        if((keys.includes("access_token") && keys.includes("refresh_token")) || (keys.includes(" access_token") && keys.includes(" refresh_token"))){
-          cookies.forEach(async (cookie) => {
-            let key = cookie.split("=")[0];
-            if(key == "access_token" || key == " access_token") {
-              sessionStorage.setItem("access_token", lo_access_token);
-              let access = sessionStorage.getItem("access_token")
-            }
-
-            if(key == "refresh_token" || key == " refresh_token") {
-              sessionStorage.setItem("refresh_token", lo_refresh_token);
-            }
-            
-            await verify_token()
-            console.log("자동로그인 및 토큰 검증 성공.")
-            loading.style.display = 'none';
-            location.reload()
-          })
-        }else{
-          document.cookie = "access_token = ; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
-          document.cookie = "refresh_token = ; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
-          location.href = "/login";
-        }*/
-
-        sessionStorage.setItem("refresh_token", lo_refresh_token);
-        sessionStorage.setItem("access_token", lo_access_token);
-        console.log(sessionStorage.getItem("refresh_token"));
-        console.log(sessionStorage.getItem("access_token"));
-        await verify_token()
-            console.log("자동로그인 및 토큰 검증 성공.")
-            loading.style.display = 'none';
-            location.reload()
-      }
-    }else{
-      location.href = "/login";
-    }
-  }}
-
-
-  async function verify_token() {
+async function verify_token() {
     return new Promise(async function(resolve, reject) {
         //토큰 검증
-        let access_token = sessionStorage.getItem("access_token")
-        fetch("/api/user/verify_token",{
-            method: 'POST',
+        fetch("/api/user/cookie/verify",{
+            method: 'GET',
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-                access_token: access_token
-            })     
+            credentials: "include"
         }).then(async function(response) {
             if (response.status !== 200) {
                 if (response.status === 422) {                   
@@ -122,68 +61,50 @@ async function LoadCookie(){
                 }else{
                     response.json().then(async (json) => {
                         let detail_error = json.detail;
+                        console.log(detail_error)
                         if (detail_error.code == "ER998") {
-                            console.log(refresh_token_fun())
-                            resolve(refresh_token_fun())
-                           
-                        }else{
-                            reject(JSON.stringify(detail_error))
-                            //localStorage.clear();
-                            sessionStorage.clear();
-                            loading.style.display = 'none';
-                            location.href = "/login"
+                          await LoadCookie();
                         }
                     });
                 }
             } else {
+              response.json().then(async (json) => {
                 loading.style.display = "none"
-                resolve(response.json())
+                resolve(json[1])
+              })
             }
         })
     })
-}
+  }
 
-async function refresh_token() {
-    return new Promise(async function(resolve, reject) {
-        let refresh_token = sessionStorage.getItem('refresh_token');
-        fetch("/api/user/refresh_token", {
-            method: "post",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              refresh_token: refresh_token,
+  async function LoadCookie(){
+    let lo_access_token = localStorage.getItem("access_token")
+    let lo_refresh_token = localStorage.getItem("refresh_token")
+    if (location.href.includes("login") == false && location.href.includes("register") == false) {
+      if(lo_access_token == null || lo_refresh_token == null) {
+        console.log("here?")
+        localStorage.clear()
+        location.href = "/login";
+      }else{
+        fetch(`/api/user/cookie/autologin?access_token=${lo_access_token}&refresh_token=${lo_refresh_token}`, {method: 'GET'}).then((res) => {
+          if (res.status === 200) {
+            console.log("자동로그인 및 토큰 검증 성공.")
+            loading.style.display = 'none';
+            location.reload()
+          } else {
+            res.json().then((data) => {
+              let detail = data.detail
+              if (detail.code === "ER015") {
+                localStorage.clear();
+                location.href = "/login";
+              }
             })
-        })
-        .then((res) => {
-            if (res.status !== 200) {
-                if (res.status === 422) {
-                    reject(new Error("로그인이 필요합니다."))
-                    //localStorage.clear();
-                    sessionStorage.clear();
-                    loading.style.display = 'none';
-                    location.href = "/login"
-                }else{
-                    res.json().then((json) => {
-                        let detail_error = json.detail;
-                        reject(JSON.stringify(detail_error));
-                        //localStorage.clear();
-                        sessionStorage.clear();
-                        loading.style.display = 'none';
-                        location.href = "/login"
-                    });
-                }
-            }else{
-                res.json().then((json) => {
-                    sessionStorage.setItem("access_token", json.access_token);
-                    sessionStorage.setItem("refresh_token", json.refresh_token);
-                    resolve("token refresed")
-                })
-            }
-        })
-    })
-}
-
+          }
+        })  
+      }
+    }
+  }
+  
 //알림 채널명 : Va8%r@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr
 async function connnect() {
     let user = await verify_token()

@@ -258,7 +258,7 @@ token_revoke_responses = {
                         "value": {"detail":User_NotFound}
                     },
                     "Invalid Token": {
-                        "summary": "토큰이 유효하지 않습니다.",
+                        "summary": "토큰이 유효하지 않 습니다.",
                         "value": {"detail":Invalid_Token}
                     }
                 }
@@ -496,6 +496,8 @@ async def f_verify_token(response: Response, access_token: str, refresh_token:st
         raise HTTPException(status_code=401, detail=User_NotFound)
     except KeyError:
         raise HTTPException(status_code=400, detail=unauthorized)
+    except ValueError:
+        raise HTTPException(status_code=422)
 
 @userapi.get('/cookie/verify')
 async def f_verify_token(response: Response, access_token: Optional[str] = Cookie(None), refresh_token: Optional[str] = Cookie(None)):
@@ -539,9 +541,59 @@ async def f_verify_token(response: Response, access_token: Optional[str] = Cooki
         raise HTTPException(status_code=401, detail=User_NotFound)
     except KeyError:
         raise HTTPException(status_code=400, detail=unauthorized)
+    except ValueError:
+        raise HTTPException(status_code=422)
+    
+@userapi.get('/cookie/get_info')
+async def f_verify_token(response: Response, access_token: Optional[str] = Cookie(None), refresh_token: Optional[str] = Cookie(None)):
+    try:
+        # Verify the ID token while checking if the token is revoked by
+        # passing check_revoked=True.
+        currentuser = auth.verify_id_token(access_token, check_revoked=True)
+        print(currentuser)
+        # Token is valid and not revoked.
+        user = execute_sql("SELECT `Nickname`, `profile_image`, `ID` FROM `user` WHERE `ID` = '"+currentuser['user_id']+"'")
+
+        return user
+    except auth.RevokedIdTokenError:
+        # Token revoked, inform the user to reauthenticate or signOut().
+        raise HTTPException(status_code=401, detail=unauthorized_revoked)
+    except auth.UserDisabledError:
+        # Token belongs to a disabled user record.
+        raise HTTPException(status_code=401, detail=unauthorized_userdisabled)
+    except auth.InvalidIdTokenError:
+        # Token is invalid
+        if refresh_token == None:
+            return RedirectResponse(url= "/login")
+
+        try:
+            currentuser = Auth.refresh(refresh_token)
+
+            response.set_cookie(key="access_token", value=currentuser['idToken'], httponly=True)
+            response.set_cookie(key="refresh_token", value=currentuser['refreshToken'], httponly=True)
+            response.set_cookie(key="userId", value=currentuser['userId'], httponly=True)
+            user = execute_sql("SELECT `Nickname`, `profile_image`, `ID` FROM `user` WHERE `ID` = '"+currentuser['userId']+"'")
+
+            return user
+        except requests.HTTPError as e:
+            error = json.loads(e.args[1])['error']['message']
+            if error == "TOKEN_EXPIRED":
+                raise HTTPException(status_code=401, detail=unauthorized_invaild)
+            
+            if error == "INVALID_REFRESH_TOKEN":
+                raise HTTPException(status_code=401, detail=unauthorized_invaild)
+            
+            print("Verify_Error "+error)
+        
+    except auth.UserNotFoundError:
+        raise HTTPException(status_code=401, detail=User_NotFound)
+    except KeyError:
+        raise HTTPException(status_code=400, detail=unauthorized)
+    except ValueError:
+        raise HTTPException(status_code=422)
 
 @userapi.get("/get_user")
-async def get_users(id:str, authorized:bool = Depends(verify_admin_token)):
+async def get_user(id:str, authorized:bool = Depends(verify_admin_token)):
     if authorized:
         user = execute_sql("SELECT `Nickname`, `profile_image`, `ID` FROM `user` WHERE `ID` = '"+id+"'")
 

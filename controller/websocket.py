@@ -205,7 +205,6 @@ async def upload(ext:str, image: UploadFile = File(), access_token: Optional[str
     user = auth.verify_id_token(access_token, check_revoked=True)
     uid = user['user_id']
     now = str(datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"))
-    print(ext)
     a = Storage.child("/dabom/"+uid+"/"+ext).put(image.file)
     #print(a)
     #print("https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+authorized[1]+"%2F"+str(now)+"?alt=media&token="+a['downloadTokens'])
@@ -215,6 +214,7 @@ async def upload(ext:str, image: UploadFile = File(), access_token: Optional[str
 @chat.get("/members")
 async def members(group: str):
     guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{group}'")
+    print(guilds)
     if guilds == None or len(guilds) == 0:
         raise HTTPException(400, er035)
 
