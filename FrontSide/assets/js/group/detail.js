@@ -32,7 +32,7 @@ const banner_img = document.querySelector(".banner_img").children[0]
 const title = document.querySelector(".top_txt").children[0]
 const members = document.querySelector(".top_txt").children[1]
 const member_list = document.querySelector(".member")
-const cls_btn = document.querySelector(".close_btn")
+const cls_btn = document.querySelector("#close_mem_list")
 const mem_ul = document.querySelector(".content_box")
 const mem_ul_title = document.querySelector("#mem_ul_title")
 
@@ -71,7 +71,7 @@ function get_group_data(id) {
                 let profile = u_data.profile_image || "../assets/images/default-profile.png"
                 let infomsg = u_data.infomsg
                 if (mem === owner) {
-                    let html = `<li>
+                    let html = `<li id="owner">
                                     <div class="img_box">
                                         <img alt="프로필이미지" src="${profile}">
                                     </div>
@@ -81,12 +81,16 @@ function get_group_data(id) {
 
                     mem_ul.insertAdjacentHTML("beforeend", html)
                 } else if (ops.includes(mem)) {
-                    let html = `<li>
+                    let html = `<li id="sub_owner">
                                     <div class="img_box">
                                         <img alt="프로필이미지" src="${profile}">
                                     </div>
                                     <p class="name">${nick}</p>
                                     <span><i id="crown_icon_sub" class="crown_icon"></i>관리자</span>
+                                    <div class="checkbox">
+                                        <input id="check7" type="checkbox" checked>
+                                        <label for="check7">선택</label>
+                                    </div>
                                 </li>`
 
                     mem_ul.insertAdjacentHTML("beforeend", html)
@@ -96,6 +100,10 @@ function get_group_data(id) {
                                         <img alt="프로필이미지" src="${profile}">
                                     </div>
                                     <p class="name">${nick}</p>
+                                    <div class="checkbox">
+                                        <input id="check7" type="checkbox">
+                                        <label for="check7">선택</label>
+                                    </div>
                                 </li>`
 
                     mem_ul.insertAdjacentHTML("beforeend", html)

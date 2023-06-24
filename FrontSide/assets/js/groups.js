@@ -96,6 +96,8 @@ const reg_email = /[a-zA-Z0-9]+@[a-z]+\.[a-z]{2,3}$/i;
 var element_invite_group_button = document.createElement("button");
 var element_invite_group_email_input = document.createElement("input");
 
+const loading = document.querySelector(".loading");
+
 clickEnter(element_invite_group_email_input, element_invite_group_button);
 
 var joined
@@ -257,7 +259,7 @@ async function verify_token() {
     }
   }
 
-async function list_public(page) {
+  async function list_public(page) {
     if (page <= 0) {
         return new Error("wrong page")
     }else{
@@ -272,9 +274,7 @@ async function list_public(page) {
                 // 가입중인거
                 fetch(`/api/group/p_groups`, {
                     method: 'GET',
-                    headers: {
-                        Authorization: access_token
-                    }
+                    credentials: "include"
                 }).then((res) => {
                     res.json().then((data) => {
                         joined = JSON.parse(data.groups)
@@ -361,15 +361,12 @@ async function list_public(page) {
 }
 
 async function mygroups(page) {
-    let access_token = sessionStorage.getItem("access_token")
     if (page <= 0) {
         return new Error("wrong page")
     }else{
         fetch(`/api/group/mygroups/${page}`, {
             method: 'GET',
-            headers: {
-                Authorization: access_token
-            }
+            credentials: "include"
         }).then((res) => {
             if (res.status === 200) {
                 res.json().then((data) => {
@@ -446,15 +443,12 @@ async function mygroups(page) {
 }
 
 async function list_owned(page) {
-    let access_token = sessionStorage.getItem("access_token")
     if (page <= 0) {
         return new Error("wrong page")
     }else{
         fetch(`/api/group/owned_groups/${page}`, {
             method: 'GET',
-            headers: {
-                Authorization: access_token
-            }
+            credentials: "include"
         }).then((res) => {
             res.json().then((data) => {
                 let groups = data.groups

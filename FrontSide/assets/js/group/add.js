@@ -37,9 +37,9 @@ add_button.onclick = () => {
         fetch("/api/group/create",{
             method: "POST",
             headers:{
-                'Authorization': access_token,
                 "content-type": "application/json"
             },
+            credentials: "include",
             body: JSON.stringify({
                 'name': title_input.value,
                 'description': '소개글을 수정해보세요!',

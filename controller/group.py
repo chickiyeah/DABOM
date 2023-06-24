@@ -145,7 +145,7 @@ async def create_group(data: create_group, userId: Optional[str] = Cookie(None))
         
     baseimage = "https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2Fdabom_guild_default.png?alt=media&token=23ed15dd-f22a-4178-b42d-bb42d0a489e5&_gl=1*ktpbe2*_ga*MTAzODYxMDc2OS4xNjgzODYyNjY2*_ga_CW55HF8NVT*MTY4NjQ2OTg3Ni4yMi4xLjE2ODY0NzAwMDAuMC4wLjA."
 
-    pl_groups = execute_sql("SELECT `groups` FROM user WHERE `ID` = '%s'" % userId)[0]['groups']
+    pl_groups = json.loads(execute_sql("SELECT `groups` FROM user WHERE `ID` = '%s'" % userId)[0]['groups'])
 
     id = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'group_id'")[0]['no'])+1
     owner = userId
