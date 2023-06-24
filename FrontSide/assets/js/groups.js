@@ -34,7 +34,7 @@ window.addEventListener('DOMContentLoaded', async function() {
                                 let dh = height - 100
                                 toast_s.style.bottom = "auto"
                                 toast_s.style.top = dh + "px"
-                            
+                                await verify_token();
                                 if (type === "public") {
                                     document.querySelector("#public").style.display = "flex"
                                     document.querySelector("#joined").remove()
@@ -196,13 +196,74 @@ function apply_edit_event() {
     })
 }
 
+async function verify_token() {
+    return new Promise(async function(resolve, reject) {
+        //토큰 검증
+        fetch("/api/user/cookie/verify",{
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include"
+        }).then(async function(response) {
+            if (response.status !== 200) {
+                if (response.status === 422) {                   
+                    await LoadCookie();
+                    loading.style.display = 'none';
+                }else{
+                    response.json().then(async (json) => {
+                        let detail_error = json.detail;
+                        console.log(detail_error)
+                        if (detail_error.code == "ER998") {
+                          await LoadCookie();
+                        }
+                    });
+                }
+            } else {
+              response.json().then(async (json) => {
+                loading.style.display = "none"
+                resolve(json[1])
+              })
+            }
+        })
+    })
+  }
+
+  async function LoadCookie(){
+    let lo_access_token = localStorage.getItem("access_token")
+    let lo_refresh_token = localStorage.getItem("refresh_token")
+    if (location.href.includes("login") == false && location.href.includes("register") == false) {
+      if(lo_access_token == null || lo_refresh_token == null) {
+        console.log("here?")
+        localStorage.clear()
+        location.href = "/login";
+      }else{
+        fetch(`/api/user/cookie/autologin?access_token=${lo_access_token}&refresh_token=${lo_refresh_token}`, {method: 'GET'}).then((res) => {
+          if (res.status === 200) {
+            console.log("자동로그인 및 토큰 검증 성공.")
+            loading.style.display = 'none';
+            location.reload()
+          } else {
+            res.json().then((data) => {
+              let detail = data.detail
+              if (detail.code === "ER015") {
+                localStorage.clear();
+                location.href = "/login";
+              }
+            })
+          }
+        })  
+      }
+    }
+  }
+
 async function list_public(page) {
     if (page <= 0) {
         return new Error("wrong page")
     }else{
-        let access_token = sessionStorage.getItem("access_token")
         fetch(`/api/group/list/${page}`, {
-            method: 'GET'
+            method: 'GET',
+            credentials: "include"
         }).then((res) => {
             res.json().then((data) => {
                 let groups = data.groups
