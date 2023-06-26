@@ -5,13 +5,10 @@ window.addEventListener('DOMContentLoaded', async function() {
             let key = param.split('=')[0];
             let value = param.split('=')[1];
             if (key === 'id') {
-                let access_token = sessionStorage.getItem("access_token")
                 // 가입중인거
                 fetch(`/api/group/p_groups`, {
                 method: 'GET',
-                headers: {
-                    Authorization: access_token
-                }
+                credentials: "include"
                 }).then((res) => {
                     res.json().then((data) => {
                         let joined = JSON.parse(data.groups)

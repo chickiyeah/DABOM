@@ -26,13 +26,23 @@
 
 /*!* 고정 알림 *!*/
 .right_menu { position: fixed; right: 35px; top: 25px; z-index: 500;}
-.right_menu .bell , .right_menu .setting{ display: inline-flex; position: relative; width: 40px; height: 40px;background: white;
+.right_menu .bell { margin-right: 5px; }
+.right_menu .bell , .right_menu .setting { display: inline-flex; position: relative; width: 40px; height: 40px;background: white;
     border-radius: 50%; box-shadow: 0 4px 4px rgba(204, 204, 204, 0.25); justify-content: center; align-items: center; }
-.right_menu .bell:before { content: ""; display: block; width: 5px; height: 5px; background: #F43B00; border-radius: 50%;
+.right_menu .bell #bell_new_alert { content: ""; display: block; width: 5px; height: 5px; background: #F43B00; border-radius: 50%;
     position: absolute; right: 8px; top: 7px; z-index: 500; }
-.right_menu a + a { margin-left: 5px; }
 .right_menu .setting_menu { position: absolute; right: -20px; top: 55px; background: #FFFFFF;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25); border-radius: 6px; padding: 10px; z-index: 500; }
+.right_menu .bell_menu { position: absolute; right :0; top: 55px; background: #FFFFFF;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25); border-radius: 6px; padding: 15px 20px; z-index: 500; max-height: 300px; overflow-y: scroll;}
+.right_menu .bell_menu .bell_item .dabom_alert { width: 4px; height: 4px; border-radius: 2px; margin: 10px 0 }
+.right_menu .bell_menu .bell_item #new_alert.dabom_alert { background-color: #F43B00; }
+.right_menu .bell_menu .bell_item { display: flex; align-items: center; gap: 10px; }
+.right_menu .bell_menu .bell_item .profile_img { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; }
+.right_menu .bell_menu .bell_item .txt_box { text-align: center; white-space: nowrap; }
+.right_menu .bell_menu .bell_item .txt_box p:first-child { font-size: 14px; line-height: 1.6; }
+.right_menu .bell_menu .bell_item .txt_box p:last-child { font-size: 12px; }
+.right_menu .bell_menu .bell_item + .bell_item { margin-top: 15px; }
 
 /* ==============================================================
 해더

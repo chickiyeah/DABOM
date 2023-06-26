@@ -116,16 +116,13 @@ function button_Event(pointerevent) {
     let id = target.id
     let owner = target.owner
     let name = target.parentElement.children[0].innerText
-    let access_token = sessionStorage.getItem("access_token")
 
     if (type === "register") {
         let reg_confirm = confirm(`정말 ${name} 모임에 가입하시겠습니까?`)
         if (reg_confirm) {     
             fetch(`/api/group/join/${id}`,{
                 method: "POST",
-                headers: {
-                    Authorization: access_token
-                }
+                credentials: "include"
             }).then((res) => {
                 if (res.status === 200) {
                     location.href = "/group/detail?id="+id
@@ -148,9 +145,7 @@ function button_Event(pointerevent) {
         if (unreg_confirm) {
             fetch(`/api/group/exit/${id}`,{
                 method: "POST",
-                headers: {
-                    Authorization: access_token
-                }
+                credentials: "include"
             }).then((res) => {
                 if (res.status === 200) {
                     location.reload();
