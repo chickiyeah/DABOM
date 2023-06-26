@@ -436,21 +436,13 @@ async def setinfomsg(data:setinfomsg ,authorized: bool = Depends(verify_tokenb))
         else:
             return "data updated"
 
-@userapi.get('/cookie/refresh')
-async def reading(refresh_token: Optional[str] = Cookie(None)):
-    return refresh_token
+@userapi.get('/cookie/user_id')
+async def reading(userId: Optional[str] = Cookie(None)):
+    return userId
 
-@userapi.get('/cookie/access')
-async def reading(access_token: Optional[str] = Cookie(None)):
-    return access_token
-
-@userapi.get('/cookie/get_all')
-async def get_all(access_token: Optional[str] = Cookie(None), refresh_token: Optional[str] = Cookie(None)):
-    res = {
-        "access_token": access_token,
-        "refresh_token": refresh_token
-    }
-
+@userapi.get('/email/user_id')
+async def email(email:str):
+    res = auth.get_user_by_email(email).uid
     return res
 
 @userapi.get('/cookie/autologin')

@@ -7,6 +7,8 @@ window.addEventListener('DOMContentLoaded', async function() {
 var alertsocket
 
 const loading = document.querySelector(".loading");
+const alert_list = document.querySelector(".bell_menu");
+const bell_new_alert = document.querySelector("#new_alert");
 
 var page = 1
 
@@ -173,21 +175,23 @@ export async function send_alert(type, tar_id, url) {
 /** 단일 유저정보 조회 (유저 아이디 ) */
 async function get_user_info(user) {
     return new Promise((resolve, reject) => {
-        let url = `/api/user/get_user?id=${user}`;
-        fetch(url, {
-            headers: {
-                Authorization: "Bearer cncztSAt9m4JYA9"
-            }
-        }).then((res) => {
-            if (res.status != 200) {
-                reject("오류.")
-            }else{
-                res.json().then(async (json) => {
-                    let u_data = json[0];
-                    console.log(u_data);
-                    resolve(u_data)
-                });
-            };
-        })
+        fetch(`/api/user/email/user_id?email=${user}`,{method: 'GET'}).then((res) => (res.json().then((data) => {
+            let url = `/api/user/get_user?id=${data}`;
+            fetch(url, {
+                headers: {
+                    Authorization: "Bearer cncztSAt9m4JYA9"
+                }
+            }).then((res) => {
+                if (res.status != 200) {
+                    reject("오류.")
+                }else{
+                    res.json().then(async (json) => {
+                        let u_data = json[0];
+                        console.log(u_data);
+                        resolve(u_data)
+                    });
+                };
+            })
+        })));     
     });
 }

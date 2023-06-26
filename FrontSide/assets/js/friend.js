@@ -115,12 +115,9 @@ async function request(uid) {
     return new Promise(async function(resolve, reject) {
         loading.style.display = "flex"
         let user_data = await verify_token()
-        let access_token = sessionStorage.getItem("access_token")
         fetch(`/api/friends/request?uid=${uid}`,{
             method: 'POST',
-            headers: {
-                Authorization: access_token
-            }
+            credentials: 'include',
         }).then(async function(res) {
             if (res.status !== 200) {
                 res.json().then(async (json) => {
@@ -165,9 +162,9 @@ async function request(uid) {
                 try {document.querySelector("#detail_msg").remove()} catch {}
                 try {document.querySelector("#success_msg").remove()} catch {}
                 friend_req_input.value = ""
-                console.log(user_data)
                 res.json().then(async (json) => {
-                    send_alert('friend_request', user_data.uid, json)
+                    console.log(uid)
+                    send_alert('friend_request', uid, json)
                 })
                 success.insertAdjacentHTML('afterbegin', '<p id="success_msg">친구요청을 전송했습니다.</p>' );
                 resolve("친구요청을 전송했습니다.")

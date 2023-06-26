@@ -107,8 +107,8 @@ async def get_alerts(page:int, response: Response, access_token: Optional[str] =
         
         uid = user['user_id']
         curpage = (page - 1) * 10
-
-        alerts = execute_pri_sql(f"SELECT * FROM food.alert WHERE `target_id` = '{uid}' LIMIT 10 OFFSET {curpage}")
+        print(curpage)
+        alerts = execute_pri_sql(f"SELECT * FROM food.alert WHERE `target_id` = '{uid}' AND `read` = 'False' LIMIT 10 OFFSET {curpage}")
         return alerts
 
     except auth.RevokedIdTokenError:
@@ -131,8 +131,8 @@ async def get_alerts(page:int, response: Response, access_token: Optional[str] =
             user = auth.verify_id_token(currentuser['idToken'], check_revoked=True)
 
             curpage = (page - 1) * 10
-
-            alerts = execute_pri_sql(f"SELECT * FROM food.alert WHERE `target_id` = '{uid}' LIMIT 10 OFFSET {curpage}")
+            
+            alerts = execute_pri_sql(f"SELECT * FROM food.alert WHERE `target_id` = '{uid}' Order BY read = `False` ASC LIMIT 10 OFFSET {curpage}")
             return alerts
 
         except requests.HTTPError as e:
@@ -151,8 +151,5 @@ async def get_alerts(page:int, response: Response, access_token: Optional[str] =
         raise HTTPException(status_code=400, detail=unauthorized)
     except ValueError:
         raise HTTPException(status_code=422)
-
-    if Authorized:
-        uid = Authorized[1]
 
         

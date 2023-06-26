@@ -143,7 +143,10 @@ async def send_message(websocket: WebSocket, username: str, channel: str, u_id: 
                 else:
                     type = datas[1]
                     tar_id = datas[2]
-                    tar_msg = datas[3]
+                    profile_image = datas[3]
+                    url = datas[4]
+                    title = datas[5]
+                    tar_msg = datas[6]
                     execute_pri_sql(f"INSERT INTO `alert` (`id`, `msg`, `read`, `send_at`, `type`, `target_id`, `url`, `title`, `profile_image`)) VALUES ('{u_id}','{tar_msg}', 'False', '{now}', '{type}', '{tar_id}', '{url}', '{title}', '{profile_image}')")
             else:
                 raise HTTPException(403)

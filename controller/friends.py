@@ -176,12 +176,11 @@ async def friend_list(response: Response, page: int, access_token: Optional[str]
         raise HTTPException(status_code=422)
 
 @friendapi.post("/request")
-async def friend_request(uid:str, authorized: bool = Depends(verify_token)):
-    if authorized:
+async def friend_request(uid:str, userId: Optional[str] = Cookie(None)):
         t_id = uid
         er041 = {"code":"ER041","message":"본인에게 친구 요청을 할 수 없습니다."}
 
-        if uid == authorized[1]:
+        if uid == userId:
             raise HTTPException(400, er041)
         
         try:
@@ -190,7 +189,7 @@ async def friend_request(uid:str, authorized: bool = Depends(verify_token)):
             targetid = target.uid
             target = target.email_verified
 
-            uid = authorized[1]
+            uid = userId
             sql = "SELECT friends FROM user WHERE ID = '%s'" % uid
             res = json.loads(execute_sql(sql)[0]['friends'])
 
@@ -200,7 +199,7 @@ async def friend_request(uid:str, authorized: bool = Depends(verify_token)):
             if not target:
                 raise HTTPException(400, User_NotFound)
             
-            requestid = authorized[1]
+            requestid = userId
             sql = "SELECT Nickname FROM user WHERE ID='%s'" % requestid
             requestnick = execute_sql(sql)[0]['Nickname']
             tarsql = "SELECT Nickname FROM user WHERE ID='%s'" % targetid
