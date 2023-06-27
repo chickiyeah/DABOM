@@ -153,8 +153,9 @@ async function connnect() {
         let alert
         try {
             alert = JSON.parse(event.data)
-            if (typeof(alert) == "string") {
+            if (typeof(alert) === "string") {
                 alert = JSON.parse(alert)
+                console.log(alert)
             }
         } catch (e) {
             alert = event.data
@@ -167,11 +168,17 @@ async function connnect() {
     }
 }
 
+export async function get_me() {
+    return new Promise(async function(resolve, reject) {fetch("/api/user/cookie/get_info", {method: "GET"}).then((res) => {res.json().then((data) => {resolve(data[0])});})})
+}
+
 /** 알림 전송 ( 알림 종류, 목표의 유저 아이디, 알림을 클릭하면 이동할 링크, 메시지(선택) ) */
 export async function send_alert(type, tar_id, url) {
     let user = await get_user_info(tar_id);
-    console.log(user);
-    let nick = user.Nickname
+    let sender = await get_me()
+    console.log(sender)
+    let nick = sender.Nickname
+    console.log(nick)
     let id = user.ID
     let profile_image = user.profile_image || "../assets/images/default-profile.png"
     let alerts = ['friend_request', 'guild_invite']

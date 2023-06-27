@@ -436,7 +436,7 @@ async def setinfomsg(data:setinfomsg ,authorized: bool = Depends(verify_tokenb))
         else:
             return "data updated"
 
-@userapi.get('/cookie/user_id')
+@userapi.get('/cookie/me')
 async def reading(userId: Optional[str] = Cookie(None)):
     return userId
 
