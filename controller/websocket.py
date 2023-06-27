@@ -120,7 +120,9 @@ async def receive_message(websocket: WebSocket, username: str, channel: str, u_i
 
 async def send_message(websocket: WebSocket, username: str, channel: str, u_id: str):
     data = await websocket.receive_text()
+    print(u_id)
     user = execute_sql("SELECT `Nickname`, `profile_image` FROM `user` WHERE `ID` = '"+u_id+"'")
+    print(user)
     pf_image = user[0]['profile_image']
     curse = check_word(data, "ko")
     now = str(datetime.now(KST).strftime("%Y-%m-%dT%H:%M:%S"))
@@ -322,6 +324,7 @@ async def pardon(group: str, user_id: str, authorized: bool = Depends(verify_tok
 @chat.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Anonymous", channel: str = "lobby"):
     guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{channel}'")
+    print(u_id)
     user_d = {
         'name': username,
         'id': u_id

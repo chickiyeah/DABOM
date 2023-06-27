@@ -8,7 +8,7 @@ var alertsocket
 
 const loading = document.querySelector(".loading");
 const alert_list = document.querySelector(".bell_menu");
-const bell_new_alert = document.querySelector("#new_alert");
+const bell_new_alert = document.querySelector("#bell_new_alert");
 
 var page = 1
 
@@ -24,7 +24,31 @@ async function get_alerts(page) {
     }).then(function(res) {
         res.json().then((json) => {
             json.forEach((item) => {
-                console.log(item)
+                if (item.read === 'False') {
+                    let html = `<a class="bell_item" href="${item.url}" target="_black">
+                                    <div id="new_alert" class="dabom_alert"></div>
+                                    <div class="profile_img">
+                                        <img alt="프로필이미지" src="${item.profile_image}">
+                                    </div>
+                                    <div class="txt_box">
+                                        <p>${item.title}</p>
+                                        <p>${item.msg}</p>
+                                    </div>
+                                </a>`
+                    alert_list.insertAdjacentHTML('beforeend', html);
+                } else {
+                    let html = `<a class="bell_item" href="${item.url}" target="_black">
+                                    <div class="dabom_alert"></div>
+                                    <div class="profile_img">
+                                        <img alt="프로필이미지" src="${item.profile_image}">
+                                    </div>
+                                    <div class="txt_box">
+                                        <p>${item.title}</p>
+                                        <p>${item.msg}</p>
+                                    </div>
+                                </a>`
+                    alert_list.insertAdjacentHTML('beforeend', html);
+                }
             })
             loading.style.display = 'none';
         })
@@ -41,7 +65,10 @@ async function get_unread_amount() {
         }
     }).then(function(res) {
         res.json().then((json) => {
-            console.log(json.amount)
+            let amount = json.amount
+            if (amount > 0) {
+                bell_new_alert.style.display = 'block'
+            }
         })
     })
 }
@@ -70,10 +97,7 @@ async function verify_token() {
                     });
                 }
             } else {
-              response.json().then(async (json) => {
-                loading.style.display = "none"
-                resolve(json[1])
-              })
+                fetch("/api/user/cookie/get_info",{ methon: 'GET', credentials: "include" }).then(async (res) => {if (res.status === 200) { res.json().then(async (json) => {loading.style.display = "none";resolve(json)})}})
             }
         })
     })
@@ -110,7 +134,11 @@ async function verify_token() {
 //알림 채널명 : Va8%r@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr
 async function connnect() {
     let user = await verify_token()
-    alertsocket = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}&channel=Va8%r@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr`)
+    console.log(user[0])
+    let us_id = user[0].ID
+    console.log("token verified")
+    let u_nick = user[0].Nickname
+    alertsocket = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${u_nick}&u_id=${us_id}&channel=Va8%r@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr`)
 
     alertsocket.onerror = async () => {
         console.error("웹소켓 연결실패 새로고침으로 문제 해결을 시도합니다.")

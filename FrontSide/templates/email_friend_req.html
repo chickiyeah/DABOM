@@ -15,8 +15,7 @@
         window.addEventListener("DOMContentLoaded", function () {
             data = document.location.href.split("/request/")[1];
             let datas = data.split("/")
-            console.log(datas)
-            document.querySelector(".name").innerText = datas[1]
+            document.querySelector(".name").innerText = decodeURI(datas[1])
         })
 
         function progress(type) {

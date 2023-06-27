@@ -98,7 +98,7 @@ async def get_unread_amount(response: Response, access_token: Optional[str] = Co
         raise HTTPException(status_code=422)
     
 @alert.get('/alerts')
-async def get_alerts(page:int, response: Response, access_token: Optional[str] = Cookie(None), refresh_token: Optional[str] = Cookie(None)):
+async def get_alerts(response: Response, access_token: Optional[str] = Cookie(None), refresh_token: Optional[str] = Cookie(None)):
     try:
         # Verify the ID token while checking if the token is revoked by
         # passing check_revoked=True.
@@ -106,9 +106,7 @@ async def get_alerts(page:int, response: Response, access_token: Optional[str] =
         print(user)
         
         uid = user['user_id']
-        curpage = (page - 1) * 10
-        print(curpage)
-        alerts = execute_pri_sql(f"SELECT * FROM food.alert WHERE `target_id` = '{uid}' AND `read` = 'False' LIMIT 10 OFFSET {curpage}")
+        alerts = execute_pri_sql(f"SELECT * FROM food.alert WHERE `target_id` = '{uid}' ORDER BY `read` ASC")
         return alerts
 
     except auth.RevokedIdTokenError:

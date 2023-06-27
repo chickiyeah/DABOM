@@ -114,7 +114,6 @@ function apply_event() {
 async function request(uid) {
     return new Promise(async function(resolve, reject) {
         loading.style.display = "flex"
-        let user_data = await verify_token()
         fetch(`/api/friends/request?uid=${uid}`,{
             method: 'POST',
             credentials: 'include',
@@ -165,10 +164,10 @@ async function request(uid) {
                 res.json().then(async (json) => {
                     console.log(uid)
                     send_alert('friend_request', uid, json)
+                    loading.style.display = "none"
                 })
                 success.insertAdjacentHTML('afterbegin', '<p id="success_msg">친구요청을 전송했습니다.</p>' );
                 resolve("친구요청을 전송했습니다.")
-                loading.style.display = "none"
             }
         })
     })
