@@ -646,7 +646,7 @@ async def user_delete(authorized:bool = Depends(verify_tokena)):
         
 er040 = {"code":"ER040", "message":"너무 많은 시도가 있었습니다. 나중에 시도해주세요."}
 
-@userapi.post('/login', response_model=LoginResponse, responses=login_responses)
+@userapi.post('/login', responses=login_responses)
 async def user_login(userdata: UserLogindata, request: Request, response: Response):
     email = userdata.email
     password = userdata.password
