@@ -157,7 +157,7 @@ if (location.href.includes("findaccount")) {
                 location.href = "/login";
               }
 
-              if (detail.code === "ER013") {
+              if (detail.code === "ER011") {
                 localStorage.clear();
                 location.href = "/login";
               }
