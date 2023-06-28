@@ -116,10 +116,12 @@ async function verify_token() {
       }else{
         fetch(`/api/user/cookie/autologin?access_token=${lo_access_token}&refresh_token=${lo_refresh_token}`, {method: 'GET'}).then((res) => {
             if (res.status === 200) {
+                if (res.url.includes(login)) {
+                    location.href = "/login";
+                }
                 console.log("자동로그인 및 토큰 검증 성공.")
                 loading.style.display = 'none';
-                console.log(res)
-                //location.reload()
+                location.reload()
               }else if (response.status === 307) {
                 location.href = "/login";
               } else {
