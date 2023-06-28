@@ -96,7 +96,7 @@ async function verify_token() {
                         if (detail_error.code == "ER998") {
                           await LoadCookie();
                         }
-                        if (detail.code === "ER013") {
+                        if (detail_error.code === "ER013") {
                             await LoadCookie();
                         }
                     });
