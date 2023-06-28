@@ -176,6 +176,26 @@ async function connnect() {
 
         if (alert.message.includes("alert")) {
             console.log(alert)
+            let a_data = alert.message.split("/*/")
+                let tar_id = a_data[2]
+                let pf_image = a_data[3]
+                let url = a_data[4]
+                let title = a_data[5]
+                let msg = a_data[6]
+
+                if (tar_id === us_id) {
+                    let html = `<a class="bell_item" href="${url}" target="_black">
+                                    <div id="new_alert" class="dabom_alert"></div>
+                                    <div class="profile_img">
+                                        <img alt="프로필이미지" src="${pf_image}">
+                                    </div>
+                                    <div class="txt_box">
+                                        <p>${title}</p>
+                                        <p>${msg}</p>
+                                    </div>
+                                </a>`
+                    alert_list.insertAdjacentHTML('afterbegin', html);
+                }
             loading.style.display = 'none';
         }
     }
