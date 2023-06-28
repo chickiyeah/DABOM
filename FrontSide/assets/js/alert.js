@@ -118,9 +118,7 @@ async function verify_token() {
             if (res.status === 200) {
                 console.log("자동로그인 및 토큰 검증 성공.")
                 loading.style.display = 'none';
-                res.json().then((data) => {
-                    console.log(data);
-                })
+                console.log(res)
                 //location.reload()
               }else if (response.status === 307) {
                 location.href = "/login";
