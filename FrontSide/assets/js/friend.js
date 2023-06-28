@@ -460,6 +460,11 @@ async function verify_token() {
                     localStorage.clear();
                     location.href = "/login";
                   }
+
+                  if (detail.code === "ER011") {
+                    localStorage.clear();
+                    location.href = "/login";
+                  }
                 })
               }
         })  
