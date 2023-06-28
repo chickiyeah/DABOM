@@ -413,6 +413,8 @@ async function verify_token() {
                 if (response.status === 422) {                   
                     await LoadCookie();
                     loading.style.display = 'none';
+                }else if (response.status === 307) {
+                    location.href = "/login";
                 }else{
                     response.json().then(async (json) => {
                         let detail_error = json.detail;
@@ -442,19 +444,21 @@ async function verify_token() {
         location.href = "/login";
       }else{
         fetch(`/api/user/cookie/autologin?access_token=${lo_access_token}&refresh_token=${lo_refresh_token}`, {method: 'GET'}).then((res) => {
-          if (res.status === 200) {
-            console.log("자동로그인 및 토큰 검증 성공.")
-            loading.style.display = 'none';
-            location.reload()
-          } else {
-            res.json().then((data) => {
-              let detail = data.detail
-              if (detail.code === "ER015") {
-                localStorage.clear();
+            if (res.status === 200) {
+                console.log("자동로그인 및 토큰 검증 성공.")
+                loading.style.display = 'none';
+                location.reload()
+              }else if (response.status === 307) {
                 location.href = "/login";
+              } else {
+                res.json().then((data) => {
+                  let detail = data.detail
+                  if (detail.code === "ER015") {
+                    localStorage.clear();
+                    location.href = "/login";
+                  }
+                })
               }
-            })
-          }
         })  
       }
     }
