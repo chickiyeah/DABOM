@@ -482,6 +482,9 @@ async def f_verify_token(response: Response, access_token: str, refresh_token:st
             if error == "INVALID_REFRESH_TOKEN":
                 raise HTTPException(status_code=401, detail=unauthorized_invaild)
             
+            if error == "USER_NOT_FOUND":
+                return RedirectResponse(url= "/login")
+            
             print("Auto_Login_Error "+error)
         
     except auth.UserNotFoundError:
