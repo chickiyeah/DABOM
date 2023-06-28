@@ -476,6 +476,7 @@ async def f_verify_token(response: Response, access_token: str, refresh_token:st
             return True, user['email_verified']
         except requests.HTTPError as e:
             error = json.loads(e.args[1])['error']['message']
+            print("Auto_Login_Error "+error)
             if error == "TOKEN_EXPIRED":
                 raise HTTPException(status_code=401, detail=unauthorized_invaild)
             
