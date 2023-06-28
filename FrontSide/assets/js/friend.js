@@ -461,7 +461,7 @@ async function verify_token() {
                     location.href = "/login";
                   }
 
-                  if (detail.code === "ER011") {
+                  if (detail.code === "ER013") {
                     localStorage.clear();
                     location.href = "/login";
                   }
