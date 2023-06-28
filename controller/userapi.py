@@ -538,7 +538,7 @@ async def f_verify_token(response: Response, access_token: Optional[str] = Cooki
     except KeyError:
         raise HTTPException(status_code=400, detail=unauthorized)
     except ValueError:
-        raise HTTPException(status_code=422)
+       raise HTTPException(status_code=400, detail=unauthorized)
     
 @userapi.get('/cookie/get_info')
 async def f_verify_token(response: Response, access_token: Optional[str] = Cookie(None), refresh_token: Optional[str] = Cookie(None)):
