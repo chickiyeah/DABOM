@@ -623,8 +623,6 @@ async function verify_token() {
                 console.log("자동로그인 및 토큰 검증 성공.")
                 loading.style.display = 'none';
                 location.reload()
-              }else if (response.status === 307) {
-                location.href = "/login";
               } else {
                 res.json().then((data) => {
                   let detail = data.detail
@@ -633,7 +631,7 @@ async function verify_token() {
                     location.href = "/login";
                   }
 
-                  if (detail.code === "ER011") {
+                  if (detail.code === "ER013") {
                     localStorage.clear();
                     location.href = "/login";
                   }
