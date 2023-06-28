@@ -158,6 +158,11 @@ if (location.href.includes("findaccount")) {
                 localStorage.clear();
                 location.href = "/login";
               }
+
+              if (detail.code === "ER011") {
+                localStorage.clear();
+                location.href = "/login";
+              }
             })
           }
         })  

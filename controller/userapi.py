@@ -483,12 +483,12 @@ async def f_verify_token(response: Response, access_token: str, refresh_token:st
                 raise HTTPException(status_code=401, detail=unauthorized_invaild)
             
             if error == "USER_NOT_FOUND":
-                return HTTPException(status_code=400, detail=User_NotFound)
+                return HTTPException(status_code=401, detail=User_NotFound)
             
             print("Auto_Login_Error "+error)
         
     except auth.UserNotFoundError:
-        return HTTPException(status_code=400, detail=User_NotFound)
+        return HTTPException(status_code=401, detail=User_NotFound)
     except KeyError:
         raise HTTPException(status_code=400, detail=unauthorized)
     except ValueError:
