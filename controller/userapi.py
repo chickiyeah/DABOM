@@ -485,7 +485,7 @@ async def f_verify_token(response: Response, access_token: str, refresh_token:st
             print("Auto_Login_Error "+error)
         
     except auth.UserNotFoundError:
-        raise HTTPException(status_code=401, detail=User_NotFound)
+        return RedirectResponse(url= "/login")
     except KeyError:
         raise HTTPException(status_code=400, detail=unauthorized)
     except ValueError:
