@@ -50,6 +50,7 @@ async function get_alerts(page) {
                     alert_list.insertAdjacentHTML('beforeend', html);
                 }
             })
+            apply_event()
             loading.style.display = 'none';
         })
     })
@@ -184,6 +185,7 @@ async function connnect() {
                 let msg = a_data[6]
 
                 if (tar_id === us_id) {
+                    bell_new_alert.style.display = 'block'
                     let html = `<a class="bell_item" href="${url}" target="_black">
                                     <div id="new_alert" class="dabom_alert"></div>
                                     <div class="profile_img">
@@ -195,6 +197,7 @@ async function connnect() {
                                     </div>
                                 </a>`
                     alert_list.insertAdjacentHTML('afterbegin', html);
+                    apply_event()
                 }
             loading.style.display = 'none';
         }
@@ -203,6 +206,32 @@ async function connnect() {
 
 export async function get_me() {
     return new Promise(async function(resolve, reject) {fetch("/api/user/cookie/get_info", {method: "GET"}).then((res) => {res.json().then((data) => {resolve(data[0])});})})
+}
+
+function alert_read(pointerevent) {
+    let target = pointerevent.target
+    let type = target.nodeName
+    var element
+
+    if (type === "P" || type === "IMG") {
+        element = target.parentElement.parentElement
+    }
+
+    if (type === "DIV") {
+        element = target.parentElement
+    }
+
+    let url = element.href
+    let pf_image = element.children[1].children[0].src
+    let title = element.children[2].children[0].innerText
+    let msg = element.children[2].children[1].innerText
+}
+
+function apply_event() {
+    Array.prototype.forEach.call(alert_list.children,(element) =>{
+        element.removeEventListener("click", alert_read);
+        element.addEventListener("click", alert_read)
+    })
 }
 
 /** 알림 전송 ( 알림 종류, 목표의 유저 아이디, 알림을 클릭하면 이동할 링크, 메시지(선택) ) */
