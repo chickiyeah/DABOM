@@ -9,6 +9,7 @@ var alertsocket
 const loading = document.querySelector(".loading");
 const alert_list = document.querySelector(".bell_menu");
 const bell_new_alert = document.querySelector("#bell_new_alert");
+const bell = document.querySelector(".bell");
 
 var page = 1
 
@@ -56,19 +57,25 @@ async function get_alerts(page) {
     })
 }
 
+bell.onclick = (event) => {
+    if (alert_list.style.display === 'none') {
+        alert_list.style.display = "block"
+    } else {
+        alert_list.style.display = "none"
+    }
+}
+
 async function get_unread_amount() {
-    await verify_token()
-    let access_token = sessionStorage.getItem("access_token")
     fetch("/api/alert/u_amount", {
         method: 'GET',
-        headers: {
-            Authorization: access_token
-        }
+        credentials: "include"
     }).then(function(res) {
         res.json().then((json) => {
             let amount = json.amount
             if (amount > 0) {
                 bell_new_alert.style.display = 'block'
+            } else {
+                bell_new_alert.style.display = 'none'
             }
         })
     })
@@ -240,6 +247,24 @@ function alert_read(pointerevent) {
     let new_a = element.children[0]
     console.log(new_a)
     new_a.id = "alert"
+
+    fetch("/api/alert/setread", {
+        method:"POST",
+        credentials: "include",
+        headers: {
+            "content-type": "application/json"
+        },
+        body: JSON.stringify({
+            "url": url,
+            "title": title,
+            "msg": msg,
+            "pf_image": pf_image
+        })
+    }).then((res) => {
+        res.json().then((data) => {
+            get_unread_amount()
+        })
+    })
 }
 
 function apply_event() {
