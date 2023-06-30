@@ -4,7 +4,9 @@ from controller.onemsgdb import execute_pri_sql
 from firebase_admin import auth
 from typing import Optional
 from firebase import Firebase
+from pydantic import BaseModel
 import json
+from urllib import parse
 
 alert = APIRouter(prefix="/api/alert", tags=['friends'])
 
@@ -127,10 +129,8 @@ async def get_alerts(response: Response, access_token: Optional[str] = Cookie(No
             response.set_cookie(key="refresh_token", value=currentuser['refreshToken'], httponly=True)
             response.set_cookie(key="userId", value=currentuser['userId'], httponly=True)
             user = auth.verify_id_token(currentuser['idToken'], check_revoked=True)
-
-            curpage = (page - 1) * 10
             
-            alerts = execute_pri_sql(f"SELECT * FROM food.alert WHERE `target_id` = '{uid}' Order BY read = `False` ASC LIMIT 10 OFFSET {curpage}")
+            alerts = execute_pri_sql(f"SELECT * FROM food.alert WHERE `target_id` = '{uid}' ORDER BY `read` ASC")
             return alerts
 
         except requests.HTTPError as e:
@@ -150,4 +150,17 @@ async def get_alerts(response: Response, access_token: Optional[str] = Cookie(No
     except ValueError:
         raise HTTPException(status_code=422)
 
-        
+class setread(BaseModel):
+    url: str
+    title: str
+    msg: str
+    pf_image:str
+
+@alert.post("/setread")
+async def setread(alert:setread, userId: Optional[str] = Cookie(None)):
+    url = parse.unquote(alert.url)
+    title = parse.unquote(alert.title)
+    msg = parse.unquote(alert.msg)
+
+    execute_pri_sql(f"UPDATE food.alert SET `read` = 'True' WHERE `target_id` = '{userId}' AND `title` = '{title}' AND `msg` = '{msg}' AND `url` = '{url}'")
+    return "complete"

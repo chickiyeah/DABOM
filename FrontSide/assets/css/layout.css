@@ -34,7 +34,7 @@
 .right_menu .setting_menu { position: absolute; right: -20px; top: 55px; background: #FFFFFF;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25); border-radius: 6px; padding: 10px; z-index: 500; }
 .right_menu .bell_menu { position: absolute; right :0; top: 55px; background: #FFFFFF;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25); border-radius: 6px; padding: 15px 20px; z-index: 500; max-height: 300px; overflow-y: scroll;}
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25); border-radius: 6px; padding: 15px 20px; z-index: 500; max-height: 300px; overflow-y: scroll; display: none; }
 .right_menu .bell_menu .bell_item .dabom_alert { width: 4px; height: 4px; border-radius: 2px; margin: 10px 0 }
 .right_menu .bell_menu .bell_item #new_alert.dabom_alert { background-color: #F43B00; }
 .right_menu .bell_menu .bell_item { display: flex; align-items: center; gap: 10px; }
