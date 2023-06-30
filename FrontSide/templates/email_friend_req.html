@@ -36,12 +36,12 @@
                         let detail = json.detail
                         if (detail.code == "ER026") {
                             document.querySelector("#res").innerText = msg+"하는중에 오류가 발생했습니다."
-                            document.querySelector(".btn_box").innerText = "만료된 친구요청입니다. 이미 친구처리가 되었거나 친구요청이 중복되었을수 있습니다."
+                            document.querySelector(".btn_box").innerHTML = "만료된 친구요청입니다.<br>이미 친구처리가 되었거나 친구요청이 중복되었을수 있습니다."
                         }
 
                         if (detail.code == "ER027") {
                             document.querySelector("#res").innerText = msg+"하는중에 오류가 발생했습니다."
-                            document.querySelector(".btn_box").innerText = "손상된 링크입니다. 친구요청을 새로 요청하거나 메일의 링크를 다시 클릭하세요."
+                            document.querySelector(".btn_box").innerHTML = "손상된 링크입니다.<br>친구요청을 새로 요청하거나 메일의 링크를 다시 클릭하세요."
                         }
                     })
                 }
