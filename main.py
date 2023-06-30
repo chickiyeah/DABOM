@@ -10,8 +10,8 @@ from fastapi.responses import PlainTextResponse, FileResponse
 app = FastAPI()
 
 origins = [
-    'dabom.kro.kr',
-    'localhost:8000'
+    'http://dabom.kro.kr',
+    'http://localhost:8000'
 ]
 
 app.add_middleware(

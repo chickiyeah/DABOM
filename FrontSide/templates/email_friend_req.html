@@ -26,7 +26,7 @@
             } else {
                 msg = "거절"
             }
-            fetch(`http://localhost:8000/api/friends/${type}/${data}`, {
+            fetch(`/api/friends/${type}/${data}`, {
                 method: "POST"
             }).then(function (res) {
                 if (res.statusCode == 200){

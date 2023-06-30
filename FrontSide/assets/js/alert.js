@@ -221,10 +221,25 @@ function alert_read(pointerevent) {
         element = target.parentElement
     }
 
+    if (type === "A") {
+        element = target
+    }
+
     let url = element.href
     let pf_image = element.children[1].children[0].src
     let title = element.children[2].children[0].innerText
     let msg = element.children[2].children[1].innerText
+
+    
+    console.log("url: " + url)
+    console.log("title: " + title)
+    console.log("msg: " + msg)
+    console.log("pf_image: " + pf_image)
+
+    //점 없애기
+    let new_a = element.children[0]
+    console.log(new_a)
+    new_a.id = "alert"
 }
 
 function apply_event() {
