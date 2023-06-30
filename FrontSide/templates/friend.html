@@ -36,6 +36,7 @@
     <title>다봄: 친구</title>
     <link rel="stylesheet" href="/assets/css/reset.css">
     <link rel="stylesheet" href="/assets/css/layout.css">
+    <link rel="stylesheet" href="/assets/css/popup.css">
     <script type="module" src="/assets/js/friend.js"></script>
 </head>
 <body>
@@ -101,8 +102,132 @@
 </div>
 <div class="right_menu">
     <a class="bell" href="javascript:">
+        <div id="bell_new_alert"></div>
         <img src="/assets/images/bell-icon.svg" alt="종아이콘">
     </a>
+    <a class="setting" href="javascript:">
+        <object data="/assets/images/setting-icon.svg" type="image/svg+xml" aria-label="설정아이콘"></object>
+    </a>
+    <div class="setting_menu">
+        <a href="javascript:">친구관리</a>
+    </div>
+    <div class="bell_menu">
+        <!-- JS 동적 추가 구역 -->
+    </div>
+</div>
+<!-- .setting_menu a 클릭했을때 나오는 팝업 -->
+<div class="block_friend_popup">
+    <div class="inner">
+        <div class="pop_close_head">
+            <h2 class="title">차단친구 관리</h2>
+            <a class="close_btn" href="javascript:">
+                <object aria-label="닫기 아이콘" data="../assets/images/close-icon.svg" type="image/svg+xml"></object>
+            </a>
+        </div>
+        <ul class="list_item">
+               <li>
+                   <label class="hidden">이메일 검색</label>
+                   <input type="text" placeholder="이메일 검색">
+               </li>
+               <li>
+                   <div class="checkbox">
+                       <input type="checkbox" id="check9">
+                       <label for="check9">
+                                <span class="profile_img">
+                                    <img src="../assets/images/default-profile.png" alt="프로필이미지">
+                               </span>
+                       </label>
+                   </div>
+                   <div class="txt_box">
+                       <p class="name">김철수 <em class="data">(올해는 살을 꼭 뺄거야!!!!!!)</em></p>
+                   </div>
+                   <a href="javascript:">해체</a>
+               </li>
+               <li>
+                   <div class="checkbox">
+                       <input type="checkbox" id="check10">
+                       <label for="check10">
+                                <span class="profile_img">
+                                    <img src="../assets/images/default-profile.png" alt="프로필이미지">
+                               </span>
+                       </label>
+                   </div>
+                   <div class="txt_box">
+                       <p class="name">김철수 <em class="data">(올해는 살을 꼭 뺄거야!!!!!!)</em></p>
+                   </div>
+                   <a href="javascript:">해체</a>
+               </li>
+               <li>
+                   <div class="checkbox">
+                       <input type="checkbox" id="check11">
+                       <label for="check11">
+                                <span class="profile_img">
+                                    <img src="../assets/images/default-profile.png" alt="프로필이미지">
+                               </span>
+                       </label>
+                   </div>
+                   <div class="txt_box">
+                       <p class="name">김철수 <em class="data">(올해는 살을 꼭 뺄거야!!!!!!)</em></p>
+                   </div>
+                   <a href="javascript:">해체</a>
+               </li>
+               <li>
+                   <div class="checkbox">
+                       <input type="checkbox" id="check12">
+                       <label for="check12">
+                                <span class="profile_img">
+                                    <img src="../assets/images/default-profile.png" alt="프로필이미지">
+                               </span>
+                       </label>
+                   </div>
+                   <div class="txt_box">
+                       <p class="name">김철수 <em class="data">(올해는 살을 꼭 뺄거야!!!!!!)</em></p>
+                   </div>
+                   <a href="javascript:">해체</a>
+               </li>
+               <li>
+                   <div class="checkbox">
+                       <input type="checkbox" id="check13">
+                       <label for="check13">
+                                <span class="profile_img">
+                                    <img src="../assets/images/default-profile.png" alt="프로필이미지">
+                               </span>
+                       </label>
+                   </div>
+                   <div class="txt_box">
+                       <p class="name">김철수 <em class="data">(올해는 살을 꼭 뺄거야!!!!!!)</em></p>
+                   </div>
+                   <a href="javascript:">해체</a>
+               </li>
+               <li>
+                   <div class="checkbox">
+                       <input type="checkbox" id="check14">
+                       <label for="check14">
+                                <span class="profile_img">
+                                    <img src="../assets/images/default-profile.png" alt="프로필이미지">
+                               </span>
+                       </label>
+                   </div>
+                   <div class="txt_box">
+                       <p class="name">김철수 <em class="data">(올해는 살을 꼭 뺄거야!!!!!!)</em></p>
+                   </div>
+                   <a href="javascript:">해체</a>
+               </li>
+           </ul>
+        <div class="post_nav">
+            <a class="prev" href="javascript:">
+                <object aria-label="왼쪽 화살표" data="../assets/images/arrow-left.svg" type="image/svg+xml"></object>
+            </a>
+            <a class="num" href="javascript:">1</a>
+            <a class="num" href="javascript:">2</a>
+            <a class="num" href="javascript:">3</a>
+            <a class="num" href="javascript:">4</a>
+            <a class="num" href="javascript:">5</a>
+            <a class="next" href="javascript:">
+                <object aria-label="오른쪽 화살표" data="../assets/images/arrow-right.svg" type="image/svg+xml"></object>
+            </a>
+        </div>
+    </div>
 </div>
 <script>
     (function(){var w=window;if(w.ChannelIO){return w.console.error("ChannelIO script included twice.");}var ch=function(){ch.c(arguments);};ch.q=[];ch.c=function(args){ch.q.push(args);};w.ChannelIO=ch;function l(){if(w.ChannelIOInitialized){return;}w.ChannelIOInitialized=true;var s=document.createElement("script");s.type="text/javascript";s.async=true;s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";var x=document.getElementsByTagName("script")[0];if(x.parentNode){x.parentNode.insertBefore(s,x);}}if(document.readyState==="complete"){l();}else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l);}})();

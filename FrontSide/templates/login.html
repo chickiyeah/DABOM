@@ -35,10 +35,12 @@
     <title>다봄 : 로그인</title>
     <link rel="stylesheet" href="/assets/css/reset.css">
     <link rel="stylesheet" href="/assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/toast.css">
 </head>
 <body>
 
 <main>
+    <div id="toast"></div>
     <div class="loading fix">
         <span class="loader"></span>
     </div>
@@ -79,5 +81,5 @@
     document.querySelector(".loading").style.display = 'none';
 </script>
 </body>
-<script src="/assets/js/user.js"></script>
+<script type="module" src="/assets/js/user.js"></script>
 </html>

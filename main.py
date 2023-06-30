@@ -9,11 +9,16 @@ from fastapi.responses import PlainTextResponse, FileResponse
 
 app = FastAPI()
 
+origins = [
+    'http://dabom.kro.kr',
+    'http://localhost:8000'
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "DELETE"],
     allow_headers=["*"]
 )
 __init__()

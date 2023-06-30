@@ -120,7 +120,9 @@ async def receive_message(websocket: WebSocket, username: str, channel: str, u_i
 
 async def send_message(websocket: WebSocket, username: str, channel: str, u_id: str):
     data = await websocket.receive_text()
+    print(u_id)
     user = execute_sql("SELECT `Nickname`, `profile_image` FROM `user` WHERE `ID` = '"+u_id+"'")
+    print(user)
     pf_image = user[0]['profile_image']
     curse = check_word(data, "ko")
     now = str(datetime.now(KST).strftime("%Y-%m-%dT%H:%M:%S"))
@@ -143,7 +145,10 @@ async def send_message(websocket: WebSocket, username: str, channel: str, u_id: 
                 else:
                     type = datas[1]
                     tar_id = datas[2]
-                    tar_msg = datas[3]
+                    profile_image = datas[3]
+                    url = datas[4]
+                    title = datas[5]
+                    tar_msg = datas[6]
                     execute_pri_sql(f"INSERT INTO `alert` (`id`, `msg`, `read`, `send_at`, `type`, `target_id`, `url`, `title`, `profile_image`)) VALUES ('{u_id}','{tar_msg}', 'False', '{now}', '{type}', '{tar_id}', '{url}', '{title}', '{profile_image}')")
             else:
                 raise HTTPException(403)
@@ -201,18 +206,20 @@ async def delete_all(username: str, channel: str):
     return "all message delete"
 
 @chat.post("/uploadfile")
-async def upload(ext:str, image: UploadFile = File(), authorized:bool = Depends(verify_token)):
+async def upload(ext:str, image: UploadFile = File(), access_token: Optional[str] = Cookie(None)):
+    user = auth.verify_id_token(access_token, check_revoked=True)
+    uid = user['user_id']
     now = str(datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"))
-    print(ext)
-    a = Storage.child("/dabom/"+authorized[1]+"/"+ext).put(image.file)
+    a = Storage.child("/dabom/"+uid+"/"+ext).put(image.file)
     #print(a)
     #print("https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+authorized[1]+"%2F"+str(now)+"?alt=media&token="+a['downloadTokens'])
-    return "https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+authorized[1]+"%2F"+ext+"?alt=media&token="+a['downloadTokens']
+    return "https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+uid+"%2F"+ext+"?alt=media&token="+a['downloadTokens']
 
 
 @chat.get("/members")
 async def members(group: str):
     guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{group}'")
+    print(guilds)
     if guilds == None or len(guilds) == 0:
         raise HTTPException(400, er035)
 
@@ -222,6 +229,7 @@ async def members(group: str):
 
     return res
 er036 = {"code":"ER036","message":"뮤트 시간 타입이 올바르지 않습니다. (m, h ,d)"}
+
 @chat.post("/mute")
 async def mute(group: str, num: int, time_type: str, user_id: str, reason: Optional[str] = None, authorized: bool = Depends(verify_token)):
     if authorized:
@@ -316,6 +324,7 @@ async def pardon(group: str, user_id: str, authorized: bool = Depends(verify_tok
 @chat.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Anonymous", channel: str = "lobby"):
     guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{channel}'")
+    print(u_id)
     user_d = {
         'name': username,
         'id': u_id

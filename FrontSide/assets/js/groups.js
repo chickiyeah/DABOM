@@ -29,6 +29,12 @@ window.addEventListener('DOMContentLoaded', async function() {
                             document.querySelector(".loading").style.display = "flex"
                             let type = q_data['type']
                             if (type === "public" || type === "owned" || type === "joined") {
+                                const height = window.innerHeight;	
+    
+                                let dh = height - 100
+                                toast_s.style.bottom = "auto"
+                                toast_s.style.top = dh + "px"
+                                await verify_token();
                                 if (type === "public") {
                                     document.querySelector("#public").style.display = "flex"
                                     document.querySelector("#joined").remove()
@@ -76,34 +82,87 @@ window.addEventListener('DOMContentLoaded', async function() {
 
 import { clickEnter } from "./enterEvent.js";
 import { send_alert } from "./alert.js";
+import { toast } from "./toast.js";
 
 const pagediv = document.querySelector("#page_div")
 
 const public_ul = document.querySelector("#public")
 const joined_ul = document.querySelector("#joined")
 const onwed_ul = document.querySelector("#owned")
+const toast_s = document.getElementById("toast")
 
 const reg_email = /[a-zA-Z0-9]+@[a-z]+\.[a-z]{2,3}$/i;
 
 var element_invite_group_button = document.createElement("button");
 var element_invite_group_email_input = document.createElement("input");
 
+const loading = document.querySelector(".loading");
+
 clickEnter(element_invite_group_email_input, element_invite_group_button);
 
 var joined
+
+window.onresize = function() {
+    const height = window.innerHeight;	
+    
+    let dh = height - 100
+    toast_s.style.bottom = "auto"
+    toast_s.style.top = dh + "px"
+}
 
 function button_Event(pointerevent) {
     let target = pointerevent.target
     let type = target.type
     let id = target.id
+    let owner = target.owner
     let name = target.parentElement.children[0].innerText
 
     if (type === "register") {
         let reg_confirm = confirm(`정말 ${name} 모임에 가입하시겠습니까?`)
+        if (reg_confirm) {     
+            fetch(`/api/group/join/${id}`,{
+                method: "POST",
+                credentials: "include"
+            }).then((res) => {
+                if (res.status === 200) {
+                    location.href = "/group/detail?id="+id
+                } else {
+                    res.json().then((data) => {
+                        let detail = data.detail;
+                        if (detail.code === "ER041") {
+                            toast("이미 가입한 그룹입니다.")
+                        } else {
+                            toast("규명되지 않은 오류가 발생했습니다.\nF12의 콘솔을 찍어 고객센터로 제보해주시면 감사하겠습니다.")
+                        }
+                    });
+                }
+            })
+        }
     }
 
     if (type === "unregister") {
         let unreg_confirm = confirm(`정말 ${name} 모임에서 탈퇴하시겠습니까?`)
+        if (unreg_confirm) {
+            fetch(`/api/group/exit/${id}`,{
+                method: "POST",
+                credentials: "include"
+            }).then((res) => {
+                if (res.status === 200) {
+                    location.reload();
+                } else {
+                    res.json().then((data) => {
+                        let detail = data.detail
+                        if (detail.code === "ER040") {
+                            toast("가입된 그룹(모임)이 아닙니다.")
+                        }
+
+                        if (detail.code === "ER042") {
+                            toast("그룹장은 탈퇴가 불가합니다.\n모든 멤버를 추방후 그룹을 삭제해주세요.")
+                        }
+                    });
+                }
+            })
+        }
     }
 
     if (type === "delete") {
@@ -134,13 +193,81 @@ function apply_edit_event() {
     })
 }
 
-async function list_public(page) {
+async function verify_token() {
+    return new Promise(async function(resolve, reject) {
+        //토큰 검증
+        fetch("/api/user/cookie/verify",{
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include"
+        }).then(async function(response) {
+            if (response.status !== 200) {
+                if (response.status === 422) {                   
+                    await LoadCookie();
+                    loading.style.display = 'none';
+                }else if (response.status === 307) {
+                    location.href = "/login";
+                }else{
+                    response.json().then(async (json) => {
+                        let detail_error = json.detail;
+                        console.log(detail_error)
+                        if (detail_error.code == "ER998") {
+                          await LoadCookie();
+                        }
+                    });
+                }
+            } else {
+              response.json().then(async (json) => {
+                loading.style.display = "none"
+                resolve(json[1])
+              })
+            }
+        })
+    })
+  }
+
+  async function LoadCookie(){
+    let lo_access_token = localStorage.getItem("access_token")
+    let lo_refresh_token = localStorage.getItem("refresh_token")
+    if (location.href.includes("login") == false && location.href.includes("register") == false) {
+      if(lo_access_token == null || lo_refresh_token == null) {
+        console.log("here?")
+        localStorage.clear()
+        location.href = "/login";
+      }else{
+        fetch(`/api/user/cookie/autologin?access_token=${lo_access_token}&refresh_token=${lo_refresh_token}`, {method: 'GET'}).then((res) => {
+          if (res.status === 200) {
+            console.log("자동로그인 및 토큰 검증 성공.")
+            loading.style.display = 'none';
+            location.reload()
+          } else {
+            res.json().then((data) => {
+              let detail = data.detail
+              if (detail.code === "ER015") {
+                localStorage.clear();
+                location.href = "/login";
+              }
+
+              if (detail.code === "ER011") {
+                localStorage.clear();
+                location.href = "/login";
+              }
+            })
+          }
+        })  
+      }
+    }
+  }
+
+  async function list_public(page) {
     if (page <= 0) {
         return new Error("wrong page")
     }else{
-        let access_token = sessionStorage.getItem("access_token")
         fetch(`/api/group/list/${page}`, {
-            method: 'GET'
+            method: 'GET',
+            credentials: "include"
         }).then((res) => {
             res.json().then((data) => {
                 let groups = data.groups
@@ -149,9 +276,7 @@ async function list_public(page) {
                 // 가입중인거
                 fetch(`/api/group/p_groups`, {
                     method: 'GET',
-                    headers: {
-                        Authorization: access_token
-                    }
+                    credentials: "include"
                 }).then((res) => {
                     res.json().then((data) => {
                         joined = JSON.parse(data.groups)
@@ -182,6 +307,7 @@ async function list_public(page) {
                         document.querySelector(".next").href = `javascript:location.href='/groups?page=${page+1}&type=public'`
 
                         if (page > maxpage) {
+                            toast("검색 결과가 없습니다.")
                             location.href = "/groups?page="+maxpage+"&type=public"
                         }else{
                             for (let i = startpage; i < maxpage+1; i++) {
@@ -197,11 +323,6 @@ async function list_public(page) {
                         console.log(groups)
                         groups.forEach((group) => {
                             var html
-                            let mem_s = group.members
-                            console.log(mem_s)
-                            console.log(JSON.parse(mem_s))
-                            console.log(Array.isArray(group.members))
-                            
                             let mem = JSON.parse(group.members).length
                             let name = group.name
                             let img = group.groupimg
@@ -242,92 +363,94 @@ async function list_public(page) {
 }
 
 async function mygroups(page) {
-    let access_token = sessionStorage.getItem("access_token")
     if (page <= 0) {
         return new Error("wrong page")
     }else{
         fetch(`/api/group/mygroups/${page}`, {
             method: 'GET',
-            headers: {
-                Authorization: access_token
-            }
+            credentials: "include"
         }).then((res) => {
-            res.json().then((data) => {
-                let groups = data.groups
-                let count = data.count
-                
-                // 페이징
-                let to_page = count / 9
-                var maxpage
-                if (Number.isInteger(to_page)) {
-                    maxpage = to_page
-                } else {
-                    maxpage = Math.floor(to_page) + 1
-                }
+            if (res.status === 200) {
+                res.json().then((data) => {
+                    let groups = data.groups
+                    let count = data.count
+                    
+                    // 페이징
+                    let to_page = count / 9
+                    var maxpage
+                    if (Number.isInteger(to_page)) {
+                        maxpage = to_page
+                    } else {
+                        maxpage = Math.floor(to_page) + 1
+                    }
 
-                console.log(page)
-                console.log(maxpage)
-                var startpage
-                var endpage
-                if (page / 10 > 1) {
-                    startpage = Math.floor((page/10))*10
-                    endpage = Math.floor((page/10))*10 + 1 + 10
-                }else{
-                    startpage = 1
-                    endpage = 11
-                }
-                document.querySelector(".prev").href = `javascript:location.href='/groups?page=${page-1}&type=joined'`
-                document.querySelector(".next").href = `javascript:location.href='/groups?page=${page+1}&type=joined'`
+                    console.log(page)
+                    console.log(maxpage)
+                    var startpage
+                    var endpage
+                    if (page / 10 > 1) {
+                        startpage = Math.floor((page/10))*10
+                        endpage = Math.floor((page/10))*10 + 1 + 10
+                    }else{
+                        startpage = 1
+                        endpage = 11
+                    }
+                    document.querySelector(".prev").href = `javascript:location.href='/groups?page=${page-1}&type=joined'`
+                    document.querySelector(".next").href = `javascript:location.href='/groups?page=${page+1}&type=joined'`
 
-                if (page > maxpage) {
-                    location.href = "/groups?page="+maxpage+"&type=joined"
-                }else{
-                    for (let i = startpage; i < maxpage+1; i++) {
-                        if (i == page) {
-                            pagediv.insertAdjacentHTML("beforeend", `<a class="selected" href="javascript:location.href='/groups?page=${i}&type=joined'">${i}</a>`)
-                        }else{
-                            pagediv.insertAdjacentHTML("beforeend", `<a class="num" href="javascript:location.href='/groups?page=${i}&type=joined'">${i}</a>`)
+                    if (page > maxpage) {
+                        location.href = "/groups?page="+maxpage+"&type=joined"
+                    }else{
+                        for (let i = startpage; i < maxpage+1; i++) {
+                            if (i == page) {
+                                pagediv.insertAdjacentHTML("beforeend", `<a class="selected" href="javascript:location.href='/groups?page=${i}&type=joined'">${i}</a>`)
+                            }else{
+                                pagediv.insertAdjacentHTML("beforeend", `<a class="num" href="javascript:location.href='/groups?page=${i}&type=joined'">${i}</a>`)
+                            }
                         }
                     }
-                }
 
-                console.log("total joined groups: "+ count)
-                groups.forEach((group) => {
-                    let mem = JSON.parse(group.members).length
-                    let name = group.name
-                    let img = group.groupimg
-                    let no = group.no
-                    let html = `<li>
-                                    <div class="img_box">
-                                        <img alt="게시글 이미지" src="${img}">
-                                    </div>
-                                    <div class="info_box">
-                                        <p class="title">${name}</p>
-                                        <p class="sub_txt">맴버: ${mem}명</p>
-                                        <a id="${no}" type="unregister" class="black_btn" href="javascript:">탈퇴하기</a>
-                                    </div>
-                                </li>`
-                    
-                                
-                    joined_ul.insertAdjacentHTML("beforeend", html)
+                    console.log("total joined groups: "+ count)
+                    groups.forEach((group) => {
+                        let mem = JSON.parse(group.members).length
+                        let name = group.name
+                        let img = group.groupimg
+                        let owner = group.owner
+                        console.log(group)
+                        let no = group.no
+                        let html = `<li>
+                                        <div class="img_box">
+                                            <img alt="게시글 이미지" src="${img}">
+                                        </div>
+                                        <div class="info_box">
+                                            <p class="title">${name}</p>
+                                            <p class="sub_txt">맴버: ${mem}명</p>
+                                            <a id="${no}" owner="${owner}" type="unregister" class="black_btn" href="javascript:">탈퇴하기</a>
+                                        </div>
+                                    </li>`
+                        
+                                    
+                        joined_ul.insertAdjacentHTML("beforeend", html)
+                    })
+                    apply_event(joined_ul)
+                    document.querySelector(".loading").style.display = "none"
                 })
-                apply_event(joined_ul)
-                document.querySelector(".loading").style.display = "none"
-            })
+            }
+
+            if (res.status === 401) {
+                location.href = "/login"
+            }
         })
     }
 }
 
 async function list_owned(page) {
-    let access_token = sessionStorage.getItem("access_token")
     if (page <= 0) {
         return new Error("wrong page")
     }else{
         fetch(`/api/group/owned_groups/${page}`, {
             method: 'GET',
-            headers: {
-                Authorization: access_token
-            }
+            credentials: "include"
         }).then((res) => {
             res.json().then((data) => {
                 let groups = data.groups

@@ -64,11 +64,19 @@ async def group_detail(request: Request):
 
 @ScreenRoute.get("/group/add")
 async def group_add(request: Request):
-    return templates.TemplateResponse("group_add.html", {"request":request}) 
+    return templates.TemplateResponse("group_add.html", {"request":request})
+
+@ScreenRoute.get("/group/edit")
+async def group_edit(request: Request):
+    return templates.TemplateResponse("group_update.html", {"request":request})
 
 @ScreenRoute.get("/friend/request/{request_id}/{request_nickname}/{target_id}/{target_nickname}/{verify_id}")
 async def friend_accept_reject(request: Request):
     return templates.TemplateResponse("email_friend_req.html", {"request":request})
+
+@ScreenRoute.get("/record_my")
+async def record_my(request: Request):
+    return templates.TemplateResponse("record_my.html", {"request":request})
 
 @ScreenRoute.get("/friend")
 async def friend(request: Request):

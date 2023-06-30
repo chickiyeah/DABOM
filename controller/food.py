@@ -15,10 +15,11 @@ foodapi = APIRouter(prefix="/api/food", tags=['food'])
 
 User_NotFound = {"code":"ER011", "message":"USER_NOT_FOUND"}    
 
-unauthorized = {'code':'ER013','message':'UNAUTHORIZED'}
+unauthorized = {'code':'ER013','message':'UNAUTHORIZED (Authorzation Header Not Found)'}
 unauthorized_revoked = {'code':'ER014','message':'UNAUTHORIZED (REVOKED TOKEN)'}
 unauthorized_invaild = {'code':'ER015','message':'UNAUTHORIZED (TOKEN INVALID)'}
 unauthorized_userdisabled = {'code':'ER016','message':'UNAUTHORIZED (TOKENS FROM DISABLED USERS)'}
+er101 = {'code':'ER101', 'message':'엑세스토큰이 올바르지 않습니다.'}
 
 class search_input(BaseModel):
     keywords: str
@@ -46,7 +47,9 @@ async def verify_token(req: Request):
         # Token is invalid
         raise HTTPException(status_code=401, detail=unauthorized_invaild)
     except KeyError:
-        raise HTTPException(status_code=400, detail=unauthorized)
+        raise HTTPException(status_code=401, detail=unauthorized)
+    except ValueError:
+        raise HTTPException(status_code=401, detail=er101)
 
 @foodapi.post("/add")
 async def food_add(data: add_food, authorized: bool = Depends(verify_token)):
@@ -68,38 +71,41 @@ async def food_add(data: add_food, authorized: bool = Depends(verify_token)):
         return "food added"
         
 
+er044 = {"code":"ER044","message":"키워드가 입력되지 않았습니다."}
 
 @foodapi.post("/search/and")
 async def food_search(input:search_input ,authorized: bool = Depends(verify_token)):
     if authorized:
         #list면 keywords = json.loads(input.keywords)
+        if input == "":
+            raise HTTPException(400, er044)
+        else:
+            # , 으로 구분된 STR이면
+            keywords = input.keywords.split(',')
+            search = "SELECT SAMPLE_ID, 식품명, `에너지(kcal)` as 칼로리 FROM foodb WHERE "
+            for keyword in keywords:
+                if keyword != "":
+                    search = search + "{0} LIKE \"%{1}%\" AND ".format("식품명", keyword)
 
-        # , 으로 구분된 STR이면
-        keywords = input.keywords.split(',')
-        search = "SELECT SAMPLE_ID, 식품명, 유통사 FROM foodb WHERE "
-        for keyword in keywords:
-            if keyword != "":
-                text = keyword.split("=")
-                search = search + "{0} LIKE \"%{1}%\" AND ".format(text[0], text[1])
-
-        res = execute_sql(search[0:-4])
-        return res
+            res = execute_sql(search[0:-4])
+            return res
     
 @foodapi.post("/search/or")
 async def food_search(input:search_input ,authorized: bool = Depends(verify_token)):
     if authorized:
         #list면 keywords = json.loads(input.keywords)
+        if input == "":
+            raise HTTPException(400, er044)
+        else:
+            # , 으로 구분된 STR이면
+            keywords = input.keywords.split(',')
+            search = "SELECT SAMPLE_ID, 식품명, `에너지(kcal)` as 칼로리 FROM foodb WHERE "
+            for keyword in keywords:
+                if keyword != "":
+                    search = search + "{0} LIKE \"%{1}%\" OR ".format("식품명", keyword)
 
-        # , 으로 구분된 STR이면
-        keywords = input.keywords.split(',')
-        search = "SELECT SAMPLE_ID, 식품명, 유통사 FROM foodb WHERE "
-        for keyword in keywords:
-            if keyword != "":
-                text = keyword.split("=")
-                search = search + "{0} LIKE \"%{1}%\" OR ".format(text[0], text[1])
-
-        res = execute_sql(search[0:-4])
-        return res
+            res = execute_sql(search[0:-4])
+            return res
     
 @foodapi.get("/detail/{sample_id}")
 async def food_datail(sample_id:str, authorized: bool = Depends(verify_token)):

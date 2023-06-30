@@ -1,6 +1,7 @@
 window.addEventListener('DOMContentLoaded', function() {
     if (location.href.includes('chat')) {
         let room = sessionStorage.getItem("chat_room")
+        toast("로딩중입니다.")
         try_connect(room)
         get_online_user(room)
         console.log("비동기 동작중.")
@@ -8,6 +9,7 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 
 import { clickEnter } from "./enterEvent.js";
+import { toast } from "./toast.js";
 const chat_input = document.querySelector('#chat_input');
 const send_button = document.querySelector('#send_button');
 const players = document.querySelector('#online_players');
@@ -146,21 +148,19 @@ async function try_connect(room) {
         if (location.href.includes('chat')) {
             loading.style.display = 'flex';
             let user = await verify_token()
-            u_id = user.uid
+            console.log(user[0])
+            let us_id = user[0].ID
             console.log("token verified")
-            if(user.nick == null) {
-                location.reload();
-            }else{
-                nick = user.nick
-            }
+            let u_nick = user[0].Nickname
             if (room == null) {
-                chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}`) // 전역변수의 값을 바꿈   
+                console.log(`ws://dabom.kro.kr/chat/ws?username=${u_nick}&u_id=${us_id}`)
+                chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${u_nick}&u_id=${us_id}`) // 전역변수의 값을 바꿈   
                 document.querySelector("#room_title").textContent = "로비 채널"
                 document.querySelector("#room_title_m").textContent = "로비 채널"
             } else {
-                chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${user.nick}&u_id=${user.uid}&channel=${room}`) // 전역변수의 값을 바꿈
+                chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${u_nick}&u_id=${us_id}&channel=${room}`) // 전역변수의 값을 바꿈
                 let c_title = sessionStorage.getItem("chat_title")
-                document.querySelector("#room_title").textContent = c_title
+                document.querySelector("#room_title").textContent = c_title 
                 document.querySelector("#room_title_m").textContent = c_title
             }
 
@@ -527,10 +527,10 @@ async function get_online_user(room) {
             fetch(requrl, {
                 method: 'GET',
             }).then(async function(res) {
-                res.json().then(async (json) => {
+                res.json().then((json) => {
                     const members = JSON.parse(json.members);
                     //접속 아이디 전송
-                    get_users_info(members)
+                    get_users_info(members)        
                 })
             })
     })
@@ -580,86 +580,67 @@ async function get_users_info(users) {
 async function verify_token() {
     return new Promise(async function(resolve, reject) {
         //토큰 검증
-        let access_token = sessionStorage.getItem("access_token")
-        fetch("/api/user/verify_token",{
-            method: 'POST',
+        fetch("/api/user/cookie/verify",{
+            method: 'GET',
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-                access_token: access_token
-            })     
+            credentials: "include"
         }).then(async function(response) {
             if (response.status !== 200) {
-                if (response.status === 422) {
-                    reject(new Error( "{\"code\": \"ER013\", \"message\": \"로그인이 필요합니다.\"}"))
-                    //localStorage.clear();
-                    sessionStorage.clear();
+                if (response.status === 422) {                   
+                    await LoadCookie();
                     loading.style.display = 'none';
-                    location.href = "/login"
+                }else if (response.status === 307) {
+                    location.href = "/login";
                 }else{
                     response.json().then(async (json) => {
                         let detail_error = json.detail;
+                        console.log(detail_error)
                         if (detail_error.code == "ER998") {
-                            console.log(refresh_token())
-                            resolve(refresh_token())
-                           
-                        }else{
-                            reject(JSON.stringify(detail_error));
-                            //localStorage.clear();
-                            sessionStorage.clear();
-                            loading.style.display = 'none';
-                            location.href = "/login"
+                          await LoadCookie();
                         }
                     });
                 }
             } else {
-                resolve(response.json())
+                fetch("/api/user/cookie/get_info",{ methon: 'GET', credentials: "include" }).then(async (res) => {if (res.status === 200) { res.json().then(async (json) => {loading.style.display = "none";resolve(json)})}})
             }
         })
     })
-}
+  }
 
-async function refresh_token() {
-    return new Promise(async function(resolve, reject) {
-        let refresh_token = sessionStorage.getItem('refresh_token');
-        fetch("/api/user/refresh_token", {
-            method: "post",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              refresh_token: refresh_token,
-            })
-        })
-        .then((res) => {
-            if (res.status !== 200) {
-                if (res.status === 422) {
-                    reject(new Error("로그인이 필요합니다."))
-                    //localStorage.clear();
-                    sessionStorage.clear();
-                    loading.style.display = 'none';
-                    location.href = "/login"
-                }else{
-                    res.json().then((json) => {
-                        let detail_error = json.detail;
-                        reject(JSON.stringify(detail_error));
-                        //localStorage.clear();
-                        sessionStorage.clear();
-                        loading.style.display = 'none';
-                        location.href = "/login"
-                    });
-                }
-            }else{
-                res.json().then((json) => {
-                    sessionStorage.setItem("access_token", json.access_token);
-                    sessionStorage.setItem("refresh_token", json.refresh_token);
-                    resolve("token refresed")
+  async function LoadCookie(){
+    let lo_access_token = localStorage.getItem("access_token")
+    let lo_refresh_token = localStorage.getItem("refresh_token")
+    if (location.href.includes("login") == false && location.href.includes("register") == false) {
+      if(lo_access_token == null || lo_refresh_token == null) {
+        console.log("here?")
+        localStorage.clear()
+        location.href = "/login";
+      }else{
+        fetch(`/api/user/cookie/autologin?access_token=${lo_access_token}&refresh_token=${lo_refresh_token}`, {method: 'GET'}).then((res) => {
+            if (res.status === 200) {
+                console.log("자동로그인 및 토큰 검증 성공.")
+                loading.style.display = 'none';
+                location.reload()
+              } else {
+                res.json().then((data) => {
+                  let detail = data.detail
+                  if (detail.code === "ER015") {
+                    localStorage.clear();
+                    location.href = "/login";
+                  }
+
+                  if (detail.code === "ER011") {
+                    localStorage.clear();
+                    location.href = "/login";
+                  }
                 })
-            }
-        })
-    })
-}
+              }
+        })  
+      }
+    }
+  }
 
 /*                  
     if (detail_error.code === "ER011") {

@@ -9,9 +9,15 @@
     <link rel="stylesheet" href="/assets/css/reset.css">
     <link rel="stylesheet" href="/assets/css/popup.css">
     <link rel="stylesheet" href="/assets/css/layout.css">
+    <script defer src="/assets/js/diary.js"></script>
+    <script type="module" src="/assets/js/user.js"></script>
 </head>
 <body>
+    <div class="loading fix">
+        <span class="loader"></span>
+    </div>
 <header>
+    
     <div class="pc_header">
         <nav class="menu">
             <a href="javascript:">다봄섭취</a>
@@ -77,8 +83,8 @@
                     <p class="date">2023년 6월 2일 금요일</p>
                 </div>
                 <div class="search_box">
-                    <input type="text" placeholder="음식을 검색하세요">
-                    <a href="javascript:" class="search_icon">
+                    <input type="text" id="searchInput" placeholder="음식을 검색하세요">
+                    <a href="javascript:" class="search_icon" id="send">
                         <object data="/assets/images/search-icon.svg" type="image/svg+xml" aria-label="검색아이콘"></object>
                     </a>
                     <a href="javascript:" class="camera_icon">
@@ -86,8 +92,8 @@
                                 aria-label="바코트 아이콘"></object>
                     </a>
                 </div>
-                <ul class="search_info">
-                    <li>
+                <ul class="search_info" id="kcalBox">
+                    <!-- <li>
                         <div class="checkbox">
                             <input type="checkbox" id="check1">
                             <label for="check1">체크하기</label>
@@ -97,29 +103,8 @@
                             <p class="kcal">3 kcal</p>
                             <a class="more_btn" href="javascript:">상세보기</a>
                         </div>
-                    </li>
-                    <li>
-                        <div class="checkbox">
-                            <input type="checkbox" id="check2">
-                            <label for="check2">체크하기</label>
-                        </div>
-                        <p class="info_txt">방울토마토</p>
-                        <div class="right_box">
-                            <p class="kcal">3 kcal</p>
-                            <a class="more_btn" href="javascript:">상세보기</a>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="checkbox">
-                            <input type="checkbox" id="check3">
-                            <label for="check3">체크하기</label>
-                        </div>
-                        <p class="info_txt">방울토마토</p>
-                        <div class="right_box">
-                            <p class="kcal">3 kcal</p>
-                            <a class="more_btn" href="javascript:">상세보기</a>
-                        </div>
-                    </li>
+                    </li> -->
+
                 </ul>
             </div>
             <div class="bottom_box">
@@ -135,7 +120,7 @@
         </div>
     </div>
 <!-- .more_btn 클릭했을때 나오는 팝업 -->
-    <div class="kcal_popup_wrap">
+    <div class="kcal_popup_wrap" id="">
         <div class="inner">
             <h2 class="title">제품 상세 내용</h2>
             <ul class="content_box">

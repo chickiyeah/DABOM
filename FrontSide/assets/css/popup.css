@@ -1,3 +1,7 @@
+/* 공통 */
+.pop_close_head { display: flex; justify-content: space-between; align-items: center;  padding-bottom: 10px;
+    border-bottom: 1px solid #E1E1E1; margin-bottom: 25px; }
+
 /* 친구수락  팝업 */
 .email_friend_wrap { background: #FEEBE5; width: 100%; height: 100vh; }
 .email_friend_wrap .inner { position: fixed; right: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.2);
@@ -24,11 +28,111 @@
 .kcal_popup_wrap .inner .content_box li + li { margin-top: 15px; }
 .kcal_popup_wrap .inner .btn_box { width: 100%; margin-top: auto; }
 
+/* 그룹맴버보기 팝업 */
+.group_list_popup { position: fixed; right: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.2);
+    z-index: 2000; overflow: hidden; display: none; }
+.group_list_popup .inner { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+    background: white; width: calc(100% - 30px); max-width: 500px; height: 100%; max-height: 600px; border-radius: 10px;
+    padding: 35px; display: flex; flex-flow: column; }
+.group_list_popup .inner .admin_check { display: inline-block; background: #E1E1E1; border: 1px solid #909090; color: #909090;
+    text-align: center; border-radius: 3px; font-size: 12px; padding: 0 13px; height: 30px; line-height: 2.5; }
+.group_list_popup .inner .pop_close_head { margin-bottom: 0;}
+.group_list_popup .inner .content_box { overflow-y: auto; margin-bottom: 10px; padding-top: 25px; }
+.group_list_popup .inner .content_box li { display: flex; align-items: center; margin-right: 15px; }
+.group_list_popup .inner .content_box li + li { margin-top: 15px; }
+.group_list_popup .inner .content_box li .img_box { width: 45px; height: 45px; overflow: hidden; border-radius: 50%; margin-right: 15px; }
+.group_list_popup .inner .content_box li .name  { font-size: 18px; display: inline-block; white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis; max-width: calc(100% - 80px); }
+.group_list_popup .inner .content_box li span { font-size: 10px; color: #909090; display: inline-flex; line-height: 2.3; gap: 5px; margin-left: 5px; }
+.group_list_popup .inner .content_box li .crown_icon { width: 20px; height: 20px; display: inline-block; }
+.group_list_popup .inner .content_box #owner .name { max-width: calc(100% - 120px); }
+.group_list_popup .inner .content_box #sub_owner .name { max-width: calc(100% - 145px); }
+.group_list_popup .inner .content_box li:first-child input { width: calc(100% - 65px); height: 45px; border: 1px solid #909090; }
+.group_list_popup .inner .content_box li:first-child a { background: #F43B00; color: white; border-radius: 3px; font-size: 14px;
+    height: 30px; line-height: 2.5; text-align: center; width: 60px; margin-left: 10px; }
+.group_list_popup .inner .content_box li #crown_icon_owner { background: url("../images/crown-icon-red.svg") no-repeat; background-size: cover;}
+.group_list_popup .inner .content_box li #crown_icon_sub { background: url("../images/crown-icon-yellow.svg") no-repeat; background-size: cover; }
+.group_list_popup .inner .content_box li .checkbox { margin-left: auto; margin-right: 15px; }
+.group_list_popup .inner .content_box li .checkbox label { text-indent: -9999px; padding-left: 20px; }
+.group_list_popup button { margin-top: auto; }
+
+/* 그룹정보수정 팝업 */
+.group_change_popup { position: fixed; right: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.2);
+    z-index: 2000; overflow: hidden; display: none; }
+.group_change_popup .inner { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+    background: white; width: calc(100% - 30px); max-width: 500px; height: 100%; max-height: 600px; border-radius: 10px;
+    padding: 25px; display: flex; flex-flow: column; }
+.group_change_popup .inner .pop_close_head { margin-bottom: 0;}
+.group_change_popup .inner .content_box { overflow-y: auto; margin-bottom: 10px; padding-top: 25px; }
+.group_change_popup .inner .content_box .filebox { width: 100%; max-width: 200px; margin: 0 auto; }
+.group_change_popup .inner .content_box .filebox .profile_img_box { cursor: pointer; }
+.group_change_popup .inner .content_box .upload_txt { display: flex; align-items: center; justify-content:center;
+    font-size: 14px; font-weight: 100; margin: 10px auto 30px; }
+.group_change_popup .inner .content_box .upload_txt em { font-weight: 400; }
+.group_change_popup .inner .content_box .upload_txt object { filter: brightness(0.2); width: 18px; margin-right: 5px; }
+.group_change_popup .inner .content_box .info_box input { margin-bottom: 15px; }
+.group_change_popup .inner .content_box .info_box textarea { margin-bottom: 25px; }
+
+    /* 친구차단 팝업 */
+.block_friend_popup { position: fixed; right: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.2);
+    z-index: 2000; overflow: hidden; display: none; }
+.block_friend_popup .inner { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+    background: white; width: calc(100% - 30px); max-width: 500px; height: 100%; max-height: 600px; border-radius: 10px;
+    padding: 25px; display: flex; flex-flow: column; }
+.block_friend_popup .list_item { display: flex; flex-flow: column; gap: 15px; }
+.block_friend_popup .list_item li { display: flex; justify-content: space-between; align-items: center; }
+.block_friend_popup .list_item li input { background: #E1E1E1; height: 45px; margin-bottom: 15px;}
+.checkbox input[type=checkbox] + label { padding-left: 30px; background-position-y: center; background-size: 18px;}
+.block_friend_popup .list_item li .checkbox .profile_img { width: 40px; height: 40px; border: 1px solid #E1E1E1;
+    border-radius: 15px; overflow: hidden; display: block; }
+.block_friend_popup .list_item li .txt_box { display: flex; width: calc(100% - 142px); margin-left: 10px; }
+.block_friend_popup .list_item li .txt_box p { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 18px; }
+.block_friend_popup .list_item li a { background: white; border: 1px solid #222; border-radius: 3px; font-size: 14px;
+    height: 30px; text-align: center; line-height: 2; padding: 0 16px; }
+.block_friend_popup .post_nav { margin-top: auto; margin-bottom: 0; }
+
 /* ==============================================================
   미디어 쿼리 시작
 ==============================================================*/
 @media all and (max-width: 800px) {
+    /*공통*/
+    .pop_close_head { margin-bottom: 20px;}
+    .pop_close_head .title { font-size: 20px; }
+    .pop_close_head .close_btn object { width: 20px; }
+
+    /* 친구수락  팝업 */
     .email_friend_wrap .inner .content_box .btn_box a { font-size: 14px; }
+
     /* 오늘일지 칼로리 상세보기 팝업 */
     .kcal_popup_wrap .inner { padding: 30px 25px;}
+
+    /* 그룹맴버보기 팝업 */
+    .group_list_popup .inner { padding: 25px; max-height: 550px; }
+    .group_list_popup .inner .content_box li .img_box { width: 40px; height: 40px; margin-right: 10px; }
+
+    /* 친구차단 팝업 */
+    .group_change_popup .inner { max-height: 550px; }
+
+    /* 친구차단 팝업 */
+    .block_friend_popup .inner { max-height: 550px; }
+    .block_friend_popup .list_item li input { height: 40px; margin-bottom: 10px; line-height: 2.5; }
+    .block_friend_popup .list_item li .checkbox .profile_img { width: 35px; height: 35px; border-radius: 10px; }
+    .block_friend_popup .list_item li .txt_box p { font-size: 16px; }
+    .block_friend_popup .list_item li a { font-size: 12px; line-height: 2.4; padding: 0 14px; font-weight: 700; }
+}
+@media all and (max-width: 400px) {
+    /* 그룹맴버보기 팝업 */
+    .group_list_popup .inner .content_box li .name { font-size: 16px; margin-top: 2px; }
+
+    /* 친구차단 팝업 */
+    .group_change_popup .inner .content_box .filebox { max-width: 150px; }
+    .group_change_popup .inner .content_box .upload_txt { font-size: 12px; margin: 10px auto 15px; }
+    .group_change_popup .inner .content_box .upload_txt object { width: 16px; }
+
+    /* 친구차단 팝업 */
+    .block_friend_popup .inner { padding: 20px; max-height: 530px; }
+    .checkbox input[type=checkbox] + label { padding-left: 25px; }
+    .block_friend_popup .list_item li .txt_box { width: calc(100% - 120px); }
+    .block_friend_popup .list_item li .txt_box p { font-size: 14px; }
+    .block_friend_popup .list_item li a { font-size: 10px; height: 25px; }
 }

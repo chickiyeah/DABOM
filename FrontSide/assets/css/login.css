@@ -4,11 +4,11 @@
 .login_wrap .container { width: 100%; max-width: 460px; padding: 0 24px; margin: 150px auto 150px; }
 .login_wrap .logo  { margin-bottom: 90px; }
 .login_wrap .logo a  { width: 80px; height: auto; display: block; margin: 0 auto; }
-.login_wrap .member_group input + input { margin-top: 10px; }
+.login_wrap .member_group { display: flex;flex-flow: column; gap: 10px; }
 .login_wrap .checkbox { margin: 15px auto; }
 .login_wrap .checkbox input[type=checkbox] + label { font-weight: 300; font-size: 12px; line-height: 2.1;}
 .login_wrap .btn { margin-bottom: 10px; }
-.login_wrap .btn input[type=submit] { width: 100%; border-color: #F43B00; background: #F43B00;}
+.login_wrap .btn input[type=submit] { width: 100%; border-color: #F43B00; background: #F43B00; cursor: pointer;}
 .login_wrap .btn input[type=submit]:valid { color: white; font-size: 18px; }
 .login_wrap .util_box {font-weight: 300; font-size: 12px; letter-spacing: -1px; display: flex; justify-content: space-between;}
 .login_wrap .util_box a:last-child em { font-weight: 500; }
