@@ -395,15 +395,19 @@ async def edit_friend(f_type: str, req_id: str, req_nick:str, tar_id: str, tar_n
         raise HTTPException(403, er027)
 
     if f_type == "accept":
-        r_friend = json.loads(execute_sql("SELECT friends FROM user WHERE ID = '%s'" % (req_id))[0]['friends'])
-        r_friend.append(tar_id)
-        t_friend = json.loads(execute_sql("SELECT friends FROM user WHERE ID = '%s'" % (tar_id))[0]['friends'])
-        t_friend.append(req_id)
+        r_friend = json.loads(execute_sql("SELECT friends FROM user WHERE ID = '%s'" % (req_id))[0]['friends'])      
+        if (tar_id in r_friend):
+            execute_sql("DELETE FROM f_verify WHERE code = '%s'" % verify_id)
+            raise HTTPException(400, er026)
+        else:
+            r_friend.append(tar_id)
+            t_friend = json.loads(execute_sql("SELECT friends FROM user WHERE ID = '%s'" % (tar_id))[0]['friends'])
+            t_friend.append(req_id)
 
-        execute_sql("UPDATE user SET friends = '%s' WHERE ID = '%s'" % (json.dumps(r_friend), req_id))
-        execute_sql("UPDATE user SET friends = '%s' WHERE ID = '%s'" % (json.dumps(t_friend), tar_id))
-        execute_sql("DELETE FROM f_verify WHERE code = '%s'" % verify_id)
-        return "Friend Request Accepted"
+            execute_sql("UPDATE user SET friends = '%s' WHERE ID = '%s'" % (json.dumps(r_friend), req_id))
+            execute_sql("UPDATE user SET friends = '%s' WHERE ID = '%s'" % (json.dumps(t_friend), tar_id))
+            execute_sql("DELETE FROM f_verify WHERE code = '%s'" % verify_id)
+            return "Friend Request Accepted"
 
     if f_type == "reject":
         execute_sql("DELETE FROM f_verify WHERE code = '%s'" % verify_id)
