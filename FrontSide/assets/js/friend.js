@@ -40,6 +40,12 @@ const friend_list_div = document.querySelector(".friends");
 const friend_req_input = document.querySelector("#friend_req_input");
 const friend_req_button = document.querySelector("#friend_req_button");
 
+const friend_setting = document.querySelector(".setting");
+const friend_setting_menu = document.querySelector(".setting_menu")
+const friend_block_p_button = document.querySelector("#block_friend")
+const friend_block_edit = document.querySelector(".block_friend_popup")
+const friend_block_p_close = document.querySelector(".close_btn")
+
 const error = document.querySelector("#error");
 const success = document.querySelector("#success");
 
@@ -48,6 +54,24 @@ const delete_ban = document.querySelector(".friend_box .top .btn");
 const reg_email = /[a-zA-Z0-9]+@[a-z]+\.[a-z]{2,3}$/i;
 
 clickEnter(friend_req_input, friend_req_button)
+
+friend_block_p_close.onclick = () => {
+    friend_block_edit.style.display = "none"
+}
+
+
+friend_block_p_button.onclick = () => {
+    friend_block_edit.style.display = "flex"
+}
+
+friend_setting.onclick = () => {
+    let s = friend_setting_menu.style.display;
+    if (s === "none") {
+        friend_setting_menu.style.display = "flex"
+    } else {
+        friend_setting_menu.style.display = "none"
+    }
+}
 
 friend_req_button.addEventListener("click", async (event) => {
     if (!friend_req_input.value.match(reg_email)) {
@@ -304,7 +328,7 @@ async function list(page) {
                 res.json().then(async (json) => {
                     console.log(json)
                     let amount = json.amount
-                    document.querySelector("#friend_amount").innerText = `친구 (${amount} 명)`
+                    document.querySelector("#friend_amount").innerText = `친구 ( ${amount} 명 )`
                     let to_page = amount / 7
                     var maxpage
                     if (Number.isInteger(to_page)) {
@@ -324,8 +348,8 @@ async function list(page) {
                         startpage = 1
                         endpage = 11
                     }
-                    document.querySelector(".prev").href = `javascript:location.href='/friend?page=${page-1}'`
-                    document.querySelector(".next").href = `javascript:location.href='/friend?page=${page+1}'`
+                    document.querySelector(".prev").href = `javascript:location.href='/friend?page=${parseInt(page)-1}'`
+                    document.querySelector(".next").href = `javascript:location.href='/friend?page=${parseInt(page)+1}'`
                     if (amount === 0) {
                         pagediv.insertAdjacentHTML("beforeend", `<a class="selected" href="javascript:location.href='/friend?page=1'">1</a>`)
                     }else{
