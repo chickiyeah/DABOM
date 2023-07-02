@@ -49,16 +49,16 @@
         transform: rotate(0deg);
     }
     10%{
-        transform: rotate(45deg);
+        transform: rotate(35deg);
     }
     20%{
-        transform: rotate(-45deg);
+        transform: rotate(-35deg);
     }
     30%{
-        transform: rotate(30deg);
+        transform: rotate(20deg);
     }
     40%{
-        transform: rotate(-30deg);
+        transform: rotate(-20deg);
     }
     50%{
         transform: rotate(10deg);
@@ -85,7 +85,7 @@
 .right_menu .bell #bell_new_alert { content: ""; display: none; width: 5px; height: 5px; background: #F43B00; border-radius: 50%;
     position: absolute; right: 8px; top: 7px; z-index: 500; }
 .right_menu .setting_menu { position: absolute; right: -20px; top: 55px; background: #FFFFFF;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25); border-radius: 6px; padding: 10px; z-index: 500; }
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25); border-radius: 6px; padding: 10px; z-index: 500; display: none; }
 .right_menu .bell_menu { position: absolute; right :0; top: 55px; background: #FFFFFF;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25); border-radius: 6px; padding: 15px 20px; z-index: 500; max-height: 300px; overflow-y: scroll; display: none; }
 .right_menu .bell_menu .bell_item .dabom_alert { width: 4px; height: 4px; border-radius: 2px; margin: 10px 0 }
