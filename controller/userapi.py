@@ -592,7 +592,10 @@ async def f_verify_token(response: Response, access_token: Optional[str] = Cooki
 async def get_user(id:str, authorized:bool = Depends(verify_admin_token)):
     if authorized:
         user = execute_sql("SELECT `Nickname`, `profile_image`, `ID` FROM `user` WHERE `ID` = '"+id+"'")
-
+        
+        imsg = execute_sql("SELECT * FROM infomsg WHERE `ID` = '"+id+"'")
+        user[0]['imsg'] = imsg[0]['message']
+        
         return user
 
 @userapi.get("/get_users")

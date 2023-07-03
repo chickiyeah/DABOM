@@ -1,7 +1,9 @@
 window.addEventListener('DOMContentLoaded', async function() {
     connnect()
-    get_unread_amount()
-    get_alerts(1)
+    if (bell != null) {
+        get_unread_amount()
+        get_alerts(1)
+    }
 })
 
 var alertsocket
@@ -57,11 +59,13 @@ async function get_alerts(page) {
     })
 }
 
-bell.onclick = (event) => {
-    if (alert_list.style.display === 'none') {
-        alert_list.style.display = "block"
-    } else {
-        alert_list.style.display = "none"
+if (bell != null) {
+    bell.onclick = (event) => {
+        if (alert_list.style.display === 'none') {
+            alert_list.style.display = "block"
+        } else {
+            alert_list.style.display = "none"
+        }
     }
 }
 
