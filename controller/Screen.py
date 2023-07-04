@@ -68,7 +68,7 @@ async def group_add(request: Request):
 
 @ScreenRoute.get("/group/edit")
 async def group_edit(request: Request):
-    return templates.TemplateResponse("group_update.html", {"request":request})
+    return templates.TemplateResponse("group_list.html", {"request":request})
 
 @ScreenRoute.get("/friend/request/{request_id}/{request_nickname}/{target_id}/{target_nickname}/{verify_id}")
 async def friend_accept_reject(request: Request):

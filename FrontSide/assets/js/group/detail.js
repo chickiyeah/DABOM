@@ -85,7 +85,7 @@ function get_group_data(id) {
                     mem_ul.insertAdjacentHTML("beforeend", html)
                 } else if (ops.includes(mem)) {
                     var html
-                    if (this.location.href.includes("detail")) {
+                    if (location.href.includes("detail")) {
                         html = `<li id="sub_owner">
                                         <div class="img_box">
                                             <img alt="프로필이미지" src="${profile}">
@@ -110,7 +110,7 @@ function get_group_data(id) {
                     mem_ul.insertAdjacentHTML("beforeend", html)
                 } else {
                     var html
-                    if (this.location.href.includes("detail")) {
+                    if (location.href.includes("detail")) {
                         html = `<li>
                                     <div class="img_box">
                                         <img alt="프로필이미지" src="${profile}">
