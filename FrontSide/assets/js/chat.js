@@ -97,7 +97,6 @@ drag_drop.addEventListener('drop', async function(e) {
         let xhr = new XMLHttpRequest();
         xhr.open('POST', `/chat/uploadfile?ext=${extentsion}`, true)
 
-    await verify_token()
     let access_token = sessionStorage.getItem("access_token")
     xhr.setRequestHeader('Authorization', access_token)
     xhr.onload = xhr.onerror = async function () {

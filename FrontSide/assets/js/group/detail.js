@@ -14,6 +14,10 @@ window.addEventListener('DOMContentLoaded', async function() {
                         let joined = JSON.parse(data.groups)
                         if (joined.includes(parseInt(value))) {
                             get_group_data(value)
+                            if (this.location.href.includes("detail")) {
+                                mem_list_invite.remove()
+                                mem_list_admin_check.remove()
+                            }
                         } else {
                             this.alert("올바르지 않은 접근입니다.")
                             this.location.href = "/groups?page=1&type=public"
@@ -32,6 +36,8 @@ const member_list = document.querySelector(".member")
 const cls_btn = document.querySelector("#close_mem_list")
 const mem_ul = document.querySelector(".content_box")
 const mem_ul_title = document.querySelector("#mem_ul_title")
+const mem_list_invite = document.querySelector(".content_box").children[0]
+const mem_list_admin_check = document.querySelector(".admin_check")
 
 member_list.addEventListener("click", () => {
     document.querySelector(".group_list_popup").style.display = "flex"
@@ -78,21 +84,41 @@ function get_group_data(id) {
 
                     mem_ul.insertAdjacentHTML("beforeend", html)
                 } else if (ops.includes(mem)) {
-                    let html = `<li id="sub_owner">
+                    var html
+                    if (this.location.href.includes("detail")) {
+                        html = `<li id="sub_owner">
+                                        <div class="img_box">
+                                            <img alt="프로필이미지" src="${profile}">
+                                        </div>
+                                        <p class="name">${nick}</p>
+                                        <span><i id="crown_icon_sub" class="crown_icon"></i>관리자</span>
+                                    </li>`
+                    } else {
+                        html = `<li id="sub_owner">
+                                        <div class="img_box">
+                                            <img alt="프로필이미지" src="${profile}">
+                                        </div>
+                                        <p class="name">${nick}</p>
+                                        <span><i id="crown_icon_sub" class="crown_icon"></i>관리자</span>
+                                        <div class="checkbox">
+                                            <input id="check7" type="checkbox" checked>
+                                            <label for="check7">선택</label>
+                                        </div>
+                                    </li>`
+                    }
+
+                    mem_ul.insertAdjacentHTML("beforeend", html)
+                } else {
+                    var html
+                    if (this.location.href.includes("detail")) {
+                        html = `<li>
                                     <div class="img_box">
                                         <img alt="프로필이미지" src="${profile}">
                                     </div>
                                     <p class="name">${nick}</p>
-                                    <span><i id="crown_icon_sub" class="crown_icon"></i>관리자</span>
-                                    <div class="checkbox">
-                                        <input id="check7" type="checkbox" checked>
-                                        <label for="check7">선택</label>
-                                    </div>
                                 </li>`
-
-                    mem_ul.insertAdjacentHTML("beforeend", html)
-                } else {
-                    let html = `<li>
+                    } else {
+                        html = `<li>
                                     <div class="img_box">
                                         <img alt="프로필이미지" src="${profile}">
                                     </div>
@@ -102,6 +128,7 @@ function get_group_data(id) {
                                         <label for="check7">선택</label>
                                     </div>
                                 </li>`
+                    }
 
                     mem_ul.insertAdjacentHTML("beforeend", html)
                 }

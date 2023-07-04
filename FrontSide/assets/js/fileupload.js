@@ -1,5 +1,6 @@
 const inputElement = document.getElementById("input").addEventListener("change", handleFiles)
 const loading = document.querySelector(".loading");
+const loading_box =document.querySelector(".loading_box")
 
 import { send_message } from './chat.js'
 
@@ -7,8 +8,8 @@ async function handleFiles() {
     const filelist = this.files
     const loading = document.querySelector(".loading");
     loading.style.display = 'flex';
+    loading_box.style.display = "flex"
     var files = []
-    await verify_token()
     for (let i = 0, numFiles = filelist.length; i < numFiles; i++) {
         let file = filelist[i]
         let formdata = new FormData()
@@ -18,7 +19,6 @@ async function handleFiles() {
         files.push(url)
     }
     console.log(files)
-    loading.style.display = 'none';
     sessionStorage.setItem("da_u_files", files)
     if (location.href.includes("diary_add")) {
         location.href = "/diary_update"
@@ -27,6 +27,7 @@ async function handleFiles() {
 
 function makeRequest(extentsion, file, formdata) {
     return new Promise(function(resolve, reject) {
+        loading_box.style.display = "flex"
         let xhr = new XMLHttpRequest();
         xhr.open('POST', `/chat/uploadfile?ext=${extentsion}`, true)
         let access_token = sessionStorage.getItem("access_token")
@@ -58,7 +59,7 @@ function makeRequest(extentsion, file, formdata) {
                 }
 
                 send_message(msg)
-                loading.style.display = 'none';
+                loading_box.style.display = "flex"
             }
 
             
