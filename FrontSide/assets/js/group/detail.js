@@ -47,6 +47,27 @@ cls_btn.addEventListener("click", () => {
     document.querySelector(".group_list_popup").style.display = "none"
 })
 
+function appoint(mouseevent) {
+    let target = mouseevent.target
+    let tar_name = target.parentElement.parentElement.children[1].innerText
+    let tar_uid = target.attributes.uid.value
+    let r_confirm = confirm(`정말 ${tar_name}님을 모임 관리자로 임명하시겠습니까?`)
+}
+
+function be_deprived(mouseevent) {
+    let target = mouseevent.target
+    let tar_name = target.parentElement.parentElement.children[1].innerText
+    let tar_uid = target.attributes.uid.value
+    let r_confirm = confirm(`정말 ${tar_name}님을 모임 관리자로 임명하시겠습니까?`)
+}
+
+function kick(mouseevent) {
+    let target = mouseevent.target
+    let tar_name = target.parentElement.parentElement.children[1].innerText
+    let tar_uid = target.attributes.uid.value
+    let r_confirm = confirm(`정말 ${tar_name}님을 모임에서 추방하시겠습니까?`)
+}
+
 function get_group_data(id) {
     fetch(`/api/group/detail/${id}`,{
         method: 'GET'
@@ -100,9 +121,13 @@ function get_group_data(id) {
                                         </div>
                                         <p class="name">${nick}</p>
                                         <span><i id="crown_icon_sub" class="crown_icon"></i>관리자</span>
-                                        <div class="checkbox">
-                                            <input id="check7" type="checkbox" checked>
-                                            <label for="check7">선택</label>
+                                        <div class="button_box">
+                                            <button type="button" id="sown" uid=${id} btype="be" active>
+                                                <object aria-label="왕관아이콘" data="/assets/images/crown-icon-yellow.svg"type="image/svg+xml"></object>
+                                            </button>
+                                            <button type="button" id="kick" uid=${id}>
+                                                <object aria-label="닫기아이콘" data="/assets/images/close-icon.svg"type="image/svg+xml"></object>
+                                            </button>
                                         </div>
                                     </li>`
                     }
@@ -123,16 +148,36 @@ function get_group_data(id) {
                                         <img alt="프로필이미지" src="${profile}">
                                     </div>
                                     <p class="name">${nick}</p>
-                                    <div class="checkbox">
-                                        <input id="check7" type="checkbox">
-                                        <label for="check7">선택</label>
+                                    <div class="button_box">
+                                        <button type="button" id="nown" uid=${id} btype="be">
+                                            <object aria-label="왕관아이콘" data="/assets/images/crown-icon-yellow.svg"type="image/svg+xml"></object>
+                                        </button>
+                                        <button type="button" id="kick" uid=${id}>
+                                            <object aria-label="닫기아이콘" data="/assets/images/close-icon.svg"type="image/svg+xml"></object>
+                                        </button>
                                     </div>
                                 </li>`
                     }
 
                     mem_ul.insertAdjacentHTML("beforeend", html)
                 }
+                
+                document.querySelectorAll("#nown").forEach((element) => {
+                    element.removeEventListener("click", appoint);
+                    element.addEventListener("click", appoint)
+                })
+
+                document.querySelectorAll("#sown").forEach((element) => {
+                    element.removeEventListener("click", be_deprived);
+                    element.addEventListener("click", be_deprived)
+                })
+
+                document.querySelectorAll("#kick").forEach((element) => {
+                    element.removeEventListener("click", kick);
+                    element.addEventListener("click", kick)
+                })
             })
+
         })
     })
 }
