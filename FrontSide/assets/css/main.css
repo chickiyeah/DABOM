@@ -1,0 +1,245 @@
+/* ==============================================================
+section 1 비주얼
+==============================================================*/
+section { margin: 200px 0; }
+.hero_wrap { width: 100%; height: 100vh; background: #FDDE58; overflow: hidden; display: flex; position: relative; z-index: 20; margin: 0; }
+.hero_wrap:after { content: ""; position: absolute; left: 0; bottom: -5px; background: url("/assets/images/zigzag-04.svg") repeat-x;
+    width: 100%; height: 40px; background-size: 70px; }
+.hero_wrap .container { display: flex; align-items: center; }
+.hero_wrap .text_box { display: flex; flex-flow: column; padding-top: 50px; width: calc(100% - 520px); }
+.hero_wrap .text_box .top_txt { background: #F43B00; color: white; font-size: 18px; padding: 5px 15px;
+    align-self: flex-start; margin-bottom: 30px; border-radius: 3px; }
+.hero_wrap .text_box .bottom_txt { font-family: "Cafe24Ohsquare", sans-serif; font-size: 84px; }
+.hero_wrap .text_box .bottom_txt em { color: #F43B00; }
+.hero_wrap .img_box { max-width: 520px; position: relative; margin-left: auto; bottom: calc(-50% - 5px); transform: translateY(-50%); }
+
+/* ==============================================================
+section 2 칼로리 검색
+==============================================================*/
+.food_search_wrap .container { display: flex; }
+.food_search_wrap .left_box { width: calc(100% - 550px); }
+.food_search_wrap .left_box .title { font-size: clamp(1.5rem, 3vw, 2.625rem); margin-bottom: 1.5vw;
+    line-height: 1.2; letter-spacing: -1.5px; }
+.food_search_wrap .left_box .sub_txt { font-size: 24px; font-weight: 700; margin-bottom: 6.5vw; }
+.food_search_wrap .left_box .search_box { max-width: 560px; }
+.food_search_wrap .left_box .search_box input { border-top: 0; border-left: 0; border-right: 0;  border-radius: 0;
+    border-bottom: 6px solid #222; background: url("../images/search-icon.svg") no-repeat; background-position: right 5px center;
+    background-size: 28px; font-size: 18px; }
+.food_search_wrap .left_box .search_box input::placeholder { font-size: 18px; }
+.food_search_wrap .left_box .search_box input:focus { outline-color: transparent;}
+
+.food_search_wrap .category_box { width: 550px; position: relative; }
+.food_search_wrap .category_box .category_item { box-shadow: 10px 30px 20px 0 rgba(0, 0, 0, 0.16);
+    display: inline-flex; align-items: center; gap: 10px; position: absolute; }
+.food_search_wrap .category_box .category_item img { width: 100%; height: 100%;}
+.food_search_wrap .category_box .category_item .cate_name { margin-top: 2px; }
+.food_search_wrap .category_box .category_item:nth-child(-n+3) { font-size: 22px; padding: 13px 25px 12px 20px; border-radius: 42px 42px 0 42px; }
+.food_search_wrap .category_box .category_item:nth-child(-n+3) picture { height: 40px; }
+.food_search_wrap .category_box .category_item:nth-last-child(-n+4) { font-size: 18px; padding: 11px 27px 10px 27px; border-radius: 32px 32px 0 32px; }
+.food_search_wrap .category_box .category_item:nth-last-child(-n+4) picture { height: 30px; }
+
+.food_search_wrap .category_box .category_item:nth-child(1) { background: black; color: white; left: 89px; top: 0;}
+.food_search_wrap .category_box .category_item:nth-child(2) { background: #FBF4E4; left: 149px;top: 100px;}
+.food_search_wrap .category_box .category_item:nth-child(3) { background: #FDDE58; left: 0; bottom: 48px; }
+.food_search_wrap .category_box .category_item:nth-child(4) { background: black; color: white; left: 50%; bottom: 0; margin-left: -70px;}
+.food_search_wrap .category_box .category_item:nth-child(5) { background: #FDDE58; color: white; right: 44px; top: 75px; }
+.food_search_wrap .category_box .category_item:nth-child(6) {  background: #FBF4E4; right: 40px; bottom: 95px; }
+.food_search_wrap .category_box .category_item:nth-child(7) { background: #F43B00 ; color: white; right: 0; bottom: 21px; }
+
+/* ==============================================================
+section 3 식단슬라이드
+==============================================================*/
+.story_wrap { position: relative; overflow: hidden; }
+.story_wrap .story_top { display: flex; align-items: center; margin-bottom: 5.2vw; position: relative; }
+.story_wrap .story_top .title { font-size: clamp(1.625rem, 5vw, 2.625rem); font-family: 'Cafe24Ohsquare', sans-serif; }
+.story_wrap .story_top .img_box { flex: 1;  padding: 0 1.4vw; }
+/* 버튼 */
+.story_wrap .story_top .swiper-button-prev { left: inherit; margin-left: auto; }
+.story_wrap .story_top .swiper-button-next { margin-left: 15px; right: inherit; }
+.story_wrap .story_top .swiper-button-next,
+.story_wrap .story_top .swiper-button-prev { position: relative; width: 50px; height: 50px; border: 2px solid #222; margin-top: inherit;  z-index: 2; overflow: hidden; }
+.story_wrap .story_top .swiper-button-next::after,
+.story_wrap .story_top .swiper-button-prev::after { content: ""; z-index: -1; width: 100%; height: 100%;
+    background-color: #F43B00; margin-top: -100%; margin-right: -100%; position: absolute; top: 0;bottom: auto; left: auto; right: 0;
+    transform: translate3d(0%, 0%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+    transform-style: preserve-3d; transition: transform .35s; }
+.story_wrap .story_top .swiper-button-next object,
+.story_wrap .story_top .swiper-button-prev object { pointer-events: none; transition: all .3s;}
+/* 버튼 호버시 */
+.story_wrap .story_top .swiper-button-next:hover:after,
+.story_wrap .story_top .swiper-button-prev:hover:after { transform: translate3d(-100%, 100%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); }
+.story_wrap .story_top .swiper-button-next:hover object,
+.story_wrap .story_top .swiper-button-prev:hover object { filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(324deg) brightness(124%) contrast(101%); }
+/* 슬라이드 */
+.story_wrap .story_slide .swiper-wrapper { gap: 20px; }
+.story_wrap .story_slide .swiper-slide { width: 100%; max-width: 300px; margin-bottom: 10px; }
+.story_wrap .story_slide .swiper-slide a { display: block; position: relative; border-radius: 30px; overflow: hidden; transition: .2s all cubic-bezier(0.5, 0, 0, 1); }
+.story_wrap .story_slide .swiper-slide a .img_box { width: 100%; height: auto; box-sizing: border-box; display: block; padding-bottom: 300px; }
+.story_wrap .story_slide .swiper-slide a .img_box img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+.story_wrap .story_slide .swiper-slide a .buttom_box { position: absolute; bottom: 0; width: 100%; background: #F43B00;
+    transition: .3s all cubic-bezier(0.5, 0, 0, 1); transform: translate(0, 6rem); padding: 1rem 1.875rem 1rem;}
+.story_wrap .story_slide .swiper-slide a .buttom_box .pattern { position: absolute; left: 0; top: -10px; width: 100%; overflow: hidden; }
+.story_wrap .story_slide .swiper-slide a .buttom_box .pattern object { width: 100%; min-width: 31rem;}
+.story_wrap .story_slide .swiper-slide a .buttom_box .txt { font-size: 24px; text-align: center; color: white;  }
+/* 슬라이드 호버시 */
+.story_wrap .story_slide .swiper-slide a:hover { box-shadow: 0 5px 10px 0 rgba(0,0,0,.2);}
+.story_wrap .story_slide .swiper-slide a:hover .buttom_box { transform: translate3d(0, 0, 0);}
+
+/* ==============================================================
+section 4 식단일기소개
+==============================================================*/
+.introduce_wrap:after { content: ""; position: absolute; left: 0; bottom: -6px; background: url("/assets/images/zigzag-04.svg") repeat-x;
+    width: 100%; height: 40px; background-size: 70px; }
+.introduce_wrap:before { content: ""; position: absolute; left: 0; top: -6px; background: url("/assets/images/zigzag-04.svg") repeat-x;
+    width: 100%; height: 40px; background-size: 70px; transform: rotate(180deg); }
+.introduce_wrap { background: #FBF4E4; position: relative; padding: 90px 0 50px; }
+.introduce_wrap .container { position: relative; }
+.introduce_wrap .top_txt { text-align: center; margin-bottom: 65px;}
+.introduce_wrap .top_txt .small_txt { color: #FFCC00; font-size: 20px; margin-bottom: 15px;}
+.introduce_wrap .top_txt .title { font-size: clamp(1.625rem, 6vw, 2.75rem); font-weight: 100; line-height: 1.2; }
+.introduce_wrap .top_txt .title em { font-weight: 700; }
+
+.introduce_wrap .text_group span { font-size: 18px; color: white; padding: 15px 20px 14px 20px; position: absolute;
+    top: calc(50% + 70px); transform: translateY(-50%); box-shadow: 10px 30px 20px 0 rgba(0, 0, 0, 0.16); }
+.introduce_wrap .text_group span:nth-child(1) { background: #F43B00; border-radius: 22px 22px 0 22px; left: 75px;}
+.introduce_wrap .text_group span:nth-child(2) { background: #222; border-radius: 22px 22px 0 22px;
+    left: calc(50% - 25%); transform: translate(-50%,-50%);}
+.introduce_wrap .text_group span:nth-child(3) { background: #F43B00; border-radius: 22px 22px 22px 0;
+    right: calc(50% - 32%); transform: translate(-50%,-50%); }
+.introduce_wrap .text_group span:nth-child(4) { background: #222; border-radius: 22px 22px 22px 0; right: 80px;}
+
+.introduce_wrap .char_group { display: flex; justify-content: space-between; }
+.introduce_wrap .char_group  { display: flex; }
+.introduce_wrap .char_group .img_box:not(:nth-child(4)) { width: 120px; margin-top: auto; }
+.introduce_wrap .char_group .img_box:nth-child(4) { width: 260px;}
+
+/* ==============================================================
+section 5 다이어리
+==============================================================*/
+.food_diary_wrap .title { text-align: center; font-size: clamp(1.625rem, 6vw, 2.625rem); font-family: "Cafe24Ohsquare", sans-serif; }
+.food_diary_wrap .diary_box { position: relative; width: 100%; transform: scale(0.8, 0.8) rotate(5deg);
+    transition: all 0.35s; display: block; margin: 2rem auto 0; filter: grayscale(100%);
+    box-shadow: 0 0.25rem 1rem rgba(0,0,0,0.2); background: white; max-width: 650px; padding: 25px 25px 30px 25px;}
+.food_diary_wrap .img_box { background: white; position: relative; width: 100%; padding-bottom: 80%;}
+.food_diary_wrap .img_box img { position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+    object-fit: cover; }
+.food_diary_wrap .txt { text-overflow: ellipsis; overflow: hidden; word-break: break-word;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; width: 100%;
+    font-size: 20px; line-height: 1.5; margin-top: 20px; }
+/* 이미지 호버시 */
+.food_diary_wrap .diary_box:hover { filter: none; transform: scale(1, 1) rotate(0deg); transition: all 0.35s;}
+
+/* ==============================================================
+ footer 푸터
+==============================================================*/
+.footer_wrap { overflow: hidden; padding-top: 20px; }
+.footer_wrap .scroller_group { font-size: 20px; font-weight: 700; background: #FDDE58; position: relative;
+    padding: 10px 0 5px; display: flex; flex: 0 0 auto; white-space: nowrap; transition: 0.3s; }
+.footer_wrap .scroller_group::before { content: ""; display: block; width: 100%; height: 20px;
+    position: absolute; left: 0; top: -20px; background: url("../images/zigzag-06.svg") repeat-x; transform:  scaleX(1.3); }
+.footer_wrap .scroller_group::after { content: ""; display: block; width: 100%; height: 20px; position: absolute;
+    left: 0; bottom: -20px; background: url("../images/zigzag-06.svg") repeat-x; transform: rotate(180deg) scaleX(1.5); }
+.footer_wrap .scroller_group span { flex: 0 0 auto; animation: left-move 3.5s linear infinite;
+    padding-right: 2vw; will-change: transform; }
+.footer_wrap .footer_info { background: #F43B00; }
+.footer_wrap .footer_info p { font-size: 20px; font-weight: 700; color: white; }
+.footer_wrap .footer_info .footer_menu { display: flex; padding: 55px 35px 15px; gap: 2vw; position: relative; }
+.footer_wrap .footer_info .footer_policies { display: flex; justify-content: space-between; padding: 30px 35px 35px; }
+/* 지그재그라인 */
+.footer_wrap .footer_info hr.zig, hr.zag { border: none; height: 30px; margin: 0 50px; left: -50px; width: calc(100% + 100px); }
+.footer_wrap hr.zig { position: relative; z-index: 100;
+    background: linear-gradient(-140deg, #F43B00 30px, rgba(0, 0, 0, 0) 0) 0 5px, linear-gradient(140deg, #F43B00 30px, rgba(0, 0, 0, 0) 0) 0 5px;
+    background-position: center bottom; background-repeat: repeat-x;background-size: 30px 40px; }
+hr.zag { position: relative; opacity: 0.4; z-index: 50;
+    background: linear-gradient(-140deg, #ccc 30px, rgba(0, 0, 0, 0) 0) 0 5px, linear-gradient(140deg, #ccc 30px, #F43B00 0) 0 5px;
+    background-position: center bottom; background-repeat: repeat-x; background-size: 30px 40px;
+    margin-top: -28px; }
+
+
+@keyframes left-move {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-100%, 0, 0); }
+}
+
+/* ==============================================================
+ 미디어 쿼리
+==============================================================*/
+
+@media all and (max-width: 1200px) {
+    .mobile_hidden { display: none; }
+     main .show_mobile { display: block !important; }
+     section { margin: 150px 0; }
+    .hero_wrap { height: 100%; max-height: 680px; }
+    .hero_wrap .container { flex-flow: column; }
+    .hero_wrap .text_box { width: 100%; text-align: center; padding-top: 90px; }
+    .hero_wrap .text_box .top_txt { margin: 0 auto 10px; font-size: 16px; }
+    .hero_wrap .text_box .bottom_txt { font-size: clamp(2.875rem, 12vw, 4.25rem) }
+    .hero_wrap .img_box { margin: 0 auto; max-width: 400px; bottom: calc(-50% + 110px);}
+    /*section 2 칼로리 검색*/
+    .food_search_wrap .left_box { width: 100%; text-align: center; }
+    .food_search_wrap .left_box .title { font-size: clamp(1.25rem, 5.4vw, 2.625rem); line-height: 1.4; }
+    .food_search_wrap .left_box .search_box { max-width: inherit; }
+    .food_search_wrap .left_box .sub_txt {  font-size: clamp(1.125rem, 4vw, 1.5rem); }
+    .food_search_wrap .category_box { display: none; }
+    /*section 4 식단일기소개*/
+    .introduce_wrap { overflow: hidden; }
+    .introduce_wrap .text_group { position: relative; }
+    .introduce_wrap .text_group span:nth-child(2) { top: calc(50% + 5px); left: calc(50% - 170px); }
+    .introduce_wrap .text_group span:nth-child(3) { top: calc(50% - -25px); right: calc(50% - 270px); }
+    .introduce_wrap .char_group { justify-content: center; }
+    .introduce_wrap .char_group .img_box:nth-child(3) { transform: translateY(45px) rotate(-20deg);}
+    .introduce_wrap .char_group .img_box:nth-child(4) { width: inherit; max-width: 450px; transform: translateY(60px);}
+    .introduce_wrap .char_group .img_box:nth-child(6) { transform: translateY(45px) rotate(20deg);}
+    /*section 5 다이어리*/
+    .food_diary_wrap .diary_box { max-width: 600px; }
+    /*푸터*/
+    .footer_wrap .scroller_group { font-size: 18px; }
+    .footer_wrap .footer_info p { font-size: 18px;}
+    .footer_wrap .footer_info .footer_menu { padding: 50px 35px 10px; }
+    .footer_wrap .footer_info .footer_policies { padding: 25px 35px 30px; flex-flow: column; }
+    .footer_wrap .footer_info .footer_policies p + p { margin-top: 10px; }
+}
+
+@media all and (max-width: 800px) {
+    section { margin: 120px 0; }
+    /*section 2 칼로리 검색*/
+    .food_search_wrap .left_box .search_box input { font-size: 16px; }
+    .food_search_wrap .left_box .search_box input::placeholder { font-size: 16px; }
+    /* section 3 식단슬라이드 */
+    .story_wrap .story_slide .swiper-slide { max-width: 250px; }
+    .story_wrap .story_slide .swiper-slide a .img_box { padding-bottom: 250px; }
+    .story_wrap .story_top .swiper-button-next,
+    .story_wrap .story_top .swiper-button-prev { width: 40px; height: 40px; }
+    .story_wrap .story_top .swiper-button-next { margin-left: 10px; }
+    .story_wrap .story_top .swiper-button-next object,
+    .story_wrap .story_top .swiper-button-prev object { width: 20px; }
+    /*section 4 식단일기소개*/
+    .introduce_wrap .top_txt { margin-bottom: 45px; }
+    .introduce_wrap .top_txt .small_txt { font-size: 18px; }
+    .introduce_wrap .text_group span { font-size: 16px; letter-spacing: -0.8px; }
+    .introduce_wrap .text_group span:nth-child(2) { left: calc(50% - 26%); }
+    .introduce_wrap .text_group span:nth-child(3) { right: inherit; left: calc(50% + 21%); }
+    .introduce_wrap .char_group .img_box:nth-child(4) { max-width: 400px; }
+    .introduce_wrap .char_group .img_box:not(:nth-child(4)) { width: 110px;}
+    /*푸터*/
+    .footer_wrap .scroller_group { font-size: 16px; }
+    .footer_wrap .footer_info p { font-size: 16px; letter-spacing: -0.8px; font-weight: 400; }
+    .footer_wrap .footer_info .footer_menu { padding: 45px 24px 5px; justify-content: center; }
+    .footer_wrap .footer_info .footer_policies { text-align: center; }
+
+}
+@media all and (max-width: 400px) {
+    section { margin: 80px 0; }
+    /*section 2 칼로리 검색*/
+    .food_search_wrap .left_box .search_box input { background-size: 24px; }
+    /* section 3 식단슬라이드 */
+    .story_wrap .story_top .img_box { display: none; }
+    /*section 4 식단일기소개*/
+    .introduce_wrap .text_group span { padding: 12px 14px 12px 14px; font-size: 13px; }
+    .food_diary_wrap .txt { font-size: 16px; }
+    /*푸터*/
+    .footer_wrap .footer_info .footer_menu p { font-size: 14px; }
+    .footer_wrap .footer_info .footer_policies p { font-size: 12px; }
+}
+
+

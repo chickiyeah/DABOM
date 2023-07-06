@@ -35,34 +35,317 @@
     <title>다봄 : 다이어트 하는거 다 지켜봄!</title>
     <link rel="stylesheet" href="/assets/css/reset.css">
     <link rel="stylesheet" href="/assets/css/layout.css">
+    <link rel="stylesheet" href="/assets/css/swiper-bundle.min.css">
     <link rel="stylesheet" href="/assets/css/temp index.css">
     <!--<script type="module" src="/assets/js/user.js"></script>
     <script type="module" src="/assets/js/alert.js"></script>-->
 </head>
 <body>
-
+    <header>
+        <div class="pc_header">
+            <nav class="menu">
+                <a href="/kcal_consume">다봄섭취</a>
+                <a href="/diary_add">오늘일지</a>
+                <a href="/record">다봄기록</a>
+                <a href="/groups?page=1&type=public">다봄모임</a>
+                <a href="javascript:">다봄달력</a>
+            </nav>
+            <h1 class="logo">
+                <a href="/"><img alt="로고" src="/assets/images/logo.svg"></a>
+            </h1>
+            <div class="login">
+                <a href="/login">
+                    <img alt="로그인 아이콘" src="/assets/images/login-icon.svg">
+                </a>
+            </div>
+        </div>
+        <div class="show_mobile">
+            <div class="mobile_header">
+                <div class="m_header">
+                    <h1 class="logo">
+                        <a href="/">
+                            <object aria-label="로고" data="/assets/images/logo.svg" type="image/svg+xml"></object>
+                        </a>
+                    </h1>
+                    <a class="hamburger" href="javascript:">
+                        <div class="line top"></div>
+                        <div class="line bottom"></div>
+                        <div class="line center"></div>
+                    </a>
+                </div>
+                <div class="slide_nav">
+                    <div class="slide_header">
+                        <h1 class="logo">
+                            <a href="/">
+                                <object aria-label="로고" data="/assets/images/logo.svg" type="image/svg+xml"></object>
+                            </a>
+                        </h1>
+                    </div>
+                    <div class="slide_content">
+                        <a href="/kcal_consume">다봄섭취</a>
+                        <a href="/diary_add">오늘일지</a>
+                        <a href="/record:">다봄기록</a>
+                        <a href="/groups?page=1&type=public">다봄모임</a>
+                        <a href="javascript:">다봄달력</a>
+                    </div>
+                    <div class="slide_bottom">
+                        <a href="/login"><i class="mypage-icon"></i>마이페이지</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
 <main>
     <div class="loading fix">
         <span class="loader"></span>
     </div>
-    <div class="login_wrap">
+    <section class="hero_wrap">
         <div class="container">
-            <h1 class="logo">
-                <a href="javascript:"><img src="/assets/images/logo.svg" alt="로고"></a> <!-- 서버에서는 .. 안너어도 되요. -->
-            </h1>
-            <form class="preparing" action="javascript:void(0);">
-                <Strong>사이트 준비중입니다.</Strong>
-                <div class="sub">
-                    <span>방문해 주셔서 감사힙니다.</span>
-                    <span>현재는 사이트 오픈 준비중입니다.</span>
-                    <div>
-                        <span>빠른 시일 이내에 오픈하도록 하겠습니다. 감사합니다.</span>
+            <div class="text_box">
+                <span class="top_txt">Welcome 잘왔다봄</span>
+                <div class="bottom_txt">
+                    <em>다</em>이어트 하는 거<br>
+                    다 지켜<em>봄</em>!
+                </div>
+            </div>
+            <div class="img_box">
+                <img alt="다봄캐릭터" src="/assets/images/mascot-04.png">
+            </div>
+        </div>
+    </section>
+    <section class="food_search_wrap">
+        <div class="container">
+            <div class="left_box">
+                <h2 class="title">거기너 !<br>오늘 섭취한 칼로리가 궁금하지 않아?</h2>
+                <p class="sub_txt">칼로리 확인하러 가보자고 !</p>
+                <div class="search_box">
+                    <input placeholder="오늘 섭취한 음식칼로리를  확인해보세요" type="text">
+                </div>
+            </div>
+            <div class="category_box">
+                <div class="category_item">
+                    <picture>
+                        <img alt="간편식사" src="/assets/images/food-icon-01.png">
+                    </picture>
+                    <span class="cate_name">간편식사</span>
+                </div>
+                <div class="category_item">
+                    <picture>
+                        <img alt="샐러드" src="/assets/images/food-icon-02.png">
+                    </picture>
+                    <span class="cate_name">샐러드</span>
+                </div>
+                <div class="category_item">
+                    <picture>
+                        <img alt="볶음요리" src="/assets/images/food-icon-03.png">
+                    </picture>
+                    <span class="cate_name">볶음요리</span>
+                </div>
+                <div class="category_item">
+                    <picture>
+                        <img alt="육류" src="/assets/images/food-icon-04.png">
+                    </picture>
+                    <span class="cate_name">육류</span>
+                </div>
+                <div class="category_item">
+                    <picture>
+                        <img alt="음료" src="/assets/images/food-icon-05.png">
+                    </picture>
+                    <span class="cate_name">음료</span>
+                </div>
+                <div class="category_item">
+                    <picture>
+                        <img alt="도시락" src="/assets/images/food-icon-06.png">
+                    </picture>
+                    <span class="cate_name">도시락</span>
+                </div>
+                <div class="category_item">
+                    <picture>
+                        <img alt="과일" src="/assets/images/food-icon-07.png">
+                    </picture>
+                    <span class="cate_name">과일</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="story_wrap">
+        <div class="container">
+            <div class="story_top">
+                <h2 class="title">Cooking Story</h2>
+                <div class="img_box">
+                    <img src="/assets/images/zigzag-01.svg" alt="지그재그이미지">
+                </div>
+                <div class="swiper-button-prev">
+                    <object aria-label="왼쪽 화살표" data="/assets/images/swiper-arrow-left.svg"
+                            type="image/svg+xml"></object>
+                </div>
+                <div class="swiper-button-next">
+                    <object aria-label="오른쪽 화살표" data="/assets/images/swiper-arrow-right.svg"
+                            type="image/svg+xml"></object>
+                </div>
+            </div>
+            <div class="story_slide">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <a href="javascript:">
+                            <div class="img_box">
+                                <img alt="식단이미지" src="/assets/images/default-background.png">
+                            </div>
+                            <div class="buttom_box">
+                                <div class="pattern">
+                                    <object aria-label="지그재그 이미지" data="/assets/images/zigzag-05.svg"
+                                            type="image/svg+xml"></object>
+                                </div>
+                                <div class="txt">more</div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="swiper-slide">
+                        <a href="javascript:">
+                            <div class="img_box">
+                                <img alt="식단이미지" src="/assets/images/default-background.png">
+                            </div>
+                            <div class="buttom_box">
+                                <div class="pattern">
+                                    <object aria-label="지그재그 이미지" data="/assets/images/zigzag-05.svg"
+                                            type="image/svg+xml"></object>
+                                </div>
+                                <div class="txt">more</div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="swiper-slide">
+                        <a href="javascript:">
+                            <div class="img_box">
+                                <img alt="식단이미지" src="/assets/images/default-background.png">
+                            </div>
+                            <div class="buttom_box">
+                                <div class="pattern">
+                                    <object aria-label="지그재그 이미지" data="/assets/images/zigzag-05.svg"
+                                            type="image/svg+xml"></object>
+                                </div>
+                                <div class="txt">more</div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="swiper-slide">
+                        <a href="javascript:">
+                            <div class="img_box">
+                                <img alt="식단이미지" src="/assets/images/default-background.png">
+                            </div>
+                            <div class="buttom_box">
+                                <div class="pattern">
+                                    <object aria-label="지그재그 이미지" data="/assets/images/zigzag-05.svg"
+                                            type="image/svg+xml"></object>
+                                </div>
+                                <div class="txt">more</div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="swiper-slide">
+                        <a href="javascript:">
+                            <div class="img_box">
+                                <img alt="식단이미지" src="/assets/images/default-background.png">
+                            </div>
+                            <div class="buttom_box">
+                                <div class="pattern">
+                                    <object aria-label="지그재그 이미지" data="/assets/images/zigzag-05.svg"
+                                            type="image/svg+xml"></object>
+                                </div>
+                                <div class="txt">more</div>
+                            </div>
+                        </a>
                     </div>
                 </div>
-            </form>
+            </div>
+        </div>
+    </section>
+    <section class="introduce_wrap">
+        <div class="container">
+            <div class="top_txt">
+                <p class="small_txt">공유되는 나의 식단일기</p>
+                <p class="title">나만의 식단일기 못참지!<br><em>다봄</em>에서 달려보자구!</p>
+            </div>
+            <div class="text_group">
+                <span class="mobile_hidden">다같이 공유하자</span>
+                <span>연인끼리</span>
+                <span>친구랑 같이</span>
+                <span class="mobile_hidden">혼자도 괜찮아 !</span>
+            </div>
+            <div class="char_group">
+                <div class="img_box mobile_hidden">
+                    <img alt="다봄캐릭터" src="/assets/images/mascot-small-01.png">
+                </div>
+                <div class="img_box mobile_hidden">
+                    <img alt="다봄캐릭터" src="/assets/images/mascot-small-02.png">
+                </div>
+                <div class="img_box">
+                    <img alt="다봄캐릭터" src="/assets/images/mascot-small-03.png">
+                </div>
+                <div class="img_box">
+                    <img class="mobile_hidden" alt="다봄캐릭터" src="/assets/images/mascot-02.png">
+                    <img class="show_mobile" alt="다봄캐릭터" src="/assets/images/mascot-03.png">
+                </div>
+                <div class="img_box mobile_hidden">
+                    <img alt="다봄캐릭터" src="/assets/images/mascot-small-04.png">
+                </div>
+                <div class="img_box">
+                    <img alt="다봄캐릭터" src="/assets/images/mascot-small-05.png">
+                </div>
+                <div class="img_box mobile_hidden">
+                    <img alt="다봄캐릭터" src="/assets/images/mascot-small-06.png">
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="food_diary_wrap">
+        <div class="container">
+            <h2 class="title">Today's Food Diary</h2>
+            <a class="diary_box" href="javascript:">
+                <div class="img_box">
+                    <img alt="식단이미지" src="/assets/images/default-background.png">
+                </div>
+                <p class="txt">
+                    오늘은 피그마로 디자인을 너무 열심히 한 탓에 허기가지고
+                    머리가 안돌아가서 타코야끼랑 딸기바를 먹었더니 저녁부터 매운 음식 땡겨서 떡볶이를 시켜서 먹었다.</p>
+            </a>
+        </div>
+    </section>
+</main>
+<footer class="footer_wrap">
+    <div class="scroller_group">
+        <span>다 지켜봄!</span>
+        <span>다 지켜봄!</span>
+        <span>다 지켜봄!</span>
+        <span>다 지켜봄!</span>
+        <span>다 지켜봄!</span>
+        <span>다 지켜봄!</span>
+        <span>다 지켜봄!</span>
+        <span>다 지켜봄!</span>
+        <span>다 지켜봄!</span>
+        <span>다 지켜봄!</span>
+        <span>다 지켜봄!</span>
+        <span>다 지켜봄!</span>
+        <span>다 지켜봄!</span>
+        <span>다 지켜봄!</span>
+        <span>다 지켜봄!</span>
+        <span>다 지켜봄!</span>
+    </div>
+    <div class="footer_info">
+        <div class="footer_menu">
+            <p>다봄 추억 문의</p>
+            <p>이용약관</p>
+            <p>개인정보처리방침</p>
+            <p>1:1 문의</p>
+        </div>
+        <hr class="zig">
+        <hr class="zag">
+        <div class="footer_policies">
+            <p>다봄 주소: 서울특별시 다봄구 다봄로2 (우편번호: 04557)</p>
+            <p>Copyright © 다봄, All Rights Reserved</p>
         </div>
     </div>
-</main>
+</footer>
 <script>
     (function(){var w=window;if(w.ChannelIO){return w.console.error("ChannelIO script included twice.");}var ch=function(){ch.c(arguments);};ch.q=[];ch.c=function(args){ch.q.push(args);};w.ChannelIO=ch;function l(){if(w.ChannelIOInitialized){return;}w.ChannelIOInitialized=true;var s=document.createElement("script");s.type="text/javascript";s.async=true;s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";var x=document.getElementsByTagName("script")[0];if(x.parentNode){x.parentNode.insertBefore(s,x);}}if(document.readyState==="complete"){l();}else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l);}})();
   
@@ -73,4 +356,7 @@
 
 </script>
 </body>
+<script src="/assets/js/header.js"></script>
+<script type="module" src="/assets/js/swiper.js"></script>
+<script src="/assets/js/swiper-bundle.min.js"></script>
 </html>
