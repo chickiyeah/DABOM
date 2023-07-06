@@ -51,14 +51,14 @@ function appoint(mouseevent) {
     let target = mouseevent.target
     let tar_name = target.parentElement.parentElement.children[1].innerText
     let tar_uid = target.attributes.uid.value
-    let r_confirm = confirm(`정말 ${tar_name}님을 모임 관리자로 임명하시겠습니까?`)
+    let r_confirm = confirm(`정말 ${tar_name}님을 모임의 관리자로 임명하시겠습니까?`)
 }
 
 function be_deprived(mouseevent) {
     let target = mouseevent.target
     let tar_name = target.parentElement.parentElement.children[1].innerText
     let tar_uid = target.attributes.uid.value
-    let r_confirm = confirm(`정말 ${tar_name}님을 모임 관리자로 임명하시겠습니까?`)
+    let r_confirm = confirm(`정말 ${tar_name}님을 모임의 관리자직에서 해임하시겠습니까?`)
 }
 
 function kick(mouseevent) {

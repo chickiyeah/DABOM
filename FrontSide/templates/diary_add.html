@@ -38,40 +38,60 @@
     <script type="module" src="../assets/js/fileupload.js"></script>
 </head>
 <body>
-<header>
-    <div class="pc_header">
-        <nav class="menu">
-            <a href="javascript:">다봄섭취</a>
-            <a href="javascript:">오늘일지</a>
-            <a href="javascript:">다봄기록</a>
-            <a href="/groups?page=1&type=public">다봄모임</a>
-            <a href="javascript:">다봄달력</a>
-        </nav>
-        <h1 class="logo">
-            <a href="/"><img src="/assets/images/logo.svg" alt="로고"></a>
-        </h1>
-        <div class="login">
-            <a href="/login">
-                <img src="/assets/images/login-icon.svg" alt="로그인 아이콘">
-            </a>
-        </div>
-    </div>
-    <div class="show_mobile">
-        <div class="mobile_header">
-            <div class="m_header">
-                <h1 class="logo">
-                <a href="javascript:"><img src="/assets/images/logo.svg" alt="로고"></a>
+    <header>
+        <div class="pc_header">
+            <nav class="menu">
+                <a href="/kcal_consume">다봄섭취</a>
+                <a href="/diary_add">오늘일지</a>
+                <a href="/record">다봄기록</a>
+                <a href="/groups?page=1&type=public">다봄모임</a>
+                <a href="javascript:">다봄달력</a>
+            </nav>
+            <h1 class="logo">
+                <a href="/"><img alt="로고" src="/assets/images/logo.svg"></a>
             </h1>
-                <a class="hamburger" href="javascript:">
-                    <div class="line top"></div>
-                    <div class="line bottom"></div>
-                    <div class="line center"></div>
+            <div class="login">
+                <a href="/login">
+                    <img alt="로그인 아이콘" src="/assets/images/login-icon.svg">
                 </a>
             </div>
-            <div class="slide_nav"></div>
         </div>
-    </div>
-</header>
+        <div class="show_mobile">
+            <div class="mobile_header">
+                <div class="m_header">
+                    <h1 class="logo">
+                        <a href="/">
+                            <object aria-label="로고" data="/assets/images/logo.svg" type="image/svg+xml"></object>
+                        </a>
+                    </h1>
+                    <a class="hamburger" href="javascript:">
+                        <div class="line top"></div>
+                        <div class="line bottom"></div>
+                        <div class="line center"></div>
+                    </a>
+                </div>
+                <div class="slide_nav">
+                    <div class="slide_header">
+                        <h1 class="logo">
+                            <a href="/">
+                                <object aria-label="로고" data="/assets/images/logo.svg" type="image/svg+xml"></object>
+                            </a>
+                        </h1>
+                    </div>
+                    <div class="slide_content">
+                        <a href="/kcal_consume">다봄섭취</a>
+                        <a href="/diary_add">오늘일지</a>
+                        <a href="/record:">다봄기록</a>
+                        <a href="/groups?page=1&type=public">다봄모임</a>
+                        <a href="javascript:">다봄달력</a>
+                    </div>
+                    <div class="slide_bottom">
+                        <a href="/login"><i class="mypage-icon"></i>마이페이지</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
 <main>
     <div class="loading fix">
         <span class="loader"></span>
