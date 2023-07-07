@@ -52,6 +52,25 @@ function appoint(mouseevent) {
     let tar_name = target.parentElement.parentElement.children[1].innerText
     let tar_uid = target.attributes.uid.value
     let r_confirm = confirm(`정말 ${tar_name}님을 모임의 관리자로 임명하시겠습니까?`)
+
+    if (r_confirm === true) {
+        let parameters = location.href.split('?')[1].split('&');
+        parameters.forEach((param) => {
+            let key = param.split('=')[0];
+            let value = param.split('=')[1];
+            if (key === 'id') {
+                let g_id = value
+                fetch(`/api/group/appoint?group_id=${g_id}&user_id=${tar_uid}`, {
+                    method: 'POST'
+                }).then((response) => {
+                    if (response.status === 200) {
+                        alert(`${tar_name}님을 모임의 관리자로 임명했습니다.`);
+                        location.reload();
+                    }
+                })
+            }
+        })
+    }
 }
 
 function be_deprived(mouseevent) {
@@ -59,6 +78,25 @@ function be_deprived(mouseevent) {
     let tar_name = target.parentElement.parentElement.children[1].innerText
     let tar_uid = target.attributes.uid.value
     let r_confirm = confirm(`정말 ${tar_name}님을 모임의 관리자직에서 해임하시겠습니까?`)
+
+    if (r_confirm === true) {
+        let parameters = location.href.split('?')[1].split('&');
+        parameters.forEach((param) => {
+            let key = param.split('=')[0];
+            let value = param.split('=')[1];
+            if (key === 'id') {
+                let g_id = value
+                fetch(`/api/group/be_deprived?group_id=${g_id}&user_id=${tar_uid}`, {
+                    method: 'POST'
+                }).then((response) => {
+                    if (response.status === 200) {
+                        alert(`${tar_name}님을 관리자직에서 해임했습니다.`);
+                        location.reload();
+                    }
+                })
+            }
+        })
+    }
 }
 
 function kick(mouseevent) {

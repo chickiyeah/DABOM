@@ -426,17 +426,21 @@ async def appoint_operator(group_id:int, user_id:str, userId: Optional[str] = Co
             raise HTTPException(400, er033)
         
         operators = json.loads(d_group['operator'])
+        
 
         if user_id in operators or user_id == d_group['owner']:
             raise HTTPException(400, er034)
         
-        operators = operators.append(user_id)
-        execute_sql("UPDATE `group` SET `operator` = '%s' WHERE `id` = %s" % operators, group_id)
+        operators.append(user_id)
+        print(operators)
+        execute_sql("UPDATE `group` SET `operator` = '%s' WHERE `id` = %s" % (json.dumps(operators), group_id))
         await group_log(group_id, "appoint", userId or "admin", user_id)
 
-        return "%s 님을 %s 모임의 관리자로 임명했습니다."
-    
-@groupapi.post("be_deprived")
+        return "%s 님을 %s 모임의 관리자로 임명했습니다." % (user_id, group_id)
+
+er934 = {'code':'E934', 'message':'해당 멤버는 이미 모임의 관리자가 아닙니다.'}
+
+@groupapi.post("/be_deprived")
 async def be_deprived(group_id:int, user_id:str, userId: Optional[str] = Cookie(None)):
         group = execute_sql("SELECT `id`, `owner`,`operator`,`members` FROM `group` WHERE `id` = %s" % group_id)
 
@@ -453,14 +457,14 @@ async def be_deprived(group_id:int, user_id:str, userId: Optional[str] = Cookie(
         
         operators = json.loads(d_group['operator'])
 
-        if user_id in operators or user_id == d_group['owner']:
-            raise HTTPException(400, er034)
+        if user_id not in operators and user_id != d_group['owner']:
+            raise HTTPException(400, er934)
         
-        operators = operators.remove(user_id)
-        execute_sql("UPDATE `group` SET `operator` = '%s' WHERE `id` = %s" % operators, group_id)
+        operators.remove(user_id)
+        execute_sql("UPDATE `group` SET `operator` = '%s' WHERE `id` = %s" % (json.dumps(operators), group_id))
         await group_log(group_id, "be_deprived", userId or "admin", user_id)
 
-        return "%s 님을 %s 모임의 관리자로 임명했습니다."
+        return "%s 님을 %s 모임의 관리자직에서 해임했습니다." % (user_id, group_id)
 
 class group_warn(BaseModel):
     group_id:int
