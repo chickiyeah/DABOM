@@ -2,6 +2,9 @@ name: deploy
 on:
   push:
     branches: ['main']
+  pull_request:
+    types:
+      - closed
 jobs:
   deploy:
     runs-on: ubuntu-latest
