@@ -2,9 +2,8 @@
 오늘일지
 ==============================================================*/
 /* 사진 업로드 */
-.diary_warp { height: 100vh; overflow: hidden; }
-.diary_warp .container { position: relative; display: flex; flex-flow: column; align-items: center; text-align: center; }
-.diary_warp .info_box { margin-top: 150px; margin-bottom: 50px; }
+.diary_warp .container { position: relative; display: flex; flex-flow: column; align-items: center; text-align: center; height: 100vh; overflow: hidden; justify-content: flex-end; }
+.diary_warp .info_box { margin-bottom: 2.5vw; }
 .diary_warp .info_box .add_img { width: 50px; height: 50px; background: #F43B00; border-radius: 50%; cursor: pointer; display: inline-flex;
     justify-content: center; align-items: center; }
 .diary_warp .info_box .add_img object { width: 31px; pointer-events: none;}
@@ -12,7 +11,7 @@
     position: relative; left: calc(50% - -3px); transform: translateX(-50%); margin: 15px 0; }
 .diary_warp .info_box p { font-size: 28px;}
 .diary_warp .info_box p em { color: #F43B00; }
-.diary_warp .img_box { display: block; max-width: 420px; }
+.diary_warp .img_box { display: block; max-width: 420px; transform: translateY(10px); }
 
 /* 기록, 칼로리 공통 */
 .update_wrap .top_box , .kcal_wrap .top_box { margin-top: 190px; margin-bottom: 90px; }
@@ -98,7 +97,11 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
     .pc_header { display: none !important; }
     .show_mobile { display: block !important;}
     /* 사진 업로드 */
+    .diary_warp .info_box .add_img { width: 45px; height: 45px; }
+    .diary_warp .info_box .add_img object { width: 27px; }
     .diary_warp .info_box p { font-size: 22px; }
+    .diary_warp .info_box .line { left: calc(50% - -1px); }
+    .diary_warp .img_box { max-width: 350px; }
 
     /* 기록, 칼로리 공통 */
     .update_wrap .top_box .date_item .img_box ,.kcal_wrap .top_box .date_item .img_box { max-width: 70px; padding-bottom: 10px; }
@@ -123,10 +126,10 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
 @media all and (max-width: 400px) {
     /* 사진 업로드 */
     .update_wrap .top_box .date_item .img_box { max-width: 60px; }
-    .diary_warp .info_box { margin-top: 120px; }
     .diary_warp .info_box .add_img { width: 40px; height: 40px; }
     .diary_warp .info_box .add_img object { width: 24px; }
-    .diary_warp .info_box p { font-size: 20px; margin-bottom: 50px; }
+    .diary_warp .info_box p { font-size: 20px; }
+    .diary_warp .img_box { max-width: 300px; }
 
     /* 기록, 칼로리 공통 */
     .update_wrap .top_box .date_item .date, .kcal_wrap .top_box .date_item .date { font-size: 14px; }

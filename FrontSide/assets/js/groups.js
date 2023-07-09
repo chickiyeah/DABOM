@@ -174,6 +174,10 @@ function button_Event(pointerevent) {
         location.href = "/group/detail?id="+id
     }
 
+    if (type === "edit") {
+        location.href = "/group/edit?id="+id
+    }
+
 }
 
 

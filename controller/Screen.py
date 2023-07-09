@@ -68,11 +68,15 @@ async def group_add(request: Request):
 
 @ScreenRoute.get("/group/edit")
 async def group_edit(request: Request):
-    return templates.TemplateResponse("group_update.html", {"request":request})
+    return templates.TemplateResponse("group_list.html", {"request":request})
 
 @ScreenRoute.get("/friend/request/{request_id}/{request_nickname}/{target_id}/{target_nickname}/{verify_id}")
 async def friend_accept_reject(request: Request):
     return templates.TemplateResponse("email_friend_req.html", {"request":request})
+
+@ScreenRoute.get("/record")
+async def record_my(request: Request):
+    return templates.TemplateResponse("record.html", {"request":request})
 
 @ScreenRoute.get("/record_my")
 async def record_my(request: Request):
@@ -81,3 +85,11 @@ async def record_my(request: Request):
 @ScreenRoute.get("/friend")
 async def friend(request: Request):
     return templates.TemplateResponse("friend.html", {"request":request})
+
+@ScreenRoute.get("/kcal_consume")
+async def friend(request: Request):
+    return templates.TemplateResponse("kcal_consume.html", {"request":request})
+
+@ScreenRoute.get("/mypage")
+async def friend(request: Request):
+    return templates.TemplateResponse("mypage.html", {"request":request})

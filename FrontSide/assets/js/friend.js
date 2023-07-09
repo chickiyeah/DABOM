@@ -13,7 +13,9 @@ window.addEventListener('DOMContentLoaded', async function() {
                         if (value < 1) {
                             location.href = "/friend?page=1"
                         }else{
+                            ban_list(value)
                             await list(value)
+
                         }
                     } else {
                         this.location.href = "/friend?page=1"
@@ -40,6 +42,13 @@ const friend_list_div = document.querySelector(".friends");
 const friend_req_input = document.querySelector("#friend_req_input");
 const friend_req_button = document.querySelector("#friend_req_button");
 
+const friend_setting = document.querySelector(".setting");
+const friend_setting_menu = document.querySelector(".setting_menu")
+const friend_block_p_button = document.querySelector("#block_friend")
+const friend_block_edit = document.querySelector(".block_friend_popup")
+const friend_block_p_close = document.querySelector(".close_btn")
+const friend_block_inner_list = document.querySelector("#banned_f_list")
+
 const error = document.querySelector("#error");
 const success = document.querySelector("#success");
 
@@ -48,6 +57,24 @@ const delete_ban = document.querySelector(".friend_box .top .btn");
 const reg_email = /[a-zA-Z0-9]+@[a-z]+\.[a-z]{2,3}$/i;
 
 clickEnter(friend_req_input, friend_req_button)
+
+friend_block_p_close.onclick = () => {
+    friend_block_edit.style.display = "none"
+}
+
+
+friend_block_p_button.onclick = () => {
+    friend_block_edit.style.display = "flex"
+}
+
+friend_setting.onclick = () => {
+    let s = friend_setting_menu.style.display;
+    if (s === "none") {
+        friend_setting_menu.style.display = "flex"
+    } else {
+        friend_setting_menu.style.display = "none"
+    }
+}
 
 friend_req_button.addEventListener("click", async (event) => {
     if (!friend_req_input.value.match(reg_email)) {
@@ -109,6 +136,30 @@ function apply_event() {
     Array.prototype.forEach.call(friend_list_div.children,(element) =>{
         element.children[0].children[0].removeEventListener("click", checkbox_event);
         element.children[0].children[0].addEventListener("click", checkbox_event)})
+}
+
+function unblock_event(mouseevent) {
+    let target = mouseevent.target
+    let uid = target.id.split("-")[1]
+    let name = target.parentNode.children[1].children[0].innerText.split(" (")[0]
+    console.log(target)
+    let res = confirm(`정말 ${name}님의 차단을 해제하시겠습니까?`)
+    if (res === true) {
+        fetch(`/api/friends/pardon?user_id=${uid}`, {
+            method: "POST"
+        }).then((res) => {
+            if (res.status === 200) {
+                target.parentElement.remove()
+            }
+        })
+    }
+}
+
+function apply_unblock_event() {
+    Array.prototype.forEach.call(friend_block_inner_list.children,(element) =>{
+        element.children[2].removeEventListener("click", unblock_event);
+        element.children[2].addEventListener("click", unblock_event)}
+    )
 }
 
 async function request(uid) {
@@ -173,6 +224,39 @@ async function request(uid) {
     })
 }
 
+async function ban_list(page) {
+    return new Promise(async function(resolve, reject) {
+        fetch(`/api/friends/banlist?page=${page}`, {
+            method: "GET",
+            credentials: "include"
+        }).then((res) => {
+            res.json().then((data) => {
+                data.forEach((element) => {
+                    get_user_data(element).then((user) => {
+                        let html = `<li>
+                                        <div class="checkbox">
+                                            <input type="checkbox" id="check-${user.ID}">
+                                            <label for="check-${user.ID}">
+                                                        <span class="profile_img">
+                                                            <img src="${user.profile_image}" alt="프로필이미지">
+                                                    </span>
+                                            </label>
+                                        </div>
+                                        <div class="txt_box">
+                                            <p class="name">${user.Nickname} <em class="data">(${user.imsg})</em></p>
+                                        </div>
+                                        <a id="unblock-${user.ID}" href="javascript:">해체</a>
+                                    </li>`
+
+                        friend_block_inner_list.insertAdjacentHTML("beforeend", html)
+                        apply_unblock_event()
+                    })
+                })
+            })
+        })
+    })
+}
+
 async function ban_friend(pointerevent) {
     return new Promise(async function(resolve, reject) {
         var checked = false
@@ -186,13 +270,9 @@ async function ban_friend(pointerevent) {
         })
 
         if (checked == true) {
-            await verify_token()
-            let access_token = sessionStorage.getItem("access_token")
             fetch(`/api/friends/ban?user_id=${tar_id}`, {
                 method: "POST",
-                headers: {
-                    Authorization: access_token
-                }
+                credentials: "include"
             }).then(async (res) => {
                 if (res.status !== 200) {
                     res.json().then(async (json) => {
@@ -304,7 +384,7 @@ async function list(page) {
                 res.json().then(async (json) => {
                     console.log(json)
                     let amount = json.amount
-                    document.querySelector("#friend_amount").innerText = `친구 (${amount} 명)`
+                    document.querySelector("#friend_amount").innerText = `친구 ( ${amount} 명 )`
                     let to_page = amount / 7
                     var maxpage
                     if (Number.isInteger(to_page)) {
@@ -324,8 +404,8 @@ async function list(page) {
                         startpage = 1
                         endpage = 11
                     }
-                    document.querySelector(".prev").href = `javascript:location.href='/friend?page=${page-1}'`
-                    document.querySelector(".next").href = `javascript:location.href='/friend?page=${page+1}'`
+                    document.querySelector(".prev").href = `javascript:location.href='/friend?page=${parseInt(page)-1}'`
+                    document.querySelector(".next").href = `javascript:location.href='/friend?page=${parseInt(page)+1}'`
                     if (amount === 0) {
                         pagediv.insertAdjacentHTML("beforeend", `<a class="selected" href="javascript:location.href='/friend?page=1'">1</a>`)
                     }else{
@@ -352,6 +432,30 @@ async function list(page) {
             }
         })
     })
+}
+
+/** 단일 유저정보 조회 (유저 아이디 ) */
+async function get_user_data(user) {
+    return new Promise((resolve, reject) => {
+        //fetch(`/api/user/email/user_id?email=${user}`,{method: 'GET'}).then((res) => (res.json().then((data) => {
+            let url = `/api/user/get_user?id=${user}`;
+            fetch(url, {
+                headers: {
+                    Authorization: "Bearer cncztSAt9m4JYA9"
+                }
+            }).then((res) => {
+                if (res.status != 200) {
+                    reject("오류.")
+                }else{
+                    res.json().then(async (json) => {
+                        let u_data = json[0];
+                        console.log(u_data);
+                        resolve(u_data)
+                    });
+                };
+            })
+        //})));     
+    });
 }
 
 //아이디로 유저가져와서 html에 적용

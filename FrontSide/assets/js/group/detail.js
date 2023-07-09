@@ -14,6 +14,10 @@ window.addEventListener('DOMContentLoaded', async function() {
                         let joined = JSON.parse(data.groups)
                         if (joined.includes(parseInt(value))) {
                             get_group_data(value)
+                            if (this.location.href.includes("detail")) {
+                                mem_list_invite.remove()
+                                mem_list_admin_check.remove()
+                            }
                         } else {
                             this.alert("올바르지 않은 접근입니다.")
                             this.location.href = "/groups?page=1&type=public"
@@ -32,6 +36,8 @@ const member_list = document.querySelector(".member")
 const cls_btn = document.querySelector("#close_mem_list")
 const mem_ul = document.querySelector(".content_box")
 const mem_ul_title = document.querySelector("#mem_ul_title")
+const mem_list_invite = document.querySelector(".content_box").children[0]
+const mem_list_admin_check = document.querySelector(".admin_check")
 
 member_list.addEventListener("click", () => {
     document.querySelector(".group_list_popup").style.display = "flex"
@@ -40,6 +46,65 @@ member_list.addEventListener("click", () => {
 cls_btn.addEventListener("click", () => {
     document.querySelector(".group_list_popup").style.display = "none"
 })
+
+function appoint(mouseevent) {
+    let target = mouseevent.target
+    let tar_name = target.parentElement.parentElement.children[1].innerText
+    let tar_uid = target.attributes.uid.value
+    let r_confirm = confirm(`정말 ${tar_name}님을 모임의 관리자로 임명하시겠습니까?`)
+
+    if (r_confirm === true) {
+        let parameters = location.href.split('?')[1].split('&');
+        parameters.forEach((param) => {
+            let key = param.split('=')[0];
+            let value = param.split('=')[1];
+            if (key === 'id') {
+                let g_id = value
+                fetch(`/api/group/appoint?group_id=${g_id}&user_id=${tar_uid}`, {
+                    method: 'POST'
+                }).then((response) => {
+                    if (response.status === 200) {
+                        alert(`${tar_name}님을 모임의 관리자로 임명했습니다.`);
+                        location.reload();
+                    }
+                })
+            }
+        })
+    }
+}
+
+function be_deprived(mouseevent) {
+    let target = mouseevent.target
+    let tar_name = target.parentElement.parentElement.children[1].innerText
+    let tar_uid = target.attributes.uid.value
+    let r_confirm = confirm(`정말 ${tar_name}님을 모임의 관리자직에서 해임하시겠습니까?`)
+
+    if (r_confirm === true) {
+        let parameters = location.href.split('?')[1].split('&');
+        parameters.forEach((param) => {
+            let key = param.split('=')[0];
+            let value = param.split('=')[1];
+            if (key === 'id') {
+                let g_id = value
+                fetch(`/api/group/be_deprived?group_id=${g_id}&user_id=${tar_uid}`, {
+                    method: 'POST'
+                }).then((response) => {
+                    if (response.status === 200) {
+                        alert(`${tar_name}님을 관리자직에서 해임했습니다.`);
+                        location.reload();
+                    }
+                })
+            }
+        })
+    }
+}
+
+function kick(mouseevent) {
+    let target = mouseevent.target
+    let tar_name = target.parentElement.parentElement.children[1].innerText
+    let tar_uid = target.attributes.uid.value
+    let r_confirm = confirm(`정말 ${tar_name}님을 모임에서 추방하시겠습니까?`)
+}
 
 function get_group_data(id) {
     fetch(`/api/group/detail/${id}`,{
@@ -78,34 +143,79 @@ function get_group_data(id) {
 
                     mem_ul.insertAdjacentHTML("beforeend", html)
                 } else if (ops.includes(mem)) {
-                    let html = `<li id="sub_owner">
-                                    <div class="img_box">
-                                        <img alt="프로필이미지" src="${profile}">
-                                    </div>
-                                    <p class="name">${nick}</p>
-                                    <span><i id="crown_icon_sub" class="crown_icon"></i>관리자</span>
-                                    <div class="checkbox">
-                                        <input id="check7" type="checkbox" checked>
-                                        <label for="check7">선택</label>
-                                    </div>
-                                </li>`
+                    var html
+                    if (location.href.includes("detail")) {
+                        html = `<li id="sub_owner">
+                                        <div class="img_box">
+                                            <img alt="프로필이미지" src="${profile}">
+                                        </div>
+                                        <p class="name">${nick}</p>
+                                        <span><i id="crown_icon_sub" class="crown_icon"></i>관리자</span>
+                                    </li>`
+                    } else {
+                        html = `<li id="sub_owner">
+                                        <div class="img_box">
+                                            <img alt="프로필이미지" src="${profile}">
+                                        </div>
+                                        <p class="name">${nick}</p>
+                                        <span><i id="crown_icon_sub" class="crown_icon"></i>관리자</span>
+                                        <div class="button_box">
+                                            <button type="button" id="sown" uid=${id} btype="be" active>
+                                                <object aria-label="왕관아이콘" data="/assets/images/crown-icon-yellow.svg"type="image/svg+xml"></object>
+                                            </button>
+                                            <button type="button" id="kick" uid=${id}>
+                                                <object aria-label="닫기아이콘" data="/assets/images/close-icon.svg"type="image/svg+xml"></object>
+                                            </button>
+                                        </div>
+                                    </li>`
+                    }
 
                     mem_ul.insertAdjacentHTML("beforeend", html)
                 } else {
-                    let html = `<li>
+                    var html
+                    if (location.href.includes("detail")) {
+                        html = `<li>
                                     <div class="img_box">
                                         <img alt="프로필이미지" src="${profile}">
                                     </div>
                                     <p class="name">${nick}</p>
-                                    <div class="checkbox">
-                                        <input id="check7" type="checkbox">
-                                        <label for="check7">선택</label>
+                                </li>`
+                    } else {
+                        html = `<li>
+                                    <div class="img_box">
+                                        <img alt="프로필이미지" src="${profile}">
+                                    </div>
+                                    <p class="name">${nick}</p>
+                                    <div class="button_box">
+                                        <button type="button" id="nown" uid=${id} btype="be">
+                                            <object aria-label="왕관아이콘" data="/assets/images/crown-icon-yellow.svg"type="image/svg+xml"></object>
+                                        </button>
+                                        <button type="button" id="kick" uid=${id}>
+                                            <object aria-label="닫기아이콘" data="/assets/images/close-icon.svg"type="image/svg+xml"></object>
+                                        </button>
                                     </div>
                                 </li>`
+                    }
 
                     mem_ul.insertAdjacentHTML("beforeend", html)
                 }
+                
+                document.querySelectorAll("#nown").forEach((element) => {
+                    element.removeEventListener("click", appoint);
+                    element.addEventListener("click", appoint)
+                })
+
+                document.querySelectorAll("#sown").forEach((element) => {
+                    element.removeEventListener("click", be_deprived);
+                    element.addEventListener("click", be_deprived)
+                })
+
+                document.querySelectorAll("#kick").forEach((element) => {
+                    element.removeEventListener("click", kick);
+                    element.addEventListener("click", kick)
+                })
             })
+
         })
     })
 }
