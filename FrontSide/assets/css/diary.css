@@ -122,6 +122,9 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
 
     /* 바코더 */
     .scan_wrap .content_box .bar_scan object { width: 80px; }
+
+    /* 알림 */
+    .right_menu .bell_menu { top: 30px; }
 }
 @media all and (max-width: 400px) {
     /* 사진 업로드 */

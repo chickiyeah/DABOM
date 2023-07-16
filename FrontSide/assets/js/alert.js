@@ -11,7 +11,7 @@ var alertsocket
 const loading = document.querySelector(".loading");
 const alert_list = document.querySelector(".bell_menu");
 const bell_new_alert = document.querySelector("#bell_new_alert");
-const bell = document.querySelector(".bell");
+const bell = document.querySelectorAll(".bell");
 
 var page = 1
 
@@ -60,13 +60,18 @@ async function get_alerts(page) {
 }
 
 if (bell != null) {
-    bell.onclick = (event) => {
+    function bell_click(){
         if (alert_list.style.display === 'none') {
             alert_list.style.display = "block"
         } else {
             alert_list.style.display = "none"
         }
     }
+
+    Array.prototype.forEach.call(bell, (item) => {
+        item.removeEventListener("click", bell_click)
+        item.addEventListener("click", bell_click)
+    })
 }
 
 async function get_unread_amount() {
