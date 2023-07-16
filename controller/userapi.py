@@ -693,8 +693,10 @@ async def user_login(userdata: UserLogindata, request: Request, response: Respon
     userjson['access_token'] = currentuser['idToken']
     userjson['refresh_token'] = currentuser['refreshToken']
     userjson['expires_in'] = currentuser['expiresIn']
-    verify = await verify_tokenc(access_token=currentuser['idToken'], refresh_token=currentuser['refreshToken'])
-    if verify[1] == False:
+
+    verify = auth.get_user(currentuser['localId'])
+    print(verify.email_verified)
+    if verify.email_verified == False:
         """
         res = auth.generate_email_verification_link(email, action_code_settings=None, app=None)
         message = res.replace("lang=en", "lang=ko")

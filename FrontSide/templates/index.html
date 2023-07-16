@@ -37,8 +37,8 @@
     <link rel="stylesheet" href="/assets/css/layout.css">
     <link rel="stylesheet" href="/assets/css/swiper-bundle.min.css">
     <link rel="stylesheet" href="/assets/css/temp index.css">
-    <!--<script type="module" src="/assets/js/user.js"></script>
-    <script type="module" src="/assets/js/alert.js"></script>-->
+    <script type="module" src="/assets/js/user.js"></script>
+    <script type="module" src="/assets/js/alert.js"></script>
 </head>
 <body>
     <header>
@@ -54,11 +54,20 @@
                 <a href="/"><img alt="로고" src="/assets/images/logo.svg"></a>
             </h1>
             <div class="login">
-                <a href="/login">
+                <a class="bell" href="javascript:">
+                    <object aria-label="종아이콘" data="/assets/images/bell-icon.svg" type="image/svg+xml"></object>
+                </a>
+                <a class="login_icon" href="/login">
                     <img alt="로그인 아이콘" src="/assets/images/login-icon.svg">
                 </a>
             </div>
         </div>
+        <div class="right_menu">
+            <div class="bell_menu">
+                <!-- JS 동적 추가 구역 -->
+            </div>
+        </div>
+
         <div class="show_mobile">
             <div class="mobile_header">
                 <div class="m_header">
@@ -90,6 +99,10 @@
                     </div>
                     <div class="slide_bottom">
                         <a href="/login"><i class="mypage-icon"></i>마이페이지</a>
+                        <a class="bell" href="javascript:">
+                            <div id="bell_new_alert"></div>
+                            <img src="/assets/images/bell-icon.svg" alt="종아이콘">
+                        </a>
                     </div>
                 </div>
             </div>
