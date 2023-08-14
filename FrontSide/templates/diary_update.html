@@ -12,6 +12,7 @@
     <script>
         var eat_when = "morning";
         var fd_total_kcal = 0;
+        var last_click_element;
 
         function sel_eat_when(when) {
             console.log(when)
@@ -184,8 +185,10 @@
     }
 
     function editamount(element) {
+        last_click_element = element
+
         var name = element.children[0].children[0].innerText;
-        var default_kcal = parseInt(element.title.replace(" kcal", ""));
+        var default_kcal = parseInt(element.title.replace(" kcal", "").replace("개당 ", ""));
         var amonunt_div = element.children[0].children[1]
 
         var fd_edit_content = document.querySelector('.fd_edit_back').children[0].children[1];
@@ -205,13 +208,22 @@
             edit_able_data.children[1].children[0].innerText = default_kcal; // 총 칼로리 ( 갯수가 지정안됨 ( 1개 ) )
         }
 
-        fd_total_kcal = parseint(document.querySelector("#tokcal").innerText) - total_kcal; // 현재 수정요소의 칼로리를 제외한 전체 칼로리를 저장
+        fd_total_kcal = parseInt(document.querySelector("#tokcal").innerText) - total_kcal; // 현재 수정요소의 칼로리를 제외한 전체 칼로리를 저장
 
         document.querySelector('.fd_edit_back').style.display = 'flex';
     }
 
     function submit_edit_amount(element) {
-        console.log(element)
+        //element.parentElement.style.display = 'none'; // 처리하는 동안 조작할수 없게 안보이게 처리
+        var f_data = element.children[1];
+        var amount = f_data.children[0].children[0].value;
+        var t_tokcal = parseInt(f_data.children[1].children[0].innerText);
+
+        last_click_element.children[0].children[1].style.display = ''; // 갯수 중복 구역 보이게
+        last_click_element.children[0].children[1].children[0].innerText = amount; // 표시 갯수 변경
+
+        document.querySelector("#tokcal").innerText = fd_total_kcal + t_tokcal; //총 칼로리 변경
+        document.querySelector('.fd_edit_back').style.display = 'none'; //작업 완료후 배경 원상 복귀
     }
 </script>
 </html>

@@ -34,7 +34,7 @@
             }).then(function(response) {
                 response.json().then((f_data) => {
                     console.log(f_data)
-                    let kcal = f_data['에너지(kcal)']+" kcal"
+                    let kcal = "개당 "+f_data['에너지(kcal)']+" kcal"
                     let f_name = f_data['식품명']
                     if (previous.includes("기록")) {
                         html = `<div title="${kcal}" class="search_item">
