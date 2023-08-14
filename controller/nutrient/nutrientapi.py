@@ -251,6 +251,10 @@ async def get_object_with_barcode(barcode:str):
                     s_company = "None"
                     front = "`유통사`"
                     back = "'None'"
+                except json.JSONDecodeError:
+                    s_company = "None"
+                    front = "`유통사`"
+                    back = "'None'"
 
                 weightstr = str(re.sub(r'[^0-9]', '', str(div2.select('div > div.pdv_korchamDetail > div.pdv_wrap_korcham > table > tbody > tr:nth-child(8) > td')),0).strip())
                 if weightstr == '':
