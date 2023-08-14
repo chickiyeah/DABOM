@@ -396,7 +396,7 @@ async def get_object_with_barcode(barcode:str):
                     front = front + ",`barcode`,`data_adder`,`SAMPLE_ID`,`NO`,`식품코드`, `DB군`,`식품대분류`,`식품상세분류`, `식품명`"
                     back = back + ",{0},'{1}','{2}',{3},'{4}','{5}','{6}','{7}','{8}'".format(s_barcode, "barcode", n_num, n_food_num, n_code, f_big_cate, f_medium_cate, f_small_cate, fd_n_name) #식품명 과거 str(re.sub('<.+?>', '', str(title[k]), 0).strip())
                     fd_kcal = 0
-                    if dlen == 0 and bar == 0:
+                    if bar == 0:
                         for nute in list(resdata[title1]['영양소']):
                             if nute == "열량":
                                 #kcal
