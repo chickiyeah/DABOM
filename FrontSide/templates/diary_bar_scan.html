@@ -69,24 +69,44 @@
     <div class="scan_wrap">
         <div class="container">
             <div class="content_box">
-                <a class="bar_scan" href="javascript:">
+                <a class="bar_scan" href="javascript:history.back()">
                     <object data="/assets/images/bar-scan-icon.svg" type="image/svg+xml" aria-label="바코더"></object>
                 </a>
                 <div class="txt_box">
                     <!--  바코드 인식오류-->
-                    <p class="error">바코드 인식에 실패했습니다. <br class="show_mobile">인식을 다시 시도하시거나 수동으로 입력해주세요.</p>
+                    <p class="error"><span id="err_big">바코드 인식에 실패했습니다.</span> <br class="show_mobile"><span class="des">위의 이미지를 눌러 인식을 다시 시도하시거나 수동으로 입력해주세요.</span></p>
                     <!--  바코드 정보오류-->
-                    <p class="error">인식된 바코드 번호 : 8806265000685</p>
+                    <!--<p class="type_error">인식된 바코드 번호 : 8806265000685</p>-->
                 </div>
                 <div class="input_box">
                     <label>바코드 번호 검색</label>
                     <input type="text" placeholder="바코드 번호를 입력해주세요">
                 </div>
-                <a class="red_btn" href="javascript:">등록하기</a>
+                <a class="red_btn" href="javascript:">검색하기</a>
+                <a class="red_btn" href="javascript:">음식 데이터 추가하러가기</a>
             </div>
         </div>
     </div>
 </main>
 </body>
 <script src="/assets/js/header.js"></script>
+<script>
+    const searchParams = new URLSearchParams(location.search);
+    const err_des = document.querySelector(".des");
+    const erbit = document.querySelector("#err_big");
+    for (const param of searchParams) {
+        console.log(param);
+        if (param[0] === "err") {
+            var err = param[1];
+            if (err === "nocodeimg") {
+                err_des.innerText = "선택한 이미지에서 바코드를 찾을수 없습니다.\n위의 이미지를 눌러 인식을 다시 시도하시거나 수동으로 입력해주세요.";
+            }
+
+            if (err === "nofood") {
+                erbit.innerText = "바코드 인식에 성공했으나 오류가 발생했습니다.";
+                err_des.innerText = "음식이 아닌 바코드를 인식했거나, 찾을수 없는 바코드입니다.\n(이의 경우 음식 데이터를 추가해주시면 추후에는 발생하지 않습니다.)";
+            }
+        }
+    }
+</script>
 </html>

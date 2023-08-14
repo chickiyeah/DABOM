@@ -32,28 +32,45 @@
             fetch(url, {
                 method: 'GET'
             }).then(function(response) {
-                response.json().then((f_data) => {
-                    console.log(f_data)
-                    let kcal = "해당 음식의 칼로리는 개당 "+f_data['에너지(kcal)']+" kcal 이며, 전체 칼로리는 "+f_data['에너지(kcal)']+" kcal 입니다."
-                    let f_name = f_data['식품명']
-                    if (previous.includes("기록")) {
-                        html = `<div title="${kcal}" per="${f_data['에너지(kcal)']}" class="search_item">
-                                        <a onclick="editamount(this.parentElement)" href="javascript:"><span>${f_name}</span><span class="amount" style="display:none;"> X <span class="amount_num">2</span></span></a>
-                                        <a href="javascript:">
-                                            <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
-                                        </a>
-                                    </div>`
-                        opener.document.querySelector(".search_box").insertAdjacentHTML("beforeend", html)
-                        var q_tokcal = parseInt(opener.document.querySelector("#tokcal").innerText) + parseInt(f_data['에너지(kcal)']);
-                        opener.document.querySelector("#tokcal").innerText = q_tokcal;
-                        window.close()
-                    }
-                })
+                if (response.statusCode == 200) {
+                    response.json().then((f_data) => {
+                        console.log(f_data)
+                        let kcal = "해당 음식의 칼로리는 개당 "+f_data['에너지(kcal)']+" kcal 이며, 전체 칼로리는 "+f_data['에너지(kcal)']+" kcal 입니다."
+                        let f_name = f_data['식품명']
+                        if (previous.includes("기록")) {
+                            html = `<div title="${kcal}" per="${f_data['에너지(kcal)']}" class="search_item">
+                                            <a onclick="editamount(this.parentElement)" href="javascript:"><span>${f_name}</span><span class="amount" style="display:none;"> X <span class="amount_num">2</span></span></a>
+                                            <a href="javascript:">
+                                                <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
+                                            </a>
+                                        </div>`
+                            opener.document.querySelector(".search_box").insertAdjacentHTML("beforeend", html)
+                            var q_tokcal = parseInt(opener.document.querySelector("#tokcal").innerText) + parseInt(f_data['에너지(kcal)']);
+                            opener.document.querySelector("#tokcal").innerText = q_tokcal;
+                            window.close()
+                        }
+                    })
+                }
+
+                if (response.statusCode == 400) {
+                    location.href = '/diary_bar_scan?err=nofood'
+                }
             })
         }
 
+        function onScanError(errorMessage) {
+            // handle on error condition, with error message
+            if (errorMessage == "D: 이미지에서 어떤 코드도 찾지 못했습니다. 다른이미지를 선택해주세요.") {
+                location.href = '/diary_bar_scan?err=nocodeimg'
+            } else {
+                console.log(errorMessage)
+            }
+            
+        }
+
         var html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-        html5QrcodeScanner.render(onScanSuccess);
+        html5QrcodeScanner.render(onScanSuccess, onScanError);
+        html5QrcodeScanner
     </script>
 </body>
 </html>
