@@ -15,6 +15,7 @@ import smtplib
 from email.message import EmailMessage
 import random
 import pyshorteners
+from controller.credentials import verify_token
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -43,26 +44,6 @@ firebaseConfig = {
 }
 
 Auth = Firebase(firebaseConfig).auth()
-
-async def verify_token(req: Request): 
-    try:
-        token = req.headers["Authorization"]  
-        # Verify the ID token while checking if the token is revoked by
-        # passing check_revoked=True.
-        user = auth.verify_id_token(token, check_revoked=True)
-        # Token is valid and not revoked.
-        return True, user['uid']
-    except auth.RevokedIdTokenError:
-        # Token revoked, inform the user to reauthenticate or signOut().
-        raise HTTPException(status_code=401, detail=unauthorized_revoked)
-    except auth.UserDisabledError:
-        # Token belongs to a disabled user record.
-        raise HTTPException(status_code=401, detail=unauthorized_userdisabled)
-    except auth.InvalidIdTokenError:
-        # Token is invalid
-        raise HTTPException(status_code=401, detail=unauthorized_invaild)
-    except KeyError:
-        raise HTTPException(status_code=400, detail=unauthorized)
 
 User_NotFound = {"code":"ER011", "message":"USER_NOT_FOUND"}    
 

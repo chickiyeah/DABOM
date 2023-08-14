@@ -17,6 +17,8 @@ from firebase_admin import auth
 import time
 from pytz import timezone
 
+from controller.credentials import verify_token
+
 from firebase import Firebase
 
 KST = timezone("ASIA/SEOUL")
@@ -46,25 +48,6 @@ unauthorized = {'code':'ER013','message':'UNAUTHORIZED'}
 unauthorized_revoked = {'code':'ER014','message':'UNAUTHORIZED (REVOKED TOKEN)'}
 unauthorized_invaild = {'code':'ER015','message':'UNAUTHORIZED (TOKEN INVALID)'}
 unauthorized_userdisabled = {'code':'ER016','message':'UNAUTHORIZED (TOKENS FROM DISABLED USERS)'}
-async def verify_token(req: Request): 
-    try:
-        token = req.headers["Authorization"]  
-        # Verify the ID token while checking if the token is revoked by
-        # passing check_revoked=True.
-        user = auth.verify_id_token(token, check_revoked=True)
-        # Token is valid and not revoked.
-        return True, user['uid']
-    except auth.RevokedIdTokenError:
-        # Token revoked, inform the user to reauthenticate or signOut().
-        raise HTTPException(status_code=401, detail=unauthorized_revoked)
-    except auth.UserDisabledError:
-        # Token belongs to a disabled user record.
-        raise HTTPException(status_code=401, detail=unauthorized_userdisabled)
-    except auth.InvalidIdTokenError:
-        # Token is invalid
-        raise HTTPException(status_code=401, detail=unauthorized_invaild)
-    except KeyError:
-        raise HTTPException(status_code=400, detail=unauthorized)
 
 #broadcast = Broadcast("redis://localhost:6379")
 broadcast = Broadcast("redis://35.212.168.183:6379")

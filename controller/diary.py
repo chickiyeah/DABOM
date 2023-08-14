@@ -1,6 +1,6 @@
 import json
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Depends, Request, File, UploadFile
+from fastapi import APIRouter, HTTPException, Depends, Request, File, UploadFile, Cookie
 from pydantic import BaseModel
 from controller.database import execute_sql
 from firebase_admin import auth
@@ -9,28 +9,8 @@ from firebase_admin import storage
 from firebase_admin import _auth_utils
 from firebase import Firebase
 import datetime
-
+from controller.credentials import verify_token
 diaryapi = APIRouter(prefix="/api/diary", tags=["diary"])
-
-async def verify_token(req: Request): 
-    try:
-        token = req.headers["Authorization"]  
-        # Verify the ID token while checking if the token is revoked by
-        # passing check_revoked=True.
-        user = auth.verify_id_token(token, check_revoked=True)
-        # Token is valid and not revoked.
-        return True, user['uid']
-    except auth.RevokedIdTokenError:
-        # Token revoked, inform the user to reauthenticate or signOut().
-        raise HTTPException(status_code=401, detail=unauthorized_revoked)
-    except auth.UserDisabledError:
-        # Token belongs to a disabled user record.
-        raise HTTPException(status_code=401, detail=unauthorized_userdisabled)
-    except auth.InvalidIdTokenError:
-        # Token is invalid
-        raise HTTPException(status_code=401, detail=unauthorized_invaild)
-    except KeyError:
-        raise HTTPException(status_code=401, detail=unauthorized)
 
 class add_diary(BaseModel):
     food_name:str

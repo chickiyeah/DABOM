@@ -6,7 +6,7 @@ const images = sessionStorage.getItem("da_u_files"); //세션 스토리지에서
 const imgBox = document.querySelector('.img_box'); // 고정 요소는 최대한 const로 
 const imgItem = document.querySelector('.img_item');
 const closeBtn = document.querySelector('.close_btn');
-const buttons = document.querySelectorAll('#on');
+const buttons = document.querySelectorAll('#eat_when');
 
 const searchFood = document.querySelector("#searchInput");
 const sendFood = document.querySelector("#send");
@@ -133,8 +133,8 @@ async function searchfood() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization" : access_token
     },
+    credentials: "include",
     body: JSON.stringify({
       "keywords": searchFood.value
     })

@@ -9,6 +9,14 @@
     <link rel="stylesheet" href="/assets/css/reset.css">
     <link rel="stylesheet" href="/assets/css/layout.css">
     <script type="module" src="/assets/js/diary.js"></script>
+    <script>
+        var eat_when = "morning";
+
+        function sel_eat_when(when) {
+            console.log(when)
+            eat_when = when;
+        }
+    </script>
 </head>
 <style>
     .clicked{
@@ -95,10 +103,10 @@
             </div>
             <div class="info_box">
                 <div class="btn_item">
-                    <a class="" id="on" href="javascript:">아침</a>
-                    <a id="on" href="javascript:">점심</a>
-                    <a id="on" href="javascript:">저녁</a>
-                    <a id="on" href="javascript:">간식</a>
+                    <a class="on" id="eat_when" onclick="sel_eat_when('morning')" href='javascript:'>아침</a>
+                    <a id="eat_when" onclick="sel_eat_when('lunch')" href='javascript:'>점심</a>
+                    <a id="eat_when" onclick="sel_eat_when('night')" href="javascript:">저녁</a>
+                    <a id="eat_when" onclick="sel_eat_when('free')" href="javascript:">간식</a>
 
                         <a href="/diary_kcal" target="_blank" class="">칼로리 검색하기</a>
                         <a href="/diary_bar_scan" target="_blank" class="">바코드 검색하기</a>
