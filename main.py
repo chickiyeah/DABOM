@@ -32,6 +32,14 @@ def robots():
     data = """User-agent: *\nAllow: /"""
     return data
 
+@app.get('/.well-known/pki-validation/908CD5BAAD7936B2EAAFC24E56D161A0.txt', response_class=PlainTextResponse)
+def https_validation():
+    data = """4221EDDE5FACEE19FF34CEDB112473EC41697B8039F42AE66B7827B862EE2C53
+comodoca.com
+4bc706773d3d2c7"""
+
+    return data
+
 @app.get('/sitemap.xml')
 async def get_sitemap():
     my_sitemap = """<?xml version="1.0" encoding="UTF-8"?>
