@@ -181,14 +181,13 @@
         amount = parseInt(amount);
         var default_kcal = parseInt(document.querySelector("body > div > div > div > div.base_data > div:nth-child(2) > span").innerText);
         document.querySelector("#total_kcal").innerText = (default_kcal*amount)
-        console.log(default_kcal*amount);
     }
 
     function editamount(element) {
         last_click_element = element
 
         var name = element.children[0].children[0].innerText;
-        var default_kcal = parseInt(element.title.replace(" kcal", "").replace("개당 ", ""));
+        var default_kcal = parseInt(element.attributes.per.value);
         var amonunt_div = element.children[0].children[1]
 
         var fd_edit_content = document.querySelector('.fd_edit_back').children[0].children[1];
@@ -216,14 +215,24 @@
     function submit_edit_amount(element) {
         //element.parentElement.style.display = 'none'; // 처리하는 동안 조작할수 없게 안보이게 처리
         var f_data = element.children[1];
-        var amount = f_data.children[0].children[0].value;
-        var t_tokcal = parseInt(f_data.children[1].children[0].innerText);
+        var amount = parseInt(f_data.children[0].children[0].value);
+        if (amount > 0) {
+            var t_tokcal = parseInt(f_data.children[1].children[0].innerText);
+            if (amount === 1) {
+                last_click_element.children[0].children[1].style.display = 'none'; // 갯수가 1개면 갯수가 안보이게
+            } else {
+                last_click_element.children[0].children[1].style.display = ''; // 갯수가 2개 이상이면 갯수가 보이게
+            }
+            
+            last_click_element.children[0].children[1].children[0].innerText = amount; // 표시 갯수 변경
+            last_click_element.title = "해당 음식의 칼로리는 개당 "+last_click_element.attributes.per.value+" kcal 이며, 전체 칼로리는 "+t_tokcal+" kcal 입니다."
 
-        last_click_element.children[0].children[1].style.display = ''; // 갯수 중복 구역 보이게
-        last_click_element.children[0].children[1].children[0].innerText = amount; // 표시 갯수 변경
-
-        document.querySelector("#tokcal").innerText = fd_total_kcal + t_tokcal; //총 칼로리 변경
-        document.querySelector('.fd_edit_back').style.display = 'none'; //작업 완료후 배경 원상 복귀
+            document.querySelector("#tokcal").innerText = fd_total_kcal + t_tokcal; //총 칼로리 변경
+            document.querySelector('.fd_edit_back').style.display = 'none'; //작업 완료후 배경 원상 복귀
+        } else {
+            document.querySelector('.fd_edit_back').style.display = 'none';
+            alert("음식의 갯수는 0개 이하일수 없습니다.")
+        }
     }
 </script>
 </html>
