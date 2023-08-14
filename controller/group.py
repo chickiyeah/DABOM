@@ -14,6 +14,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import random
 import string
+from controller.credentials import verify_token, verify_admin_token
 
 s = smtplib.SMTP("smtp.gmail.com", 587)
 s.ehlo()
@@ -27,30 +28,6 @@ unauthorized = {'code':'ER013','message':'UNAUTHORIZED'}
 unauthorized_revoked = {'code':'ER014','message':'UNAUTHORIZED (REVOKED TOKEN)'}
 unauthorized_invaild = {'code':'ER015','message':'UNAUTHORIZED (TOKEN INVALID)'}
 unauthorized_userdisabled = {'code':'ER016','message':'UNAUTHORIZED (TOKENS FROM DISABLED USERS)'}
-
-async def verify_token(req: Request): 
-    try:
-        token = req.headers["Authorization"]  
-        # Verify the ID token while checking if the token is revoked by
-        # passing check_revoked=True.
-        admin_token = "i>9/,tUmc_&==Ap|5)yk9$@H=T^ATpp]8UG@*E-nAWSag]pe<2"
-        if token == admin_token:
-            return True, "admin"
-        else:
-            user = auth.verify_id_token(token, check_revoked=True)
-            # Token is valid and not revoked.
-            return True, user['uid']
-    except auth.RevokedIdTokenError:
-        # Token revoked, inform the user to reauthenticate or signOut().
-        raise HTTPException(status_code=401, detail=unauthorized_revoked)
-    except auth.UserDisabledError:
-        # Token belongs to a disabled user record.
-        raise HTTPException(status_code=401, detail=unauthorized_userdisabled)
-    except auth.InvalidIdTokenError:
-        # Token is invalid
-        raise HTTPException(status_code=401, detail=unauthorized_invaild)
-    except KeyError:
-        raise HTTPException(status_code=400, detail=unauthorized)
 
 class create_group(BaseModel):
     name:str
@@ -470,7 +447,7 @@ class group_warn(BaseModel):
     group_id:int
 
 @groupapi.post("/warn")
-async def group_warn(group: group_warn, admin: bool = Depends(verify_token)):
+async def group_warn(group: group_warn, admin: bool = Depends(verify_admin_token)):
     if admin and admin[1] == "admin":
         warn = execute_sql("SELECT warn, deleted, banned, owner, members FROM `group` WHERE `id` = %s" % group.group_id)
 

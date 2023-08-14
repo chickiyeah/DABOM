@@ -1,14 +1,20 @@
 const inputElement = document.getElementById("input").addEventListener("change", handleFiles)
 const loading = document.querySelector(".loading");
-const loading_box =document.querySelector(".loading_box")
+const loading_box = document.querySelector(".loading_box")
 
 import { send_message } from './chat.js'
 
 async function handleFiles() {
-    const filelist = this.files
-    const loading = document.querySelector(".loading");
-    loading.style.display = 'flex';
-    loading_box.style.display = "flex"
+    const filelist = this.files;
+    if (loading_box != null) {
+      loading_box.style.display = "flex";
+    }
+
+    if (loading != null) {
+      loading.style.display = 'flex';
+    }
+    
+    
     var files = []
     for (let i = 0, numFiles = filelist.length; i < numFiles; i++) {
         let file = filelist[i]
@@ -27,7 +33,13 @@ async function handleFiles() {
 
 function makeRequest(extentsion, file, formdata) {
     return new Promise(function(resolve, reject) {
-        loading_box.style.display = "flex"
+      if (loading_box != null) {
+        loading_box.style.display = "flex";
+      }
+  
+      if (loading != null) {
+        loading.style.display = 'flex';
+      }
         let xhr = new XMLHttpRequest();
         xhr.open('POST', `/chat/uploadfile?ext=${extentsion}`, true)
         let access_token = sessionStorage.getItem("access_token")
@@ -95,7 +107,13 @@ async function verify_token() {
             if (response.status !== 200) {
                 if (response.status === 422) {                   
                     await LoadCookie();
-                    loading.style.display = 'none';
+                    if (loading_box != null) {
+                      loading_box.style.display = "none";
+                    }
+                
+                    if (loading != null) {
+                      loading.style.display = 'none';
+                    }
                 }else{
                     response.json().then(async (json) => {
                         let detail_error = json.detail;
@@ -107,7 +125,13 @@ async function verify_token() {
                 }
             } else {
               response.json().then(async (json) => {
-                loading.style.display = "none"
+                if (loading_box != null) {
+                  loading_box.style.display = "none";
+                }
+            
+                if (loading != null) {
+                  loading.style.display = 'none';
+                }
                 resolve(json[1])
               })
             }
@@ -127,7 +151,13 @@ async function verify_token() {
         fetch(`/api/user/cookie/autologin?access_token=${lo_access_token}&refresh_token=${lo_refresh_token}`, {method: 'GET'}).then((res) => {
           if (res.status === 200) {
             console.log("자동로그인 및 토큰 검증 성공.")
-            loading.style.display = 'none';
+            if (loading_box != null) {
+              loading_box.style.display = "none";
+            }
+        
+            if (loading != null) {
+              loading.style.display = 'none';
+            }
             location.reload()
           } else {
             res.json().then((data) => {

@@ -15,6 +15,8 @@ from controller.database import execute_sql
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+from controller.credentials import verify_token, verify_admin_token
+
 s = smtplib.SMTP("smtp.gmail.com", 587)
 s.ehlo()
 s.starttls()
@@ -405,19 +407,6 @@ async def verify_tokena(req: Request):
         raise HTTPException(status_code=401, detail=User_NotFound)
     except KeyError:
         raise HTTPException(status_code=400, detail=unauthorized)
-
-def verify_admin_token(req: Request):
-    try:
-        token = req.headers["Authorization"]
-
-        if token == "Bearer cncztSAt9m4JYA9":
-            return True
-        else:
-            raise HTTPException(status_code=401, detail=unauthorized_invaild)
-        
-    except KeyError:
-        raise HTTPException(status_code=400, detail=unauthorized)
-
 
 @userapi.post('/setinfomsg')
 async def setinfomsg(data:setinfomsg ,authorized: bool = Depends(verify_tokenb)):
