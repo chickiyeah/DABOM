@@ -50,9 +50,7 @@
                             window.close()
                         }
                     })
-                }
-
-                if (response.statusCode == 400) {
+                } else {
                     location.href = '/diary_bar_scan?err=nofood'
                 }
             })
