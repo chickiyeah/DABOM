@@ -8,6 +8,7 @@
     <title>다봄일지(바코더)</title>
     <link rel="stylesheet" href="/assets/css/reset.css">
     <link rel="stylesheet" href="/assets/css/layout.css">
+    <link rel="stylesheet" href="/assets/css/scanner.css">
     
     <script src="/assets/js/barscanner.js"></script>
 
@@ -16,16 +17,18 @@
     </script>
 </head>
 <body>
-    <div style="width: 500px" id="reader"></div>
+    <div style="width: 900px" id="reader"></div>
 
-    <script>
+        <script>
         function onScanSuccess(decodedText, decodedResult) {
             // Handle on success condition with the decoded text or result.
             console.log(`Scan result: ${decodedText}`, decodedResult);
+            // ...
+            html5QrcodeScanner.clear();
+            // ^ this will stop the scanner (video feed) and clear the scan area.
         }
 
-        var html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader", { fps: 10, qrbox: 250 });
+        var html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
         html5QrcodeScanner.render(onScanSuccess);
     </script>
 </body>
