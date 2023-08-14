@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from firebase_admin import auth
 from urllib import parse
 from controller.database import execute_sql
-
 from controller.credentials import verify_token
 
 import os

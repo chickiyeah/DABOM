@@ -38,6 +38,10 @@ async def diary_add(request: Request):
 async def diary_bar_scan(request: Request):
     return templates.TemplateResponse("diary_bar_scan.html", {"request":request})
 
+@ScreenRoute.get("/diary_bar_cam")
+async def diary_bar_scan(request: Request):
+    return templates.TemplateResponse("diary_bar_cam.html", {"request":request})
+
 @ScreenRoute.get("/diary_kcal")
 async def diary_kcal(request: Request):
     return templates.TemplateResponse("diary_kcal.html", {"request":request})

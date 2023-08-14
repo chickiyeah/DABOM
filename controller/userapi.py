@@ -332,84 +332,9 @@ class refresh_token(BaseModel):
 class setinfomsg(BaseModel):
     msg: str
 
-async def verify_tokenc(access_token: str, refresh_token: str):
-    try:
-        # Verify the ID token while checking if the token is revoked by
-        # passing check_revoked=True.
-        user = auth.verify_id_token(access_token, check_revoked=True)
-        print(user)
-        # Token is valid and not revoked.
-        return True, user['email_verified']
-    except auth.RevokedIdTokenError:
-        # Token revoked, inform the user to reauthenticate or signOut().
-        raise HTTPException(status_code=401, detail=unauthorized_revoked)
-    except auth.UserDisabledError:
-        # Token belongs to a disabled user record.
-        raise HTTPException(status_code=401, detail=unauthorized_userdisabled)
-    except auth.InvalidIdTokenError:
-        # Token is invalid
-        if refresh_token == None:
-            return RedirectResponse(url= "/login")
-
-        try:
-            currentuser = Auth.refresh(refresh_token)
-            user = auth.verify_id_token(currentuser['idToken'], check_revoked=True)
-            return True, user['email_verified']
-        except requests.HTTPError as e:
-            error = json.loads(e.args[1])['error']['message']
-            if error == "TOKEN_EXPIRED":
-                raise HTTPException(status_code=401, detail=unauthorized_invaild)
-        
-    except auth.UserNotFoundError:
-        raise HTTPException(status_code=401, detail=User_NotFound)
-    except KeyError:
-        raise HTTPException(status_code=400, detail=unauthorized)
-
-async def verify_tokenb(req: Request): 
-    try:
-        token = req.headers["Authorization"]  
-        # Verify the ID token while checking if the token is revoked by
-        # passing check_revoked=True.
-        user = auth.verify_id_token(token, check_revoked=True)
-        # Token is valid and not revoked.
-        return True, user['uid']
-    except auth.RevokedIdTokenError:
-        # Token revoked, inform the user to reauthenticate or signOut().
-        raise HTTPException(status_code=401, detail=unauthorized_revoked)
-    except auth.UserDisabledError:
-        # Token belongs to a disabled user record.
-        raise HTTPException(status_code=401, detail=unauthorized_userdisabled)
-    except auth.InvalidIdTokenError:
-        # Token is invalid
-        raise HTTPException(status_code=401, detail=unauthorized_invaild)
-    except KeyError:
-        raise HTTPException(status_code=400, detail=unauthorized)
-
-
-async def verify_tokena(req: Request):
-    try:
-        token = req.headers["Authorization"]  
-        # Verify the ID token while checking if the token is revoked by
-        # passing check_revoked=True.
-        user = auth.verify_id_token(token, check_revoked=True)
-        # Token is valid and not revoked.
-        return True, user
-    except auth.RevokedIdTokenError:
-        # Token revoked, inform the user to reauthenticate or signOut().
-        raise HTTPException(status_code=401, detail=unauthorized_revoked)
-    except auth.UserDisabledError:
-        # Token belongs to a disabled user record.
-        raise HTTPException(status_code=401, detail=unauthorized_userdisabled)
-    except auth.InvalidIdTokenError:
-        # Token is invalid
-        raise HTTPException(status_code=401, detail=unauthorized_invaild)
-    except auth.UserNotFoundError:
-        raise HTTPException(status_code=401, detail=User_NotFound)
-    except KeyError:
-        raise HTTPException(status_code=400, detail=unauthorized)
 
 @userapi.post('/setinfomsg')
-async def setinfomsg(data:setinfomsg ,authorized: bool = Depends(verify_tokenb)):
+async def setinfomsg(data:setinfomsg ,authorized: bool = Depends(verify_token)):
     if authorized:
         msg = data.msg
         sql = "UPDATE infomsg SET message = '%s' WHERE ID = '%s'" % (msg, authorized[1])
@@ -621,7 +546,7 @@ async def revoke_token(token: token_revoke):
         raise HTTPException(status_code=400, detail=User_NotFound)
 
 @userapi.delete('/delete')
-async def user_delete(authorized:bool = Depends(verify_tokena)):
+async def user_delete(authorized:bool = Depends(verify_token)):
     if authorized:
         user = authorized[1]
         id = user['user_id']
@@ -881,7 +806,7 @@ async def user_create(userdata: UserRegisterdata):
 
 @userapi.post('/logout')
 async def user_logout(userdata: UserLogoutdata):
-    auth = await verify_tokenb(userdata.access_token)
+    auth = await verify_token(userdata.access_token)
     if auth:
         print(auth)
         res = await revoke_token(list(auth)[1])
