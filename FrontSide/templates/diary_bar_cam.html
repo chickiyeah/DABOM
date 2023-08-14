@@ -26,6 +26,30 @@
             // ...
             html5QrcodeScanner.clear();
             // ^ this will stop the scanner (video feed) and clear the scan area.
+            document.write(`인식된 바코드 번호 ${decodedText}로 음식을 조회중입니다.`)
+            url = "/api/nutrient/barcodecroll/"+decodedText
+            var previous = opener.document.title
+            fetch(url, {
+                method: 'GET'
+            }).then(function(response) {
+                response.json().then((f_data) => {
+                    console.log(f_data)
+                    let kcal = "해당 음식의 칼로리는 개당 "+f_data['에너지(kcal)']+" kcal 이며, 전체 칼로리는 "+f_data['에너지(kcal)']+" kcal 입니다."
+                    let f_name = f_data['식품명']
+                    if (previous.includes("기록")) {
+                        html = `<div title="${kcal}" per="${f_data['에너지(kcal)']}" class="search_item">
+                                        <a onclick="editamount(this.parentElement)" href="javascript:"><span>${f_name}</span><span class="amount" style="display:none;"> X <span class="amount_num">2</span></span></a>
+                                        <a href="javascript:">
+                                            <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
+                                        </a>
+                                    </div>`
+                        opener.document.querySelector(".search_box").insertAdjacentHTML("beforeend", html)
+                        var q_tokcal = parseInt(opener.document.querySelector("#tokcal").innerText) + parseInt(f_data['에너지(kcal)']);
+                        opener.document.querySelector("#tokcal").innerText = q_tokcal;
+                        window.close()
+                    }
+                })
+            })
         }
 
         var html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });

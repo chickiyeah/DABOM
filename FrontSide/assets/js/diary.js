@@ -13,7 +13,6 @@ const sendFood = document.querySelector("#send");
 const itemappend = document.querySelector(".search_info");
 const kcalBox = document.querySelector("#kcalBox");
 
-
 var beforex = -1
 
 window.addEventListener('DOMContentLoaded', function() {
