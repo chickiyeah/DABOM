@@ -11,6 +11,7 @@
     <script type="module" src="/assets/js/diary.js"></script>
     <script>
         var eat_when = "morning";
+        var fd_total_kcal = 0;
 
         function sel_eat_when(when) {
             console.log(when)
@@ -24,6 +25,29 @@
     }
 </style>
 <body>
+    <div class="fd_edit_back">
+        <div class="fd_edit">
+            <h2>음식 갯수 설정<label for="popup"><a onclick="this.parentElement.parentElement.parentElement.parentElement.style.display='none'" href="javascript:">X</a></label></h2>
+            <div class="fd_edit_content">
+                <div class="base_data">
+                    <div>식품명 : <span>소금빵</span> </div>
+                    <div>개당 칼로리 : <span>300</span>kcal</div>
+                </div>
+                <div class="editable_data">
+                    <div class="edit_amount">
+                        갯수
+                        <input class="amount" type="number" min="1" value="1" onchange="setamount(this.value)">
+                    </div>
+                    <div style="margin-top: 50px; font-size: 30px; font-weight: 900;">
+                        총 칼로리 : <span id="total_kcal">300</span>kcal
+                    </div>
+                </div>
+                <div>
+                    <button onclick="submit_edit_amount(this.parentElement.parentElement)" class="edit_submit">완료</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <header>
         <div class="pc_header">
             <nav class="menu">
@@ -109,12 +133,16 @@
                     <a id="eat_when" onclick="sel_eat_when('free')" href="javascript:">간식</a>
 
                         <a href="/diary_kcal" target="_blank" class="">칼로리 검색하기</a>
-                        <a href="/diary_bar_scan" target="_blank" class="">바코드 검색하기</a>
+                        <a href="javascript:" onclick="window.open('/diary_bar_cam')" target="_blank" class="">바코드 검색하기</a>
 
                 </div>
+                <div style="display:flex;justify-content: right;">
+                    <span style="margin-right: auto;">이름을 눌러 갯수를 수정할 수 있습니다.</span>
+                    <span>현재 총 칼로리 :  <span id="tokcal">0</span>  kcal</span>
+                </div>
                 <div class="search_box">
-                    <div class="search_item">
-                        <span>소금빵</span>
+                    <div class="search_item" title="400 kcal">
+                        <a onclick="editamount(this.parentElement)" href="javascript:"><span>소금빵</span><span class="amount"> X <span class="amount_num">2</span></span></a>
                         <a href="javascript:">
                             <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
                         </a>
@@ -138,9 +166,52 @@
                     <button>작성하기</button>
                 </div>
             </div>
+            
+            
         </div>
     </div>
+    
 </main>
+
 </body>
 <script src="/assets/js/header.js"></script>
+<script>
+    function setamount(amount) {
+        amount = parseInt(amount);
+        var default_kcal = parseInt(document.querySelector("body > div > div > div > div.base_data > div:nth-child(2) > span").innerText);
+        document.querySelector("#total_kcal").innerText = (default_kcal*amount)
+        console.log(default_kcal*amount);
+    }
+
+    function editamount(element) {
+        var name = element.children[0].children[0].innerText;
+        var default_kcal = parseInt(element.title.replace(" kcal", ""));
+        var amonunt_div = element.children[0].children[1]
+
+        var fd_edit_content = document.querySelector('.fd_edit_back').children[0].children[1];
+        var base_data = fd_edit_content.children[0];
+        var edit_able_data = fd_edit_content.children[1];
+
+        var total_kcal = default_kcal;
+
+        base_data.children[0].children[0].innerText = name; // 식품명
+        base_data.children[1].children[0].innerText = default_kcal // 기본 칼로리
+
+        if (amonunt_div.style.display != 'none') {
+            edit_able_data.children[0].children[0].value = parseInt(amonunt_div.children[0].innerText); // 갯수
+            edit_able_data.children[1].children[0].innerText = (parseInt(amonunt_div.children[0].innerText)*default_kcal); // 갯수에 따른 총 칼로리
+            total_kcal = (parseInt(amonunt_div.children[0].innerText)*default_kcal)
+        } else {
+            edit_able_data.children[1].children[0].innerText = default_kcal; // 총 칼로리 ( 갯수가 지정안됨 ( 1개 ) )
+        }
+
+        fd_total_kcal = parseint(document.querySelector("#tokcal").innerText) - total_kcal; // 현재 수정요소의 칼로리를 제외한 전체 칼로리를 저장
+
+        document.querySelector('.fd_edit_back').style.display = 'flex';
+    }
+
+    function submit_edit_amount(element) {
+        console.log(element)
+    }
+</script>
 </html>

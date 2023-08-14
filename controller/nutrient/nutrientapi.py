@@ -224,6 +224,11 @@ async def get_object_with_barcode(barcode:str):
             #print(title)
             resdata = {}
             #print(datas)
+            #소비자 24 식품명용
+            fd_n_url = "https://www.consumer.go.kr/user/ftc/consumer/goodsinfo/57/selectGoodsInfoDetailThngApi.do"
+            fd_n_res = requests.post(fd_n_url, data={"stdBrcd": barcode}).json()
+            fd_n_name = fd_n_res['npname']
+
             for k in range(len(datas)):
                 #print(datas[k]['data-prd-no'])
                 #print("k"+str(k))
@@ -342,7 +347,7 @@ async def get_object_with_barcode(barcode:str):
                     except IndexError:
                         n_index = title1.find(" %s g" % weight)
                     #print(" %sg" % glist[0])
-                    name = title1[:n_index]
+                    name = fd_n_name#title1[:n_index]
                     #print(str(re.sub('<.+?>', '', str(title[k]), 0).strip()))
                     #print(name)
                     dlen = len(execute_sql("SELECT 식품명 FROM foodb WHERE 식품명 LIKE \"%{0}%\"".format(name)))
@@ -389,7 +394,8 @@ async def get_object_with_barcode(barcode:str):
 
 
                     front = front + ",`barcode`,`data_adder`,`SAMPLE_ID`,`NO`,`식품코드`, `DB군`,`식품대분류`,`식품상세분류`, `식품명`"
-                    back = back + ",{0},'{1}','{2}',{3},'{4}','{5}','{6}','{7}','{8}'".format(s_barcode, "barcode", n_num, n_food_num, n_code, f_big_cate, f_medium_cate, f_small_cate, str(re.sub('<.+?>', '', str(title[k]), 0).strip()))
+                    back = back + ",{0},'{1}','{2}',{3},'{4}','{5}','{6}','{7}','{8}'".format(s_barcode, "barcode", n_num, n_food_num, n_code, f_big_cate, f_medium_cate, f_small_cate, fd_n_name) #식품명 과거 str(re.sub('<.+?>', '', str(title[k]), 0).strip())
+                    fd_kcal = 0
                     if dlen == 0 and bar == 0:
                         for nute in list(resdata[title1]['영양소']):
                             if nute == "열량":
@@ -407,133 +413,159 @@ async def get_object_with_barcode(barcode:str):
                                 else:
                                     back = back + ", " + num
 
-                            if nute == "탄수화물":
-                                #tancu
-                                data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
-                                num = data[0]
-                                type = data[1]
-                                if front == "":
-                                    front = tancu
-                                else:
-                                    front = front + ", " + tancu 
+                                    fd_kcal = num
 
-                                if back == "":
-                                    back = num
-                                else:
-                                    back = back + ", " + num
-                                        
-                            if nute == "당류":
-                                #sugar
-                                data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
-                                num = data[0]
-                                type = data[1]    
+                            try:
+                                if nute == "탄수화물":
+                                    #tancu
+                                    data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
+                                    num = data[0]
+                                    type = data[1]
+                                    if front == "":
+                                        front = tancu
+                                    else:
+                                        front = front + ", " + tancu 
 
-                                if front == "":
-                                    front = sugar
-                                else:
-                                    front = front + ", " + sugar
+                                    if back == "":
+                                        back = num
+                                    else:
+                                        back = back + ", " + num
+                            except IndexError:
+                                print(nute+" 데이터 불완성 스킵")
 
-                                if back == "":
-                                    back = num
-                                else:
-                                    back = back + ", " + num
+                            try:           
+                                if nute == "당류":
+                                    #sugar
+                                    data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
+                                    num = data[0]
+                                    type = data[1]    
 
+                                    if front == "":
+                                        front = sugar
+                                    else:
+                                        front = front + ", " + sugar
+
+                                    if back == "":
+                                        back = num
+                                    else:
+                                        back = back + ", " + num
+                            except IndexError:
+                                print(nute+" 데이터 불완성 스킵")
+
+                            try:              
+                                if nute == "단백질":
+                                    #danbag
+                                    data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
+                                    num = data[0]
+                                    type = data[1]
+
+                                    if front == "":
+                                        front = danbag
+                                    else:
+                                        front = front + ", " + danbag
                                             
-                            if nute == "단백질":
-                                #danbag
-                                data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
-                                num = data[0]
-                                type = data[1]
+                                    if back == "":
+                                        back = num
+                                    else:
+                                        back = back + ", " + num
+                            except IndexError:
+                                print(nute+" 데이터 불완성 스킵")
 
-                                if front == "":
-                                    front = danbag
-                                else:
-                                    front = front + ", " + danbag
-                                        
-                                if back == "":
-                                    back = num
-                                else:
-                                    back = back + ", " + num
-                                        
-                            if nute == "지방":
-                                #jibang
-                                data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
-                                num = data[0]
-                                type = data[1]
+                            try:       
+                                if nute == "지방":
+                                    #jibang
+                                    data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
+                                    num = data[0]
+                                    type = data[1]
 
-                                if front == "":
-                                    front = jibang
-                                else:
-                                    front = front + ", " + jibang
+                                    if front == "":
+                                        front = jibang
+                                    else:
+                                        front = front + ", " + jibang
 
-                                if back == "":
-                                    back = num
-                                else:
-                                    back = back + ", " + num
-                            
-                            if nute == "콜레스테롤":
-                                #colestrol
-                                data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
-                                num = data[0]
-                                type = data[1]
+                                    if back == "":
+                                        back = num
+                                    else:
+                                        back = back + ", " + num
+                            except IndexError:
+                                print(nute+" 데이터 불완성 스킵")
 
-                                if front == "":
-                                    front = colestrol
-                                else:
-                                    front = front + ", " + colestrol
+                            try:
+                                if nute == "콜레스테롤":
+                                    #colestrol
+                                    data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
+                                    print(data)
+                                    num = data[0]
+                                    type = data[1]
 
-                                if back == "":
-                                    back = num
-                                else:
-                                    back = back + ", " + num
+                                    if front == "":
+                                        front = colestrol
+                                    else:
+                                        front = front + ", " + colestrol
 
-                            if nute == "나트륨":
-                                #nat
-                                data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
-                                num = data[0]
-                                type = data[1]
+                                    if back == "":
+                                        back = num
+                                    else:
+                                        back = back + ", " + num
+                            except IndexError:
+                                print(nute+" 데이터 불완성 스킵")
 
-                                if front == "":
-                                    front = nat
-                                else:
-                                    front = front + ", " + nat
+                            try:
+                                if nute == "나트륨":
+                                    #nat
+                                    data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
+                                    num = data[0]
+                                    type = data[1]
 
-                                if back == "":
-                                    back = num
-                                else:
-                                    back = back + ", " + num
-                                            
-                            if nute == "포화지방":
-                                #pohwajibang
-                                data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
-                                num = data[0]
-                                type = data[1]
+                                    if front == "":
+                                        front = nat
+                                    else:
+                                        front = front + ", " + nat
 
-                                if front == "":
-                                    front = pohwajibang
-                                else:
-                                    front = front + ", " + pohwajibang
+                                    if back == "":
+                                        back = num
+                                    else:
+                                        back = back + ", " + num
+                            except IndexError:
+                                print(nute+" 데이터 불완성 스킵")
 
-                                if back == "":
-                                    back = num
-                                else:
-                                    back = back + ", " + num
-                                        
-                            if nute == "트랜스지방":
-                                #trans
-                                data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
-                                num = data[0]
-                                type = data[1]
+                            try:               
+                                if nute == "포화지방":
+                                    #pohwajibang
+                                    data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
+                                    num = data[0]
+                                    type = data[1]
 
-                                if front == "":
-                                    front = trans
-                                else:
-                                    front = front + ", " + trans
+                                    if front == "":
+                                        front = pohwajibang
+                                    else:
+                                        front = front + ", " + pohwajibang
 
-                                if back == "":
-                                    back = num
-                                else:
-                                    back = back + ", " + num
+                                    if back == "":
+                                        back = num
+                                    else:
+                                        back = back + ", " + num
+                            except IndexError:
+                                print(nute+" 데이터 불완성 스킵")
+
+                            try:          
+                                if nute == "트랜스지방":
+                                    #trans
+                                    data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
+                                    num = data[0]
+                                    type = data[1]
+
+                                    if front == "":
+                                        front = trans
+                                    else:
+                                        front = front + ", " + trans
+
+                                    if back == "":
+                                        back = num
+                                    else:
+                                        back = back + ", " + num
+                            except IndexError:
+                                print(nute+" 데이터 불완성 스킵")
 
                         sql = "INSERT INTO foodb ({0}) VALUES ({1})".format(front, back)
                         #print(sql)
@@ -548,7 +580,8 @@ async def get_object_with_barcode(barcode:str):
                                     "1회제공량": glist[1],
                                     "내용량_단위": "g",
                                     "유통사": s_company,
-                                    "new카테": cate_n
+                                    "new카테": cate_n,
+                                    "에너지(kcal)": fd_kcal
                                 }
                             else:
                                 p_res = {
@@ -556,7 +589,8 @@ async def get_object_with_barcode(barcode:str):
                                     "1회제공량": glist[0],
                                     "내용량_단위": "g",
                                     "유통사": s_company,
-                                    "new카테": cate_n
+                                    "new카테": cate_n,
+                                    "에너지(kcal)": fd_kcal
                                 }
                         except IndexError:
                             p_res = {
@@ -564,7 +598,8 @@ async def get_object_with_barcode(barcode:str):
                                 "1회제공량": weight,
                                 "내용량_단위": "g",
                                 "유통사": s_company,
-                                "new카테": cate_n
+                                "new카테": cate_n,
+                                "에너지(kcal)": fd_kcal
                             }
 
                         return p_res
@@ -642,6 +677,7 @@ async def get_object_with_barcode(barcode:str):
 
                     front = front + ",`barcode`,`data_adder`,`SAMPLE_ID`,`NO`,`식품코드`, `DB군`,`식품대분류`,`식품상세분류`, `식품명`"
                     back = back + ",{0},'{1}','{2}',{3},'{4}','{5}','{6}','{7}','{8}'".format(s_barcode, "barcode", n_num, n_food_num, n_code, f_big_cate, f_medium_cate, f_small_cate, str(re.sub('<.+?>', '', str(title[k]), 0).strip()))
+                    fd_kcal = 0
                     if dlen == 0 and bar == 0:
                         for nute in list(resdata[title1]['영양소']):
                             if nute == "열량":
@@ -659,133 +695,159 @@ async def get_object_with_barcode(barcode:str):
                                 else:
                                     back = back + ", " + num
 
-                            if nute == "탄수화물":
-                                #tancu
-                                data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
-                                num = data[0]
-                                type = data[1]
-                                if front == "":
-                                    front = tancu
-                                else:
-                                    front = front + ", " + tancu 
+                                fd_kcal = num
 
-                                if back == "":
-                                    back = num
-                                else:
-                                    back = back + ", " + num
-                                        
-                            if nute == "당류":
-                                #sugar
-                                data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
-                                num = data[0]
-                                type = data[1]    
+                            try:
+                                if nute == "탄수화물":
+                                    #tancu
+                                    data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
+                                    num = data[0]
+                                    type = data[1]
+                                    if front == "":
+                                        front = tancu
+                                    else:
+                                        front = front + ", " + tancu 
 
-                                if front == "":
-                                    front = sugar
-                                else:
-                                    front = front + ", " + sugar
+                                    if back == "":
+                                        back = num
+                                    else:
+                                        back = back + ", " + num
+                            except IndexError:
+                                print(nute+" 데이터 불완성 스킵")
 
-                                if back == "":
-                                    back = num
-                                else:
-                                    back = back + ", " + num
+                            try:           
+                                if nute == "당류":
+                                    #sugar
+                                    data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
+                                    num = data[0]
+                                    type = data[1]    
 
+                                    if front == "":
+                                        front = sugar
+                                    else:
+                                        front = front + ", " + sugar
+
+                                    if back == "":
+                                        back = num
+                                    else:
+                                        back = back + ", " + num
+                            except IndexError:
+                                print(nute+" 데이터 불완성 스킵")
+
+                            try:              
+                                if nute == "단백질":
+                                    #danbag
+                                    data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
+                                    num = data[0]
+                                    type = data[1]
+
+                                    if front == "":
+                                        front = danbag
+                                    else:
+                                        front = front + ", " + danbag
                                             
-                            if nute == "단백질":
-                                #danbag
-                                data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
-                                num = data[0]
-                                type = data[1]
+                                    if back == "":
+                                        back = num
+                                    else:
+                                        back = back + ", " + num
+                            except IndexError:
+                                print(nute+" 데이터 불완성 스킵")
 
-                                if front == "":
-                                    front = danbag
-                                else:
-                                    front = front + ", " + danbag
-                                        
-                                if back == "":
-                                    back = num
-                                else:
-                                    back = back + ", " + num
-                                        
-                            if nute == "지방":
-                                #jibang
-                                data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
-                                num = data[0]
-                                type = data[1]
+                            try:       
+                                if nute == "지방":
+                                    #jibang
+                                    data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
+                                    num = data[0]
+                                    type = data[1]
 
-                                if front == "":
-                                    front = jibang
-                                else:
-                                    front = front + ", " + jibang
+                                    if front == "":
+                                        front = jibang
+                                    else:
+                                        front = front + ", " + jibang
 
-                                if back == "":
-                                    back = num
-                                else:
-                                    back = back + ", " + num
-                            
-                            if nute == "콜레스테롤":
-                                #colestrol
-                                data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
-                                num = data[0]
-                                type = data[1]
+                                    if back == "":
+                                        back = num
+                                    else:
+                                        back = back + ", " + num
+                            except IndexError:
+                                print(nute+" 데이터 불완성 스킵")
 
-                                if front == "":
-                                    front = colestrol
-                                else:
-                                    front = front + ", " + colestrol
+                            try:
+                                if nute == "콜레스테롤":
+                                    #colestrol
+                                    data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
+                                    print(data)
+                                    num = data[0]
+                                    type = data[1]
 
-                                if back == "":
-                                    back = num
-                                else:
-                                    back = back + ", " + num
+                                    if front == "":
+                                        front = colestrol
+                                    else:
+                                        front = front + ", " + colestrol
 
-                            if nute == "나트륨":
-                                #nat
-                                data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
-                                num = data[0]
-                                type = data[1]
+                                    if back == "":
+                                        back = num
+                                    else:
+                                        back = back + ", " + num
+                            except IndexError:
+                                print(nute+" 데이터 불완성 스킵")
 
-                                if front == "":
-                                    front = nat
-                                else:
-                                    front = front + ", " + nat
+                            try:
+                                if nute == "나트륨":
+                                    #nat
+                                    data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
+                                    num = data[0]
+                                    type = data[1]
 
-                                if back == "":
-                                    back = num
-                                else:
-                                    back = back + ", " + num
-                                            
-                            if nute == "포화지방":
-                                #pohwajibang
-                                data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
-                                num = data[0]
-                                type = data[1]
+                                    if front == "":
+                                        front = nat
+                                    else:
+                                        front = front + ", " + nat
 
-                                if front == "":
-                                    front = pohwajibang
-                                else:
-                                    front = front + ", " + pohwajibang
+                                    if back == "":
+                                        back = num
+                                    else:
+                                        back = back + ", " + num
+                            except IndexError:
+                                print(nute+" 데이터 불완성 스킵")
 
-                                if back == "":
-                                    back = num
-                                else:
-                                    back = back + ", " + num
-                                        
-                            if nute == "트랜스지방":
-                                #trans
-                                data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
-                                num = data[0]
-                                type = data[1]
+                            try:               
+                                if nute == "포화지방":
+                                    #pohwajibang
+                                    data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
+                                    num = data[0]
+                                    type = data[1]
 
-                                if front == "":
-                                    front = trans
-                                else:
-                                    front = front + ", " + trans
+                                    if front == "":
+                                        front = pohwajibang
+                                    else:
+                                        front = front + ", " + pohwajibang
 
-                                if back == "":
-                                    back = num
-                                else:
-                                    back = back + ", " + num
+                                    if back == "":
+                                        back = num
+                                    else:
+                                        back = back + ", " + num
+                            except IndexError:
+                                print(nute+" 데이터 불완성 스킵")
+
+                            try:          
+                                if nute == "트랜스지방":
+                                    #trans
+                                    data = resdata[title1]['영양소'][nute]['내용량'].split(" ")
+                                    num = data[0]
+                                    type = data[1]
+
+                                    if front == "":
+                                        front = trans
+                                    else:
+                                        front = front + ", " + trans
+
+                                    if back == "":
+                                        back = num
+                                    else:
+                                        back = back + ", " + num
+                            except IndexError:
+                                print(nute+" 데이터 불완성 스킵")
 
                         sql = "INSERT INTO foodb ({0}) VALUES ({1})".format(front, back)
                         #print(sql)
@@ -800,7 +862,8 @@ async def get_object_with_barcode(barcode:str):
                                     "1회제공량": glist[1],
                                     "내용량_단위": "g",
                                     "유통사": s_company,
-                                    "new카테": cate_n
+                                    "new카테": cate_n,
+                                    "에너지(kcal)": fd_kcal
                                 }
                             else:
                                 p_res = {
@@ -808,7 +871,8 @@ async def get_object_with_barcode(barcode:str):
                                     "1회제공량": glist[0],
                                     "내용량_단위": "g",
                                     "유통사": s_company,
-                                    "new카테": cate_n
+                                    "new카테": cate_n,
+                                    "에너지(kcal)": fd_kcal
                                 }
                         except IndexError:
                             p_res = {
@@ -816,7 +880,8 @@ async def get_object_with_barcode(barcode:str):
                                 "1회제공량": weight,
                                 "내용량_단위": "g",
                                 "유통사": s_company,
-                                "new카테": cate_n
+                                "new카테": cate_n,
+                                "에너지(kcal)": fd_kcal
                             }
 
                         return p_res                                
