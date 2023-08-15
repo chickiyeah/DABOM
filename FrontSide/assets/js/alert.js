@@ -168,7 +168,7 @@ async function connnect() {
     let us_id = user[0].ID
     console.log("token verified")
     let u_nick = user[0].Nickname
-    alertsocket = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${u_nick}&u_id=${us_id}&channel=Va8%r@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr`)
+    alertsocket = new WebSocket(`wss://dabom.kro.kr/chat/ws?username=${u_nick}&u_id=${us_id}&channel=Va8%r@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr`)
 
     alertsocket.onerror = async () => {
         console.error("웹소켓 연결실패 새로고침으로 문제 해결을 시도합니다.")
