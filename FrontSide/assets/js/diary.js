@@ -13,6 +13,8 @@ const sendFood = document.querySelector("#send");
 const itemappend = document.querySelector(".search_info");
 const kcalBox = document.querySelector("#kcalBox");
 
+const loading = document.querySelector(".loading");
+
 var beforex = -1
 
 window.addEventListener('DOMContentLoaded', function() {
@@ -119,6 +121,11 @@ buttons.forEach(function(button) {
 // 음식 검색
 const apiUrlor = 'http://localhost:8000/api/food/search/or';
 const apiUrland = 'http://localhost:8000/api/food/search/and';
+const progress_h = document.querySelector('#i_progress');
+const h_search_count = document.querySelector('.search_count');
+const h_search_count_num = document.querySelector('.search_count_num');
+
+import { toast } from './toast.js';
 
 sendFood.addEventListener("click", (event) => {
   event.preventDefault();
@@ -126,65 +133,92 @@ sendFood.addEventListener("click", (event) => {
   searchfood();
 })
 
+searchFood.addEventListener("keyup", (event) => {if(event.keyCode==13){
+  searchfood();
+}})
+
 async function searchfood() {
-  let access_token = sessionStorage.getItem("access_token");
-  fetch("/api/food/search/or", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    body: JSON.stringify({
-      "keywords": searchFood.value
+
+  let keyword = searchFood.value.trim()
+  if (keyword != "") {
+    fetch("/api/food/search/or", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        "keywords": searchFood.value
+      })
     })
-  })
-  .then((data) => {
-    // API 응답 데이터를 검색하고자 하는 단어와 비교
-    data.json().then((items) => { // function a () {} <==> () => {} 화살표 배워올게요
-      console.log(items)//대써여!! 이제 이거를 foreach 돌려야죠
-      itemappend.innerHTML = '';
-      items.forEach((item_var) =>{ //data를 돌리면 안되죠
-      console.log(item_var) //됐져!! ㅇㅇ! 됬음~! 매우 감사합니다.. 큰절올려요 ㅋ ㅋㅋㅋㅋㅋ
-      if (item_var != null) {
-        let kcal_data = item_var.칼로리;
-        // console.log(Number(item_var.value))
-        console.log(kcal_data + "여기는 칼로리 데이터")
-        let foodid = item_var.SAMPLE_ID
-        let kcalNum = Math.round(item_var.칼로리);
-          if(item_var != null){
-            let html = `
-          <li>
-            <div class="checkbox">
-                <input type="checkbox" id="${foodid}">
-                <label for="${foodid}">체크하기</label>
-            </div>
-            <p class="info_txt">${item_var.식품명}</p>
-            <div class="right_box">
-                <p class="kcal">${kcalNum} kcal</p>
-                <a class="more_btn" id="moreBtn" href="javascript:">상세보기</a>
-            </div>
-        </li>
-            `
-            //변수에다가 html을 삽입하라고하면 컴퓨터한테 뭘바라는거에요 쪼매만 기다려주숑 오키오키
-            itemappend.insertAdjacentHTML("beforeend", html); // 땡 해당 스트링은 투입 위치를 지정하는것임 ( beforestart 요소가 위로 올라감 , afterstart 요소가 올라가지만 beforestart보다는 아래 , beforeend 요소가 아래로감 , afterend beforeend보다 더 아래로감 틀을 벗어날수잇음 )           
-            check_event(foodid);
-            more_event(foodid);
-        }
+    .then((data) => {
+      // API 응답 데이터를 검색하고자 하는 단어와 비교
+      loading.style.display = 'flex';
+      data.json().then((items) => { // function a () {} <==> () => {} 화살표 배워올게요
+        let fd_leng = items.length;
+        itemappend.style.display = 'none';
+        itemappend.innerHTML = '';
+        let fd_n = 0;
+        if (fd_leng < 1) {
+          toast("검색 결과가 없습니다.")
+        } else {
+          items.forEach((item_var) =>{ //data를 돌리면 안되죠
+            fd_n = fd_n + 1
+            let percent = ((fd_n / fd_leng) * 100).toFixed(2)
+            let progress = fd_n+" / "+fd_leng+" ( "+percent+" % )"
+
+            progress_h.innerText = progress;
+            console.log(progress)
+            //toast(progress)
+          //console.log(item_var) //됐져!! ㅇㅇ! 됬음~! 매우 감사합니다.. 큰절올려요 ㅋ ㅋㅋㅋㅋㅋ
+          if (item_var != null) {
+            let kcal_data = item_var.칼로리;
+            // console.log(Number(item_var.value))
+            //console.log(kcal_data + "여기는 칼로리 데이터")
+            let foodid = item_var.SAMPLE_ID
+            let kcalNum = Math.round(item_var.칼로리);
+              if(item_var != null){
+                let html = `
+              <li>
+                <div class="checkbox">
+                    <input type="checkbox" id="${foodid}">
+                    <label for="${foodid}">체크하기</label>
+                </div>
+                <p class="info_txt">${item_var.식품명}</p>
+                <div class="right_box">
+                    <p style="margin-right:20px" class="kcal">${kcalNum} kcal</p>
+                    <!--<a class="more_btn" id="moreBtn" href="javascript:">상세보기</a>-->
+                </div>
+            </li>
+                `
+                //변수에다가 html을 삽입하라고하면 컴퓨터한테 뭘바라는거에요 쪼매만 기다려주숑 오키오키
+                itemappend.insertAdjacentHTML("beforeend", html); // 땡 해당 스트링은 투입 위치를 지정하는것임 ( beforestart 요소가 위로 올라감 , afterstart 요소가 올라가지만 beforestart보다는 아래 , beforeend 요소가 아래로감 , afterend beforeend보다 더 아래로감 틀을 벗어날수잇음 )           
+                check_event(foodid);
+                more_event(foodid);
+            }
+          }
+        })
       }
+      itemappend.style.display = '';
+      loading.style.display = 'none';
+      h_search_count_num.innerText = fd_leng;
+      h_search_count.style.display = 'flex';
+    }); // then에는 데이터가 있으니 데이터를 받아올 변수를 지정해줘야 이제 함순데 함수를 console.log 하나요 k아뉴 변수 생각요요 변수는 아무거나 해도되요
+      
+      /*for (let i = 0; i < data.length; i++) {
+        const item = data;   
+        const strfy = JSON.stringify(item);
+        const str = JSON.parse(item); 
+        console.log(strfy);
+        console.log(str);
+      }*/
     })
-  }); // then에는 데이터가 있으니 데이터를 받아올 변수를 지정해줘야 이제 함순데 함수를 console.log 하나요 k아뉴 변수 생각요요 변수는 아무거나 해도되요
-    
-    /*for (let i = 0; i < data.length; i++) {
-      const item = data;   
-      const strfy = JSON.stringify(item);
-      const str = JSON.parse(item); 
-      console.log(strfy);
-      console.log(str);
-    }*/
-  })
-  .catch(error => {
-    console.error('API 요청 중 오류가 발생했습니다.', error);
-  });
+    .catch(error => {
+      console.error('API 요청 중 오류가 발생했습니다.', error);
+    });
+  } else {
+    toast("공백을 검색 할순 없습니다.")
+  }
 }
 
 function checkevent(e) {
@@ -221,14 +255,14 @@ function check_event() {
 
 // 상세보기 팝업
 function more_event(foodid) {
-  let moreBtn = document.querySelector("#moreBtn");
+  //let moreBtn = document.querySelector("#moreBtn");
   let kcal_popup = document.querySelector(".kcal_popup_wrap");
   let bakcBtn = document.querySelector(".black_line_btn");
-  moreBtn.addEventListener("click", (event) => {
+  /*moreBtn.addEventListener("click", (event) => {
     event.preventDefault();
     kcal_popup.style.display = "block";
-    console.log("검색 click");
-  })
+    console.log("상세보기 click");
+  })*/
   bakcBtn.addEventListener("click", (event) => {
     event.preventDefault();
     kcal_popup.style.display = "none";

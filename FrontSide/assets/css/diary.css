@@ -122,6 +122,18 @@
     z-index: 30;
 }
 
+.search_count {
+    display: none;
+    justify-content: right;
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.search_count .search_count_num {
+    color: orange;
+    font-weight: 600;
+}
+
 /* 바코더 */
 .scan_wrap .content_box { display: flex; flex-flow: column; align-items: center;  margin-top: 200px; }
 .scan_wrap .content_box .bar_scan { margin-bottom: 40px; }

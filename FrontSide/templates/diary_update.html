@@ -133,7 +133,7 @@
                     <a id="eat_when" onclick="sel_eat_when('night')" href="javascript:">저녁</a>
                     <a id="eat_when" onclick="sel_eat_when('free')" href="javascript:">간식</a>
 
-                        <a href="/diary_kcal" target="_blank" class="">칼로리 검색하기</a>
+                        <a href="javascript:" onclick="window.open('/diary_kcal')" target="_blank" class="">칼로리 검색하기</a>
                         <a href="javascript:" onclick="window.open('/diary_bar_cam')" target="_blank" class="">바코드 검색하기</a>
 
                 </div>
@@ -142,6 +142,7 @@
                     <span>현재 총 칼로리 :  <span id="tokcal">0</span>  kcal</span>
                 </div>
                 <div class="search_box">
+                    <!---
                     <div class="search_item" title="400 kcal">
                         <a onclick="editamount(this.parentElement)" href="javascript:"><span>소금빵</span><span class="amount"> X <span class="amount_num">2</span></span></a>
                         <a href="javascript:">
@@ -159,7 +160,7 @@
                         <a href="javascript:">
                             <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
                         </a>
-                    </div>
+                    </div> 동적 추가-->
                 </div>
                 <div class="text_item">
                     <input type="text" placeholder="제목을 입력하세요">
@@ -185,6 +186,7 @@
 
     function editamount(element) {
         last_click_element = element
+        document.querySelector('.fd_edit').style.display = '';
 
         var name = element.children[0].children[0].innerText;
         var default_kcal = parseInt(element.attributes.per.value);
@@ -213,7 +215,7 @@
     }
 
     function submit_edit_amount(element) {
-        //element.parentElement.style.display = 'none'; // 처리하는 동안 조작할수 없게 안보이게 처리
+        element.parentElement.style.display = 'none'; // 처리하는 동안 조작할수 없게 안보이게 처리
         var f_data = element.children[1];
         var amount = parseInt(f_data.children[0].children[0].value);
         if (amount > 0) {
@@ -230,9 +232,13 @@
             document.querySelector("#tokcal").innerText = fd_total_kcal + t_tokcal; //총 칼로리 변경
             document.querySelector('.fd_edit_back').style.display = 'none'; //작업 완료후 배경 원상 복귀
         } else {
-            document.querySelector('.fd_edit_back').style.display = 'none';
+            element.parentElement.style.display = '';
             alert("음식의 갯수는 0개 이하일수 없습니다.")
         }
+    }
+
+    function remove_ele(element) {
+        console.log(element)
     }
 </script>
 </html>

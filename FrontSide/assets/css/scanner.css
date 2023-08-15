@@ -36,3 +36,23 @@ img {
 #reader > div:nth-child(1) > img {
     display: none;
 }
+
+.manual_type {
+    display: flex;
+    justify-content: center;
+    padding: 10px 20px;
+    margin-top: 30px;
+    margin-left: 30%;
+    margin-right: 30%;
+    border: black solid;
+    border-radius: 20px;
+    margin-bottom: 30px;
+}
+
+#html5-qrcode-anchor-scan-type-change {
+    margin-top: 10px;
+    border: black solid;
+    border-radius: 15px;
+    padding: 10px 20px;
+    text-decoration: none;
+}
