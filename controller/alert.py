@@ -64,7 +64,7 @@ async def get_unread_amount(response: Response, access_token: Optional[str] = Co
 
             unread_amount = execute_pri_sql(f"SELECT count(id) as `amount` FROM food.alert WHERE `read` = 'False' AND `target_id` = '{uid}'")
             return unread_amount[0]
-        except requests.HTTPError as e:
+        except HTTPException as e:
             error = json.loads(e.args[1])['error']['message']
             if error == "TOKEN_EXPIRED":
                 raise HTTPException(status_code=401, detail=unauthorized_invaild)
