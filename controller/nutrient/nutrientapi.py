@@ -292,9 +292,10 @@ async def get_object_with_barcode(barcode:str):
                     #print(str(i)+"/"+str(int(len(rdata)/3)))
                     #print(resdata[re.sub('<.+?>', '', str(title[k]), 0).strip()])  
 
-                print(weight)
+                print(f"t_weight : {weight}")
 
                 title1 = list(resdata.keys())[0]
+                print(f"title1 : {title1}")
                 kancode = datas[0]['data-prd-no'] 
                 glist = []
                 if "g" in title1:
@@ -401,6 +402,7 @@ async def get_object_with_barcode(barcode:str):
                     front = front + ",`barcode`,`data_adder`,`SAMPLE_ID`,`NO`,`식품코드`, `DB군`,`식품대분류`,`식품상세분류`, `식품명`"
                     back = back + ",{0},'{1}','{2}',{3},'{4}','{5}','{6}','{7}','{8}'".format(s_barcode, "barcode", n_num, n_food_num, n_code, f_big_cate, f_medium_cate, f_small_cate, fd_n_name) #식품명 과거 str(re.sub('<.+?>', '', str(title[k]), 0).strip())
                     fd_kcal = 0
+                    print(f"bar : {bar}")
                     if bar == 0:
                         for nute in list(resdata[title1]['영양소']):
                             if nute == "열량":
@@ -683,7 +685,7 @@ async def get_object_with_barcode(barcode:str):
                     front = front + ",`barcode`,`data_adder`,`SAMPLE_ID`,`NO`,`식품코드`, `DB군`,`식품대분류`,`식품상세분류`, `식품명`"
                     back = back + ",{0},'{1}','{2}',{3},'{4}','{5}','{6}','{7}','{8}'".format(s_barcode, "barcode", n_num, n_food_num, n_code, f_big_cate, f_medium_cate, f_small_cate, str(re.sub('<.+?>', '', str(title[k]), 0).strip()))
                     fd_kcal = 0
-                    if dlen == 0 and bar == 0:
+                    if bar == 0:
                         for nute in list(resdata[title1]['영양소']):
                             if nute == "열량":
                                 #kcal
@@ -700,7 +702,12 @@ async def get_object_with_barcode(barcode:str):
                                 else:
                                     back = back + ", " + num
 
+                                
+
                                 fd_kcal = num
+
+
+                                
 
                             try:
                                 if nute == "탄수화물":
@@ -854,6 +861,10 @@ async def get_object_with_barcode(barcode:str):
                             except IndexError:
                                 print(nute+" 데이터 불완성 스킵")
 
+
+                            
+                        if (fd_kcal == 0):
+                            raise HTTPException(400, "열량 데이터가 없습니다.")
                         sql = "INSERT INTO foodb ({0}) VALUES ({1})".format(front, back)
                         #print(sql)
                         res = execute_sql(sql)
