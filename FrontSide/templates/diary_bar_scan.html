@@ -8,7 +8,85 @@
     <title>다봄일지(바코더)</title>
     <link rel="stylesheet" href="/assets/css/reset.css">
     <link rel="stylesheet" href="/assets/css/layout.css">
+    <link rel="stylesheet" href="/assets/css/toast.css">
 </head>
+<script>
+    let removeToast;
+
+    function toast(string) {
+        const toast = document.getElementById("toast");
+
+        toast.classList.contains("reveal") ?
+            (clearTimeout(removeToast), removeToast = setTimeout(function () {
+                document.getElementById("toast").classList.remove("reveal")
+            }, 1000)) :
+            removeToast = setTimeout(function () {
+                document.getElementById("toast").classList.remove("reveal")
+            }, 2500)
+        toast.classList.add("reveal"),
+            toast.innerText = string
+    }
+
+    function search_brcd() {
+        var strbarcd = document.getElementById("strbarcd").value
+        var previous = opener.document.title
+        const err_des = document.querySelector(".des");
+        console.log(strbarcd)
+        if (!isNaN(strbarcd)){
+            if (strbarcd.length == 13) {
+                url = "/api/nutrient/barcodecroll/"+strbarcd
+                fetch(url, {
+                    method: 'GET'
+                }).then(function(response) {
+                    if (response.status == 200) {
+                        response.json().then((f_data) => {
+                            console.log(f_data)
+                            let kcal = "해당 음식의 칼로리는 개당 "+f_data['에너지(kcal)']+" kcal 이며, 전체 칼로리는 "+f_data['에너지(kcal)']+" kcal 입니다."
+                            let f_name = f_data['식품명']
+                            if (previous.includes("기록")) {
+                                html = `<div title="${kcal}" per="${f_data['에너지(kcal)']}" class="search_item">
+                                                <a onclick="editamount(this.parentElement)" href="javascript:"><span>${f_name}</span><span class="amount" style="display:none;"> X <span class="amount_num">2</span></span></a>
+                                                <a onclick="remove_ele(this.parentElement)" href="javascript:">
+                                                    <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
+                                                </a>
+                                            </div>`
+                                opener.document.querySelector(".search_box").insertAdjacentHTML("beforeend", html)
+                                var q_tokcal = parseInt(opener.document.querySelector("#tokcal").innerText) + parseInt(f_data['에너지(kcal)']);
+                                opener.document.querySelector("#tokcal").innerText = q_tokcal;
+                                window.close()
+                            }
+
+                            if (previous.includes("칼로리")) {
+                                html = `<div title="${kcal}" per="${f_data['에너지(kcal)']}" class="search_item">
+                                                <a onclick="editamount(this.parentElement)" href="javascript:"><span>${f_name}</span><span class="amount" style="display:none;"> X <span class="amount_num">2</span></span></a>
+                                                <a onclick="remove_ele(this.parentElement)" href="javascript:">
+                                                    <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
+                                                </a>
+                                            </div>`
+                                opener.opener.document.querySelector(".search_box").insertAdjacentHTML("beforeend", html)
+                                var q_tokcal = parseInt(opener.opener.document.querySelector("#tokcal").innerText) + parseInt(f_data['에너지(kcal)']);
+                                opener.opener.document.querySelector("#tokcal").innerText = q_tokcal;
+                                opener.close();
+                                window.close();
+                            }
+                        })
+                    } else {
+                        response.json().then((err) => {
+                            toast(err.detail)
+                            err_des.innerText = (err.detail+"\n입력된 바코드 : "+strbarcd)
+                        })
+                    }
+                })
+            } else {
+                toast("바코드의 길이는 13자 이어야만 합니다.")
+                err_des.innerText = "바코드의 길이는 13자 이어야만 합니다.\n입력한 바코드의 길이 : "+strbarcd.length+"\n입력된 바코드 : "+strbarcd
+            }
+        } else {
+            toast("바코드는 숫자만 입력해야합니다.")
+            err_des.innerText = "바코드는 숫자만 입력해야합니다.\n입력값 : "+strbarcd
+        }
+    }
+</script>
 <body>
     <header>
         <div class="pc_header">
@@ -66,6 +144,7 @@
     </header>
 <!-- .info_box a태그 .on 들어갈때로 스타일 줬어요 -->
 <main>
+    <div id="toast"></div>
     <div class="scan_wrap">
         <div class="container">
             <div class="content_box">
@@ -80,10 +159,10 @@
                 </div>
                 <div class="input_box">
                     <label>바코드 번호 검색</label>
-                    <input type="text" placeholder="바코드 번호를 입력해주세요">
+                    <input maxlength="13" onkeyup="if(window.event.keyCode==13){search_brcd()}" id="strbarcd" type="text" placeholder="바코드 번호를 입력해주세요">
                 </div>
-                <a class="red_btn" href="javascript:">검색하기</a>
-                <a class="red_btn" href="javascript:">음식 데이터 추가하러가기</a>
+                <a class="red_btn" id="search_btn" style="margin-bottom: 10px;" onclick="search_brcd()" href="javascript:">검색하기</a>
+                <a class="red_btn" href="/diary/food_data_add">음식 데이터 추가하러가기</a>
             </div>
         </div>
     </div>
@@ -112,5 +191,21 @@
             }
         }
     }
+
+    function clickEnter(className1, className2) {
+        // console.log(className1)
+        try {
+            className1.addEventListener("keydown", function (e) {
+            if (e.keyCode === 13) {
+                e.preventDefault();
+                className2.click();
+            }
+            });
+        } catch (e) {void(0)}
+    }
+    
+    const input = document.getElementById("strbarcd");
+    const btn = document.getElementById("search_btn");
+    clickEnter()
 </script>
 </html>

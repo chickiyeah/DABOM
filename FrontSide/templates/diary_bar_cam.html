@@ -55,6 +55,20 @@
                             opener.document.querySelector("#tokcal").innerText = q_tokcal;
                             window.close()
                         }
+
+                        if (previous.includes("칼로리")) {
+                            html = `<div title="${kcal}" per="${f_data['에너지(kcal)']}" class="search_item">
+                                            <a onclick="editamount(this.parentElement)" href="javascript:"><span>${f_name}</span><span class="amount" style="display:none;"> X <span class="amount_num">2</span></span></a>
+                                            <a onclick="remove_ele(this.parentElement)" href="javascript:">
+                                                <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
+                                            </a>
+                                        </div>`
+                            opener.opener.document.querySelector(".search_box").insertAdjacentHTML("beforeend", html)
+                            var q_tokcal = parseInt(opener.opener.document.querySelector("#tokcal").innerText) + parseInt(f_data['에너지(kcal)']);
+                            opener.opener.document.querySelector("#tokcal").innerText = q_tokcal;
+                            opener.close();
+                            window.close();
+                        }
                     })
                 } else {
                     location.href = '/diary_bar_scan?err=nofood'

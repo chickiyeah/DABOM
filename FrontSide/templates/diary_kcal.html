@@ -9,12 +9,16 @@
     <link rel="stylesheet" href="/assets/css/reset.css">
     <link rel="stylesheet" href="/assets/css/popup.css">
     <link rel="stylesheet" href="/assets/css/layout.css">
-    <script defer src="/assets/js/diary.js"></script>
+    <script defer type="module" src="/assets/js/diary.js"></script>
     <script type="module" src="/assets/js/user.js"></script>
+    <link rel="stylesheet" href="/assets/css/toast.css">
 </head>
 <body>
-    <div class="loading fix">
+    <div id="toast"></div>
+    <div style="flex-direction: column;" class="loading fix">
         <span class="loader"></span>
+        <span style="margin-top: 20px;">처리중이오니 잠시만 기다려 주십시오. 데이터가 많을경우 더 많은 시간이 소요됩니다.</span>
+        <span style="margin-top: 20px; display: none;" id="i_progress">1/100</span>
     </div>
     <header>
         <div class="pc_header">
@@ -83,13 +87,16 @@
                 </div>
                 <div class="search_box">
                     <input type="text" id="searchInput" placeholder="음식을 검색하세요">
-                    <a href="javascript:" class="search_icon" id="send">
+                    <a title="검색" href="javascript:" class="search_icon" id="send">
                         <object data="/assets/images/search-icon.svg" type="image/svg+xml" aria-label="검색아이콘"></object>
                     </a>
-                    <a href="javascript:" onclick="window.open('/diary_bar_cam')" class="camera_icon">
+                    <a title="바코드 인식" href="javascript:" onclick="window.open('/diary_bar_cam')" class="camera_icon">
                         <object data="/assets/images/bar-scan-icon.svg" type="image/svg+xml"
                                 aria-label="바코트 아이콘"></object>
                     </a>
+                </div>
+                <div class="search_count">
+                    <span>검색 결과 : <span class="search_count_num"></span> 개</span>
                 </div>
                 <ul class="search_info" id="kcalBox">
                     <!-- <li>
@@ -108,7 +115,7 @@
             </div>
             <div class="bottom_box">
                 <div class="info_box">
-                    <a href="javascript:" class="add_img">
+                    <a href="/diary/food_data_add" class="add_img">
                         <object data="/assets/images/add-icon.svg" type="image/svg+xml" aria-label="플러스아이콘"></object>
                     </a>
                     <p>원하는 제품을 찾을수 없다면?</p>

@@ -46,7 +46,7 @@ async def diary_bar_scan(request: Request):
 async def diary_kcal(request: Request):
     return templates.TemplateResponse("diary_kcal.html", {"request":request})
 
-@ScreenRoute.get("/diary_food_data_add")
+@ScreenRoute.get("/diary/food_data_add")
 async def diary_food_data_add(request: Request):
     return templates.TemplateResponse("diary_food_data_add.html", {"request":request})
 

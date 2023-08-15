@@ -6,11 +6,12 @@
     transform: translate(-50%, 10px);
     border-radius: 30px;
     overflow: hidden;
-    font-size: .8rem;
+    font-size: .9rem;
     opacity: 0;
     visibility: hidden;
+    font-weight: 550;
     transition: opacity .5s, visibility .5s, transform .5s;
-    background: rgba(0, 0, 0, .35);
+    background: rgba(0, 0, 0, 0.658);
     color: #fff;
     z-index: 10000;
 }
