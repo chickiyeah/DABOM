@@ -152,12 +152,12 @@ async function try_connect(room) {
             console.log("token verified")
             let u_nick = user[0].Nickname
             if (room == null) {
-                console.log(`ws://dabom.kro.kr/chat/ws?username=${u_nick}&u_id=${us_id}`)
-                chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${u_nick}&u_id=${us_id}`) // 전역변수의 값을 바꿈   
+                console.log(`wss://dabom.kro.kr/chat/ws?username=${u_nick}&u_id=${us_id}`)
+                chat = new WebSocket(`wss://dabom.kro.kr/chat/ws?username=${u_nick}&u_id=${us_id}`) // 전역변수의 값을 바꿈   
                 document.querySelector("#room_title").textContent = "로비 채널"
                 document.querySelector("#room_title_m").textContent = "로비 채널"
             } else {
-                chat = new WebSocket(`ws://dabom.kro.kr/chat/ws?username=${u_nick}&u_id=${us_id}&channel=${room}`) // 전역변수의 값을 바꿈
+                chat = new WebSocket(`wss://dabom.kro.kr/chat/ws?username=${u_nick}&u_id=${us_id}&channel=${room}`) // 전역변수의 값을 바꿈
                 let c_title = sessionStorage.getItem("chat_title")
                 document.querySelector("#room_title").textContent = c_title 
                 document.querySelector("#room_title_m").textContent = c_title

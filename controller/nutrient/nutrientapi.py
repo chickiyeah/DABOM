@@ -228,6 +228,7 @@ async def get_object_with_barcode(barcode:str):
             fd_n_url = "https://www.consumer.go.kr/user/ftc/consumer/goodsinfo/57/selectGoodsInfoDetailThngApi.do"
             fd_n_res = requests.post(fd_n_url, data={"stdBrcd": barcode}).json()
             fd_n_name = fd_n_res['npname']
+            fd_c_name = fd_n_res['entrpsNm']
 
             for k in range(len(datas)):
                 #print(datas[k]['data-prd-no'])
@@ -252,9 +253,9 @@ async def get_object_with_barcode(barcode:str):
                     front = "`유통사`"
                     back = "'None'"
                 except json.JSONDecodeError:
-                    s_company = "None"
+                    s_company = fd_c_name
                     front = "`유통사`"
-                    back = "'None'"
+                    back = f"'{fd_c_name}'"
 
                 weightstr = str(re.sub(r'[^0-9]', '', str(div2.select('div > div.pdv_korchamDetail > div.pdv_wrap_korcham > table > tbody > tr:nth-child(8) > td')),0).strip())
                 if weightstr == '':
