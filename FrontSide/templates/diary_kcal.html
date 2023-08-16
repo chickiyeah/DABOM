@@ -14,11 +14,11 @@
     <link rel="stylesheet" href="/assets/css/toast.css">
 </head>
 <body>
-    <div id="toast"></div>
+    
     <div style="flex-direction: column;" class="loading fix">
         <span class="loader"></span>
         <span style="margin-top: 20px;">처리중이오니 잠시만 기다려 주십시오. 데이터가 많을경우 더 많은 시간이 소요됩니다.</span>
-        <span style="margin-top: 20px; display: none;" id="i_progress">1/100</span>
+        <span style="margin-top: 20px;" id="i_progress">진행 상황</span>
     </div>
     <header>
         <div class="pc_header">
@@ -75,6 +75,7 @@
         </div>
     </header>
 <main>
+    
     <!-- .info_box a태그 .on 들어갈때로 스타일 줬어요 -->
     <div class="kcal_wrap">
         <div class="container">
@@ -94,6 +95,7 @@
                         <object data="/assets/images/bar-scan-icon.svg" type="image/svg+xml"
                                 aria-label="바코트 아이콘"></object>
                     </a>
+                    <div id="toast"></div>
                 </div>
                 <div class="search_count">
                     <span>검색 결과 : <span class="search_count_num"></span> 개</span>

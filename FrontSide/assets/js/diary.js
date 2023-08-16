@@ -138,8 +138,9 @@ searchFood.addEventListener("keyup", (event) => {if(event.keyCode==13){
 }})
 
 async function searchfood() {
-
+return new Promise((resolve, reject) => {
   let keyword = searchFood.value.trim()
+  progress_h.innerText = "서버에서 데이터를 취득중입니다.";
   if (keyword != "") {
     fetch("/api/food/search/or", {
       method: "POST",
@@ -152,12 +153,17 @@ async function searchfood() {
       })
     })
     .then((data) => {
+      progress_h.innerText = "서버로부터 받은 데이터를 정리중입니다."
       // API 응답 데이터를 검색하고자 하는 단어와 비교
       loading.style.display = 'flex';
+      itemappend.style.display = 'none';
+      itemappend.innerHTML = '';
       data.json().then((items) => { // function a () {} <==> () => {} 화살표 배워올게요
         let fd_leng = items.length;
-        itemappend.style.display = 'none';
-        itemappend.innerHTML = '';
+        var i_food = [];
+        var i_skip = 0;
+        var to_html = "";
+
         let fd_n = 0;
         if (fd_leng < 1) {
           toast("검색 결과가 없습니다.")
@@ -169,39 +175,50 @@ async function searchfood() {
 
             progress_h.innerText = progress;
             console.log(progress)
-            //toast(progress)
+            toast(progress)
           //console.log(item_var) //됐져!! ㅇㅇ! 됬음~! 매우 감사합니다.. 큰절올려요 ㅋ ㅋㅋㅋㅋㅋ
           if (item_var != null) {
+            
             let kcal_data = item_var.칼로리;
             // console.log(Number(item_var.value))
             //console.log(kcal_data + "여기는 칼로리 데이터")
             let foodid = item_var.SAMPLE_ID
-            let kcalNum = Math.round(item_var.칼로리);
-              if(item_var != null){
-                let html = `
-              <li>
-                <div class="checkbox">
-                    <input type="checkbox" id="${foodid}">
-                    <label for="${foodid}">체크하기</label>
-                </div>
-                <p class="info_txt">${item_var.식품명}</p>
-                <div class="right_box">
-                    <p style="margin-right:20px" class="kcal">${kcalNum} kcal</p>
-                    <!--<a class="more_btn" id="moreBtn" href="javascript:">상세보기</a>-->
-                </div>
-            </li>
-                `
-                //변수에다가 html을 삽입하라고하면 컴퓨터한테 뭘바라는거에요 쪼매만 기다려주숑 오키오키
-                itemappend.insertAdjacentHTML("beforeend", html); // 땡 해당 스트링은 투입 위치를 지정하는것임 ( beforestart 요소가 위로 올라감 , afterstart 요소가 올라가지만 beforestart보다는 아래 , beforeend 요소가 아래로감 , afterend beforeend보다 더 아래로감 틀을 벗어날수잇음 )           
-                check_event(foodid);
-                more_event(foodid);
+            if (i_food.includes(foodid)) {
+              i_skip = i_skip + 1;
+              console.error("데이터 중복 삽입 시도 발견 : "+foodid);
+            } else {
+              i_food.push(foodid);
+              let kcalNum = Math.round(item_var.칼로리);
+                if(item_var != null){
+                  let html = `
+                <li>
+                  <div class="checkbox">
+                      <input type="checkbox" id="${foodid}">
+                      <label for="${foodid}">체크하기</label>
+                  </div>
+                  <p class="info_txt">${item_var.식품명}</p>
+                  <div class="right_box">
+                      <p style="margin-right:20px" class="kcal">${kcalNum} kcal</p>
+                      <!--<a class="more_btn" id="moreBtn" href="javascript:">상세보기</a>-->
+                  </div>
+              </li>
+                  `
+
+                  to_html = to_html+html
+                  //변수에다가 html을 삽입하라고하면 컴퓨터한테 뭘바라는거에요 쪼매만 기다려주숑 오키오키
+                  
+              }
             }
           }
         })
       }
+      progress_h.innerText = "정돈된 데이터를 추가하는중입니다."
+      itemappend.insertAdjacentHTML("beforeend", to_html); // 땡 해당 스트링은 투입 위치를 지정하는것임 ( beforestart 요소가 위로 올라감 , afterstart 요소가 올라가지만 beforestart보다는 아래 , beforeend 요소가 아래로감 , afterend beforeend보다 더 아래로감 틀을 벗어날수잇음 )           
+                  check_event();
+                  //more_event();
       itemappend.style.display = '';
       loading.style.display = 'none';
-      h_search_count_num.innerText = fd_leng;
+      h_search_count_num.innerText = fd_leng - i_skip;
       h_search_count.style.display = 'flex';
     }); // then에는 데이터가 있으니 데이터를 받아올 변수를 지정해줘야 이제 함순데 함수를 console.log 하나요 k아뉴 변수 생각요요 변수는 아무거나 해도되요
       
@@ -219,7 +236,7 @@ async function searchfood() {
   } else {
     toast("공백을 검색 할순 없습니다.")
   }
-}
+})}
 
 function checkevent(e) {
   // let target = pointerevent.target
@@ -227,6 +244,7 @@ function checkevent(e) {
   // // console.log(target.id)    
   // const checkbox = document.getElementById(foodid);
   console.log("e" + e);
+  console.log(e.target)
   const checkbox = e.target;
   const foodid = checkbox.id;
   console.log("e.target :" + checkbox);
