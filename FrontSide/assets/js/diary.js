@@ -17,7 +17,19 @@ const loading = document.querySelector(".loading");
 
 var beforex = -1
 
+function getToday(){
+  const h_week = document.querySelector(".date");
+  const week = ['일', '월', '화', '수', '목', '금', '토']
+  var date = new Date();
+  var year = date.getFullYear();
+  var month = ("0" + (1 + date.getMonth())).slice(-2);
+  var day = ("0" + date.getDate()).slice(-2);
+
+  h_week.innerText = year + "년 " + month + "월 " + day +"일 " + week[date.getDay()]+"요일";
+}
+
 window.addEventListener('DOMContentLoaded', function() {
+  getToday()
   init();
   if (this.location.href.includes('diary_update')) {
     imgItem.addEventListener('dragover', function(e) {
@@ -124,12 +136,36 @@ const apiUrland = 'http://localhost:8000/api/food/search/and';
 const progress_h = document.querySelector('#i_progress');
 const h_search_count = document.querySelector('.search_count');
 const h_search_count_num = document.querySelector('.search_count_num');
+const kc_h_submit = document.querySelector("#kc_h_submit");
 
 import { toast } from './toast.js';
 
+kc_h_submit.addEventListener("click", (event) => {
+  event.preventDefault();
+  if (f_map.size === 0) {
+    toast("선택한 음식이 없습니다!\n음식을 선택해주세요!")
+  } else {
+    f_map.forEach((value) => {
+      console.log(value)
+      let kcal = "해당 음식의 칼로리는 개당 "+value[1]+" kcal 이며, 전체 칼로리는 "+value[1]+" kcal 입니다."
+      let html = `<div title="${kcal}" per="${value[1]}" class="search_item">
+                <a onclick="editamount(this.parentElement)" href="javascript:"><span>${value[0]}</span><span class="amount" style="display:none;"> X <span class="amount_num">2</span></span></a>
+                <a onclick="remove_ele(this.parentElement)" href="javascript:">
+                  <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
+                </a>
+              </div>`
+      opener.document.querySelector(".search_box").insertAdjacentHTML("beforeend", html)
+      var q_tokcal = parseInt(opener.document.querySelector("#tokcal").innerText) + parseInt(value[1]);
+      opener.document.querySelector("#tokcal").innerText = q_tokcal;
+
+    })
+    window.close()
+  }
+})
+
 sendFood.addEventListener("click", (event) => {
   event.preventDefault();
-  console.log("검색 click");
+  //  console.log("검색 click");
   searchfood();
 })
 
@@ -153,6 +189,7 @@ return new Promise((resolve, reject) => {
       })
     })
     .then((data) => {
+      f_map.clear(); // 체크박스 선택 기록 초기화
       progress_h.innerText = "서버로부터 받은 데이터를 정리중입니다."
       // API 응답 데이터를 검색하고자 하는 단어와 비교
       loading.style.display = 'flex';
@@ -174,8 +211,8 @@ return new Promise((resolve, reject) => {
             let progress = fd_n+" / "+fd_leng+" ( "+percent+" % )"
 
             progress_h.innerText = progress;
-            console.log(progress)
-            toast(progress)
+            //console.log(progress)
+            //toast(percent+" %")
           //console.log(item_var) //됐져!! ㅇㅇ! 됬음~! 매우 감사합니다.. 큰절올려요 ㅋ ㅋㅋㅋㅋㅋ
           if (item_var != null) {
             
@@ -185,7 +222,7 @@ return new Promise((resolve, reject) => {
             let foodid = item_var.SAMPLE_ID
             if (i_food.includes(foodid)) {
               i_skip = i_skip + 1;
-              console.error("데이터 중복 삽입 시도 발견 : "+foodid);
+              //console.error("데이터 중복 삽입 시도 발견 : "+foodid);
             } else {
               i_food.push(foodid);
               let kcalNum = Math.round(item_var.칼로리);
@@ -243,20 +280,19 @@ function checkevent(e) {
   // console.log("체크박스 이벤트"+target);
   // // console.log(target.id)    
   // const checkbox = document.getElementById(foodid);
-  console.log("e" + e);
-  console.log(e.target)
-  const checkbox = e.target;
-  const foodid = checkbox.id;
-  console.log("e.target :" + checkbox);
-  console.log("foodid :" + foodid);
-  if(foodid != null){
-    checkbox.addEventListener("click", (event) => {
-      if (checkbox.checked) {
-        console.log(foodid + "선택됨.");
-      }else{
-        console.log(foodid + "해제됨.");
-      }
-    });
+
+  //f_map 체크한 음식 맵
+  const f_check = e.target.parentElement.children[0];
+  const f_obj = f_check.parentElement.parentElement;
+  if (!f_check.checked) {
+    let f_name = f_obj.children[1].innerText;
+    let f_kcal = parseInt(f_obj.children[2].children[0].innerText.replace(" kcal", "")); 
+    let f_data = [f_name, f_kcal]
+    f_map.set(f_check.attributes.id.value, f_data)
+    //console.log(f_map)
+  } else {
+    f_map.delete(f_check.attributes.id.value)
+    //console.log(f_map)
   }
 }
 

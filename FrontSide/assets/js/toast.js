@@ -16,14 +16,31 @@ export function toast(string) {
 
 /** 상대 위치 조정 */
 
-/*
+window.addEventListener('DOMContentLoaded', function() {
+    const height = window.innerHeight;
+    
+    
+    let dh = height - 90 + window.scrollY
+    toast_s.style.bottom = "auto"
+    toast_s.style.top = dh + "px"
+})
+
+
 const toast_s = document.getElementById("toast")
 
 window.onresize = function() {
     const height = window.innerHeight;	
     
-    let dh = height - 100
+    let dh = height - 100 + window.scrollY
     toast_s.style.bottom = "auto"
     toast_s.style.top = dh + "px"
 }
-*/
+
+window.onscroll = function() {
+    const height = window.innerHeight;	
+    
+    let dh = height - 100 + window.scrollY
+    toast_s.style.bottom = "auto"
+    toast_s.style.top = dh + "px"
+}
+

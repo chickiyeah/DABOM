@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -12,9 +12,12 @@
     <script defer type="module" src="/assets/js/diary.js"></script>
     <script type="module" src="/assets/js/user.js"></script>
     <link rel="stylesheet" href="/assets/css/toast.css">
+    <script>
+        var f_map = new Map();
+    </script>
+    
 </head>
 <body>
-    
     <div style="flex-direction: column;" class="loading fix">
         <span class="loader"></span>
         <span style="margin-top: 20px;">처리중이오니 잠시만 기다려 주십시오. 데이터가 많을경우 더 많은 시간이 소요됩니다.</span>
@@ -95,7 +98,7 @@
                         <object data="/assets/images/bar-scan-icon.svg" type="image/svg+xml"
                                 aria-label="바코트 아이콘"></object>
                     </a>
-                    <div id="toast"></div>
+                    
                 </div>
                 <div class="search_count">
                     <span>검색 결과 : <span class="search_count_num"></span> 개</span>
@@ -123,7 +126,7 @@
                     <p>원하는 제품을 찾을수 없다면?</p>
                     <p>새로운 음식 추가</p>
                 </div>
-                <a class="red_btn" href="javascript:">등록하기</a>
+                <a id="kc_h_submit" class="red_btn" href="javascript:">등록하기</a>
             </div>
         </div>
     </div>
@@ -149,6 +152,7 @@
         </div>
     </div>
 </main>
+<div id="toast"></div>
 </body>
 <script src="/assets/js/header.js"></script>
 </html>
