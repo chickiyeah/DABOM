@@ -29,25 +29,50 @@ class add_food(BaseModel):
     name: str
     category: str
     kcal: int
+    barcode: int
 
 @foodapi.post("/add")
-async def food_add(data: add_food, authorized: bool = Depends(verify_token)):
+async def food_add(request: Request, authorized: bool = Depends(verify_token)):
     if authorized:
-        name = data.name
-        cate = data.category
-        kcal = data.kcal
-        b_num = str(execute_sql("SELECT no FROM food_no WHERE fetch = 'custom_food'")[0]['no'])
-        b_num_len = "0"*(6-(len(str(int(b_num)+1))))
-        n_num = "C{0}{1}-ZZ-AVG".format(b_num_len, int(b_num)+1)
-        n_code ="C{0}{1}".format(b_num_len, int(b_num)+1)
-        b_food_num = str(execute_sql("SELECT no FROM food_no WHERE fetch = 'food_db'")[0]['no'])
-        n_food_num = int(b_food_num)+1
-        pname = execute_sql("SELECT Nickname FROM user WHERE ID = '{0}'".format(authorized[1]))[0]['Nickname']
-        execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'custom_food'".format(int(b_num)+1))
-        execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'food_db'".format(n_food_num))
-        execute_sql("INSERT INTO foodb (NO, SAMPLE_ID, `에너지(kcal)`, new카테, 식품명, data_adder, 식품코드) VALUES ({0},'{1}','{2}','{3}', '{4}','{5}','{6}')".format(n_food_num, n_num, kcal, cate, name, pname, n_code))
+        f_data = await request.json()
+        name = f_data['name']
+        cate = f_data['category']
+        kcal = f_data['kcal']
+        barcode = f_data['barcode']
+        weight = f_data['weight']
+        print()
+        bar = 1
+        if barcode == 0:
+            b_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'custom_food'")[0]['no'])
+            b_num_len = "0"*(6-(len(str(int(b_num)+1))))
+            n_num = "C{0}{1}-ZZ-AVG".format(b_num_len, int(b_num)+1)
+            n_code ="C{0}{1}".format(b_num_len, int(b_num)+1)
+            b_food_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'food_db'")[0]['no'])
+            n_food_num = int(b_food_num)+1
+            pname = execute_sql("SELECT Nickname FROM user WHERE ID = '{0}'".format(authorized[1]))[0]['Nickname']
+            execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'custom_food'".format(int(b_num)+1))
+            execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'food_db'".format(n_food_num))
+            execute_sql("INSERT INTO foodb (NO, SAMPLE_ID, `에너지(kcal)`, new카테, 식품명, data_adder, 식품코드, `내용량_단위`, `총내용량(g)`, `1회제공량`) VALUES ({0},'{1}','{2}','{3}', '{4}','{5}','{6}','{7}',{8},{9})".format(n_food_num, n_num, kcal, cate, name, pname, n_code, "g", weight, weight))
 
-        return "food added"
+            return "food added"
+        else:
+            bar = len(execute_sql("SELECT barcode FROM foodb WHERE barcode = {0}".format(barcode)))
+        
+        if bar == 0:
+            b_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'custom_food'")[0]['no'])
+            b_num_len = "0"*(6-(len(str(int(b_num)+1))))
+            n_num = "C{0}{1}-ZZ-AVG".format(b_num_len, int(b_num)+1)
+            n_code ="C{0}{1}".format(b_num_len, int(b_num)+1)
+            b_food_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'food_db'")[0]['no'])
+            n_food_num = int(b_food_num)+1
+            pname = execute_sql("SELECT Nickname FROM user WHERE ID = '{0}'".format(authorized[1]))[0]['Nickname']
+            execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'custom_food'".format(int(b_num)+1))
+            execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'food_db'".format(n_food_num))
+            execute_sql("INSERT INTO foodb (NO, SAMPLE_ID, `에너지(kcal)`, new카테, 식품명, data_adder, 식품코드, barcode, `내용량_단위`, `총내용량(g)`, `1회제공량`) VALUES ({0},'{1}','{2}','{3}', '{4}','{5}','{6}',{7},'{8}',{9},{10})".format(n_food_num, n_num, kcal, cate, name, pname, n_code, barcode, "g", weight, weight))
+
+            return "food added"
+        else:
+            raise HTTPException(400, "해당 바코드는 이미 사용중입니다.")
         
 
 er044 = {"code":"ER044","message":"키워드가 입력되지 않았습니다."}
