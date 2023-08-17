@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException, Depends, Request, Cookie, Response, requests
+from fastapi import APIRouter, HTTPException, Depends, Request, Cookie, Response
 from firebase import Firebase
 from typing import Optional
 from firebase_admin import auth
 import json
+import requests
 
 unauthorized = {'code':'ER013','message':'UNAUTHORIZED'}
 unauthorized_revoked = {'code':'ER014','message':'UNAUTHORIZED (REVOKED TOKEN)'}
