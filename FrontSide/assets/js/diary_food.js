@@ -18,7 +18,7 @@ function food_add() {
     
     let bar_ok = false;
     let barcode_v = barcode.value.trim()
-    let name_v = name.value.trim()
+    let name_v = name.value
     let f_type_v = f_type.value
     let kcal_v = kcal.value.trim()
     let weight_v = weight.value.trim()
@@ -39,7 +39,7 @@ function food_add() {
                     toast("무게는 숫자만 입력해야합니다.")
                 } else {
                     weight_v = parseInt(weight_v);
-                    if (name_v === "") {
+                    if (name_v.trim() === "") {
                         toast("음식의 이름을 입력해주세요.");
                     } else {
                         fetch("/api/food/add", {
