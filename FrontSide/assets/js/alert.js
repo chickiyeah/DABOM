@@ -95,36 +95,7 @@ async function get_unread_amount() {
 
 async function verify_token() {
     return new Promise(async function(resolve, reject) {
-        //토큰 검증
-        fetch("/api/user/cookie/verify",{
-            method: 'GET',
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include"
-        }).then(async function(response) {
-            if (response.status !== 200) {
-                if (response.status === 422) {                   
-                    await LoadCookie();
-                    loading.style.display = 'none';
-                }else if (response.status === 307) {
-                    location.href = "/login";
-                }else{
-                    response.json().then(async (json) => {
-                        let detail_error = json.detail;
-                        console.log(detail_error)
-                        if (detail_error.code == "ER998") {
-                          await LoadCookie();
-                        }
-                        if (detail_error.code === "ER013") {
-                            await LoadCookie();
-                        }
-                    });
-                }
-            } else {
-                fetch("/api/user/cookie/get_info",{ methon: 'GET', credentials: "include" }).then(async (res) => {if (res.status === 200) { res.json().then(async (json) => {loading.style.display = "none";resolve(json)})}})
-            }
-        })
+        fetch("/api/user/cookie/get_info",{ methon: 'GET', credentials: "include" }).then(async (res) => {if (res.status === 200) { res.json().then(async (json) => {loading.style.display = "none";resolve(json)})}})
     })
   }
 
