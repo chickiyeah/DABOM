@@ -16,7 +16,10 @@ const bell = document.querySelectorAll(".bell");
 var page = 1
 
 async function get_alerts(page) {
-    await verify_token()
+    if (location.href != "/") {
+        await verify_token()
+    }
+    
     loading.style.display = 'flex';
     let access_token = sessionStorage.getItem("access_token")
     fetch(`/api/alert/alerts?page=${page}`, {

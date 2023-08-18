@@ -75,10 +75,10 @@ class MessageEvent(BaseModel):
     pf_image: str
 
 async def mutecheck():
-    while True:
+    """while True:
         await asyncio.sleep(1)
         t = int(time.mktime(datetime.now().timetuple()))
-        execute_sql(f"DELETE FROM `chat_mute` WHERE unmute_at < {t}")
+        execute_sql(f"DELETE FROM `chat_mute` WHERE unmute_at < {t}")"""
 
 async def logfile(author, msg, channel):
     f_data = msg.split('/*/')[1]
@@ -378,7 +378,7 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
 async def start_up():
     await broadcast.connect()
     execute_sql("TRUNCATE chatroom")
-    asyncio.create_task(mutecheck())
+    #asyncio.create_task(mutecheck())
 
 @chat.on_event("shutdown")
 async def shutdown():
