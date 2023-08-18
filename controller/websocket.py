@@ -37,7 +37,7 @@ firebaseConfig = {
 
 Storage = Firebase(firebaseConfig).storage()
 
-r = redis.Redis(host="35.212.163.209", port=6379, decode_responses=True, db=0)
+r = redis.Redis(host="35.212.135.37", port=6379, decode_responses=True, db=0)
 
 chat = APIRouter(prefix="/chat", tags=['webSocket_chat'])
 
