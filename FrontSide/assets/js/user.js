@@ -171,13 +171,9 @@ if (location.href.includes("findaccount")) {
 
 async function cookieSave(json) {
      if (is_checked()) {
-        fetch("/api/user/cookie/get_all", {method: "GET"}).then((res) => {
-          res.json().then((data) => {
-            console.log(data)
-            localStorage.setItem("access_token", data.access_token)
-            localStorage.setItem("refresh_token", data.refresh_token);
-          })
-        })
+        console.log(json)
+        localStorage.setItem("access_token", json.access_token)
+        localStorage.setItem("refresh_token", json.refresh_token);
     }
 }
 
