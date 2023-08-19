@@ -53,7 +53,22 @@ function food_add() {
                                 "weight": weight_v
                             })
                         }).then((response) => {
-                            console.log(response);
+                            if (response.status === 200) {
+                                response.json().then((json) => {
+                                    let kcal_s = "해당 음식의 칼로리는 개당 "+kcal_v+" kcal 이며, 전체 칼로리는 "+kcal_v+" kcal 입니다."
+                                    let html = `<div title="${kcal_s}" per="${kcal_v}" s_code="${json}" class="search_item">
+                                        <a onclick="editamount(this.parentElement)" href="javascript:"><span>${name_v}</span><span class="amount" style="display:none;"> X <span class="amount_num">2</span></span></a>
+                                        <a onclick="remove_ele(this.parentElement)" href="javascript:">
+                                            <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
+                                        </a>
+                                    </div>`
+                                    opener.opener.document.querySelector(".search_box").insertAdjacentHTML("beforeend", html)
+                                    var q_tokcal = parseInt(opener.opener.document.querySelector("#tokcal").innerText) + parseInt(kcal_v);
+                                    opener.opener.document.querySelector("#tokcal").innerText = q_tokcal;
+                                    opener.close();
+                                    window.close();
+                                })
+                            }
                         })
                     }
                 }
@@ -93,7 +108,22 @@ function food_add() {
                                 "weight": weight_v
                             })
                         }).then((response) => {
-                            console.log(response);
+                            if (response.status === 200) {
+                                response.json().then((json) => {
+                                    let kcal_s = "해당 음식의 칼로리는 개당 "+kcal_v+" kcal 이며, 전체 칼로리는 "+kcal_v+" kcal 입니다."
+                                    let html = `<div title="${kcal_s}" per="${kcal_v}" s_code="${json}" class="search_item">
+                                        <a onclick="editamount(this.parentElement)" href="javascript:"><span>${name_v}</span><span class="amount" style="display:none;"> X <span class="amount_num">2</span></span></a>
+                                        <a onclick="remove_ele(this.parentElement)" href="javascript:">
+                                            <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
+                                        </a>
+                                    </div>`
+                                    opener.opener.document.querySelector(".search_box").insertAdjacentHTML("beforeend", html)
+                                    var q_tokcal = parseInt(opener.opener.document.querySelector("#tokcal").innerText) + parseInt(kcal_v);
+                                    opener.opener.document.querySelector("#tokcal").innerText = q_tokcal;
+                                    opener.close();
+                                    window.close();
+                                })
+                            }
                         })
                     }
                 }

@@ -96,13 +96,8 @@ function init() {
     console.log(target.id);
     console.log(target.parentElement);
     console.log(target.parentElement.parentElement);
-    console.log(imgId);
-    if(target.id == imgId){
-      if(confirm('정말 삭제하시겠어요?')){
-        target.parentElement.parentElement.remove();
-      }else{
-
-      }
+    if(confirm('정말 삭제하시겠어요?')){
+      target.parentElement.parentElement.remove();
     }
   }
 
@@ -148,7 +143,7 @@ kc_h_submit.addEventListener("click", (event) => {
     f_map.forEach((value) => {
       console.log(value)
       let kcal = "해당 음식의 칼로리는 개당 "+value[1]+" kcal 이며, 전체 칼로리는 "+value[1]+" kcal 입니다."
-      let html = `<div title="${kcal}" per="${value[1]}" class="search_item">
+      let html = `<div title="${kcal}" per="${value[1]}" s_code="${value[2]}" class="search_item">
                 <a onclick="editamount(this.parentElement)" href="javascript:"><span>${value[0]}</span><span class="amount" style="display:none;"> X <span class="amount_num">2</span></span></a>
                 <a onclick="remove_ele(this.parentElement)" href="javascript:">
                   <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
@@ -287,7 +282,7 @@ function checkevent(e) {
   if (!f_check.checked) {
     let f_name = f_obj.children[1].innerText;
     let f_kcal = parseInt(f_obj.children[2].children[0].innerText.replace(" kcal", "")); 
-    let f_data = [f_name, f_kcal]
+    let f_data = [f_name, f_kcal, f_check.attributes.id.value]
     f_map.set(f_check.attributes.id.value, f_data)
     //console.log(f_map)
   } else {

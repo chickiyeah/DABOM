@@ -9,13 +9,13 @@
     <link rel="stylesheet" href="/assets/css/reset.css">
     <link rel="stylesheet" href="/assets/css/layout.css">
     <script type="module" src="/assets/js/diary.js"></script>
+    <link rel="stylesheet" href="/assets/css/toast.css">
     <script>
         var eat_when = "morning";
         var fd_total_kcal = 0;
         var last_click_element;
 
         function sel_eat_when(when) {
-            console.log(when)
             eat_when = when;
         }
     </script>
@@ -135,6 +135,7 @@
 
                         <a href="javascript:" onclick="window.open('/diary_kcal')" target="_blank" class="">칼로리 검색하기</a>
                         <a href="javascript:" onclick="window.open('/diary_bar_cam')" target="_blank" class="">바코드 검색하기</a>
+                        <a href="javascript:" onclick="window.open('/diary_bar_cam')" target="_blank" class="">같이 먹은 친구 추가하기</a>
 
                 </div>
                 <div style="display:flex;justify-content: right;">
@@ -142,30 +143,12 @@
                     <span>현재 총 칼로리 :  <span id="tokcal">0</span>  kcal</span>
                 </div>
                 <div class="search_box">
-                    <!---
-                    <div class="search_item" title="400 kcal">
-                        <a onclick="editamount(this.parentElement)" href="javascript:"><span>소금빵</span><span class="amount"> X <span class="amount_num">2</span></span></a>
-                        <a href="javascript:">
-                            <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
-                        </a>
-                    </div>
-                    <div class="search_item">
-                        <span>단팥빵</span>
-                        <a href="javascript:">
-                            <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
-                        </a>
-                    </div>
-                    <div class="search_item">
-                        <span>완두콩빵</span>
-                        <a href="javascript:">
-                            <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
-                        </a>
-                    </div> 동적 추가-->
+                    <!--동적-->
                 </div>
                 <div class="text_item">
                     <input type="text" placeholder="제목을 입력하세요">
                     <textarea placeholder="내용을 입력하세요" rows="20" role="textbox"></textarea>
-                    <button>작성하기</button>
+                    <button onclick="submit_write()">작성하기</button>
                 </div>
             </div>
             
@@ -174,7 +157,16 @@
     </div>
     
 </main>
+<div id="toast"></div>
+<script>
+    (function(){var w=window;if(w.ChannelIO){return w.console.error("ChannelIO script included twice.");}var ch=function(){ch.c(arguments);};ch.q=[];ch.c=function(args){ch.q.push(args);};w.ChannelIO=ch;function l(){if(w.ChannelIOInitialized){return;}w.ChannelIOInitialized=true;var s=document.createElement("script");s.type="text/javascript";s.async=true;s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";var x=document.getElementsByTagName("script")[0];if(x.parentNode){x.parentNode.insertBefore(s,x);}}if(document.readyState==="complete"){l();}else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l);}})();
+  
+    ChannelIO('boot', {
+      "pluginKey": "bda6c3a5-d0b9-4359-93fe-46b9af57db3a"
+    });
+    document.querySelector(".loading").style.display = 'none';
 
+</script>
 </body>
 <script src="/assets/js/header.js"></script>
 <script>
@@ -193,6 +185,7 @@
         var amonunt_div = element.children[0].children[1]
 
         var fd_edit_content = document.querySelector('.fd_edit_back').children[0].children[1];
+        var ed_amount = document.querySelector('.edit_amount').children[0]
         var base_data = fd_edit_content.children[0];
         var edit_able_data = fd_edit_content.children[1];
 
@@ -205,8 +198,10 @@
             edit_able_data.children[0].children[0].value = parseInt(amonunt_div.children[0].innerText); // 갯수
             edit_able_data.children[1].children[0].innerText = (parseInt(amonunt_div.children[0].innerText)*default_kcal); // 갯수에 따른 총 칼로리
             total_kcal = (parseInt(amonunt_div.children[0].innerText)*default_kcal)
+            ed_amount.value = parseInt(amonunt_div.children[0].innerText)
         } else {
             edit_able_data.children[1].children[0].innerText = default_kcal; // 총 칼로리 ( 갯수가 지정안됨 ( 1개 ) )
+            ed_amount.value = 1;
         }
 
         fd_total_kcal = parseInt(document.querySelector("#tokcal").innerText) - total_kcal; // 현재 수정요소의 칼로리를 제외한 전체 칼로리를 저장
@@ -238,7 +233,34 @@
     }
 
     function remove_ele(element) {
-        console.log(element)
+        f_name = element.children[0].children[0].innerText
+        let del_con = confirm(`${f_name}을(를) 삭제하시겠습니까?`)
+
+        if (del_con) {element.remove()}
+    }
+
+    function submit_write() {
+        const food_element = document.querySelector(".search_box")
+        if (food_element.innerText === "") {
+            alert("선택한 음식이 없습니다.\n음식을 선택해주세요.")
+        } else {
+            var a_list = []
+            Array.prototype.forEach.call(food_element.children,(element) => {
+                var amount = 1;
+                if(element.children[0].children[1].style.display != "none") {
+                    amount = parseInt(element.children[0].children[1].children[0].innerText)
+                } 
+
+                let d_json = {
+                    "code" : element.attributes.s_code.value,
+                    "amount" : amount
+                }
+
+                a_list.push(d_json)
+            })
+
+            console.log(a_list)
+        }
     }
 </script>
 </html>

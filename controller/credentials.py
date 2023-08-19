@@ -76,8 +76,8 @@ def verify_admin_token(req: Request):
         token = req.headers["Authorization"]  
         # Verify the ID token while checking if the token is revoked by
         # passing check_revoked=True.
-        admin_token = "i>9/,tUmc_&==Ap|5)yk9$@H=T^ATpp]8UG@*E-nAWSag]pe<2"
-        if token == admin_token:
+        admin_token = "Bearer cncztSAt9m4JYA9"
+        if str(token) == admin_token:
             return True, "admin"
         else:
             user = auth.verify_id_token(token, check_revoked=True)

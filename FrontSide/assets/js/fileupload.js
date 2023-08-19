@@ -5,6 +5,7 @@ const loading_box = document.querySelector(".loading_box")
 import { send_message } from './chat.js'
 
 async function handleFiles() {
+  verify_token()
     const filelist = this.files;
     if (loading_box != null) {
       loading_box.style.display = "flex";

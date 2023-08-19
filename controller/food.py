@@ -54,7 +54,7 @@ async def food_add(request: Request, authorized: bool = Depends(verify_token)):
             execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'food_db'".format(n_food_num))
             execute_sql("INSERT INTO foodb (NO, SAMPLE_ID, `에너지(kcal)`, new카테, 식품명, data_adder, 식품코드, `내용량_단위`, `총내용량(g)`, `1회제공량`) VALUES ({0},'{1}','{2}','{3}', '{4}','{5}','{6}','{7}',{8},{9})".format(n_food_num, n_num, kcal, cate, name, pname, n_code, "g", weight, weight))
 
-            return "food added"
+            return n_num
         else:
             bar = len(execute_sql("SELECT barcode FROM foodb WHERE barcode = {0}".format(barcode)))
         
@@ -70,7 +70,7 @@ async def food_add(request: Request, authorized: bool = Depends(verify_token)):
             execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'food_db'".format(n_food_num))
             execute_sql("INSERT INTO foodb (NO, SAMPLE_ID, `에너지(kcal)`, new카테, 식품명, data_adder, 식품코드, barcode, `내용량_단위`, `총내용량(g)`, `1회제공량`) VALUES ({0},'{1}','{2}','{3}', '{4}','{5}','{6}',{7},'{8}',{9},{10})".format(n_food_num, n_num, kcal, cate, name, pname, n_code, barcode, "g", weight, weight))
 
-            return "food added"
+            return n_num
         else:
             raise HTTPException(400, "해당 바코드는 이미 사용중입니다.")
         
