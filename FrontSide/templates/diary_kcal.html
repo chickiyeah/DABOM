@@ -120,7 +120,7 @@
             </div>
             <div class="bottom_box">
                 <div class="info_box">
-                    <a href="/diary/food_manualy_add" target="_blank" class="add_img">
+                    <a onclick="window.open('/diary/food_manualy_add')" href="javascript:" target="_blank" class="add_img">
                         <object data="/assets/images/add-icon.svg" type="image/svg+xml" aria-label="플러스아이콘"></object>
                     </a>
                     <p>원하는 제품을 찾을수 없다면?</p>
@@ -153,6 +153,15 @@
     </div>
 </main>
 <div id="toast"></div>
+<script>
+    (function(){var w=window;if(w.ChannelIO){return w.console.error("ChannelIO script included twice.");}var ch=function(){ch.c(arguments);};ch.q=[];ch.c=function(args){ch.q.push(args);};w.ChannelIO=ch;function l(){if(w.ChannelIOInitialized){return;}w.ChannelIOInitialized=true;var s=document.createElement("script");s.type="text/javascript";s.async=true;s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";var x=document.getElementsByTagName("script")[0];if(x.parentNode){x.parentNode.insertBefore(s,x);}}if(document.readyState==="complete"){l();}else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l);}})();
+  
+    ChannelIO('boot', {
+      "pluginKey": "bda6c3a5-d0b9-4359-93fe-46b9af57db3a"
+    });
+    document.querySelector(".loading").style.display = 'none';
+
+</script>
 </body>
 <script src="/assets/js/header.js"></script>
 </html>
