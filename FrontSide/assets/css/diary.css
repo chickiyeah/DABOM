@@ -153,7 +153,7 @@
 .update_wrap .info_box .btn_item a { background: white; border: 1px solid #F43B00; color: #F43B00; display: block; width: calc(25% - 7.5px);
 text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-weight: 700; }
 .update_wrap .info_box .btn_item a.on { background: #F43B00; color: white; }
-.update_wrap .info_box .btn_item a:nth-last-child(-n+2) { background: #F43B00; color: white; }
+.update_wrap .info_box .btn_item a:nth-last-child(-n+3) { background: #F43B00; color: white; }
 .update_wrap .info_box .search_box { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; }
 .update_wrap .info_box .search_box .search_item { display: inline-flex; align-items: center; gap: 5px; background: #F43B00;
     color: white; font-size: 14px; border-radius: 3px; padding: 6px 10px 5px 10px; }
@@ -169,6 +169,38 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
 .food_add_wrap .info_box .group select { cursor: pointer; width: 100%;}
 .food_add_wrap .info_box button { cursor: pointer; width: 100%; background: #F43B00; color: white; height: 45px; border-radius: 6px; font-size: 18px; margin-bottom: 65px; }
 
+/* 그룹맴버보기 팝업 */
+.friend_list_back { position: fixed; right: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.2);
+    z-index: 2000; overflow: hidden;display: none;}
+.friend_list_back .inner { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+    background: white; width: calc(100% - 30px); max-width: 500px; height: 100%; max-height: 600px; border-radius: 10px;
+    padding: 35px; display: flex; flex-flow: column; }
+.friend_list_back .inner .admin_check { display: inline-block; background: #E1E1E1; border: 1px solid #909090; color: #909090;
+    text-align: center; border-radius: 3px; font-size: 12px; padding: 0 13px; height: 30px; line-height: 2.5; }
+.friend_list_back .inner .pop_close_head { margin-bottom: 0;}
+.friend_list_back .inner .content_box { overflow-y: auto; margin-bottom: 10px; padding-top: 25px; }
+.friend_list_back .inner .content_box li { display: flex; align-items: center; }
+.friend_list_back .inner .content_box li + li { margin-top: 15px; }
+.friend_list_back .inner .content_box li .img_box { width: 45px; height: 45px; overflow: hidden; border-radius: 50%; margin-right: 15px; }
+.friend_list_back .inner .content_box li .name  { font-size: 18px; display: inline-block; white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis; max-width: calc(100% - 130px); }
+.friend_list_back .inner .content_box li span { font-size: 10px; color: #909090; display: inline-flex; line-height: 2.3; gap: 5px; margin-left: 5px; }
+.friend_list_back .inner .content_box li .crown_icon { width: 20px; height: 20px; display: inline-block; }
+.friend_list_back .inner .content_box li:nth-child(2) .name { max-width: calc(100% - 120px); }
+.friend_list_back .inner .content_box li:nth-child(3) .name { max-width: calc(100% - 195px); }
+.friend_list_back .inner .content_box li:first-child input { width: calc(100% - 65px); height: 45px; border: 1px solid #909090; }
+.friend_list_back .inner .content_box li:first-child a { background: #F43B00; color: white; border-radius: 3px; font-size: 14px;
+    height: 30px; line-height: 2.5; text-align: center; width: 60px; margin-left: 10px; }
+.friend_list_back .inner .content_box li #crown_icon_owner { background: url("../images/crown-icon-red.svg") no-repeat; background-size: cover;}
+.friend_list_back .inner .content_box li #crown_icon_sub { background: url("../images/crown-icon-yellow.svg") no-repeat; background-size: cover; }
+.friend_list_back .inner .content_box li .button_box { margin-left: auto; display: flex; gap: 10px; padding-right: 10px; }
+.friend_list_back .inner .content_box li .button_box button object { pointer-events: none; display: block; }
+.friend_list_back .inner .content_box li .button_box #sown { background: rgba(0,0,0,0.1); padding: 5px; border-radius: 3px; }
+.friend_list_back .inner .content_box li .button_box #nown { background: rgba(0,0,0,0); border: 1px solid #ccc; padding: 5px; border-radius: 3px; }
+.friend_list_back .inner .content_box li .button_box button:first-child object { width: 20px; }
+.friend_list_back .inner .content_box li .button_box button:last-child { border: 1px solid #ccc; padding: 5px; border-radius: 3px; }
+.friend_list_back .inner .content_box li .button_box button:last-child object { width: 16px; }
+.friend_list_back .black_line_btn { margin-top: auto; }
 
 /* ==============================================================
   미디어 쿼리 시작
