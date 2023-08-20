@@ -47,6 +47,32 @@ cls_btn.addEventListener("click", () => {
     document.querySelector(".group_list_popup").style.display = "none"
 })
 
+function get_write() {
+    `<li>
+        <a class="img_box" href="javascript:">
+            <img alt="식단 이미지" src="/assets/images/default-background.png">
+        </a>
+        <div class="info_box">
+            <h2>다봄모임 -10Kg 아자아자</h2>
+            <p class="meal">아침</p>
+            <p class="txt_info">오늘은 피그마로 디자인을 너무 열심히 한 탓에 허기가지고
+                머리가 안돌아가서 타코야끼랑 딸기바나를 먹었지 당떨어지면 달달한게 최고야</p>
+            <div class="bottom">
+                <div class="txt">
+                    <span>유림</span>
+                </div>
+                <div class="right_box">
+                    <p class="date">05 / 03</p>
+                    <a class="comment" href="javascript:">
+                        <i class="comment_icon"><img alt="댓글아이콘" src="/assets/images/comment-icon.svg"></i>
+                        댓글 <em>86</em>개
+                    </a>
+                </div>
+            </div>
+        </div>
+    </li>`
+}
+
 function appoint(mouseevent) {
     let target = mouseevent.target
     let tar_name = target.parentElement.parentElement.children[1].innerText

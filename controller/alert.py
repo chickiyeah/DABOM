@@ -61,6 +61,7 @@ async def get_unread_amount(response: Response, access_token: Optional[str] = Co
             response.set_cookie(key="refresh_token", value=currentuser['refreshToken'], httponly=True)
             response.set_cookie(key="userId", value=currentuser['userId'], httponly=True)
             user = auth.verify_id_token(currentuser['idToken'], check_revoked=True)
+            uid = user['user_id']
 
             unread_amount = execute_pri_sql(f"SELECT count(id) as `amount` FROM food.alert WHERE `read` = 'False' AND `target_id` = '{uid}'")
             return unread_amount[0]

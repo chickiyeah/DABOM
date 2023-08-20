@@ -323,13 +323,13 @@ async def remove_friend(delid:str, authorized: bool = Depends(verify_token)):
     if authorized:
         try:
             auth.get_user(delid)
-            f_list = json.loads(execute_sql("SELECT friends FROM user WHERE ID = '%s'" % userId)[0]['friends'])
+            f_list = json.loads(execute_sql("SELECT friends FROM user WHERE ID = '%s'" % authorized[1])[0]['friends'])
             t_list = json.loads(execute_sql("SELECT friends FROM user WHERE ID = '%s'" % delid)[0]['friends'])
-            print(userId)
+            print(authorized[1])
             if delid in f_list:
                 f_list.remove(delid)
-                t_list.remove(userId)
-                execute_sql("UPDATE user SET friends = '%s' WHERE ID = '%s'" % (json.dumps(f_list), userId))
+                t_list.remove(authorized[1])
+                execute_sql("UPDATE user SET friends = '%s' WHERE ID = '%s'" % (json.dumps(f_list), authorized[1]))
                 execute_sql("UPDATE user SET friends = '%s' WHERE ID = '%s'" % (json.dumps(t_list), delid))
                 return "Friend Removed"
             else:
