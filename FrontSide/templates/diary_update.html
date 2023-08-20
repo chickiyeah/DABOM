@@ -135,7 +135,7 @@
 
                         <a href="javascript:" onclick="window.open('/diary_kcal')" target="_blank" class="">칼로리 검색하기</a>
                         <a href="javascript:" onclick="window.open('/diary_bar_cam')" target="_blank" class="">바코드 검색하기</a>
-                        <a href="javascript:" onclick="window.open('/diary_bar_cam')" target="_blank" class="">같이 먹은 친구 추가하기</a>
+                        <a href="javascript:" onclick="document.querySelector('.friend_list_back').style.display='flex'" target="_blank" class="">같이 먹은 친구 추가하기</a>
 
                 </div>
                 <div style="display:flex;justify-content: right;">
@@ -165,7 +165,7 @@
         <ul class="content_box">
 
         </ul>
-        <button id="close_friend_list" class="black_line_btn">뒤로가기</button>
+        <button id="close_friend_list" onclick="this.parentElement.parentElement.style.display='none'" class="black_line_btn">뒤로가기</button>
     </div>
 </div>
 <div id="toast"></div>
