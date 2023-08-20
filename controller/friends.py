@@ -55,6 +55,38 @@ unauthorized_userdisabled = {'code':'ER016','message':'UNAUTHORIZED (TOKENS FROM
 class request_friend(BaseModel):
     id: str
 
+@friendapi.get("/all")
+async def get_friend(request: Request, authorzation: bool = Depends(verify_token)):
+    if authorzation:
+        f_res = []
+
+        uid = authorzation[1]
+        sql = "SELECT friends FROM user WHERE ID = '%s'" % (uid)
+        res = json.loads(execute_sql(sql)[0]['friends'])
+        if len(res) == 0:
+            e_res = {
+                'friends': [],
+                'amount': 0
+            }
+
+            return e_res
+        
+        for e in res:
+            user = execute_sql("SELECT `Nickname`, `profile_image`, `ID` FROM `user` WHERE `ID` = '"+e+"'")
+            imsg = execute_sql("SELECT * FROM infomsg WHERE `ID` = '"+e+"'")
+            user[0]['imsg'] = imsg[0]['message']
+            f_res.append(user[0])
+
+        res = {
+            'friends': f_res,
+            'amount': len(res)
+        }
+
+        return res
+        
+
+
+
 @friendapi.get("/list")
 async def friend_list(response: Response, page: int, access_token: Optional[str] = Cookie(None), refresh_token: Optional[str] = Cookie(None)):
     try:
