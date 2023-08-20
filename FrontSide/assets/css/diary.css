@@ -153,7 +153,7 @@
 .update_wrap .info_box .btn_item a { background: white; border: 1px solid #F43B00; color: #F43B00; display: block; width: calc(25% - 7.5px);
 text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-weight: 700; }
 .update_wrap .info_box .btn_item a.on { background: #F43B00; color: white; }
-.update_wrap .info_box .btn_item a:nth-last-child(-n+2) { background: #F43B00; color: white; }
+.update_wrap .info_box .btn_item a:nth-last-child(-n+3) { background: #F43B00; color: white; }
 .update_wrap .info_box .search_box { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; }
 .update_wrap .info_box .search_box .search_item { display: inline-flex; align-items: center; gap: 5px; background: #F43B00;
     color: white; font-size: 14px; border-radius: 3px; padding: 6px 10px 5px 10px; }
@@ -169,6 +169,11 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
 .food_add_wrap .info_box .group select { cursor: pointer; width: 100%;}
 .food_add_wrap .info_box button { cursor: pointer; width: 100%; background: #F43B00; color: white; height: 45px; border-radius: 6px; font-size: 18px; margin-bottom: 65px; }
 
+/* 친구 목록 */
+.friend_list_back { display: none; position: fixed; right: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.2); z-index: 2000; overflow: hidden;}
+.friend_list_back .inner { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: white; width: calc(100% - 30px); max-width: 500px; height: 100%; max-height: 600px; border-radius: 10px; padding: 35px; display: flex; flex-flow: column; flex-direction: row;}
+.friend_list_back .inner .pop_close_head { margin-bottom: 0;}
+.friend_list_back .inner .content_box { overflow-y: auto; margin-bottom: 10px; padding-top: 25px }
 
 /* ==============================================================
   미디어 쿼리 시작

@@ -146,8 +146,8 @@
                     <!--동적-->
                 </div>
                 <div class="text_item">
-                    <input type="text" placeholder="제목을 입력하세요">
-                    <textarea placeholder="내용을 입력하세요" rows="20" role="textbox"></textarea>
+                    <input id="f_title" type="text" placeholder="제목을 입력하세요">
+                    <textarea id="f_desc" placeholder="내용을 입력하세요" rows="20" role="textbox"></textarea>
                     <button onclick="submit_write()">작성하기</button>
                 </div>
             </div>
@@ -157,6 +157,17 @@
     </div>
     
 </main>
+<div class="friend_list_back">
+    <div class="inner">
+        <div class="pop_close_head">
+            <h2 id="friend_ul_title" class="title">같이 먹은 친구를 선택하세요.</h2>
+        </div>
+        <ul class="content_box">
+
+        </ul>
+        <button id="close_friend_list" class="black_line_btn">뒤로가기</button>
+    </div>
+</div>
 <div id="toast"></div>
 <script>
     (function(){var w=window;if(w.ChannelIO){return w.console.error("ChannelIO script included twice.");}var ch=function(){ch.c(arguments);};ch.q=[];ch.c=function(args){ch.q.push(args);};w.ChannelIO=ch;function l(){if(w.ChannelIOInitialized){return;}w.ChannelIOInitialized=true;var s=document.createElement("script");s.type="text/javascript";s.async=true;s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";var x=document.getElementsByTagName("script")[0];if(x.parentNode){x.parentNode.insertBefore(s,x);}}if(document.readyState==="complete"){l();}else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l);}})();
@@ -241,6 +252,8 @@
 
     function submit_write() {
         const food_element = document.querySelector(".search_box")
+        const title = document.querySelector("#f_title").value
+        const desc = document.querySelector("#f_desc").value
         if (food_element.innerText === "") {
             alert("선택한 음식이 없습니다.\n음식을 선택해주세요.")
         } else {
@@ -259,7 +272,19 @@
                 a_list.push(d_json)
             })
 
-            console.log(a_list)
+            if (title.trim() === "") {
+                alert("제목을 입력해주세요.")
+            } else if (desc.trim() === "") {
+                alert("내용을 업력해주세요.")
+            } else {
+                var s_json = {
+                    "title": title,
+                    "desc": desc,
+                    "foods": a_list
+                }
+
+                console.log(s_json)
+            }
         }
     }
 </script>
