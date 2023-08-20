@@ -12,15 +12,6 @@ import datetime
 from controller.credentials import verify_token
 diaryapi = APIRouter(prefix="/api/diary", tags=["diary"])
 
-class add_diary(BaseModel):
-    food_name:str
-    food_category:str
-    title:str
-    memo:Optional[str]
-    kcal:int
-    image:Optional[str]
-    eat_category:str
-    withfriend:Optional[list]
 
 class update_diary(BaseModel):
     no:int
@@ -46,22 +37,21 @@ post_not_owner = {'code':'ER002','message':'본인의 글만 수정/삭제할수
 
 
 @diaryapi.post('/add')
-async def post_add(data:add_diary, authorized: bool = Depends(verify_token)):
+async def post_add(request: Request, authorized: bool = Depends(verify_token)):
     if authorized:
+        data = await request.json()
         uid = authorized[1]
-        imgbase64 = data.image
-        f_name = data.food_name
-        f_cate = data.food_category
-        f_kcal = data.kcal
-        title = data.title
-        memo = data.memo
-        e_cate = data.eat_category
-        with_friend = str(data.withfriend)
+        imgs = data['images']
+        foods = data['foods']
+        title = data['title']
+        memo = data['desc']
+        friends = data['friends']
+
         created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         p_num = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'post_no'")[0]['no'])
         n_p_num = p_num+1
         execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
-        sql = "INSERT INTO UserEat (`NO`, `ID`, `먹은종류`, `음식명`, `음식종류`, `칼로리`, `음식이미지`, `메모`, `Created_At`, `친구`, `제목`) VALUES (%s,'%s','%s','%s','%s','%s',\"%s\",'%s','%s','%s','%s')" % (n_p_num, uid, e_cate, f_name, f_cate, f_kcal, imgbase64, memo, created_at, with_friend, title)
+        sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}')"
         res = execute_sql(sql)
         return res
 

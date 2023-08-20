@@ -15,6 +15,10 @@ const kcalBox = document.querySelector("#kcalBox");
 
 const loading = document.querySelector(".loading");
 
+const close_f_btn = document.querySelector("#close_friend_list")
+const open_f_btn = document.querySelector("#d_f_open")
+const friend_back = document.querySelector(".friend_list_back")
+
 var beforex = -1
 
 function getToday(){
@@ -30,8 +34,51 @@ function getToday(){
 
 window.addEventListener('DOMContentLoaded', function() {
   getToday()
-  init();
+  
   if (this.location.href.includes('diary_update')) {
+    init();
+    const desc = document.querySelector(".content_box")
+    fetch('/api/friends/all', {
+      method: 'GET'
+    }).then((res) => {
+      res.json().then((data) => {
+        data.friends.forEach((value) => {
+          let html = `<li>
+                        <div class="img_box">
+                          <img alt="프로필이미지" src="${value.profile_image}">
+                        </div>
+                        <p class="name">${value.Nickname}</p>
+                        <div class="button_box">
+                        <input style="width:20px" type="checkbox" id="check-${value.ID}">
+                          <label for="check-${value.ID}">
+                          </label>
+                        </div>
+                    </li>`
+          desc.insertAdjacentHTML("beforeend", html)
+        })
+      })
+    })
+
+    open_f_btn.addEventListener('click', function(e) {
+      e.preventDefault()
+      friend_back.style.display = "flex"
+    })
+    
+    close_f_btn.addEventListener('click', function(e) {
+      e.preventDefault()
+      close_f_btn.parentElement.parentElement.style.display='none'
+      s_friends = [];
+      let f_html = close_f_btn.parentElement.children[1]
+      Array.prototype.forEach.call(f_html.children, (element) => {
+        let check = element.children[2].children[0]
+        let uid = check.id.replace("check-","")
+    
+        if (check.checked) {
+          s_friends.push(uid)
+        }
+      })
+    })
+
     imgItem.addEventListener('dragover', function(e) {
       let onx = e.clientX
       var curx = document.querySelector('.img_item').scrollLeft
@@ -104,8 +151,9 @@ function init() {
   function remove_event() {
     Array.prototype.forEach.call(imgItem.children,(element) =>{
       element.children[0].children[1].removeEventListener("click", closeevent);
-      element.children[0].children[1].addEventListener("click", closeevent)})
-    }
+      element.children[0].children[1].addEventListener("click", closeevent)
+    })
+  }
 
 
 
