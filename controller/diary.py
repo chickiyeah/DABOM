@@ -51,9 +51,47 @@ async def post_add(request: Request, authorized: bool = Depends(verify_token)):
         p_num = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'post_no'")[0]['no'])
         n_p_num = p_num+1
         execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
-        sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}')"
+        sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}','{imgs}')"
         res = execute_sql(sql)
         return res
+    
+@diaryapi.post('/add_g')
+async def post_add(request: Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        data = await request.json()
+        uid = authorized[1]
+        imgs = data['images']
+        foods = data['foods']
+        title = data['title']
+        memo = data['desc']
+        friends = data['friends']
+        group = data['group']
+
+        created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        p_num = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'post_no'")[0]['no'])
+        n_p_num = p_num+1
+        execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
+        sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`group`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}','{imgs}','{group}')"
+        res = execute_sql(sql)
+        return res
+    
+@diaryapi.get('/group/{group_id}/{page}')
+async def get_group_post(group_id:int, page:int):
+    page = page - 1
+
+    if (page < 0):
+        page = 0
+
+    offset = page*3
+    count = len(execute_sql(f"SELECT no from UserEat WHERE `group` = {group_id}"))
+    res = execute_sql(f"SELECT * from UserEat WHERE `group` = {group_id} LIMIT 3 OFFSET {offset}")
+    j_res = {
+        "posts": res,
+        "page": page+1,
+        "total": count
+    }
+
+    return j_res
 
 @diaryapi.get('/alone/{post_no}')
 async def post_get(post_no:int):

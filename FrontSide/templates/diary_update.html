@@ -290,14 +290,32 @@
                     "friends": s_friends,
                     "images": files
                 }
-
-                fetch("/api/diary/add", {
-                    method: "POST",
-                    credentials: "include",
-                    body: JSON.stringify(s_json)
-                }).then((res) => {
-                    console.log(res)
-                })
+                
+                if (opener == null) {
+                    fetch("/api/diary/add", {
+                        method: "POST",
+                        credentials: "include",
+                        body: JSON.stringify(s_json)
+                    }).then((res) => {
+                        if (res.status === 200) {
+                            location.href = "/record"
+                        }
+                    })
+                } else {
+                    let g_id
+                    opener.document.location.href.split("?")[1].split(";").forEach((ele) => {if(ele.includes("id")){let a=ele.replace("id=","");g_id = a}})
+                    s_json.group = parseInt(g_id)
+                    fetch("/api/diary/add_g", {
+                        method: "POST",
+                        credentials: "include",
+                        body: JSON.stringify(s_json)
+                    }).then((res) => {
+                        if (res.status === 200) {
+                            opener.location.reload()
+                            window.close()
+                        }
+                    })
+                }
             }
         }
     }
