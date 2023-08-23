@@ -21,7 +21,7 @@ window.addEventListener('DOMContentLoaded', async function() {
 
                 if (keys.includes("page") && keys.includes("type")) {
                     if (!isNaN(q_data['page'])) {
-                        console.log("page numm")
+                        //console.log("page numm")
                         let page = q_data['page']
                         if (page < 1) {
                             location.href = "/groups?page=1&type=public"
@@ -237,13 +237,13 @@ async function verify_token() {
     let lo_refresh_token = localStorage.getItem("refresh_token")
     if (location.href.includes("login") == false && location.href.includes("register") == false) {
       if(lo_access_token == null || lo_refresh_token == null) {
-        console.log("here?")
+        //console.log("here?")
         localStorage.clear()
         location.href = "/login";
       }else{
         fetch(`/api/user/cookie/autologin?access_token=${lo_access_token}&refresh_token=${lo_refresh_token}`, {method: 'GET'}).then((res) => {
           if (res.status === 200) {
-            console.log("자동로그인 및 토큰 검증 성공.")
+            //console.log("자동로그인 및 토큰 검증 성공.")
             loading.style.display = 'none';
             location.reload()
           } else {
@@ -285,7 +285,7 @@ async function verify_token() {
                     res.json().then((data) => {
                         joined = JSON.parse(data.groups)
                         
-                        console.log(joined)
+                        //console.log(joined)
 
                         // 페이징
                         let to_page = count / 9
@@ -296,8 +296,8 @@ async function verify_token() {
                             maxpage = Math.floor(to_page) + 1
                         }
 
-                        console.log(page)
-                        console.log(maxpage)
+                        //console.log(page)
+                        //console.log(maxpage)
                         var startpage
                         var endpage
                         if (page / 10 > 1) {
@@ -323,8 +323,8 @@ async function verify_token() {
                             }
                         }
 
-                        console.log("all public groups: "+count)
-                        console.log(groups)
+                        //console.log("all public groups: "+count)
+                        //console.log(groups)
                         groups.forEach((group) => {
                             var html
                             let mem = JSON.parse(group.members).length
@@ -388,8 +388,8 @@ async function mygroups(page) {
                         maxpage = Math.floor(to_page) + 1
                     }
 
-                    console.log(page)
-                    console.log(maxpage)
+                    //console.log(page)
+                    //console.log(maxpage)
                     var startpage
                     var endpage
                     if (page / 10 > 1) {
@@ -414,13 +414,13 @@ async function mygroups(page) {
                         }
                     }
 
-                    console.log("total joined groups: "+ count)
+                    //console.log("total joined groups: "+ count)
                     groups.forEach((group) => {
                         let mem = JSON.parse(group.members).length
                         let name = group.name
                         let img = group.groupimg
                         let owner = group.owner
-                        console.log(group)
+                        //console.log(group)
                         let no = group.no
                         let html = `<li>
                                         <div class="img_box">
@@ -469,8 +469,8 @@ async function list_owned(page) {
                     maxpage = Math.floor(to_page) + 1
                 }
 
-                console.log(page)
-                console.log(maxpage)
+                //console.log(page)
+                //console.log(maxpage)
                 var startpage
                 var endpage
                 if (page / 10 > 1) {
@@ -495,7 +495,7 @@ async function list_owned(page) {
                     }
                 }
 
-                console.log("total owned groups: "+ count)
+                //console.log("total owned groups: "+ count)
                 groups.forEach((group) => {
                     let mem = JSON.parse(group.members).length
                     let name = group.name
@@ -514,7 +514,7 @@ async function list_owned(page) {
                                         </div>
                                     </div>
                                 </li>`
-                    console.log(group)
+                    //console.log(group)
 
                     onwed_ul.insertAdjacentHTML('beforeend', html)
                 })

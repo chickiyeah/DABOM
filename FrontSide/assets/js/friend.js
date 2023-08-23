@@ -382,7 +382,7 @@ async function list(page) {
                 })
             }else{
                 res.json().then(async (json) => {
-                    console.log(json)
+                    //console.log(json)
                     let amount = json.amount
                     document.querySelector("#friend_amount").innerText = `친구 ( ${amount} 명 )`
                     let to_page = amount / 7

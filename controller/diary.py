@@ -9,7 +9,7 @@ from firebase_admin import storage
 from firebase_admin import _auth_utils
 from firebase import Firebase
 import datetime
-from controller.credentials import verify_token
+from controller.credentials import verify_token, verify_admin_token
 diaryapi = APIRouter(prefix="/api/diary", tags=["diary"])
 
 
@@ -46,12 +46,13 @@ async def post_add(request: Request, authorized: bool = Depends(verify_token)):
         title = data['title']
         memo = data['desc']
         friends = data['friends']
+        eat_when = data['eat_when']
 
         created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         p_num = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'post_no'")[0]['no'])
         n_p_num = p_num+1
         execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
-        sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}','{imgs}')"
+        sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}')"
         res = execute_sql(sql)
         return res
     
@@ -66,32 +67,34 @@ async def post_add(request: Request, authorized: bool = Depends(verify_token)):
         memo = data['desc']
         friends = data['friends']
         group = data['group']
+        eat_when = data['eat_when']
 
         created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         p_num = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'post_no'")[0]['no'])
         n_p_num = p_num+1
         execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
-        sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`group`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}','{imgs}','{group}')"
+        sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`group`,`eat_when`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{group}','{eat_when}')"
         res = execute_sql(sql)
         return res
     
 @diaryapi.get('/group/{group_id}/{page}')
-async def get_group_post(group_id:int, page:int):
-    page = page - 1
+async def get_group_post(group_id:int, page:int, authorized :bool = Depends(verify_admin_token)):
+    if authorized:
+        page = page - 1
 
-    if (page < 0):
-        page = 0
+        if (page < 0):
+            page = 0
 
-    offset = page*3
-    count = len(execute_sql(f"SELECT no from UserEat WHERE `group` = {group_id}"))
-    res = execute_sql(f"SELECT * from UserEat WHERE `group` = {group_id} LIMIT 3 OFFSET {offset}")
-    j_res = {
-        "posts": res,
-        "page": page+1,
-        "total": count
-    }
+        offset = page*3
+        count = len(execute_sql(f"SELECT no from UserEat WHERE `group` = {group_id}"))
+        res = execute_sql(f"SELECT * from UserEat WHERE `group` = {group_id} ORDER BY created_at ASC LIMIT 3 OFFSET {offset}")
+        j_res = {
+            "posts": res,
+            "page": page+1,
+            "total": count
+        }
 
-    return j_res
+        return j_res
 
 @diaryapi.get('/alone/{post_no}')
 async def post_get(post_no:int):

@@ -97,7 +97,7 @@ async def list_mygroups(page:int, userId: Optional[str] = Cookie(None)):
 @groupapi.get('/detail/{group_id}')
 async def detail_group(group_id:int):
     
-    group = execute_sql("SELECT *, `deleted`, `banned` FROM `group` WHERE id = {0}".format(group_id))
+    group = execute_sql("SELECT * FROM `group` WHERE id = {0}".format(group_id))
 
     if len(group) == 0:
         raise HTTPException(400, er031)
