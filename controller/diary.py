@@ -87,7 +87,7 @@ async def get_group_post(group_id:int, page:int, authorized :bool = Depends(veri
 
         offset = page*3
         count = len(execute_sql(f"SELECT no from UserEat WHERE `group` = {group_id}"))
-        res = execute_sql(f"SELECT * from UserEat WHERE `group` = {group_id} LIMIT 3 OFFSET {offset}")
+        res = execute_sql(f"SELECT * from UserEat WHERE `group` = {group_id} ORDER BY created_at ASC LIMIT 3 OFFSET {offset}")
         j_res = {
             "posts": res,
             "page": page+1,

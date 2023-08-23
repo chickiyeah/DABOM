@@ -59,7 +59,7 @@ function get_write(g_id, page) {
         }
     }).then((res) => {
         if (res.status === 200) {
-            res.json().then((data) => {
+            res.json().then(async (data) => {
                 console.log(data)
                 let amount = data.total
                 let pagediv = document.querySelector("#page_div")
@@ -100,14 +100,17 @@ function get_write(g_id, page) {
                     }else if (page < 1) {
                         //비정상 접근 시도 새로고침
                         location.reload();
-                    } else {                     
+                    } else {  
+                        let pg_html = ""                   
                         for (let i = startpage; i < maxpage+1; i++) {
                             if (i == page) {
-                                pagediv.insertAdjacentHTML("beforeend", `<a class="selected" id=${i} href="javascript:">${i}</a>`)
+                                pg_html = pg_html + `<a class="selected" id=${i} href="javascript:">${i}</a>`
                             }else{
-                                pagediv.insertAdjacentHTML("beforeend", `<a class="num" id=${i} href="javascript:">${i}</a>`)
+                                pg_html = pg_html + `<a class="num" id=${i} href="javascript:">${i}</a>`
                             }
                         }
+
+                        pagediv.insertAdjacentHTML("beforeend", pg_html);
 
                         Array.prototype.forEach.call(pagediv.children,(element) => {
                             element.addEventListener("click", (e) => {e.preventDefault;get_write(g_id,element.id);})
@@ -117,7 +120,11 @@ function get_write(g_id, page) {
                 }
 
                 let posts = data.posts
-                posts.forEach(async (post) => {
+                let p_html = "";
+
+                const post_div = document.querySelector(".list_box");
+
+                await posts.forEach(async (post) => {
                     console.log(post)
                     let writer = await get_user_info(post.id)
                     console.log(writer)
@@ -132,33 +139,75 @@ function get_write(g_id, page) {
                         when = "간식"
                     }
 
-                    let html = `<li>
-                        <a class="img_box" href="javascript:">
-                            <img alt="식단 이미지" src="/assets/images/default-background.png">
-                        </a>
-                        <div class="info_box">
-                            <h2>${post.title}</h2>
-                            <p class="meal">${when}</p>
-                            <p class="txt_info">${post.desc.substring(0, 51).replaceAll("\n", "")}</p>
-                            <div class="bottom">
-                                <div class="txt">
-                                    <span>유림</span>
+                    let friends = JSON.parse(post.friends.replace(/'/g, '"'));
+
+
+                    let f_html = `<span>${writer.Nickname}</span>`;
+                    var f_i = 0
+                    if (friends.length > 0) {
+                    friends.forEach(async (friend) => {
+                        friend = await get_user_info(friend)
+                        f_html = f_html + `<span>${friend.Nickname}</span>`
+                        f_i++;
+                        if(f_i === friends.length) {
+                            let _day = post.created_at.split(" ")[0].split("-");
+
+                            let html = `<li>
+                                <a class="img_box" href="javascript:">
+                                    <img alt="식단 이미지" src="/assets/images/default-background.png">
+                                </a>
+                                <div class="info_box">
+                                    <h2>${post.title}</h2>
+                                    <p class="meal">${when}</p>
+                                    <p class="txt_info">${post.desc.substring(0, 130).replaceAll("\n", "")}</p>
+                                    <div class="bottom">
+                                        <div class="txt">
+                                            ${f_html}
+                                        </div>
+                                        <div class="right_box">
+                                            <p class="date">${_day[1]} / ${_day[2]}</p>
+                                            <a class="comment" href="javascript:">
+                                                <i class="comment_icon"><img alt="댓글아이콘" src="/assets/images/comment-icon.svg"></i>
+                                                댓글 <em>0</em>개
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="right_box">
-                                    <p class="date">05 / 03</p>
-                                    <a class="comment" href="javascript:">
-                                        <i class="comment_icon"><img alt="댓글아이콘" src="/assets/images/comment-icon.svg"></i>
-                                        댓글 <em>86</em>개
-                                    </a>
+                            </li>`
+        
+                            post_div.insertAdjacentHTML("beforeend", html);
+                            console.log("html placed")
+                        }
+                    })} else {
+                        let _day = post.created_at.split(" ")[0].split("-");
+
+                            let html = `<li>
+                                <a class="img_box" href="javascript:">
+                                    <img alt="식단 이미지" src="/assets/images/default-background.png">
+                                </a>
+                                <div class="info_box">
+                                    <h2>${post.title}</h2>
+                                    <p class="meal">${when}</p>
+                                    <p class="txt_info">${post.desc.substring(0, 130).replaceAll("\n", "")}</p>
+                                    <div class="bottom">
+                                        <div class="txt">
+                                            ${f_html}
+                                        </div>
+                                        <div class="right_box">
+                                            <p class="date">${_day[1]} / ${_day[2]}</p>
+                                            <a class="comment" href="javascript:">
+                                                <i class="comment_icon"><img alt="댓글아이콘" src="/assets/images/comment-icon.svg"></i>
+                                                댓글 <em>0</em>개
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </li>`
+                            </li>`
+        
+                            post_div.insertAdjacentHTML("beforeend", html);
+                            console.log("html placed")
+                    }
                 })
-
-
-
-                
             })
         }
     })
