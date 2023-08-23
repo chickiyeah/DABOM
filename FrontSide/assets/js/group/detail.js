@@ -14,6 +14,7 @@ window.addEventListener('DOMContentLoaded', async function() {
                         let joined = JSON.parse(data.groups)
                         if (joined.includes(parseInt(value))) {
                             get_group_data(value)
+                            get_write(value, 1)
                             if (this.location.href.includes("detail")) {
                                 mem_list_invite.remove()
                                 mem_list_admin_check.remove()
@@ -47,7 +48,19 @@ cls_btn.addEventListener("click", () => {
     document.querySelector(".group_list_popup").style.display = "none"
 })
 
-function get_write() {
+/** 그룹의 글을 가져오는 함수입니다. (그룹 아이디, 페이지) */
+function get_write(g_id, page) {
+    fetch(`/api/diary/group/${g_id}/${page}`, {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer cncztSAt9m4JYA9"
+        }
+    }).then((res) => {
+        res.json().then((data) => {
+            console.log(data)
+        })
+    })
+
     `<li>
         <a class="img_box" href="javascript:">
             <img alt="식단 이미지" src="/assets/images/default-background.png">
@@ -73,6 +86,7 @@ function get_write() {
     </li>`
 }
 
+/** 그룹의 관리자로 임명하는 함수 (마우스 이벤트) */
 function appoint(mouseevent) {
     let target = mouseevent.target
     let tar_name = target.parentElement.parentElement.children[1].innerText
@@ -99,6 +113,7 @@ function appoint(mouseevent) {
     }
 }
 
+/** 그룹의 관리자에서 해임하는 함수 (마우스 이벤트) */
 function be_deprived(mouseevent) {
     let target = mouseevent.target
     let tar_name = target.parentElement.parentElement.children[1].innerText
@@ -125,6 +140,8 @@ function be_deprived(mouseevent) {
     }
 }
 
+
+/** 그룹의 멤버를 그룹에서 추방하는 함수 (마우스 이벤트) */
 function kick(mouseevent) {
     let target = mouseevent.target
     let tar_name = target.parentElement.parentElement.children[1].innerText
@@ -132,6 +149,8 @@ function kick(mouseevent) {
     let r_confirm = confirm(`정말 ${tar_name}님을 모임에서 추방하시겠습니까?`)
 }
 
+
+/** 그룹의 세부 정보를 받아오는 함수 (그룹 아이디) */
 function get_group_data(id) {
     fetch(`/api/group/detail/${id}`,{
         method: 'GET'
