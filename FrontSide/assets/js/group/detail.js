@@ -48,7 +48,9 @@ cls_btn.addEventListener("click", () => {
     document.querySelector(".group_list_popup").style.display = "none"
 })
 
-/** 그룹의 글을 가져오는 함수입니다. (그룹 아이디, 페이지) */
+/** 그룹의 글을 가져오는 함수입니다. (그룹 아이디, 페이지) 
+ * morning (아침) lunch (점심) night (저녁) free (간식)
+*/
 function get_write(g_id, page) {
     fetch(`/api/diary/group/${g_id}/${page}`, {
         method: "GET",
@@ -56,34 +58,110 @@ function get_write(g_id, page) {
             "Authorization": "Bearer cncztSAt9m4JYA9"
         }
     }).then((res) => {
-        res.json().then((data) => {
-            console.log(data)
-        })
-    })
+        if (res.status === 200) {
+            res.json().then((data) => {
+                console.log(data)
+                let amount = data.total
+                let pagediv = document.querySelector("#page_div")
+                let to_page = amount / 7
+                var maxpage
+                if (Number.isInteger(to_page)) {
+                    maxpage = to_page
+                } else {
+                    maxpage = Math.floor(to_page) + 1
+                }
 
-    `<li>
-        <a class="img_box" href="javascript:">
-            <img alt="식단 이미지" src="/assets/images/default-background.png">
-        </a>
-        <div class="info_box">
-            <h2>다봄모임 -10Kg 아자아자</h2>
-            <p class="meal">아침</p>
-            <p class="txt_info">오늘은 피그마로 디자인을 너무 열심히 한 탓에 허기가지고
-                머리가 안돌아가서 타코야끼랑 딸기바나를 먹었지 당떨어지면 달달한게 최고야</p>
-            <div class="bottom">
-                <div class="txt">
-                    <span>유림</span>
-                </div>
-                <div class="right_box">
-                    <p class="date">05 / 03</p>
-                    <a class="comment" href="javascript:">
-                        <i class="comment_icon"><img alt="댓글아이콘" src="/assets/images/comment-icon.svg"></i>
-                        댓글 <em>86</em>개
-                    </a>
-                </div>
-            </div>
-        </div>
-    </li>`
+                console.log(page)
+                console.log(maxpage)
+                var startpage
+                var endpage
+                if (page / 10 > 1) {
+                    startpage = Math.floor((page/10))*10
+                    endpage = Math.floor((page/10))*10 + 1 + 10
+                }else{
+                    startpage = 1
+                    endpage = 11
+                }
+                if (page - 1 >= 1) {
+                    document.querySelector(".prev").addEventListener("click", (e) => {e.preventDefault;get_write(g_id,parseInt(page)-1);})
+                }
+                
+                if ( page + 1 <= maxpage ) {
+                    document.querySelector(".next").addEventListener("click", (e) => {e.preventDefault;get_write(g_id,parseInt(page)+1);})
+                }
+
+                pagediv.innerHTML = "";
+                if (amount === 0) {
+                    pagediv.insertAdjacentHTML("beforeend", `<a class="selected" href="javascript:">1</a>`)
+                }else{
+                    if (page > maxpage) {
+                        //비정상 접근 시도 새로고침
+                        location.reload();
+                    }else if (page < 1) {
+                        //비정상 접근 시도 새로고침
+                        location.reload();
+                    } else {                     
+                        for (let i = startpage; i < maxpage+1; i++) {
+                            if (i == page) {
+                                pagediv.insertAdjacentHTML("beforeend", `<a class="selected" id=${i} href="javascript:">${i}</a>`)
+                            }else{
+                                pagediv.insertAdjacentHTML("beforeend", `<a class="num" id=${i} href="javascript:">${i}</a>`)
+                            }
+                        }
+
+                        Array.prototype.forEach.call(pagediv.children,(element) => {
+                            element.addEventListener("click", (e) => {e.preventDefault;get_write(g_id,element.id);})
+                        })
+                         
+                    }
+                }
+
+                let posts = data.posts
+                posts.forEach(async (post) => {
+                    console.log(post)
+                    let writer = await get_user_info(post.id)
+                    console.log(writer)
+                    let when
+                    if (post.eat_when == "morning") {
+                        when = "아침"
+                    } else if (post.eat_when == "lunch") {
+                        when = "점심"
+                    } else if (post.eat_when == "night") {
+                        when = "저녁"
+                    } else {
+                        when = "간식"
+                    }
+
+                    let html = `<li>
+                        <a class="img_box" href="javascript:">
+                            <img alt="식단 이미지" src="/assets/images/default-background.png">
+                        </a>
+                        <div class="info_box">
+                            <h2>${post.title}</h2>
+                            <p class="meal">${when}</p>
+                            <p class="txt_info">${post.desc.substring(0, 51).replaceAll("\n", "")}</p>
+                            <div class="bottom">
+                                <div class="txt">
+                                    <span>유림</span>
+                                </div>
+                                <div class="right_box">
+                                    <p class="date">05 / 03</p>
+                                    <a class="comment" href="javascript:">
+                                        <i class="comment_icon"><img alt="댓글아이콘" src="/assets/images/comment-icon.svg"></i>
+                                        댓글 <em>86</em>개
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>`
+                })
+
+
+
+                
+            })
+        }
+    })
 }
 
 /** 그룹의 관리자로 임명하는 함수 (마우스 이벤트) */
@@ -266,6 +344,10 @@ function get_group_data(id) {
 }
 
 //아이디로 유저가져와서 html에 적용
+
+/** 유저의 세부정보를 가져오는암수
+ * @promise (유저의 아이디)
+ */
 async function get_user_info(user) {
     return new Promise((resolve, reject) => {
         let url = `/api/user/get_user?id=${user}`
