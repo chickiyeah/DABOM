@@ -11,8 +11,6 @@ import re
 import smtplib
 from email.message import EmailMessage
 from controller.database import execute_sql
-from datetime import datetime, timezone, timedelta
-from socket import socket, AF_INET, SOCK_DGRAM
 import platform
 import os
 import time
