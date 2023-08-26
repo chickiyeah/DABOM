@@ -11,6 +11,13 @@ import re
 import smtplib
 from email.message import EmailMessage
 from controller.database import execute_sql
+from datetime import datetime, timezone, timedelta
+from socket import socket, AF_INET, SOCK_DGRAM
+import platform
+import os
+import time
+import sys
+import ctypes
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -362,6 +369,24 @@ async def email(email:str):
 @userapi.get('/cookie/autologin')
 async def f_verify_token(response: Response, access_token: str, refresh_token:str):
     try:
+        if platform.system() == "Linux":
+            os.system("sudo ntpdate time.google.com")
+
+        if platform.system() == "Windows":
+            def is_admin():
+                try:
+                    return ctypes.windll.shell32.IsUserAnAdmin()
+                except:
+                    return False
+
+            if is_admin():
+                # 관리자 권한으로 실행 중일 때 수행할 작업
+                os.system("w32tm /resync")
+                pass
+            else:
+                # 현재 프로그램 인스턴스를 관리자 권한으로 다시 실행
+                ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+
         # Verify the ID token while checking if the token is revoked by
         # passing check_revoked=True.
         user = auth.verify_id_token(access_token, check_revoked=True)
@@ -380,6 +405,24 @@ async def f_verify_token(response: Response, access_token: str, refresh_token:st
             return RedirectResponse(url= "/login")
 
         try:
+            if platform.system() == "Linux":
+                os.system("sudo ntpdate time.google.com")
+
+            if platform.system() == "Windows":
+                def is_admin():
+                    try:
+                        return ctypes.windll.shell32.IsUserAnAdmin()
+                    except:
+                        return False
+
+                if is_admin():
+                    # 관리자 권한으로 실행 중일 때 수행할 작업
+                    os.system("w32tm /resync")
+                    pass
+                else:
+                    # 현재 프로그램 인스턴스를 관리자 권한으로 다시 실행
+                    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+
             currentuser = Auth.refresh(refresh_token)
 
             response.set_cookie(key="access_token", value=currentuser['idToken'], httponly=True)
@@ -412,6 +455,23 @@ async def f_verify_token(response: Response, access_token: str, refresh_token:st
 @userapi.get('/cookie/verify')
 async def f_verify_token(response: Response, access_token: Optional[str] = Cookie(None), refresh_token: Optional[str] = Cookie(None)):
     try:
+        if platform.system() == "Linux":
+            os.system("sudo ntpdate time.google.com")
+
+        if platform.system() == "Windows":
+            def is_admin():
+                try:
+                    return ctypes.windll.shell32.IsUserAnAdmin()
+                except:
+                    return False
+
+            if is_admin():
+                # 관리자 권한으로 실행 중일 때 수행할 작업
+                os.system("w32tm /resync")
+                pass
+            else:
+                # 현재 프로그램 인스턴스를 관리자 권한으로 다시 실행
+                ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
         # Verify the ID token while checking if the token is revoked by
         # passing check_revoked=True.
         user = auth.verify_id_token(access_token, check_revoked=True)
@@ -430,6 +490,24 @@ async def f_verify_token(response: Response, access_token: Optional[str] = Cooki
             return RedirectResponse(url= "/login")
 
         try:
+            if platform.system() == "Linux":
+                os.system("sudo ntpdate time.google.com")
+
+            if platform.system() == "Windows":
+                def is_admin():
+                    try:
+                        return ctypes.windll.shell32.IsUserAnAdmin()
+                    except:
+                        return False
+
+                if is_admin():
+                    # 관리자 권한으로 실행 중일 때 수행할 작업
+                    os.system("w32tm /resync")
+                    pass
+                else:
+                    # 현재 프로그램 인스턴스를 관리자 권한으로 다시 실행
+                    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+            
             currentuser = Auth.refresh(refresh_token)
 
             response.set_cookie(key="access_token", value=currentuser['idToken'], httponly=True)
