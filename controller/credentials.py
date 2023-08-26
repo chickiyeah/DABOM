@@ -32,58 +32,9 @@ firebaseConfig = {
 
 Auth = Firebase(firebaseConfig).auth()
 
-class NTP:
-
-    time = datetime.now(timezone.utc)
- 
-    @classmethod
-    def getNTPtime(cls, host ='time.windows.com', utc_std=9):                
-        # NTP query (48 bypte)
-        query = '\x1b' + 47 * '\0'       
-        # Unix standard time, 1970 00:00:00
-        # NTP standart time, 1900 00:00:00
-        # difference time 70 years (sec) 
-        STD1970 = 2208988800       
-         
-        try:
-            # crate socket(IPv4, UDP)
-            sock = socket(AF_INET, SOCK_DGRAM)      
-            # send NTP query
-            sock.sendto(query.encode(), (host, 123))            
-            # receive from NTP     
-            sock.settimeout(1)
-            recv, addr = sock.recvfrom(1024)
-            
-            if recv and len(recv)==48:
-                # struct : python byte <-> C struct
-                # !:Big endian, I:unsigned int(4byte) = 48byte
-                # [10]: tuple[10] index, unpack returned a tuple type
-                ts = struct.unpack('!12I', recv)[10]          
-                ts -= STD1970            
-            else:
-                raise NameError('recv error')
-             
-        except Exception as e:            
-            sock.close()
-            utc = datetime.now(timezone.utc)   
-            NTP.time = utc.astimezone(timezone(timedelta(hours=utc_std)))      
-            os.system('date ' + time.strftime('%m%d%H%M%Y.%S',time.timezone(timedelta(hours=utc_std))))    
-            #print(e)
-            return False
-        else:
-            # from timestamp to datetime
-            utc = datetime.fromtimestamp(ts, tz=timezone.utc)            
-            # convert utc to local time
-            #NTP.time = utc.astimezone()
-            # convert utc to other utc time
-            NTP.time = utc.astimezone(timezone(timedelta(hours=utc_std)))
-            os.system('date ' + time.strftime('%m%d%H%M%Y.%S',time.timezone(timedelta(hours=utc_std))))
-             
-        return True
-
 def verify_token(response: Response, req: Request, access_token: Optional[str] = Cookie(None), refresh_token: Optional[str] = Cookie(None)): 
     try:
-        if platform.system() == "Linux":
+        """if platform.system() == "Linux":
                 os.system("sudo ntpdate time.google.com")
 
         if platform.system() == "Windows":
@@ -99,7 +50,7 @@ def verify_token(response: Response, req: Request, access_token: Optional[str] =
                 pass
             else:
                # 현재 프로그램 인스턴스를 관리자 권한으로 다시 실행
-                ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+                ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)"""
                     
         # Verify the ID token while checking if the token is revoked by
         # passing check_revoked=True.
@@ -116,7 +67,7 @@ def verify_token(response: Response, req: Request, access_token: Optional[str] =
         raise HTTPException(status_code=401, detail=unauthorized_userdisabled)
     except auth.InvalidIdTokenError:
         if platform.system() == "Linux":
-                os.system("sudo ntpdate time.google.com")
+            os.system("sudo ntpdate time.google.com")
 
         if platform.system() == "Windows":
             def is_admin():
@@ -132,7 +83,7 @@ def verify_token(response: Response, req: Request, access_token: Optional[str] =
             else:
                # 현재 프로그램 인스턴스를 관리자 권한으로 다시 실행
                 ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
-                
+
         # Token is invalid
         if refresh_token == None:
             raise HTTPException(status_code=400, detail=unauthorized_invaild)
@@ -185,6 +136,23 @@ def verify_admin_token(req: Request):
         # Token belongs to a disabled user record.
         raise HTTPException(status_code=401, detail=unauthorized_userdisabled)
     except auth.InvalidIdTokenError:
+        if platform.system() == "Linux":
+            os.system("sudo ntpdate time.google.com")
+
+        if platform.system() == "Windows":
+            def is_admin():
+                try:
+                    return ctypes.windll.shell32.IsUserAnAdmin()
+                except:
+                    return False
+
+            if is_admin():
+                # 관리자 권한으로 실행 중일 때 수행할 작업
+                os.system("w32tm /resync")
+                pass
+            else:
+               # 현재 프로그램 인스턴스를 관리자 권한으로 다시 실행
+                ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
         # Token is invalid
         raise HTTPException(status_code=401, detail=unauthorized_invaild)
     except KeyError:
@@ -206,7 +174,24 @@ def verify_email_token(access_token: str, refresh_token: str):
         # Token belongs to a disabled user record.
         raise HTTPException(status_code=401, detail=unauthorized_userdisabled)
     except auth.InvalidIdTokenError:
-        # Token is invalid
+        if platform.system() == "Linux":
+            os.system("sudo ntpdate time.google.com")
+
+        if platform.system() == "Windows":
+            def is_admin():
+                try:
+                    return ctypes.windll.shell32.IsUserAnAdmin()
+                except:
+                    return False
+
+            if is_admin():
+                # 관리자 권한으로 실행 중일 때 수행할 작업
+                os.system("w32tm /resync")
+                pass
+            else:
+               # 현재 프로그램 인스턴스를 관리자 권한으로 다시 실행
+                ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+                
         if refresh_token == None:
             raise HTTPException(status_code=401, detail=unauthorized_invaild)
 
