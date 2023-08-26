@@ -198,6 +198,10 @@ async function verify_token() {
                   response.json().then(async (json) => {
                       let detail_error = json.detail;
                       console.log(detail_error)
+                      if (detail_error.code == "ER015") {
+                        await LoadCookie();
+                      }
+                      
                       if (detail_error.code == "ER998") {
                         await LoadCookie();
                       }
