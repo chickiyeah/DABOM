@@ -453,7 +453,7 @@ async def f_verify_token(response: Response, access_token: str, refresh_token:st
 @userapi.get('/cookie/verify')
 async def f_verify_token(response: Response, access_token: Optional[str] = Cookie(None), refresh_token: Optional[str] = Cookie(None)):
     if (access_token == None or refresh_token == None):
-        return HTTPException(401,unauthorized_invaild)
+        raise HTTPException(401,unauthorized_invaild)
     
     try:
         """if platform.system() == "Linux":
