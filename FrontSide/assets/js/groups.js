@@ -236,7 +236,7 @@ async function verify_token() {
     let lo_access_token = localStorage.getItem("access_token")
     let lo_refresh_token = localStorage.getItem("refresh_token")
     if (location.href.includes("login") == false && location.href.includes("register") == false) {
-      if(lo_access_token == null || lo_refresh_token == null) {
+        if(lo_access_token == null || lo_refresh_token == null || lo_access_token.length < 12 || lo_refresh_token.length < 12) {
         //console.log("here?")
         localStorage.clear()
         location.href = "/login";
