@@ -95,7 +95,7 @@ async function get_unread_amount() {
 
 async function verify_token() {
     return new Promise(async function(resolve, reject) {
-        fetch("/api/user/cookie/get_info",{ methon: 'GET', credentials: "include" }).then(async (res) => {if (res.status === 200) { res.json().then(async (json) => {loading.style.display = "none";resolve(json)})} else {location.reload()}})
+        fetch("/api/user/cookie/get_info",{ methon: 'GET', credentials: "include" }).then(async (res) => {if (res.status === 200) { res.json().then(async (json) => {loading.style.display = "none";resolve(json)})} else {}})
     })
   }
 
