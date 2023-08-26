@@ -452,6 +452,7 @@ async def f_verify_token(response: Response, access_token: str, refresh_token:st
 
 @userapi.get('/cookie/verify')
 async def f_verify_token(response: Response, access_token: Optional[str] = Cookie(None), refresh_token: Optional[str] = Cookie(None)):
+    print(access_token, refresh_token)
     try:
         """if platform.system() == "Linux":
             os.system("sudo ntpdate time.google.com")
