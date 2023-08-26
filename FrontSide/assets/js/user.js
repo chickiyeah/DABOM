@@ -192,7 +192,8 @@ async function verify_token() {
                   await LoadCookie();
                   loading.style.display = 'none';
               }else if (response.status === 307 || response.status === 401) {
-                  location.href = "/login";
+                localStorage.clear();
+                location.href = "/login";
               }else{
                   response.json().then(async (json) => {
                       let detail_error = json.detail;
