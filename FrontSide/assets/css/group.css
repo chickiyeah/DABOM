@@ -116,7 +116,7 @@
     .group_write_wrap .banner_img { height: 250px; padding-bottom: 250px; }
     .group_write_wrap .banner_img .pencil_icon { width: 45px; height: 45px; }
 }
-@media all and (max-width: 400px) {
+@media all and (max-width: 420px) {
     /* 찾아보기 ,내모임 , 내가 만든 모임*/
     .group_wrap .group li { width: 100%;}
     .group_wrap .tab_menu li a { font-size: 14px; line-height: 2.8; }

@@ -49,7 +49,7 @@
                 <a href="/diary_add">오늘일지</a>
                 <a href="/record">다봄기록</a>
                 <a href="/groups?page=1&type=public">다봄모임</a>
-                <a href="javascript:">다봄달력</a>
+                <a href="/mypage">마이다봄</a>
             </nav>
             <h1 class="logo">
                 <a href="/"><img alt="로고" src="/assets/images/logo.svg"></a>
@@ -60,6 +60,9 @@
                 </a>
                 <a class="login_icon" href="/login">
                     <img alt="로그인 아이콘" src="/assets/images/login-icon.svg">
+                </a>
+                <a class="logout_icon" href="javascript:" title="로그아웃">
+                 <img alt="로그아웃 아이콘" src="/assets/images/login-out-icon.svg">
                 </a>
             </div>
         </div>
@@ -94,12 +97,13 @@
                     <div class="slide_content">
                         <a href="/kcal_consume">다봄섭취</a>
                         <a href="/diary_add">오늘일지</a>
-                        <a href="/record:">다봄기록</a>
+                        <a href="/record">다봄기록</a>
                         <a href="/groups?page=1&type=public">다봄모임</a>
-                        <a href="javascript:">다봄달력</a>
+                        <a href="/mypage">마이다봄</a>
                     </div>
                     <div class="slide_bottom">
-                        <a href="/login"><i class="mypage-icon"></i>마이페이지</a>
+                        <a href="javascript:"><i class="login_icon"></i><span class="txt">로그인</span></a>
+                        <a href="javascript:"><i class="logout_icon"></i><span class="txt">로그아웃</span></a>
                         <a class="bell" href="javascript:">
                             <div id="bell_new_alert"></div>
                             <img src="/assets/images/bell-icon.svg" alt="종아이콘">

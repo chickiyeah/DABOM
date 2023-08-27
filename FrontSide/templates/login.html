@@ -47,14 +47,21 @@
     <div class="login_wrap">
         <div class="container">
             <h1 class="logo">
-                <a href="/"><img src="/assets/images/logo.svg" alt="로고"></a> <!-- 서버에서는 .. 안너어도 되요. -->
+                <a href="/"><img src="/assets/images/logo.svg" alt="로고"></a>
             </h1>
             <form action="javascript:void(0);">
                 <div class="member_group">
                     <label for="login_email" class="hidden">이메일</label>
                     <input id="login_email" type="text" placeholder="이메일">
-                    <label for="login_pw" class="hidden">비밀번호</label>
-                    <input id="login_pw" type="password" placeholder="비밀번호">
+                    <div class="input_password">
+                        <label for="login_pw" class="hidden">비밀번호</label>
+                        <input id="login_pw" type="password" placeholder="비밀번호">
+                        <div class="eyes">
+                            <input type="checkbox">
+                            <i class="on"></i>
+                            <!-- <i class="off"></i> -->
+                        </div>
+                    </div>
                 </div>
                 <div class="checkbox">
                     <input type="checkbox" id="save">

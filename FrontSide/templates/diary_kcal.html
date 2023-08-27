@@ -12,6 +12,7 @@
     <script defer type="module" src="/assets/js/diary.js"></script>
     <script type="module" src="/assets/js/user.js"></script>
     <link rel="stylesheet" href="/assets/css/toast.css">
+    <link rel="stylesheet" href="/assets/css/diary.css">
     <script>
         var f_map = new Map();
     </script>
@@ -36,11 +37,20 @@
                 <a href="/"><img alt="로고" src="/assets/images/logo.svg"></a>
             </h1>
             <div class="login">
-                <a href="/login">
+                <a class="bell" href="javascript:">
+                    <object aria-label="종아이콘" data="/assets/images/bell-icon.svg" type="image/svg+xml"></object>
+                </a>
+                <a class="login_icon" href="/login">
                     <img alt="로그인 아이콘" src="/assets/images/login-icon.svg">
                 </a>
             </div>
         </div>
+        <div class="right_menu">
+            <div class="bell_menu">
+                <!-- JS 동적 추가 구역 -->
+            </div>
+        </div>
+
         <div class="show_mobile">
             <div class="mobile_header">
                 <div class="m_header">
@@ -66,12 +76,16 @@
                     <div class="slide_content">
                         <a href="/kcal_consume">다봄섭취</a>
                         <a href="/diary_add">오늘일지</a>
-                        <a href="/record:">다봄기록</a>
+                        <a href="/record">다봄기록</a>
                         <a href="/groups?page=1&type=public">다봄모임</a>
                         <a href="javascript:">다봄달력</a>
                     </div>
                     <div class="slide_bottom">
                         <a href="/login"><i class="mypage-icon"></i>마이페이지</a>
+                        <a class="bell" href="javascript:">
+                            <div id="bell_new_alert"></div>
+                            <img src="/assets/images/bell-icon.svg" alt="종아이콘">
+                        </a>
                     </div>
                 </div>
             </div>

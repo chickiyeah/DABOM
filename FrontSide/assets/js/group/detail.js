@@ -54,9 +54,7 @@ cls_btn.addEventListener("click", () => {
 function get_write(g_id, page) {
     fetch(`/api/diary/group/${g_id}/${page}`, {
         method: "GET",
-        headers: {
-            "Authorization": "Bearer cncztSAt9m4JYA9"
-        }
+        credentials: "include"
     }).then((res) => {
         if (res.status === 200) {
             res.json().then(async (data) => {
@@ -140,7 +138,15 @@ function get_write(g_id, page) {
                     }
 
                     let friends = JSON.parse(post.friends.replace(/'/g, '"'));
+                    let images = JSON.parse(post.images.replace(/'/g, '"'));
 
+                    console.log(images)
+
+                    let image = "/assets/images/default-background.png"
+
+                    if (images.length > 0) {
+                        image = images[0]
+                    }
 
                     let f_html = `<span>${writer.Nickname}</span>`;
                     var f_i = 0
@@ -154,7 +160,7 @@ function get_write(g_id, page) {
 
                             let html = `<li>
                                 <a class="img_box" href="javascript:">
-                                    <img alt="식단 이미지" src="/assets/images/default-background.png">
+                                    <img alt="식단 이미지" src="${image}">
                                 </a>
                                 <div class="info_box">
                                     <h2>${post.title}</h2>
@@ -168,7 +174,7 @@ function get_write(g_id, page) {
                                             <p class="date">${_day[1]} / ${_day[2]}</p>
                                             <a class="comment" href="javascript:">
                                                 <i class="comment_icon"><img alt="댓글아이콘" src="/assets/images/comment-icon.svg"></i>
-                                                댓글 <em>0</em>개
+                                                댓글 <em>${post.comments.length}</em>개
                                             </a>
                                         </div>
                                     </div>

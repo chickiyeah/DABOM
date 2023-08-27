@@ -1,7 +1,7 @@
 <svg width="47" height="44" viewBox="0 0 47 44" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_1107_720)">
-<path d="M28.25 23H38.75C39.8546 23 40.75 23.8954 40.75 25V41C40.75 42.1046 39.8546 43 38.75 43H28.25" stroke="#FFCC00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M32 36.75L35.75 33M35.75 33L32 29.25M35.75 33H23.25" stroke="#FFCC00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M38.75 23H28.25C27.1454 23 26.25 23.8954 26.25 25V41C26.25 42.1046 27.1454 43 28.25 43H38.75" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M35 36.75L31.25 33M31.25 33L35 29.25M31.25 33H43.75" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M12.8215 0H12.8205C7.15622 0 2.56445 4.59177 2.56445 10.256V24.488C2.56445 30.1522 7.15622 34.744 12.8205 34.744H12.8215C18.4857 34.744 23.0775 30.1522 23.0775 24.488V10.256C23.0775 4.59177 18.4857 0 12.8215 0Z" fill="#FFCC00"/>
 <path d="M0 7.56396H9.391L7.67 19.359H10.9" stroke="black" stroke-width="1.5"/>
 <path d="M2.55763 15.129C3.47828 15.129 4.22463 14.3827 4.22463 13.462C4.22463 12.5414 3.47828 11.795 2.55763 11.795C1.63697 11.795 0.890625 12.5414 0.890625 13.462C0.890625 14.3827 1.63697 15.129 2.55763 15.129Z" stroke="black" stroke-width="1.5"/>

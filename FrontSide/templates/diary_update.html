@@ -13,8 +13,10 @@
     <script>
         var eat_when = "morning";
         var fd_total_kcal = 0;
+        var f_t_kcal = 0;
         var last_click_element;
         var s_friends = [];
+        var sel_with = "friend";
 
         function sel_eat_when(when) {
             eat_when = when;
@@ -93,7 +95,7 @@
                     <div class="slide_content">
                         <a href="/kcal_consume">다봄섭취</a>
                         <a href="/diary_add">오늘일지</a>
-                        <a href="/record:">다봄기록</a>
+                        <a href="/record">다봄기록</a>
                         <a href="/groups?page=1&type=public">다봄모임</a>
                         <a href="javascript:">다봄달력</a>
                     </div>
@@ -136,7 +138,7 @@
 
                         <a href="javascript:" onclick="window.open('/diary_kcal')" target="_blank" class="">칼로리 검색하기</a>
                         <a href="javascript:" onclick="window.open('/diary_bar_cam')" target="_blank" class="">바코드 검색하기</a>
-                        <a href="javascript:" id="d_f_open" target="_blank" class="">같이 먹은 친구 추가하기</a>
+                        <a href="javascript:" id="d_f_open" target="_blank" class="">같이 먹은 친구/연인 추가하기</a>
 
                 </div>
                 <div style="display:flex;justify-content: right;">
@@ -161,7 +163,11 @@
 <div class="friend_list_back">
     <div class="inner">
         <div class="pop_close_head">
-            <h2 id="friend_ul_title" class="title">같이 먹은 친구를 선택하세요.</h2>
+            <h2 id="friend_ul_title" style="text-align: center;" class="title">같이 먹은 친구/연인을(를) 선택하세요.</h2>
+        </div>
+        <div class="f_sel">
+            <a id="s_friend" onclick="set_with('friend')" class="on" href="javascript:">친구</a>
+            <a id="s_couple" onclick="set_with('couple')"  href="javascript:">연인</a>
         </div>
         <ul class="content_box"></ul>
         <button id="close_friend_list" class="black_line_btn">저장하기</button>
@@ -184,6 +190,17 @@
         amount = parseInt(amount);
         var default_kcal = parseInt(document.querySelector("body > div > div > div > div.base_data > div:nth-child(2) > span").innerText);
         document.querySelector("#total_kcal").innerText = (default_kcal*amount)
+    }
+
+    function set_with(s_with) {
+        if (s_with == "friend") {
+            document.querySelector("#s_couple").classList.remove("on")
+            document.querySelector("#s_friend").classList.add("on")
+        } else {
+            document.querySelector("#s_friend").classList.remove("on")
+            document.querySelector("#s_couple").classList.add("on")
+        }
+        sel_with = s_with
     }
 
     function editamount(element) {
@@ -235,6 +252,7 @@
             last_click_element.title = "해당 음식의 칼로리는 개당 "+last_click_element.attributes.per.value+" kcal 이며, 전체 칼로리는 "+t_tokcal+" kcal 입니다."
 
             document.querySelector("#tokcal").innerText = fd_total_kcal + t_tokcal; //총 칼로리 변경
+            f_t_kcal = fd_total_kcal + t_tokcal;
             document.querySelector('.fd_edit_back').style.display = 'none'; //작업 완료후 배경 원상 복귀
         } else {
             element.parentElement.style.display = '';
@@ -288,8 +306,14 @@
                     "desc": desc,
                     "foods": a_list,
                     "friends": s_friends,
+                    "with": sel_with,
                     "images": files,
-                    "eat_when": eat_when
+                    "eat_when": eat_when,
+                    "total_kcal": f_t_kcal
+                }
+
+                if (s_friends.length == 0) {
+                    s_json.with = "alone"
                 }
                 
                 if (opener == null) {

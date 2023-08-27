@@ -19,6 +19,7 @@ from controller.credentials import verify_token
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email import utils
 
 er028 = {"code":"ER028", "message":"처리 타입은 accept/reject 만 허용됩니다."}
 er029 = {"code":"ER029", "message":"해당 유저와 이미 친구입니다."}
@@ -219,7 +220,7 @@ async def friend_request(uid:str, userId: Optional[str] = Cookie(None)):
             targetnick = execute_sql(tarsql)[0]['Nickname']
             msg = MIMEMultipart('alternative')
             msg['Subject'] = '[다봄] %s 님으로 부터 친구요청이 도착했습니다.' % requestnick
-            msg['From'] = "noreply.dabom@gmail.com"
+            msg['From'] = utils.formataddr(("다봄","noreply.dabom@gmail.com"))
             msg['To'] = targetmail
             versql = "SELECT code FROM f_verify WHERE `type` = 'friend'"
             veri_list = execute_sql(versql)
@@ -249,8 +250,8 @@ async def friend_request(uid:str, userId: Optional[str] = Cookie(None)):
             add_verifykey = "INSERT INTO f_verify (code, req_id, tar_id, `type`) VALUES ('%s','%s','%s', 'friend')" % (verifykey, requestid, targetid)
             execute_sql(add_verifykey)
 
-            link = "http://dabom.kro.kr/friend/request/%s/%s/%s/%s/%s" % (requestid, requestnick, targetid, targetnick, verifykey)
-            text = "\n\n\n안녕하세요 다봄 입니다.\n\n%s 님이 유저님에게 친구요청을 보냈습니다.\n아래 링크를 클릭해서 수락/거절 여부를 선택해주세요!\n\n\n%s\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다."
+            link = "https://dabom.kro.kr/friend/request/%s/%s/%s/%s/%s" % (requestid, requestnick, targetid, targetnick, verifykey)
+            text = "\n\n\n안녕하세요 다봄 입니다.\n\n%s 님이 유저님에게 친구요청을 보냈습니다.\n아래 링크를 클릭해서 수락/거절 여부를 선택해주세요!\n\n\n%s\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 <a href='https://dabom.channel.io/home'><strong>고객센터</strong></a>를 이용해 주시기 바랍니다."
             html = """\
 <html>
   <head></head>
@@ -275,7 +276,7 @@ async def friend_request(uid:str, userId: Optional[str] = Cookie(None)):
                                         <br/>
                                         <br/>
                                         <p>※ 본 메일은 발신 전용 메일이며,</p>
-                                        <p>자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.</p>
+                                        <p>자세한 문의사항은 다봄 <a href="https://dabom.channel.io/home"><strong>고객센터</strong></a>를 이용해 주시기 바랍니다.</p>
                                     </div>
                                 </div>
                             </div>
