@@ -74,7 +74,7 @@ header .pc_header .login .bell { position: relative; }
 header .pc_header .login .bell:before { content: ""; display: block; width: 5px; height: 5px; background: #F43B00; border-radius: 50%;
     position: absolute; right: 1px; top: -1px; z-index: 500; }
 header .pc_header .login .bell object { display: block; width: 22px; }
-header .pc_header .login .login_icon { display: block; width: 22px; height: 38px;}
+header .pc_header .login .login_icon { display: block; width: 36px; height: 38px; }
 header .pc_header .login .logout_icon { display: block; width: 36px; height: 38px; }
 header .pc_header.active { top: -60px; transition: all 0.25s ease; }
 
@@ -105,8 +105,8 @@ header .pc_header.active { top: -60px; transition: all 0.25s ease; }
 .mobile_header .slide_nav .slide_content { margin-top: 50px; display: flex; flex-flow: column; font-size: 18px; gap: 24px; }
 .mobile_header .slide_nav .slide_bottom { margin-top: 40px; display: flex; justify-content: space-between; align-items: center;}
 .mobile_header .slide_nav .slide_bottom a { display: flex; align-items: flex-end; gap: 5px; font-weight: 700; font-size: 18px;}
-.mobile_header .slide_nav .slide_bottom .login_icon { background: url("../images/login-icon.svg") no-repeat;
-    width: 20px; height: 40px; display: inline-block; background-size: 19px; }
+.mobile_header .slide_nav .slide_bottom .login_icon { background: url("../images/m-login-icon.svg") no-repeat;
+  width: 34px; height: 40px; display: inline-block; background-size: 34px; }
 .mobile_header .slide_nav .slide_bottom .logout_icon { background: url("../images/m-login-out-icon.svg") no-repeat;
     width: 34px; height: 40px; display: inline-block; background-size: 34px; }
 .mobile_header .slide_nav .slide_bottom .txt { padding-bottom: 3px;}
