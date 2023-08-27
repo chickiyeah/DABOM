@@ -404,6 +404,7 @@ var Yearpicker = (function() {
       } else {
         $this.html(value);
       }
+      $this.trigger("change");
     },
     trigger: function(type, data) {
       var e = $.Event(type, data);

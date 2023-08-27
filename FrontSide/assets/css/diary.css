@@ -200,6 +200,11 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
 .friend_list_back .inner .content_box li .button_box button:first-child object { width: 20px; }
 .friend_list_back .inner .content_box li .button_box button:last-child { border: 1px solid #ccc; padding: 5px; border-radius: 3px; }
 .friend_list_back .inner .content_box li .button_box button:last-child object { width: 16px; }
+.friend_list_back .inner .f_sel { display:flex; flex-direction: row; justify-content: space-around; margin-top: 1rem }
+.friend_list_back .inner .f_sel > a { background: white; border: 1px solid #F43B00; color: #F43B00; display: block; width: calc(25% - 7.5px);
+    text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-weight: 700; }
+
+.friend_list_back .inner .f_sel > a.on { background: #F43B00; color: white; }
 .friend_list_back .black_line_btn { margin-top: auto; }
 
 /* ==============================================================

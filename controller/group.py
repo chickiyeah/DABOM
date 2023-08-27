@@ -213,7 +213,7 @@ async def group_invite(group:invite_group, userId: Optional[str] = Cookie(None))
 
         r_key = userId
 
-        link = "http://dabom.kro.kr/group/invite/{0}/{1}/{2}/{3}".format(group.group_id, r_key, group.target_id, verifykey)
+        link = "https://dabom.kro.kr/group/invite/{0}/{1}/{2}/{3}".format(group.group_id, r_key, group.target_id, verifykey)
 
         newno = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'log_invite'")[0]['no'])+1
 

@@ -249,7 +249,7 @@ async def friend_request(uid:str, userId: Optional[str] = Cookie(None)):
             add_verifykey = "INSERT INTO f_verify (code, req_id, tar_id, `type`) VALUES ('%s','%s','%s', 'friend')" % (verifykey, requestid, targetid)
             execute_sql(add_verifykey)
 
-            link = "http://dabom.kro.kr/friend/request/%s/%s/%s/%s/%s" % (requestid, requestnick, targetid, targetnick, verifykey)
+            link = "https://dabom.kro.kr/friend/request/%s/%s/%s/%s/%s" % (requestid, requestnick, targetid, targetnick, verifykey)
             text = "\n\n\n안녕하세요 다봄 입니다.\n\n%s 님이 유저님에게 친구요청을 보냈습니다.\n아래 링크를 클릭해서 수락/거절 여부를 선택해주세요!\n\n\n%s\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다."
             html = """\
 <html>

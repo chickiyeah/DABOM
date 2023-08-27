@@ -47,12 +47,14 @@ async def post_add(request: Request, authorized: bool = Depends(verify_token)):
         memo = data['desc']
         friends = data['friends']
         eat_when = data['eat_when']
+        s_with = data['with']
+        to_kcal = data['total_kcal']
 
         created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         p_num = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'post_no'")[0]['no'])
         n_p_num = p_num+1
         execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
-        sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}')"
+        sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}', '{s_with}', {to_kcal})"
         res = execute_sql(sql)
         return res
     
@@ -68,18 +70,22 @@ async def post_add(request: Request, authorized: bool = Depends(verify_token)):
         friends = data['friends']
         group = data['group']
         eat_when = data['eat_when']
+        s_with = data['with']
+        to_kcal = data['total_kcal']
 
         created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         p_num = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'post_no'")[0]['no'])
         n_p_num = p_num+1
         execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
-        sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`group`,`eat_when`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{group}','{eat_when}')"
+        sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`group`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{group}','{eat_when}','{s_with}',{to_kcal})"
         res = execute_sql(sql)
         return res
     
 @diaryapi.get('/group/{group_id}/{page}')
-async def get_group_post(group_id:int, page:int, authorized :bool = Depends(verify_admin_token)):
-    if authorized:
+async def get_group_post(group_id:int, page:int, authorized :bool = Depends(verify_token)):
+    g_mem = execute_sql(f"SELECT members FROM `group` WHERE `id` = {group_id}")[0]['members']
+
+    if authorized[1] in g_mem:
         page = page - 1
 
         if (page < 0):
@@ -88,34 +94,45 @@ async def get_group_post(group_id:int, page:int, authorized :bool = Depends(veri
         offset = page*3
         count = len(execute_sql(f"SELECT no from UserEat WHERE `group` = {group_id}"))
         res = execute_sql(f"SELECT * from UserEat WHERE `group` = {group_id} ORDER BY created_at ASC LIMIT 3 OFFSET {offset}")
+        posts = []
+        for post in res:
+            comment = execute_sql(f"SELECT * from post_comments WHERE `post_id` = {post['no']} ORDER BY created_at ASC")
+            post['comments'] = comment
+            posts.append(post)
+
+
         j_res = {
-            "posts": res,
+            "posts": posts,
             "page": page+1,
             "total": count
         }
 
         return j_res
-
-@diaryapi.get('/alone/{post_no}')
-async def post_get(post_no:int):
-    res = execute_sql("SELECT * from UserEat WHERE `NO` = %s" % post_no)
-
-    if len(res) == 0:
-        raise HTTPException(404, post_not_found)
     
-    return res
+    else:
+        raise HTTPException(401)
 
-@diaryapi.get('/with_friend/{page}')
-async def get_with_friend(page:int, authorized: bool = Depends(verify_token)):
+@diaryapi.post('/alone')
+async def post_get(request:Request, authorized: bool = Depends(verify_token)):
     if authorized:
-        friends = json.loads(execute_sql("SELECT friends FROM user WHERE `ID` = '%s'" % authorized[1])[0]['friends'])
-        s_friend = "ID = '%s' " % authorized[1]
-        for friend in friends:
-            s_friend = s_friend + "OR ID = '%s'" % friend
-        
-        diarys = execute_sql("SELECT * FROM UserEat WHERE %s LIMIT 10 OFFSET %s0" % (s_friend, page))
+        json = await request.json()
+        res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND `with` = 'alone' LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
 
-        return diarys
+        if len(res) == 0:
+            raise HTTPException(404, post_not_found)
+        
+        return res
+
+@diaryapi.post('/with')
+async def post_get(request:Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        json = await request.json()
+        res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND (`with` = 'friend' OR `with` = 'couple') LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
+
+        if len(res) == 0:
+            raise HTTPException(404, post_not_found)
+        
+        return res
 
 
 @diaryapi.patch('/update')

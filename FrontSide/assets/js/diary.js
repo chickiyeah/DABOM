@@ -68,8 +68,9 @@ window.addEventListener('DOMContentLoaded', function() {
       e.preventDefault()
       close_f_btn.parentElement.parentElement.style.display='none'
       s_friends = [];
-      let f_html = close_f_btn.parentElement.children[1]
+      let f_html = close_f_btn.parentElement.children[2]
       Array.prototype.forEach.call(f_html.children, (element) => {
+        console.log(element)
         let check = element.children[2].children[0]
         let uid = check.id.replace("check-","")
     
