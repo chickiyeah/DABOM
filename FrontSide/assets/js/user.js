@@ -201,7 +201,7 @@ async function verify_token() {
                       if (detail_error.code == "ER015") {
                         await LoadCookie();
                       }
-                      
+
                       if (detail_error.code == "ER998") {
                         await LoadCookie();
                       }
@@ -417,7 +417,7 @@ async function join() {
       joinBirday.value = "";
     }
     loading.style.display = 'flex';
-    fetch("http://dabom.kro.kr/api/user/register", {
+    fetch("/api/user/register", {
       method: "POST", 
       headers: {
         "Content-Type": "application/json",

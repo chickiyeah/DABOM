@@ -16,6 +16,7 @@ import os
 import time
 import sys
 import ctypes
+from email import utils
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -823,7 +824,7 @@ async def user_create(userdata: UserRegisterdata):
     message = res.replace("lang=en", "lang=ko")
     msg = MIMEMultipart('alternative')
     msg['Subject'] = '[다봄] 계정 이메일 인증'
-    msg['From'] = "noreply.dabom@gmail.com"
+    msg['From'] = utils.formataddr(("다봄","noreply.dabom@gmail.com"))
     msg['To'] = email
     #message
     #msg.set_content("안녕하세요 다봄 입니다.\n\n해당 이메일로 다봄 사이트에 가입되어 이메일 인증이 필요합니다.\n아래 링크를 클릭해서 이메일 인증을 완료할 수 있습니다.\n\n"+message+"\n\n만약 본인이 가입하지 않은거라면 이 메일을 무시하세요.\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.")
@@ -855,7 +856,7 @@ async def user_create(userdata: UserRegisterdata):
                                         <strong>만약 본인이 가입하지 않은거라면 이 메일을 무시하세요.</strong>
                                         <br/>                                        
                                         <p>※ 본 메일은 발신 전용 메일이며,</p>
-                                        <p>자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.</p>
+                                        <p>자세한 문의사항은 다봄 <a href="https://dabom.channel.io/home"><strong>고객센터</strong></a>를 이용해 주시기 바랍니다.</p>
                                     </div>
                                 </div>
                             </div>
@@ -956,7 +957,7 @@ async def user_reset_password(userdata: UserResetPWdata):
 
     rst = MIMEMultipart('alternative')
     rst['Subject'] = '[다봄] 계정 비밀번호 변경'
-    rst['From'] = "noreply.dabom@gmail.com"
+    rst['From'] = utils.formataddr(("다봄","noreply.dabom@gmail.com"))
     rst['To'] = email
     #rst.set_content("안녕하세요 다봄 입니다.\n\n회원님께서는 다봄 계정의 비밀번호 변경을 요청하셨습니다.\n링크를 누르면 새로운 비밀번호를 설정하실 수 있습니다.\n\n"+rstlink+"\n\n회원님이 요청하신 것이 아니라면 이 메일을 무시하세요.\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.")
     
@@ -994,7 +995,7 @@ async def user_reset_password(userdata: UserResetPWdata):
                                         <br>
                                         <br>
                                         <p>※ 본 메일은 발신 전용 메일이며,</p>
-                                        <p>자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.</p>
+                                        <p>자세한 문의사항은 다봄 <a href="https://dabom.channel.io/home"><strong>고객센터</strong></a>를 이용해 주시기 바랍니다.</p>
                                     </div>
                                 </div>
                             </div>
@@ -1049,7 +1050,7 @@ async def user_verify(userdata: EmailVerify):
 
         ver = MIMEMultipart('alternative')
         ver['Subject'] = '[다봄] 계정 이메일 인증'
-        ver['From'] = 'noreply.dabom@gmail.com'
+        ver['From'] = utils.formataddr(("다봄","noreply.dabom@gmail.com"))
         ver['To'] = email
         #ver.set_content("안녕하세요 다봄 입니다.\n\n해당 이메일로 다봄 사이트에 이메일 인증이 요청되었습니다.\n아래 링크를 클릭해서 이메일 인증을 완료할 수 있습니다.\n\n"+vlink+"\n\n만약 본인이 가입하지 않은거라면 이 메일을 무시하세요.\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.")
 
@@ -1084,7 +1085,7 @@ async def user_verify(userdata: EmailVerify):
                                         <br>
                                         <br>
                                         <p>※ 본 메일은 발신 전용 메일이며,</p>
-                                        <p>자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.</p>
+                                        <p>자세한 문의사항은 다봄 <a href="https://dabom.channel.io/home"><strong>고객센터</strong></a>를 이용해 주시기 바랍니다.</p>
                                     </div>
                                 </div>
                             </div>
@@ -1138,9 +1139,9 @@ async def admin_send_email(userdata: EmailSend, authorized: bool = Depends(verif
         
         message = EmailMessage()
         message['Subject'] = '[다봄] '+userdata.title
-        message['From'] = 'noreply.dabom@gmail.com'
+        message['From'] = utils.formataddr(("다봄","noreply.dabom@gmail.com"))
         message['To'] = email
-        message.set_content(userdata.content+"\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.")
+        message.set_content(userdata.content+"\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 <a href='https://dabom.channel.io/home'><strong>고객센터</strong></a>를 이용해 주시기 바랍니다.")
 
         try:
             s.send_message(message)

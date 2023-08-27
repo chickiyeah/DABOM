@@ -15,6 +15,7 @@ from email.mime.text import MIMEText
 import random
 import string
 from controller.credentials import verify_token, verify_admin_token
+from email import utils
 
 s = smtplib.SMTP("smtp.gmail.com", 587)
 s.ehlo()
@@ -225,7 +226,7 @@ async def group_invite(group:invite_group, userId: Optional[str] = Cookie(None))
 
         msg = MIMEMultipart('alternative')
         msg['Subject'] = '[다봄] {0} 모임으로부터 모임 초대가 도착했습니다!'.format(groups[0]['name'])
-        msg['From'] = "noreply.dabom@gmail.com"
+        msg['From'] = utils.formataddr(("다봄","noreply.dabom@gmail.com"))
         msg['To'] = email
 
         text = "그룹 멤버 초대"
@@ -254,7 +255,7 @@ async def group_invite(group:invite_group, userId: Optional[str] = Cookie(None))
                                         <a href='{1}'> 모임 초대 확인하기 </a>
                                         <br><br>                                      
                                         <p>※ 본 메일은 발신 전용 메일이며,</p>
-                                        <p>자세한 문의사항은 다봄 고객센터를 이용해 주시기 바랍니다.</p>
+                                        <p>자세한 문의사항은 다봄 <a href="https://dabom.channel.io/home"><strong>고객센터</strong></a>를 이용해 주시기 바랍니다.</p>
                                     </div>
                                 </div>
                             </div>

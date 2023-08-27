@@ -43,8 +43,13 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
 function sel_year(year) {
     last_year = year;
-    get_alone_posts(year, lastselmonth, 1);
-    //get_with_posts(year, lastselmonth, 1);
+    const alone_ul = document.querySelector(".my_record");
+
+    if (alone_ul.style.display == "none") {
+        get_with_posts(year, lastselmonth, 1);
+    } else {
+        get_alone_posts(year, lastselmonth, 1);
+    }
 }
 
 /** 월을 선택하는 함수
@@ -57,7 +62,13 @@ function sel_month(monthdiv, id) {
     monthdiv.querySelector(`#m_${id_s}`).classList.add('on');
     lastselmonth = id_s
 
-    get_alone_posts(last_year, id_s, 1);
+    const alone_ul = document.querySelector(".my_record");
+
+    if (alone_ul.style.display == "none") {
+        get_with_posts(last_year, id_s, 1);
+    } else {
+        get_alone_posts(last_year, id_s, 1);
+    }
 }
 
 /** 내 기록의 게시글을 불러오는 함수
@@ -79,8 +90,67 @@ function get_alone_posts(year, month, page) {
     }).then((e) => {
         e.json().then((json) => {
             var to_html = "";
-            json.forEach((post) => {
+            let posts = json.posts
+            let amount = json.total
+                let pagediv = document.querySelector("#page_div")
+                let to_page = amount / 7
+                var maxpage
+                if (Number.isInteger(to_page)) {
+                    maxpage = to_page
+                } else {
+                    maxpage = Math.floor(to_page) + 1
+                }
+
+                console.log(page)
+                console.log(maxpage)
+                var startpage
+                var endpage
+                if (page / 10 > 1) {
+                    startpage = Math.floor((page/10))*10
+                    endpage = Math.floor((page/10))*10 + 1 + 10
+                }else{
+                    startpage = 1
+                    endpage = 11
+                }
+                if (page - 1 >= 1) {
+                    document.querySelector(".prev").addEventListener("click", (e) => {e.preventDefault;get_write(g_id,parseInt(page)-1);})
+                }
+                
+                if ( page + 1 <= maxpage ) {
+                    document.querySelector(".next").addEventListener("click", (e) => {e.preventDefault;get_write(g_id,parseInt(page)+1);})
+                }
+
+                pagediv.innerHTML = "";
+                if (amount === 0) {
+                    pagediv.insertAdjacentHTML("beforeend", `<a class="selected" href="javascript:">1</a>`)
+                }else{
+                    if (page > maxpage) {
+                        //비정상 접근 시도 새로고침
+                        location.reload();
+                    }else if (page < 1) {
+                        //비정상 접근 시도 새로고침
+                        location.reload();
+                    } else {  
+                        let pg_html = ""                   
+                        for (let i = startpage; i < maxpage+1; i++) {
+                            if (i == page) {
+                                pg_html = pg_html + `<a class="selected" id=${i} href="javascript:">${i}</a>`
+                            }else{
+                                pg_html = pg_html + `<a class="num" id=${i} href="javascript:">${i}</a>`
+                            }
+                        }
+
+                        pagediv.insertAdjacentHTML("beforeend", pg_html);
+
+                        Array.prototype.forEach.call(pagediv.children,(element) => {
+                            element.addEventListener("click", (e) => {e.preventDefault;get_write(g_id,element.id);})
+                        })
+                         
+                    }
+                }
+            posts.forEach((post) => {
                 console.log(post)
+
                 var eat_when = "";
                 if (post.eat_when == "morning") {
                     eat_when = "아침"
@@ -92,10 +162,20 @@ function get_alone_posts(year, month, page) {
                     eat_when = "간식"
                 }
 
+                let images = JSON.parse(post.images.replace(/'/g, '"'));
+
+                console.log(images)
+
+                let image = "/assets/images/default-background.png"
+
+                if (images.length > 0) {
+                    image = images[0]
+                }
+
                 let html = `
                     <li id='p_${post.no}'>
                         <div class="img_box" href="javascript:">
-                            <img alt="식단 이미지" src="/assets/images/default-background.png">
+                            <img alt="식단 이미지" src="${image}">
                         </div>
                         <div class="info_box">
                             <h2>${post.title}</h2>
@@ -142,9 +222,65 @@ function get_with_posts(year, month, page) {
         })
     }).then((e) => {
         e.json().then((json) => {
-            var to_html = "";
-            
-            json.forEach((post) => {
+            let posts = json.posts
+            let amount = json.total
+                let pagediv = document.querySelector("#page_div")
+                let to_page = amount / 7
+                var maxpage
+                if (Number.isInteger(to_page)) {
+                    maxpage = to_page
+                } else {
+                    maxpage = Math.floor(to_page) + 1
+                }
+
+                console.log(page)
+                console.log(maxpage)
+                var startpage
+                var endpage
+                if (page / 10 > 1) {
+                    startpage = Math.floor((page/10))*10
+                    endpage = Math.floor((page/10))*10 + 1 + 10
+                }else{
+                    startpage = 1
+                    endpage = 11
+                }
+                if (page - 1 >= 1) {
+                    document.querySelector(".prev").addEventListener("click", (e) => {e.preventDefault;get_write(g_id,parseInt(page)-1);})
+                }
+                
+                if ( page + 1 <= maxpage ) {
+                    document.querySelector(".next").addEventListener("click", (e) => {e.preventDefault;get_write(g_id,parseInt(page)+1);})
+                }
+
+                pagediv.innerHTML = "";
+                if (amount === 0) {
+                    pagediv.insertAdjacentHTML("beforeend", `<a class="selected" href="javascript:">1</a>`)
+                }else{
+                    if (page > maxpage) {
+                        //비정상 접근 시도 새로고침
+                        location.reload();
+                    }else if (page < 1) {
+                        //비정상 접근 시도 새로고침
+                        location.reload();
+                    } else {  
+                        let pg_html = ""                   
+                        for (let i = startpage; i < maxpage+1; i++) {
+                            if (i == page) {
+                                pg_html = pg_html + `<a class="selected" id=${i} href="javascript:">${i}</a>`
+                            }else{
+                                pg_html = pg_html + `<a class="num" id=${i} href="javascript:">${i}</a>`
+                            }
+                        }
+
+                        pagediv.insertAdjacentHTML("beforeend", pg_html);
+
+                        Array.prototype.forEach.call(pagediv.children,(element) => {
+                            element.addEventListener("click", (e) => {e.preventDefault;get_write(g_id,element.id);})
+                        })
+                         
+                    }
+                }
+            posts.forEach((post) => {
                 var eat_with = "";
                 if (post.with == "friend") {
                     eat_with = "친구와"
@@ -155,6 +291,15 @@ function get_with_posts(year, month, page) {
                 let friends = JSON.parse(post.friends.replace(/'/g, '"'));
                 let f_i = 0
                 const our_ul = document.querySelector(".our_record");
+                let images = JSON.parse(post.images.replace(/'/g, '"'));
+
+                console.log(images)
+
+                let image = "/assets/images/default-background.png"
+
+                if (images.length > 0) {
+                    image = images[0]
+                }
                     friends.forEach(async (friend) => {
                         friend = await get_user_info(friend)
                         f_html = f_html + `<span class="r_txt">${friend.Nickname}</span>`
@@ -163,7 +308,7 @@ function get_with_posts(year, month, page) {
                         if (f_i == friends.length) {
                             let html = `<li id='p_${post.no}'>
                             <a class="img_box" href="javascript:">
-                                <img alt="식단 이미지" src="/assets/images/default-background.png">
+                                <img alt="식단 이미지" src="${image}">
                             </a>
                             <div class="info_box">
                                 <h2>${post.title}</h2>

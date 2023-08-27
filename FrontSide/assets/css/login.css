@@ -12,6 +12,13 @@
 .login_wrap .btn input[type=submit]:valid { color: white; font-size: 18px; }
 .login_wrap .util_box {font-weight: 300; font-size: 12px; letter-spacing: -1px; display: flex; justify-content: space-between;}
 .login_wrap .util_box a:last-child em { font-weight: 500; }
+.login_wrap .input_password { position: relative; }
+.login_wrap .input_password > input { padding: 0 35px 0 10px; }
+.login_wrap .input_password .eyes i { display: inline-block; width: 20px; height: 20px; position: absolute; right: 10px; 
+    top: 50%; transform: translateY(-50%); cursor: pointer; }
+.login_wrap .input_password .eyes .on { background: url(../images/eyes-on-icon.svg) no-repeat; background-size: cover;}
+.login_wrap .input_password .eyes .off { background: url(../images/eyes-off-icon.svg) no-repeat; background-size: cover;}
+
 /* ==============================================================
 아이디, 비밀번호 찾기
 ==============================================================*/

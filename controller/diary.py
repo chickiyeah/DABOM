@@ -115,24 +115,40 @@ async def get_group_post(group_id:int, page:int, authorized :bool = Depends(veri
 @diaryapi.post('/alone')
 async def post_get(request:Request, authorized: bool = Depends(verify_token)):
     if authorized:
+        
         json = await request.json()
+        count = len(execute_sql(f"SELECT no from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND `with` = 'alone'"))
         res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND `with` = 'alone' LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
 
         if len(res) == 0:
             raise HTTPException(404, post_not_found)
         
-        return res
+        j_res = {
+            "posts": res,
+            "page": int(json['page']),
+            "total": count
+        }
+        
+        return j_res
 
 @diaryapi.post('/with')
 async def post_get(request:Request, authorized: bool = Depends(verify_token)):
     if authorized:
         json = await request.json()
+
+        count = len(execute_sql(f"SELECT no from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND (`with` = 'friend' OR `with` = 'couple')"))
         res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND (`with` = 'friend' OR `with` = 'couple') LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
 
         if len(res) == 0:
             raise HTTPException(404, post_not_found)
         
-        return res
+        j_res = {
+            "posts": res,
+            "page": int(json['page']),
+            "total": count
+        }
+        
+        return j_res
 
 
 @diaryapi.patch('/update')
