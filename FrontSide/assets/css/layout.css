@@ -69,11 +69,13 @@ header .pc_header .menu { display: flex; gap: 10px; font-size: 14px; }
 header .pc_header .logo { position: absolute; left: 50%; transform: translateX(-50%); }
 header .pc_header .logo a { display: block; width: 60px;}
 header .pc_header .login { display: flex; align-items: center; gap: 20px; margin-left: auto;}
+header .pc_header .login img { width: 100%; height: 100%; object-fit: contain;}
 header .pc_header .login .bell { position: relative; }
 header .pc_header .login .bell:before { content: ""; display: block; width: 5px; height: 5px; background: #F43B00; border-radius: 50%;
     position: absolute; right: 1px; top: -1px; z-index: 500; }
 header .pc_header .login .bell object { display: block; width: 22px; }
-header .pc_header .login .login_icon { display: block; width: 22px; }
+header .pc_header .login .login_icon { display: block; width: 22px; height: 38px;}
+header .pc_header .login .logout_icon { display: block; width: 36px; height: 38px; }
 header .pc_header.active { top: -60px; transition: all 0.25s ease; }
 
 /* 모바일 해더 */
@@ -102,13 +104,14 @@ header .pc_header.active { top: -60px; transition: all 0.25s ease; }
     transition: all .15s cubic-bezier(.25, .46, .45, .94) 0s; z-index: 100; }
 .mobile_header .slide_nav .slide_content { margin-top: 50px; display: flex; flex-flow: column; font-size: 18px; gap: 24px; }
 .mobile_header .slide_nav .slide_bottom { margin-top: 40px; display: flex; justify-content: space-between; align-items: center;}
-.mobile_header .slide_nav .slide_bottom a { display: flex; align-items: center; gap: 20px; font-weight: 700; font-size: 20px;}
-.mobile_header .slide_nav .slide_bottom .mypage-icon { background: url("../images/login-icon.svg") no-repeat;
-    width: 24px; height: 50px; display: inline-block; background-size: 24px; }
-.mobile_header .slide_nav .slide_bottom .bell { display: inline-flex; position: relative; width: 40px; height: 40px;background: white;
-    border-radius: 50%; box-shadow: 0 4px 4px rgba(204, 204, 204, 0.25); justify-content: center; align-items: center;}
-.mobile_header .slide_nav .slide_bottom .bell:before { content: ""; display: block; width: 4px; height: 4px; background: #F43B00; border-radius: 50%;
-    position: absolute; right: 10px; top: 7px; z-index: 500; }
+.mobile_header .slide_nav .slide_bottom a { display: flex; align-items: flex-end; gap: 5px; font-weight: 700; font-size: 18px;}
+.mobile_header .slide_nav .slide_bottom .login_icon { background: url("../images/login-icon.svg") no-repeat;
+    width: 20px; height: 40px; display: inline-block; background-size: 19px; }
+.mobile_header .slide_nav .slide_bottom .logout_icon { background: url("../images/m-login-out-icon.svg") no-repeat;
+    width: 34px; height: 40px; display: inline-block; background-size: 34px; }
+.mobile_header .slide_nav .slide_bottom .txt { padding-bottom: 3px;}
+.mobile_header .slide_nav .slide_bottom .bell { display: inline-flex; position: relative; width: 36px; height: 36px;background: white; border-radius: 50%; box-shadow: 0 4px 4px rgba(204, 204, 204, 0.25); justify-content: center; align-items: center; gap: 0; padding: 8px;}
+.mobile_header .slide_nav .slide_bottom .bell:before { content: ""; display: block; width: 4px; height: 4px; background: #F43B00; border-radius: 50%; position: absolute; right: 6px; top: 7px; z-index: 500; }
 
 /* 모바일 슬라이드 메뉴 on 클래스 넣었을때 */
 .mobile_header.on .m_header { padding: 0 24px; top: 30px; background: transparent; border-color: transparent;}
@@ -141,7 +144,7 @@ textarea { width: 100%; font-family: 'GmarketSans', sans-serif; border-radius: 6
 input::placeholder { font-family: 'GmarketSans', sans-serif; color: #909090; font-size: 16px; transform:translate3d(0,2px,0);}
 textarea::placeholder { font-family: 'GmarketSans', sans-serif; color: #909090; font-size: 16px; }
 input[type="text"],input[type="password"] { width: 100%; }
-.checkbox input[type=checkbox] ,.radio-box input[type=radio] { display:none; }
+.checkbox input[type=checkbox] , .eyes input[type=checkbox] , .radio-box input[type=radio] { display:none; }
 .checkbox input[type=checkbox] + label { display: inline-block; padding-left: 30px; background-repeat: no-repeat;
     background-image:url("../images/disabled.svg"); cursor: pointer; background-size: 24px; line-height: 1.5; transition: all 0.2s ease-in-out; }
 .checkbox input[type=checkbox]:disabled + label { background-image: url("../images/disabled.svg"); }
