@@ -146,6 +146,28 @@ function select_post(checkbox) {
 function delete_post() {
     if (checked.length == 0) {
         alert("삭제할 게시글을 선택해주세요!")
+    } else {
+        let del_con = confirm("정말 "+checked.length+"개의 게시글을 삭제하시겠습니까?")
+
+        if (del_con) {
+            let ids = []
+            checked.forEach((val) => {
+                ids.push(parseInt(val.replace("p_a_", "")))
+            })
+
+            console.log(ids)
+            fetch("/api/diary/delete", {
+                method: "DELETE",
+                credentials: "include",
+                body: JSON.stringify({
+                    post_ids : ids
+                })
+            }).then((response) => {
+                if (response.status === 200) {
+                    location.reload()
+                }
+            })
+        }
     }
 } 
 
@@ -170,6 +192,8 @@ function get_alone_posts(year, month, page) {
             const alone_ul = document.querySelector(".my_record")
             alone_ul.innerHTML = ""
             alone_ul.insertAdjacentHTML("beforeend","<span>글이 존재 하지 않습니다! 하나 작성해보세요!</span>") 
+        } else if (e.status === 422) {
+            location.href = "/login"
         } else {  
             const alone_ul = document.querySelector(".my_record")
             alone_ul.innerHTML = ""
@@ -178,7 +202,7 @@ function get_alone_posts(year, month, page) {
                 let posts = json.posts
                 let amount = json.total
                     let pagediv = document.querySelector("#page_div")
-                    let to_page = amount / 7
+                    let to_page = amount / 3
                     var maxpage
                     if (Number.isInteger(to_page)) {
                         maxpage = to_page
@@ -198,11 +222,11 @@ function get_alone_posts(year, month, page) {
                         endpage = 11
                     }
                     if (page - 1 >= 1) {
-                        document.querySelector(".prev").addEventListener("click", (e) => {e.preventDefault;get_write(g_id,parseInt(page)-1);})
+                        document.querySelector(".prev").addEventListener("click", (e) => {e.preventDefault;get_alone_posts(last_year, lastselmonth ,parseInt(page)-1);})
                     }
 
                     if ( page + 1 <= maxpage ) {
-                        document.querySelector(".next").addEventListener("click", (e) => {e.preventDefault;get_write(g_id,parseInt(page)+1);})
+                        document.querySelector(".next").addEventListener("click", (e) => {e.preventDefault;get_alone_posts(last_year, lastselmonth ,parseInt(page)+1);})
                     }
 
                     pagediv.innerHTML = "";
@@ -228,13 +252,13 @@ function get_alone_posts(year, month, page) {
                             pagediv.insertAdjacentHTML("beforeend", pg_html);
 
                             Array.prototype.forEach.call(pagediv.children,(element) => {
-                                element.addEventListener("click", (e) => {e.preventDefault;get_write(g_id,element.id);})
+                                element.addEventListener("click", (e) => {e.preventDefault;get_alone_posts(last_year, lastselmonth ,element.id);})
                             })
                             
                         }
                     }
                 posts.forEach((post) => {
-                    console.log(post)
+                    //console.log(post)
 
                     var eat_when = "";
                     if (post.eat_when == "morning") {
@@ -249,7 +273,7 @@ function get_alone_posts(year, month, page) {
 
                     let images = JSON.parse(post.images.replace(/'/g, '"'));
 
-                    console.log(images)
+                    //console.log(images)
 
                     let image = "/assets/images/default-background.png"
 
@@ -311,6 +335,8 @@ function get_with_posts(year, month, page) {
             const our_ul = document.querySelector(".our_record");
             our_ul.innerHTML = ""
             our_ul.insertAdjacentHTML("beforeend","<span>글이 존재 하지 않습니다! 하나 작성해보세요!</span>") 
+        } else if (e.status === 422) {
+            location.href = "/login"
         } else {
             const our_ul = document.querySelector(".our_record");
             our_ul.innerHTML = ""
@@ -318,7 +344,7 @@ function get_with_posts(year, month, page) {
                 let posts = json.posts
                 let amount = json.total
                     let pagediv = document.querySelector("#page_div")
-                    let to_page = amount / 7
+                    let to_page = amount / 3
                     var maxpage
                     if (Number.isInteger(to_page)) {
                         maxpage = to_page
@@ -338,11 +364,11 @@ function get_with_posts(year, month, page) {
                         endpage = 11
                     }
                     if (page - 1 >= 1) {
-                        document.querySelector(".prev").addEventListener("click", (e) => {e.preventDefault;get_write(g_id,parseInt(page)-1);})
+                        document.querySelector(".prev").addEventListener("click", (e) => {e.preventDefault;get_with_write(last_year, lastselmonth ,parseInt(page)-1);})
                     }
                     
                     if ( page + 1 <= maxpage ) {
-                        document.querySelector(".next").addEventListener("click", (e) => {e.preventDefault;get_write(g_id,parseInt(page)+1);})
+                        document.querySelector(".next").addEventListener("click", (e) => {e.preventDefault;get_with_write(last_year, lastselmonth ,parseInt(page)+1);})
                     }
 
                     pagediv.innerHTML = "";
@@ -368,7 +394,7 @@ function get_with_posts(year, month, page) {
                             pagediv.insertAdjacentHTML("beforeend", pg_html);
 
                             Array.prototype.forEach.call(pagediv.children,(element) => {
-                                element.addEventListener("click", (e) => {e.preventDefault;get_write(g_id,element.id);})
+                                element.addEventListener("click", (e) => {e.preventDefault;get_with_write(g_id,element.id);})
                             })
                             
                         }
