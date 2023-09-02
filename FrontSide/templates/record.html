@@ -16,6 +16,7 @@
         var last_year = 2023;
         var lastselmonth = 1;
         var last_page = 1;
+        var checked = [];
     </script>
 </head>
 <body>
@@ -116,11 +117,11 @@
             </div>
             <div class="check_item">
                 <div class="checkbox">
-                    <input id="checkall" type="checkbox">
+                    <input name="post" id="checkall" onclick="select_all(this)" type="checkbox">
                     <label for="checkall">전체선택</label>
                 </div>
                 <div class="btn">
-                    <a href="javascript:">삭제</a>
+                    <a id="rem_post" onclick="delete_post()" href="javascript:">삭제</a>
                 </div>
             </div>
             <div class="record_box">

@@ -3,7 +3,7 @@
 import { toast } from "./toast.js";
 
 window.addEventListener('DOMContentLoaded', async function () {
-    if (this.location.href.includes("login") || this.location.href.includes("register") || this.location.href.includes("findaccount")){
+    if (this.location.href.includes("login") || this.location.href.includes("register")){
       document.querySelector(".loading").style.display = "none"
       if (this.location.href.includes("login")) {
         if (this.location.href.includes("?")) {
@@ -14,6 +14,13 @@ window.addEventListener('DOMContentLoaded', async function () {
         }
       }
     }else{loading.style.display = "flex";verify_token();}
+
+    logouts.forEach((ele) => {
+      ele.addEventListener("click", (e) => {
+        e.preventDefault();
+        logout();
+      })
+    })
 });
 
 // 로그인
@@ -42,6 +49,8 @@ const private_radio = document.querySelector("#private_radio");
 const rstpw_button = document.querySelector("#rstpw_submit");
 const rstpw_email = document.querySelector("#rstpw_email");
 
+const logins = document.querySelectorAll("#login");
+const logouts = document.querySelectorAll("#logout");
 
 
 if (location.href.includes("findaccount")) {
@@ -138,7 +147,7 @@ if (location.href.includes("findaccount")) {
   async function LoadCookie(){
     let lo_access_token = localStorage.getItem("access_token")
     let lo_refresh_token = localStorage.getItem("refresh_token")
-    if (location.href.includes("login") == false && location.href.includes("register") == false) {
+    if (location.href.includes("login") == false && location.href.includes("register") == false && this.location.href.includes("findaccount") == false && this.location.href != this.location.origin+"/") {
       if(lo_access_token == null || lo_refresh_token == null || lo_access_token.length < 22 || lo_refresh_token.length < 22) {
         console.log("here?")
         localStorage.clear()
@@ -193,7 +202,9 @@ async function verify_token() {
                   loading.style.display = 'none';
               }else if (response.status === 307 || response.status === 401) {
                 localStorage.clear();
-                location.href = "/login";
+                if (location.href != location.origin+"/") {
+                  location.href = "/login";
+                }
               }else{
                   response.json().then(async (json) => {
                       let detail_error = json.detail;
@@ -210,10 +221,28 @@ async function verify_token() {
           } else {
             response.json().then(async (json) => {
               loading.style.display = "none"
+              logins.forEach((ele) => {ele.style.display = "none"})
+              logouts.forEach((ele) => {ele.style.display = ""})
               resolve(json[1])
             })
           }
       })
+  })
+}
+
+
+
+async function logout() {
+  fetch("/api/user/logout", {
+    method: "GET"
+  }).then((response) => {
+    if (response.status === 200) {
+      localStorage.clear();
+      location.href = "/";
+    } else {
+      toast("로그아웃중 서버 오류가 발생했습니다.\n콘솔의 오류사항을 고객센터로 제보해주시기 바랍니다.")
+      response.json().then((response) => { console.error(response)})
+    }
   })
 }
 

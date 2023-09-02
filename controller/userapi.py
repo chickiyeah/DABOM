@@ -365,6 +365,14 @@ async def email(email:str):
     res = auth.get_user_by_email(email).uid
     return res
 
+@userapi.get('/logout')
+async def logout(response: Response):
+    response.delete_cookie(key="access_token")
+    response.delete_cookie(key="refresh_token")
+    response.delete_cookie(key="userId")
+    
+    return True
+
 @userapi.get('/cookie/autologin')
 async def f_verify_token(response: Response, access_token: str, refresh_token:str):
     try:

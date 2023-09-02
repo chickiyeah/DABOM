@@ -56,8 +56,8 @@
 .right_menu .bell_menu .bell_item { display: flex; align-items: center; gap: 10px; }
 .right_menu .bell_menu .bell_item .profile_img { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; }
 .right_menu .bell_menu .bell_item .txt_box { text-align: center; white-space: nowrap; }
-.right_menu .bell_menu .bell_item .txt_box p:first-child { font-size: 14px; line-height: 1.6; }
-.right_menu .bell_menu .bell_item .txt_box p:last-child { font-size: 12px; }
+.right_menu .bell_menu .bell_item .txt_box p:first-child { font-size: 16px; line-height: 1.6; }
+.right_menu .bell_menu .bell_item .txt_box p { font-size: 13px; }
 .right_menu .bell_menu .bell_item + .bell_item { margin-top: 15px; }
 
 /* ==============================================================
