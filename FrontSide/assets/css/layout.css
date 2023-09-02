@@ -45,8 +45,8 @@
 }
 .right_menu .bell , .right_menu .setting { display: inline-flex; position: relative; width: 38px; height: 38px;background: white;
     border-radius: 50%; box-shadow: 0 4px 4px rgba(204, 204, 204, 0.25); justify-content: center; align-items: center; padding: 10px;}
-.right_menu .bell #bell_new_alert { content: ""; display: none; width: 5px; height: 5px; background: #F43B00; border-radius: 50%;
-    position: absolute; right: 8px; top: 7px; z-index: 500; }
+.right_menu .bell #bell_new_alert { content: ""; display: none; width: 4px; height: 4px; background: #F43B00; border-radius: 50%;
+    position: absolute; right: 8px; top: 9px; z-index: 500; }
 .right_menu .setting_menu { position: absolute; right: -20px; top: 55px; background: #FFFFFF;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25); border-radius: 6px; padding: 10px; z-index: 500; display: none; }
 .right_menu .bell_menu { position: absolute; right :0; top: 55px; background: #FFFFFF;
@@ -68,9 +68,9 @@ header .pc_header { display: flex; align-items: center; margin: 0 35px; height: 
 header .pc_header .menu { display: flex; gap: 10px; font-size: 14px; }
 header .pc_header .logo { position: absolute; left: 50%; transform: translateX(-50%); }
 header .pc_header .logo a { display: block; width: 60px;}
-header .pc_header .login { display: flex; align-items: center; gap: 20px; margin-left: auto;}
+header .pc_header .login { display: flex; align-items: center; gap: 8px; margin-left: auto;}
 header .pc_header .login .bell { display: inline-flex; position: relative; width: 40px; height: 40px;background: white;
-    border-radius: 50%; box-shadow: 0 4px 4px rgba(204, 204, 204, 0.25); justify-content: center; align-items: center; }
+    border-radius: 50%; justify-content: center; align-items: center; }
 header .pc_header .login .bell img:hover { 
     transform-origin: 50% 0%;
       animation-name: shake;
@@ -78,7 +78,7 @@ header .pc_header .login .bell img:hover {
       animation-iteration-count: infinite;
       animation-delay: 0.5s; 
 }
-header .pc_header .login  .bell #bell_new_alert { content: ""; display: none; width: 5px; height: 5px; background: #F43B00; border-radius: 50%;
+header .pc_header .login  .bell #bell_new_alert { content: ""; display: none; width: 4px; height: 4px; background: #F43B00; border-radius: 50%;
     position: absolute; right: 8px; top: 7px; z-index: 500; }
 header .pc_header .login .bell object { display: block; width: 22px; }
 header .pc_header .login .login_icon { display: block; width: 36px; height: 38px; }
@@ -207,16 +207,16 @@ input[type="text"],input[type="password"] { width: 100%; }
         transform: rotate(0deg);
     }
     10%{
-        transform: rotate(35deg);
-    }
-    20%{
-        transform: rotate(-35deg);
-    }
-    30%{
         transform: rotate(20deg);
     }
-    40%{
+    20%{
         transform: rotate(-20deg);
+    }
+    30%{
+        transform: rotate(15deg);
+    }
+    40%{
+        transform: rotate(-15deg);
     }
     50%{
         transform: rotate(10deg);

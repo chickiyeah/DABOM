@@ -188,6 +188,8 @@ function get_alone_posts(year, month, page) {
             const alone_ul = document.querySelector(".my_record")
             alone_ul.innerHTML = ""
             alone_ul.insertAdjacentHTML("beforeend","<span>글이 존재 하지 않습니다! 하나 작성해보세요!</span>") 
+        } else if (e.status === 422) {
+            location.href = "/login"
         } else {  
             const alone_ul = document.querySelector(".my_record")
             alone_ul.innerHTML = ""
@@ -329,6 +331,8 @@ function get_with_posts(year, month, page) {
             const our_ul = document.querySelector(".our_record");
             our_ul.innerHTML = ""
             our_ul.insertAdjacentHTML("beforeend","<span>글이 존재 하지 않습니다! 하나 작성해보세요!</span>") 
+        } else if (e.status === 422) {
+            location.href = "/login"
         } else {
             const our_ul = document.querySelector(".our_record");
             our_ul.innerHTML = ""

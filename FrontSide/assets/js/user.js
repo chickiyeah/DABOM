@@ -202,9 +202,11 @@ async function verify_token() {
                   loading.style.display = 'none';
               }else if (response.status === 307 || response.status === 401) {
                 localStorage.clear();
-                if (location.href != location.origin+"/") {
+                document.querySelector(".loading").style.display = "none"
+                if (location.href != location.origin+"/" && location.href.includes("login") == false && location.href.includes("register") == false && this.location.href.includes("findaccount") == false) {
                   location.href = "/login";
                 }
+                
               }else{
                   response.json().then(async (json) => {
                       let detail_error = json.detail;
