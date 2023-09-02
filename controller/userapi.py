@@ -18,6 +18,8 @@ import sys
 import ctypes
 from email import utils
 
+from firebase_admin import exceptions
+
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -717,16 +719,89 @@ async def user_login(userdata: UserLogindata, request: Request, response: Respon
     verify = auth.get_user(currentuser['localId'])
     print(verify.email_verified)
     if verify.email_verified == False:
-        """
-        res = auth.generate_email_verification_link(email, action_code_settings=None, app=None)
+        try:
+            res = auth.generate_email_verification_link(email, action_code_settings=None, app=None)
+        except exceptions.InvalidArgumentError as exception:
+            raise HTTPException(status_code=400, detail=er040)
+        
         message = res.replace("lang=en", "lang=ko")
-        msg = EmailMessage()
+        
+        msg = MIMEMultipart('alternative')
         msg['Subject'] = '[다봄] 이메일을 인증하세요'
-        msg['From'] = "noreply.enote@gmail.com"
+        msg['From'] = utils.formataddr(("다봄","noreply.dabom@gmail.com"))
         msg['To'] = email
-        msg.set_content("아래 링크를 클릭해서 이메일을 인증하세요.\n"+message)
+
+        text = "이메일 인증"
+        html = """\
+        <html>
+        <head></head>
+        <body>
+            <div>
+                <xlink href="//fonts.googleapis.com/css?family=Google+Sans" rel="stylesheet" type="text/css"
+                    <tr align="center" height="32" style="height: 32px;">
+                        <td>
+                            <table border="0" cellspacing="0" cellpadding="0"
+                            style="padding-bottom: 20px; max-width: 516px; min-width: 220px; margin-left:auto; margin-right:auto; margin-top:6rem">
+                                <tbody>
+                                <tr>
+                                <td>
+                                    <div align="center" style="border-style: solid; border-width: thin; border-color:#dadce0; border-radius: 8px; padding: 40px 20px;">
+                                        <img src='https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabomlogo.png?alt=media&token=8b895151-37d3-4bbe-ae65-efdd6adb6ff7' width="74" height="54" style="margin-bottom: 16px;" loading="lazy"/>
+                                        <div style="font-family: 'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif;border-bottom: thin solid #dadce0; color: rgba(0,0,0,0.87); line-height: 32px; padding-bottom: 24px;text-align: center; word-break: break-word;><div style="font-size: 24px;">
+                                            <a style="text-decoration: none; color: rgba(0,0,0,0.87);" rel="noreferrer noopener"target="_blank"></a> 계정 이메일 인증
+                                        </div>
+                                            <div style="font-family: Roboto-Regular,Helvetica,Arial,sans-serif; font-size: 14px; color: rgba(0,0,0,0.87); line-height: 20px;padding-top: 20px; text-align: center;">    
+                                                <p> 이메일 미인증 상태의 아이디의 로그인이 감지되어 이메일 인증 링크가 전송되었습니다.</p>
+                                                <p> 아래 링크를 클릭하여 이메일 인증을 완료 하실수 있습니다. </p>
+                                                <br>
+                                                <a href='{0}'> 이메일 인증하기 </a>
+                                                <br>
+                                                <br>
+                                                <strong>만약 본인이 요청하지 않은거라면 이 메일을 무시하세요.</strong>
+                                                <br>
+                                                <br>
+                                                <p>※ 본 메일은 발신 전용 메일이며,</p>
+                                                <p>자세한 문의사항은 다봄 <a href="https://dabom.channel.io/home"><strong>고객센터</strong></a>를 이용해 주시기 바랍니다.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td></tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </div>
+        </body>
+        </html>
+        """.format(message)
+        
+                        # Record the MIME types of both parts - text/plain and text/html.
+        part1 = MIMEText(text, 'plain')
+        part2 = MIMEText(html, 'html')
+
+                # Attach parts into message container.
+                # According to RFC 2046, the last part of a multipart message, in this case
+                # the HTML message, is best and preferred.
+        msg.attach(part1)
+        msg.attach(part2)
+
+        try:
+            s.sendmail("noreply.dabom@gmail.com", email, msg.as_string())
+        except smtplib.SMTPServerDisconnected:
+            d = smtplib.SMTP("smtp.gmail.com", 587)
+            d.ehlo()
+            d.starttls()
+            d.login("noreply.dabom", "sxhmurnajtenjtbr")
+            d.sendmail("noreply.dabom@gmail.com", email, msg.as_string())
+        except smtplib.SMTPSenderRefused: #sender refused to send message
+            d = smtplib.SMTP("smtp.gmail.com", 587)
+            d.ehlo()
+            d.starttls()
+            d.login("noreply.dabom", "sxhmurnajtenjtbr")
+            d.sendmail("noreply.dabom@gmail.com", email, msg.as_string())     
+
+        #msg.set_content("아래 링크를 클릭해서 이메일을 인증하세요.\n"+message)
         s.send_message(msg)
-        """
         raise HTTPException(status_code=400, detail=Email_Not_Verified)
 
     

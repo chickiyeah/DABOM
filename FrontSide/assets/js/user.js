@@ -308,7 +308,7 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
             document.querySelector(".loading").style.display = 'none';
           }else if(detail.code == "ER012"){
             reject( new Error("이메일 인증이 필요합니다"));
-            loginVal.insertAdjacentHTML('afterbegin', '<p>이메일 인증이 필요합니다</p>' );
+            loginVal.insertAdjacentHTML('afterbegin', '<p>이메일 인증이 필요합니다.\n이메일로 인증메일이 발송되었습니다.</p>' );
             document.querySelector(".loading").style.display = 'none';
           }else if(detail.code == "ER040"){
             reject( new Error("너무 많은 시도가 있었습니다. 나중에 시도해주세요."));
