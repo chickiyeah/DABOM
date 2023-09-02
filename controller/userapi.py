@@ -18,6 +18,8 @@ import sys
 import ctypes
 from email import utils
 
+from firebase_admin import exceptions
+
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -717,9 +719,14 @@ async def user_login(userdata: UserLogindata, request: Request, response: Respon
     verify = auth.get_user(currentuser['localId'])
     print(verify.email_verified)
     if verify.email_verified == False:
-        res = auth.generate_email_verification_link(email, action_code_settings=None, app=None)
+        try:
+            res = auth.generate_email_verification_link(email, action_code_settings=None, app=None)
+        except exceptions.InvalidArgumentError as exception:
+            raise HTTPException(status_code=400, detail=er040)
+        
         message = res.replace("lang=en", "lang=ko")
-        msg = EmailMessage()
+        
+        msg = MIMEMultipart('alternative')
         msg['Subject'] = '[다봄] 이메일을 인증하세요'
         msg['From'] = utils.formataddr(("다봄","noreply.dabom@gmail.com"))
         msg['To'] = email
@@ -751,10 +758,6 @@ async def user_login(userdata: UserLogindata, request: Request, response: Respon
                                                 <br>
                                                 <br>
                                                 <strong>만약 본인이 요청하지 않은거라면 이 메일을 무시하세요.</strong>
-                                                <br>
-                                                <br>
-                                                <p>회원님의 비밀번호는 암호화되어 저장되어 기존 비밀번호를 복구해 드릴수 없습니다.</p>
-                                                <br>  
                                                 <br>
                                                 <br>
                                                 <p>※ 본 메일은 발신 전용 메일이며,</p>
