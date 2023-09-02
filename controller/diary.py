@@ -117,8 +117,8 @@ async def post_get(request:Request, authorized: bool = Depends(verify_token)):
     if authorized:
         
         json = await request.json()
-        count = len(execute_sql(f"SELECT no from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND `with` = 'alone'"))
-        res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND `with` = 'alone' LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
+        count = len(execute_sql(f"SELECT no from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND `with` = 'alone' AND `no` NOT LIKE 'DELETED%'"))
+        res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND `with` = 'alone' AND `no` NOT LIKE 'DELETED%' LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
 
         if len(res) == 0:
             raise HTTPException(404, post_not_found)
@@ -136,8 +136,8 @@ async def post_get(request:Request, authorized: bool = Depends(verify_token)):
     if authorized:
         json = await request.json()
 
-        count = len(execute_sql(f"SELECT no from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND (`with` = 'friend' OR `with` = 'couple')"))
-        res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND (`with` = 'friend' OR `with` = 'couple') LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
+        count = len(execute_sql(f"SELECT no from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND (`with` = 'friend' OR `with` = 'couple') AND `no` NOT LIKE 'DELETED%'"))
+        res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND (`with` = 'friend' OR `with` = 'couple') AND `no` NOT LIKE 'DELETED%' LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
 
         if len(res) == 0:
             raise HTTPException(404, post_not_found)
@@ -179,16 +179,23 @@ async def post_update(data:update_diary, authorized: bool = Depends(verify_token
 async def post_delete(request: Request, authorzed: bool = Depends(verify_token)):
     if authorzed:
         data = await request.json()
-
-        print(data)
-
-        no = data.no
-        note = execute_sql("SELECT `NO`, `제목` FROM UserEat WHERE ID = %s" % authorzed[1])
-        if len(note) == 0:
-            raise HTTPException(404, post_not_found)
+        post_ids = data['post_ids']
+        notes = execute_sql("SELECT `no` FROM UserEat WHERE `id` = '%s'" % authorzed[1])
+        note_num = []
+        for note in notes:
+            if not "DELETED" in note:
+                note_num.append(int(note['no']))
         
-        if no != int(note[0]['NO']):
-            raise HTTPException(403, post_not_owner)
-        
-        execute_sql("UPDATE UserEat SET `NO` = '%s', `제목` = '%s' WHERE `NO` = %s" % ("DELETED-"+no, "DELETED-"+note[0]['제목'], no))
+        sqls = []
+        for post_id in post_ids:
+            print(post_id)
+            print(post_id in note_num)
+            sql = f"UPDATE UserEat SET `no` = 'DELETED-{post_id}' WHERE `no` = {post_id}"
+            sqls.append(sql)
+            if not post_id in note_num:
+                raise HTTPException(403, post_not_owner)
+
+        for sql in sqls:
+            execute_sql(sql)
+
         return "글을 삭제하였습니다."

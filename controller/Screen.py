@@ -97,3 +97,7 @@ async def friend(request: Request):
 @ScreenRoute.get("/mypage")
 async def friend(request: Request):
     return templates.TemplateResponse("mypage.html", {"request":request})
+
+@ScreenRoute.get("/unregister")
+async def friend(request: Request):
+    return templates.TemplateResponse("unregister.html", {"request":request})

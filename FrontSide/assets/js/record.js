@@ -162,6 +162,10 @@ function delete_post() {
                 body: JSON.stringify({
                     post_ids : ids
                 })
+            }).then((response) => {
+                if (response.status === 200) {
+                    location.reload()
+                }
             })
         }
     }
@@ -198,7 +202,7 @@ function get_alone_posts(year, month, page) {
                 let posts = json.posts
                 let amount = json.total
                     let pagediv = document.querySelector("#page_div")
-                    let to_page = amount / 7
+                    let to_page = amount / 3
                     var maxpage
                     if (Number.isInteger(to_page)) {
                         maxpage = to_page
@@ -218,11 +222,11 @@ function get_alone_posts(year, month, page) {
                         endpage = 11
                     }
                     if (page - 1 >= 1) {
-                        document.querySelector(".prev").addEventListener("click", (e) => {e.preventDefault;get_write(g_id,parseInt(page)-1);})
+                        document.querySelector(".prev").addEventListener("click", (e) => {e.preventDefault;get_alone_posts(last_year, lastselmonth ,parseInt(page)-1);})
                     }
 
                     if ( page + 1 <= maxpage ) {
-                        document.querySelector(".next").addEventListener("click", (e) => {e.preventDefault;get_write(g_id,parseInt(page)+1);})
+                        document.querySelector(".next").addEventListener("click", (e) => {e.preventDefault;get_alone_posts(last_year, lastselmonth ,parseInt(page)+1);})
                     }
 
                     pagediv.innerHTML = "";
@@ -248,7 +252,7 @@ function get_alone_posts(year, month, page) {
                             pagediv.insertAdjacentHTML("beforeend", pg_html);
 
                             Array.prototype.forEach.call(pagediv.children,(element) => {
-                                element.addEventListener("click", (e) => {e.preventDefault;get_write(g_id,element.id);})
+                                element.addEventListener("click", (e) => {e.preventDefault;get_alone_posts(last_year, lastselmonth ,element.id);})
                             })
                             
                         }
@@ -340,7 +344,7 @@ function get_with_posts(year, month, page) {
                 let posts = json.posts
                 let amount = json.total
                     let pagediv = document.querySelector("#page_div")
-                    let to_page = amount / 7
+                    let to_page = amount / 3
                     var maxpage
                     if (Number.isInteger(to_page)) {
                         maxpage = to_page
@@ -360,11 +364,11 @@ function get_with_posts(year, month, page) {
                         endpage = 11
                     }
                     if (page - 1 >= 1) {
-                        document.querySelector(".prev").addEventListener("click", (e) => {e.preventDefault;get_write(g_id,parseInt(page)-1);})
+                        document.querySelector(".prev").addEventListener("click", (e) => {e.preventDefault;get_with_write(last_year, lastselmonth ,parseInt(page)-1);})
                     }
                     
                     if ( page + 1 <= maxpage ) {
-                        document.querySelector(".next").addEventListener("click", (e) => {e.preventDefault;get_write(g_id,parseInt(page)+1);})
+                        document.querySelector(".next").addEventListener("click", (e) => {e.preventDefault;get_with_write(last_year, lastselmonth ,parseInt(page)+1);})
                     }
 
                     pagediv.innerHTML = "";
@@ -390,7 +394,7 @@ function get_with_posts(year, month, page) {
                             pagediv.insertAdjacentHTML("beforeend", pg_html);
 
                             Array.prototype.forEach.call(pagediv.children,(element) => {
-                                element.addEventListener("click", (e) => {e.preventDefault;get_write(g_id,element.id);})
+                                element.addEventListener("click", (e) => {e.preventDefault;get_with_write(g_id,element.id);})
                             })
                             
                         }
