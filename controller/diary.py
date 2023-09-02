@@ -176,8 +176,12 @@ async def post_update(data:update_diary, authorized: bool = Depends(verify_token
         return "글이 업데이트 되었습니다."
     
 @diaryapi.delete('/delete')
-async def post_delete(data: delete_diary, authorzed: bool = Depends(verify_token)):
+async def post_delete(request: Request, authorzed: bool = Depends(verify_token)):
     if authorzed:
+        data = await request.json()
+
+        print(data)
+
         no = data.no
         note = execute_sql("SELECT `NO`, `제목` FROM UserEat WHERE ID = %s" % authorzed[1])
         if len(note) == 0:

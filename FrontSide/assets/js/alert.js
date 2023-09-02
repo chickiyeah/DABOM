@@ -10,7 +10,7 @@ var alertsocket
 
 const loading = document.querySelector(".loading");
 const alert_list = document.querySelector(".bell_menu");
-const bell_new_alert = document.querySelector("#bell_new_alert");
+const bell_new_alert = document.querySelectorAll("#bell_new_alert");
 const bell = document.querySelectorAll(".bell");
 
 var page = 1
@@ -84,9 +84,9 @@ async function get_unread_amount() {
         res.json().then((json) => {
             let amount = json.amount
             if (amount > 0) {
-                bell_new_alert.style.display = 'block'
+                bell_new_alert.forEach((ele) => ele.style.display = 'block')
             } else {
-                bell_new_alert.style.display = 'none'
+                ell_new_alert.forEach((ele) => ele.style.display = 'none')
             }
         })
     })

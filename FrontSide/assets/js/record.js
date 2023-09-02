@@ -146,6 +146,24 @@ function select_post(checkbox) {
 function delete_post() {
     if (checked.length == 0) {
         alert("삭제할 게시글을 선택해주세요!")
+    } else {
+        let del_con = confirm("정말 "+checked.length+"개의 게시글을 삭제하시겠습니까?")
+
+        if (del_con) {
+            let ids = []
+            checked.forEach((val) => {
+                ids.push(parseInt(val.replace("p_a_", "")))
+            })
+
+            console.log(ids)
+            fetch("/api/diary/delete", {
+                method: "DELETE",
+                credentials: "include",
+                body: JSON.stringify({
+                    post_ids : ids
+                })
+            })
+        }
     }
 } 
 
@@ -234,7 +252,7 @@ function get_alone_posts(year, month, page) {
                         }
                     }
                 posts.forEach((post) => {
-                    console.log(post)
+                    //console.log(post)
 
                     var eat_when = "";
                     if (post.eat_when == "morning") {
@@ -249,7 +267,7 @@ function get_alone_posts(year, month, page) {
 
                     let images = JSON.parse(post.images.replace(/'/g, '"'));
 
-                    console.log(images)
+                    //console.log(images)
 
                     let image = "/assets/images/default-background.png"
 
