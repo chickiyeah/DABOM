@@ -16,10 +16,9 @@ const bell = document.querySelectorAll(".bell");
 var page = 1
 
 async function get_alerts(page) {
-    if (location.href != "/") {
-        await verify_token()
-    }
+    await verify_token()
     
+    alert_list.innerHTML = ''
     loading.style.display = 'flex';
     let access_token = sessionStorage.getItem("access_token")
     fetch(`/api/alert/alerts?page=${page}`, {
@@ -95,7 +94,7 @@ async function get_unread_amount() {
 
 async function verify_token() {
     return new Promise(async function(resolve, reject) {
-        fetch("/api/user/cookie/get_info",{ methon: 'GET', credentials: "include" }).then(async (res) => {if (res.status === 200) { res.json().then(async (json) => {loading.style.display = "none";resolve(json)})} else {}})
+        fetch("/api/user/cookie/get_info",{ methon: 'GET', credentials: "include" }).then(async (res) => {if (res.status === 200) { res.json().then(async (json) => {loading.style.display = "none";resolve(json)})} else {loading.style.display = "none";}})
     })
   }
 
