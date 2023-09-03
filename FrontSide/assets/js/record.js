@@ -233,7 +233,7 @@ function get_alone_posts(year, month, page) {
                     if (amount === 0) {
                         pagediv.insertAdjacentHTML("beforeend", `<a class="selected" href="javascript:">1</a>`)
                     }else{
-                        if (page > maxpage) {
+                        if (page > maxpage) {ㄹ
                             //비정상 접근 시도 새로고침
                             location.reload();
                         }else if (page < 1) {
@@ -287,7 +287,7 @@ function get_alone_posts(year, month, page) {
                                 <img alt="식단 이미지" src="${image}">
                             </div>
                             <div class="info_box">
-                                <h2>${post.title}</h2>
+                                <h2 onclick='window.open(\"record_my?id=${post.no}\")' style="cursor:pointer">${post.title}</h2>
                                 <p class="date">05/03</p>
                                 <p class="txt_info">${post.desc}</p>
                                 <div class="bottom">
@@ -430,7 +430,7 @@ function get_with_posts(year, month, page) {
                                     <img alt="식단 이미지" src="${image}">
                                 </a>
                                 <div class="info_box">
-                                    <h2>${post.title}</h2>
+                                    <h2 onclick='window.open(\"record_my?id=${post.no}\")' style="cursor:pointer">${post.title}</h2>
                                     <p class="date">05/03</p>
                                     <p class="txt_info">오늘은 피그마로 디자인을 너무 열심히 한 탓에 허기가지고
                                         머리가 안돌아가서 타코야끼랑 딸기바나를 먹었지 당떨어지면 달달한게 최고야</p>

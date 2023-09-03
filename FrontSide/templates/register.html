@@ -38,7 +38,7 @@
     <script> var h_f_link = ""; </script>
     <script type="module" src="/assets/js/fileupload.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script> var checked = [] </script>
+    <script> var checked = []; var gender = "male" </script>
 </head>
 <body>
 <main>
@@ -55,7 +55,7 @@
                     <input type="file" name="file" id="input">
                     <label class="profile_img_box" for="input">
                         <span class="profile_img">
-                             <img src="/assets/images/default-profile.png" alt="프로필이미지">
+                             <img id="pf_pro_image" src="/assets/images/default-profile.png" alt="프로필이미지">
                         </span>
                         <i class="camera_icon"></i>
                     </label>
@@ -121,11 +121,11 @@
                     </div>
                 </div>
                 <p class="caution">* 해당 사이트는 참고용입니다. 정확한 필요 섭취량은 의사와 상담하세요.</p>
-                <button type="submit" id="join_btn">가입하기</button>
+                <button type="button" onclick="register()" id="join_btn">가입하기</button>
             </form>
         </div>
     </div>
 </main>
 </body>
-<script type="module" src="/assets/js/user.js"></script>
+<script src="/assets/js/register.js"></script>
 </html>

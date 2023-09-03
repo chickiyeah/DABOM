@@ -30,6 +30,11 @@ async function handleFiles() {
     if (location.href.includes("diary_add")) {
         location.href = "/diary_update"
     }
+
+    if (location.href.includes("register")) {
+      document.querySelector("#pf_pro_image").src = files[0]
+      loading.style.display = 'none';
+    }
 }
 
 function makeRequest(extentsion, file, formdata) {
@@ -59,6 +64,7 @@ function makeRequest(extentsion, file, formdata) {
             if (location.href.includes('chat')) {
                 var count = file.name.split('.').length - 1
                 let extentsion = file.name.split('.')[count]
+                file.name = file.name.replace(" ", "_")
                 let type = file.type
                 var msg
                 if(type == '') {

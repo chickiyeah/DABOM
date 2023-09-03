@@ -190,12 +190,17 @@ async def delete_all(username: str, channel: str):
 
 @chat.post("/uploadfile")
 async def upload(ext:str, image: UploadFile = File(), access_token: Optional[str] = Cookie(None)):
-    user = auth.verify_id_token(access_token, check_revoked=True)
-    uid = user['user_id']
-    now = str(datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"))
+    now = str(datetime.now(KST).strftime("%Y-%m-%d_%H:%M:%S"))
+    try:
+        user = auth.verify_id_token(access_token, check_revoked=True)
+        uid = user['user_id']
+    except:
+        uid = "register_"+now
+
+    
     a = Storage.child("/dabom/"+uid+"/"+ext).put(image.file)
     #print(a)
-    #print("https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+authorized[1]+"%2F"+str(now)+"?alt=media&token="+a['downloadTokens'])
+    print("https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+uid+"%2F"+ext+"?alt=media&token="+a['downloadTokens'])
     return "https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+uid+"%2F"+ext+"?alt=media&token="+a['downloadTokens']
 
 

@@ -843,7 +843,7 @@ async def user_create(userdata: UserRegisterdata):
             if(re.search('(([a-zA-Z0-9])\\2{3,})', password)):
                 raise HTTPException(status_code=400, detail=Too_Many_Duplicate_Characters)
 
-    if not gender == "male" or gender == "female" or gender == "private":
+    if gender != "male" and gender != "female" and gender != "private":
         raise HTTPException(400, gender_choose_error)
     
     if birthday.count("/") != 2:
@@ -894,7 +894,8 @@ async def user_create(userdata: UserRegisterdata):
     if not weight.isdecimal() and not weight == "":
         raise HTTPException(400, weight_type_error)
     
-    if image == "":
+
+    if "/assets/images/default-profile.png" in image :
         image = "../assets/images/default-profile.png"
     
     
@@ -978,7 +979,7 @@ async def user_create(userdata: UserRegisterdata):
         d.sendmail("noreply.dabom@gmail.com", email, msg.as_string())       
 
     execute_sql(f"INSERT INTO infomsg (ID, message) VALUES ('{id}','없음')")
-    sql = "INSERT INTO user VALUES (\""+email+"\",\""+id+"\",\""+nickname+"\",\""+str(now.strftime("%Y-%m-%d %H:%M:%S"))+"\",\""+gender+"\",\""+str(age)+"\",\""+height+"\",\""+weight+"\", \"[]\", '[]', 'False',  '[]', \""+str(t_birthday.strftime("%Y-%m-%d"))+"\",'"+image+"')"
+    sql = "INSERT INTO user VALUES (\""+email+"\",\""+id+"\",\""+nickname+"\",\""+str(now.strftime("%Y-%m-%d %H:%M:%S"))+"\",\""+gender+"\",\""+str(age)+"\",\""+height+"\",\""+weight+"\", \"[]\", '[]', 'False',  '[]', \""+str(t_birthday.strftime("%Y-%m-%d"))+"\",'"+image+"', '[]')"
     res = execute_sql(sql)
     if res != 1:
         raise HTTPException(500, "ERROR ON CREATE DATA FOR NEW USER")

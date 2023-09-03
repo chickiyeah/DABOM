@@ -69,20 +69,15 @@ header .pc_header .menu { display: flex; gap: 10px; font-size: 14px; }
 header .pc_header .logo { position: absolute; left: 50%; transform: translateX(-50%); }
 header .pc_header .logo a { display: block; width: 60px;}
 header .pc_header .login { display: flex; align-items: center; gap: 8px; margin-left: auto;}
-header .pc_header .login .bell { display: inline-flex; position: relative; width: 40px; height: 40px;background: white;
+header .pc_header .login .bell { display: inline-flex; position: relative; width: 40px; height: 26px;background: white;
     border-radius: 50%; justify-content: center; align-items: center; }
-header .pc_header .login .bell img:hover { 
-    transform-origin: 50% 0%;
-      animation-name: shake;
-      animation-duration: 2s;
-      animation-iteration-count: infinite;
-      animation-delay: 0.5s; 
-}
-header .pc_header .login  .bell #bell_new_alert { content: ""; display: none; width: 4px; height: 4px; background: #F43B00; border-radius: 50%;
-    position: absolute; right: 8px; top: 7px; z-index: 500; }
+header .pc_header .login .bell img { height: 100%; }
+/* 종 애니메이션 효과 */
+header .pc_header .login .bell img:hover {  animation-delay: 0.5s; animation: shake 1.35s infinite ease-in-out; }
+header .pc_header .login  .bell #bell_new_alert { content: ""; display: none; width: 4px; height: 4px; background: #F43B00; border-radius: 50%; position: absolute; right: 8px; top: 0px; z-index: 500; }
 header .pc_header .login .bell object { display: block; width: 22px; }
-header .pc_header .login .login_icon { display: block; width: 36px; height: 38px; }
-header .pc_header .login .logout_icon { display: block; width: 36px; height: 38px; }
+header .pc_header .login .login_icon { display: block; width: 36px; height: 38px; margin-top: 2px;}
+header .pc_header .login .logout_icon { display: block; width: 36px; height: 38px; margin-top: 2px;}
 header .pc_header.active { top: -60px; transition: all 0.25s ease; }
 
 /* 모바일 해더 */
@@ -119,15 +114,10 @@ header .pc_header.active { top: -60px; transition: all 0.25s ease; }
 .mobile_header .slide_nav .slide_bottom .txt { padding-bottom: 3px;}
 .mobile_header .slide_nav .slide_bottom .bell { display: inline-flex; position: relative; width: 40px; height: 40px;background: white;
     border-radius: 50%; box-shadow: 0 4px 4px rgba(204, 204, 204, 0.25); justify-content: center; align-items: center; }
-.mobile_header .slide_nav .slide_bottom .bell img:hover { 
-    transform-origin: 50% 0%;
-      animation-name: shake;
-      animation-duration: 2s;
-      animation-iteration-count: infinite;
-      animation-delay: 0.5s; 
-}
-.mobile_header .slide_nav .slide_bottom .bell #bell_new_alert { content: ""; display: none; width: 5px; height: 5px; background: #F43B00; border-radius: 50%;
-    position: absolute; right: 8px; top: 7px; z-index: 500; }
+/* 모바일 종 애니메아션 효과  */
+.mobile_header .slide_nav .slide_bottom .bell img:hover { animation-delay: 0.5s; animation: shake 1.35s infinite ease-in-out;}
+.mobile_header .slide_nav .slide_bottom .bell #bell_new_alert { content: ""; display: none; width: 4px; height: 4px; background: #F43B00; border-radius: 50%;
+    position: absolute; right: 9px; top: 7px; z-index: 500; }
 
 /* 모바일 슬라이드 메뉴 on 클래스 넣었을때 */
 .mobile_header.on .m_header { padding: 0 24px; top: 30px; background: transparent; border-color: transparent;}
@@ -203,7 +193,34 @@ input[type="text"],input[type="password"] { width: 100%; }
 }
 
 @keyframes shake {
-    0%{
+    0% {
+        transform: rotate(0) scale(1) skew(0deg);
+      }
+    
+      10% {
+        transform: rotate(-25deg) scale(1) skew(0deg);
+      }
+    
+      20% {
+        transform: rotate(25deg) scale(1) skew(0deg);
+      }
+    
+      30% {
+        transform: rotate(-25deg) scale(1) skew(0deg);
+      }
+    
+      40% {
+        transform: rotate(25deg) scale(1) skew(0deg);
+      }
+    
+      50% {
+        transform: rotate(0) scale(1) skew(0deg);
+      }
+    
+      100% {
+        transform: rotate(0) scale(1) skew(0deg);
+      }
+    /* 0%{
         transform: rotate(0deg);
     }
     10%{
@@ -229,7 +246,7 @@ input[type="text"],input[type="password"] { width: 100%; }
     }
     100%{
         transform: rotate(0deg);
-    }
+    } */
 }
 
 @keyframes rotate_image{

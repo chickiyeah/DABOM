@@ -122,9 +122,9 @@ async def food_datail(sample_id:str, authorized: bool = Depends(verify_token)):
         gram = str(detail['1회제공량']) + " " + detail['내용량_단위']
         res = {
             "SAMPLE_ID": sample_id,
-            "식품명": detail['식품명'],
-            "카테고리" : detail['new카테'],
-            "유통사" : detail['유통사'],
-            "칼로리 (%s)" % gram : detail['에너지(kcal)']
+            "name": detail['식품명'],
+            "category" : detail['new카테'],
+            "company" : detail['유통사'],
+            "kcal" : detail['에너지(kcal)']
         }    
         return res
