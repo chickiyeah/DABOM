@@ -38,7 +38,7 @@
 .mypage_wrap .post_group ul { width: 100%; max-width: 710px;  display: flex; flex-wrap: wrap; gap: 10px; box-sizing: border-box; margin: 0 auto; }
 .mypage_wrap .post_group ul li { border: 1px solid #E1E1E1; background: white; position: relative; padding:25px 20px 20px;
     width: calc(33% - 5px); border-radius: 6px;  }
-.mypage_wrap .post_group.checkbox { position: absolute; left: 5px; top: 3px; }
+.mypage_wrap .post_group .checkbox { position: absolute; left: 5px; top: 3px; }
 .mypage_wrap .post_group .checkbox input[type=checkbox] + label {  background-size: 20px !important; }
 .mypage_wrap .post_group ul .checkbox label { text-indent: -9999px; }
 .mypage_wrap .post_group ul .kcal { position: absolute; right: 5px; top: 5px; color: white; background: #F43B00; font-size: 10px;

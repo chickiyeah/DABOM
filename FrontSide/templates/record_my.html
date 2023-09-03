@@ -9,6 +9,8 @@
     <link href="/assets/css/reset.css" rel="stylesheet">
     <link href="/assets/css/layout.css" rel="stylesheet">
     <link href="/assets/css/swiper-bundle.min.css" rel="stylesheet">
+    <script src="/assets/js/diary_detail.js"></script>
+    <script type="module" src="/assets/js/alert.js"></script>
 </head>
 <body>
     <header>
@@ -104,8 +106,8 @@
                 <div class="img_box">
                     <img alt="다봄 사진 찍는 캐릭터" src="/assets/images/small-mascot-01.svg">
                 </div>
-                <p class="date">2023년 6월 2일 금요일</p>
-                <h2 class="title">다봄모임 -10kg 아자아자</h2>
+                <p id="post_date" class="date">2023년 6월 2일 금요일</p>
+                <h2 id="post_title" class="title">다봄모임 -10kg 아자아자</h2>
             </div>
             <div class="record_slide">
                 <div class="swiper-wrapper">
@@ -144,15 +146,18 @@
             </div>
             <div class="bottom_box">
                 <div class="meal_box">
-                    <h2>소금빵(1개)</h2>
+                    <div class="left_box">
+                        <!--<h2>소금빵(1개)</h2>-->
+                        <a class="more_btn" onclick="document.querySelector('.record_add_pop').style.display ='flex'" href="javascript:">음식 목록 확인</a>
+                    </div>
                     <p class="kcal">380kcal</p>
-                    <div class="txt">
+                    <div id="eat_txt" class="txt">
                         <span class="y_txt">아침</span>
                         <span class="r_txt">유림</span>
                     </div>
                 </div>
                 <div class="info_box">
-                    <p>내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을
+                    <p id="post_desc">내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을
                         입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을
                         입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을
                         입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.내용을 입력학세요.</p>
@@ -169,14 +174,14 @@
                                     <object aria-label="좋아요아이콘" data="/assets/images/link-icon.svg"
                                             type="image/svg+xml"></object>
                                 </i>
-                                <p>좋아요 <em>0</em>개</p>
+                                <p>좋아요 <em id="p_like_count">0</em>개</p>
                             </a>
                             <a href="javascript:">
                                 <i class="comment_icon">
                                     <object aria-label="댓글아이콘" data="/assets/images/comment-block-icon.svg"
                                             type="image/svg+xml"></object>
                                 </i>
-                                <p>댓글 <em>0</em>개</p>
+                                <p>댓글 <em id="p_comment_count">0</em>개</p>
                             </a>
                         </div>
                         <div class="write_info">
@@ -324,6 +329,38 @@
                         </li>
                     </ul>
                 </div>
+            </div>
+        </div>
+    </div>
+<!-- 음식목록 상세보기 팝업 -->
+    <div class="record_add_pop">
+        <div class="inner">
+            <h2 class="title">제품 상세 내용</h2>
+            <div class="record_add_wrap">
+                <table class="record_add_box">
+                    <thead>
+                    <tr>
+                        <th>제품명</th>
+                        <th>개당 칼로리</th>
+                        <th>갯수</th>
+                    </tr>
+                    </thead>
+                    <tbody id="post_foods">
+                    <tr>
+                        <td>방울토마토</td>
+                        <td>3Kcal</td>
+                        <td>1개</td>
+                    </tr>
+                    <tr>
+                        <td>방울토마토</td>
+                        <td>3Kcal</td>
+                        <td>1개</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="btn_box">
+                <a class="black_line_btn" onclick="document.querySelector('.record_add_pop').style.display =''" href="javascript:">뒤로가기</a>
             </div>
         </div>
     </div>

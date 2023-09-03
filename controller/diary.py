@@ -96,7 +96,7 @@ async def get_group_post(group_id:int, page:int, authorized :bool = Depends(veri
         res = execute_sql(f"SELECT * from UserEat WHERE `group` = {group_id} ORDER BY created_at ASC LIMIT 3 OFFSET {offset}")
         posts = []
         for post in res:
-            comment = execute_sql(f"SELECT * from post_comments WHERE `post_id` = {post['no']} ORDER BY created_at ASC")
+            comment = execute_sql(f"SELECT * from comments WHERE `post_id` = {post['no']} ORDER BY created_at ASC")
             post['comments'] = comment
             posts.append(post)
 
@@ -117,8 +117,8 @@ async def post_get(request:Request, authorized: bool = Depends(verify_token)):
     if authorized:
         
         json = await request.json()
-        count = len(execute_sql(f"SELECT no from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND `with` = 'alone' AND `no` NOT LIKE 'DELETED%'"))
-        res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND `with` = 'alone' AND `no` NOT LIKE 'DELETED%' LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
+        count = len(execute_sql(f"SELECT no from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND `with` = 'alone' AND (deleted IS NULL OR deleted = 'false')"))
+        res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND `with` = 'alone' AND (deleted IS NULL OR deleted = 'false') LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
 
         if len(res) == 0:
             raise HTTPException(404, post_not_found)
@@ -136,8 +136,8 @@ async def post_get(request:Request, authorized: bool = Depends(verify_token)):
     if authorized:
         json = await request.json()
 
-        count = len(execute_sql(f"SELECT no from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND (`with` = 'friend' OR `with` = 'couple') AND `no` NOT LIKE 'DELETED%'"))
-        res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND (`with` = 'friend' OR `with` = 'couple') AND `no` NOT LIKE 'DELETED%' LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
+        count = len(execute_sql(f"SELECT no from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND (`with` = 'friend' OR `with` = 'couple') AND (deleted IS NULL OR deleted = 'false')"))
+        res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND (`with` = 'friend' OR `with` = 'couple') AND (deleted IS NULL OR deleted = 'false') LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
 
         if len(res) == 0:
             raise HTTPException(404, post_not_found)
@@ -174,23 +174,47 @@ async def post_update(data:update_diary, authorized: bool = Depends(verify_token
         
         execute_sql("UPDATE UserEat SET `먹은종류` = '%s', `음식명` = '%s', `음식종류` = '%s', `칼로리` = %s, `음식이미지` = '%s', `메모` = '%s', `친구` = '%s', `제목` = '%s' WHERE `NO` = %s" % (e_cate, f_name, f_cate, f_kcal, imgbase64, memo, with_friend, title, post_no))
         return "글이 업데이트 되었습니다."
-    
+
+@diaryapi.get("/detail/{post_id}/comments")
+async def get_post_comments(post_id: int, request: Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        notes = execute_sql(f"SELECT `no` FROM UserEat WHERE `id` = '{authorized[1]}' AND `no` = {post_id} AND (deleted IS NULL OR deleted = 'false')")
+
+        if len(notes) == 0:
+            raise HTTPException(403, "글이 존재 하지 않거나, 해당 글에 접근할 권한이 없습니다.")
+        
+        comments = execute_sql(f"SELECT * FROM comments WHERE `post_id` = {post_id} ORDER BY created_at ASC")
+
+        return comments
+
+
+@diaryapi.get("/detail/{post_id}")
+async def get_post_detail(post_id: int, request: Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        notes = execute_sql(f"SELECT * FROM UserEat WHERE `id` = '{authorized[1]}' AND `no` = {post_id} AND (deleted IS NULL OR deleted = 'false')")
+
+        if len(notes) == 0:
+            raise HTTPException(403, "글이 존재 하지 않거나, 해당 글에 접근할 권한이 없습니다.")
+
+        return notes[0]
+
 @diaryapi.delete('/delete')
 async def post_delete(request: Request, authorzed: bool = Depends(verify_token)):
     if authorzed:
         data = await request.json()
         post_ids = data['post_ids']
-        notes = execute_sql("SELECT `no` FROM UserEat WHERE `id` = '%s'" % authorzed[1])
+        notes = execute_sql("SELECT `no` FROM UserEat WHERE `id` = '%s' AND (deleted IS NULL OR deleted = 'false')" % authorzed[1])
         note_num = []
         for note in notes:
-            if not "DELETED" in note:
-                note_num.append(int(note['no']))
-        
+            note_num.append(int(note['no']))
+
+        print(note_num)
+
         sqls = []
         for post_id in post_ids:
             print(post_id)
             print(post_id in note_num)
-            sql = f"UPDATE UserEat SET `no` = 'DELETED-{post_id}' WHERE `no` = {post_id}"
+            sql = f"UPDATE UserEat SET `deleted` = 'true' WHERE `no` = {post_id}"
             sqls.append(sql)
             if not post_id in note_num:
                 raise HTTPException(403, post_not_owner)

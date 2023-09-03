@@ -71,8 +71,10 @@
     height: 30px; line-height: 2.6; border-radius: 20px; font-size: 12px; }
 
 .record_wrap .meal_box { display: flex; align-items: center; margin-bottom: 40px; }
-.record_wrap .txt { align-self: baseline; }
-.record_wrap .bottom_box .meal_box h2 { font-weight: 400; margin-right: 6vw; }
+.record_wrap .bottom_box .meal_box .left_box { display: flex; gap: 10px; align-items: center; margin-right: 15px;}
+.record_wrap .bottom_box .meal_box h2 { font-weight: 400; max-width: 500px; overflow: hidden; text-overflow: ellipsis;white-space: nowrap; }
+.record_wrap .more_btn { border: 1px solid #E1E1E1;  color: #909090; border-radius: 3px;
+    padding: 5px 0; width: 85px; text-align: center;font-size: 12px; }
 .record_wrap .bottom_box .meal_box .kcal { color: #F43B00; margin-right: 2vw; font-size: 18px; }
 .record_wrap .bottom_box .info_box p { color: #909090; font-size: 18px; line-height: 1.8; }
 .record_wrap .bottom_box .btn_box { margin: 50px auto 40px; max-width: 700px; }
@@ -86,7 +88,6 @@
 .record_wrap .comment_box .write_info input { width: calc(100% - 110px);}
 .record_wrap .comment_box .write_info input::placeholder { transform:translate3d(0,1px,0); }
 .record_wrap .comment_box .write_info a { border: 1px solid #222; height: 40px; border-radius: 3px; line-height: 2.5; padding: 0 14px; }
-.record_wrap .comment_box .comment_list {}
 .record_wrap .comment_box .comment_list li + li { padding-top: 10px; border-top: 1px solid #909090; }
 /*공통*/
 .record_wrap .comment_box .comment_list .nick_box { display: flex; align-items: center; gap: 5px; margin-bottom: 15px; }

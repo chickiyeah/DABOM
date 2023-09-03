@@ -72,6 +72,7 @@ if (location.href.includes("register")) {
     e.preventDefault()
     male_radio.children[0].checked = true
     joinGender.attributes.value.value = "male"
+    gender = "male"
     console.log("남성 클릭 감지")
   })
 
@@ -79,6 +80,7 @@ if (location.href.includes("register")) {
     e.preventDefault()
     female_radio.children[0].checked = true
     joinGender.attributes.value.value = "female"
+    gender = "female"
     console.log("여성 클릭 감지")
   })
 
@@ -86,6 +88,7 @@ if (location.href.includes("register")) {
     e.preventDefault()
     private_radio.children[0].checked = true
     joinGender.attributes.value.value = "private"
+    gender = "private"
     console.log("비공개 클릭 감지")
   })
 }
@@ -436,16 +439,7 @@ async function join() {
       bir_mon_val = joinBirmon.value;
       bir_col_val = joinBircol.value;
       bir_day_val = joinBirday.value;
-
-      loginPw.value="";
-      loginPwre.value="";
-      joinName.value="";
-      joinGender.attributes.value.value = ""
-      joinTail.value="";
-      joinWeight.value="";
-      joinBirmon.value = "";
-      joinBircol.value = "";
-      joinBirday.value = "";
+      
     }
     loading.style.display = 'flex';
     fetch("/api/user/register", {
@@ -458,7 +452,7 @@ async function join() {
         "email": email_val,
         "password": pw_val,
         "nickname": name_val,
-        "gender": gender_val,
+        "gender": gender,
         "birthday": `${bir_mon_val}/${bir_col_val}/${bir_day_val}`,
         "height": tail_val,
         "weight": weight_val,
@@ -468,7 +462,9 @@ async function join() {
     .then(async (res) => {
       if (res.status == 201) {
         location.href = "/login?t=r"
-      }else{
+      } else if (res.status == 422) {
+        loading.style.display = 'none';
+      } else {
         res.json().then(async (json) => {
           let detail = json.detail
           if (detail.code == "ER010") {

@@ -33,6 +33,19 @@
 .group_wrap .more_btn:before { content: ""; position: absolute; left: 12px;top: 50%; transform: translateY(-50%);
  background: url("../images/add-icon.svg") no-repeat; width: 20px; height: 20px; }
 
+ /* 내기록 음식목록 상세보기 팝업 */
+.record_add_pop { position: fixed; right: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.2);
+    z-index: 2000; overflow: hidden; display: none;}
+.record_add_pop .inner { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+    background: white; width: calc(100% - 30px); max-width: 500px; height: 100%; max-height: 500px; border-radius: 10px;
+    padding: 40px; display: flex; flex-flow: column; }
+.record_add_pop .inner h2 { font-size: 22px; padding-bottom: 5px; margin-bottom: 15px; border-bottom: 1px solid #E1E1E1; }
+.record_add_pop .inner .record_add_wrap { max-height: 310px; overflow-y: auto; }
+.record_add_pop .inner .record_add_box { padding:0; border:0; border-spacing:0; border-collapse:collapse; width: 100% }
+.record_add_pop .inner .record_add_box thead { background: #E1E1E1; line-height: 2; }
+.record_add_pop .inner .record_add_box tbody td { text-align: center; padding: 5px; font-size: 14px;}
+.record_add_pop .inner .btn_box { width: 100%; margin-top: auto; }
+
 /* 모임 목록 */
 .group_list_wrap { margin: 180px auto; }
 .group_list_wrap .banner_img { width: 100%; height: 350px; padding-bottom: 350px; box-sizing: border-box;
