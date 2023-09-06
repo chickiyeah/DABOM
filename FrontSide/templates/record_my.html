@@ -285,13 +285,19 @@
                                 </div>
                                 <div class="text_box">아침은 든든히 먹어야지!!!!</div>
                                 <button class="comment_btn">
-                                    <i>
+                                    <i id="show_more_comment">
+                                        <object aria-label="댓글아이콘" data="/assets/images/add-box-icon.svg"
+                                                type="image/svg+xml"></object>
+                                    </i>답글 달기
+                                    <i id="hide_more_comment">
                                         <object aria-label="댓글아이콘" data="/assets/images/minu-box-icon.svg"
                                                 type="image/svg+xml"></object>
                                     </i>숨기기
                                 </button>
                             </div>
+                            
                             <ul class="comment_view_box">
+                                
                                 <li>
                                     <div class="nick_box">
                                         <div class="profile_img">
@@ -303,12 +309,6 @@
                                         </div>
                                     </div>
                                     <div class="text_box">그치만 너무너무 귀찮다~~</div>
-                                    <button class="comment_btn">
-                                        <i>
-                                            <object aria-label="댓글아이콘" data="/assets/images/add-box-icon.svg"
-                                                    type="image/svg+xml"></object>
-                                        </i>답글 달기
-                                    </button>
                                 </li>
                                 <li>
                                     <div class="nick_box">
@@ -321,12 +321,15 @@
                                         </div>
                                     </div>
                                     <div class="text_box">그치만 너무너무 귀찮다~~</div>
-                                    <button class="comment_btn">
-                                        <i>
-                                            <object aria-label="댓글아이콘" data="/assets/images/add-box-icon.svg"
-                                                    type="image/svg+xml"></object>
-                                        </i>답글 달기
-                                    </button>
+                                </li>
+                                <li>
+                                    <div class="inner_comment">
+                                        <textarea placeholder="댓글을 작성하세요" role="textbox" rows="3"></textarea>
+                                        <div class="inner_comment_btn">
+                                            <a href="javascript:">취소</a>
+                                            <a href="javascript:">댓글 작성</a>
+                                        </div>
+                                    </div>
                                 </li>
                             </ul>
                         </li>
