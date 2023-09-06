@@ -175,29 +175,6 @@ async def post_update(data:update_diary, authorized: bool = Depends(verify_token
         execute_sql("UPDATE UserEat SET `먹은종류` = '%s', `음식명` = '%s', `음식종류` = '%s', `칼로리` = %s, `음식이미지` = '%s', `메모` = '%s', `친구` = '%s', `제목` = '%s' WHERE `NO` = %s" % (e_cate, f_name, f_cate, f_kcal, imgbase64, memo, with_friend, title, post_no))
         return "글이 업데이트 되었습니다."
 
-@diaryapi.get("/detail/{post_id}/comments")
-async def get_post_comments(post_id: int, request: Request, authorized: bool = Depends(verify_token)):
-    if authorized:
-        notes = execute_sql(f"SELECT `no` FROM UserEat WHERE `id` = '{authorized[1]}' AND `no` = {post_id} AND (deleted IS NULL OR deleted = 'false')")
-
-        if len(notes) == 0:
-            raise HTTPException(403, "글이 존재 하지 않거나, 해당 글에 접근할 권한이 없습니다.")
-        
-        comments = execute_sql(f"SELECT * FROM comments WHERE `post_id` = {post_id} ORDER BY created_at ASC")
-
-        return comments
-
-
-@diaryapi.get("/detail/{post_id}")
-async def get_post_detail(post_id: int, request: Request, authorized: bool = Depends(verify_token)):
-    if authorized:
-        notes = execute_sql(f"SELECT * FROM UserEat WHERE `id` = '{authorized[1]}' AND `no` = {post_id} AND (deleted IS NULL OR deleted = 'false')")
-
-        if len(notes) == 0:
-            raise HTTPException(403, "글이 존재 하지 않거나, 해당 글에 접근할 권한이 없습니다.")
-
-        return notes[0]
-
 @diaryapi.delete('/delete')
 async def post_delete(request: Request, authorzed: bool = Depends(verify_token)):
     if authorzed:
@@ -223,3 +200,52 @@ async def post_delete(request: Request, authorzed: bool = Depends(verify_token))
             execute_sql(sql)
 
         return "글을 삭제하였습니다."
+    
+@diaryapi.post('/detail/{post_id}/comment/main')
+async def write_main_comment(post_id:int, request: Request, authorized : bool = Depends(verify_token)):
+    if authorized:
+        data = await request.json()
+        data['post_id'] = post_id
+        comments = await execute_sql(f"SELECT * FROM comments WHERE post_id = {post_id} AND 'type' = 'main' ORDER BY created_at ASC")
+
+        return data
+
+@diaryapi.post('/detail/{post_id}/comment/{main_comment_id}/sub')
+async def write_sub_comment(post_id:int, main_comment_id:int, request: Request, authorized : bool = Depends(verify_token)):
+    if authorized:
+        data = await request.json()
+        data['post_id'] = post_id
+
+        return data
+
+@diaryapi.get("/detail/{post_id}/comments")
+async def get_post_comments(post_id: int, request: Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        notes = execute_sql(f"SELECT `no` FROM UserEat WHERE `id` = '{authorized[1]}' AND `no` = {post_id} AND (deleted IS NULL OR deleted = 'false')")
+
+        if len(notes) == 0:
+            raise HTTPException(403, "글이 존재 하지 않거나, 해당 글에 접근할 권한이 없습니다.")
+        
+        comments = execute_sql(f"SELECT * FROM comments WHERE `post_id` = {post_id} AND `type` = 'main' ORDER BY created_at ASC")
+
+        r_comments = []
+
+        for comment in comments:
+            post_id = comment['post_id']
+            id = comment['id']
+            subcomments = execute_sql(f"SELECT * FROM comments WHERE post_id = {post_id} AND `main_comment` = {id} AND `type` = 'sub' ORDER BY created_at ASC")
+            comment['sub_comments'] = subcomments
+            r_comments.append(comment)
+
+        return r_comments
+
+
+@diaryapi.get("/detail/{post_id}")
+async def get_post_detail(post_id: int, request: Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        notes = execute_sql(f"SELECT * FROM UserEat WHERE `id` = '{authorized[1]}' AND `no` = {post_id} AND (deleted IS NULL OR deleted = 'false')")
+
+        if len(notes) == 0:
+            raise HTTPException(403, "글이 존재 하지 않거나, 해당 글에 접근할 권한이 없습니다.")
+
+        return notes[0]

@@ -107,6 +107,9 @@ function get_comments(post_no) {
         response.json().then((comments) => {
             document.querySelector("#p_comment_count").innerText = comments.length
             console.log(comments)
+            comments.forEach((comment) => {
+                console.log(comment)
+            })
         })
     })
 }
