@@ -36,6 +36,7 @@
     <link rel="stylesheet" href="/assets/css/reset.css">
     <link rel="stylesheet" href="/assets/css/layout.css">
     <link rel="stylesheet" href="../assets/css/toast.css">
+    <script src="https://www.google.com/recaptcha/api.js"></script>
 </head>
 <body>
 
@@ -69,7 +70,10 @@
                 </div>
                 <div id="login_val"></div>
                 <div class="btn">
-                    <input type="submit" value="로그인" id="login_btn">
+                    <button class="g-recaptcha" 
+                    data-sitekey="6Lft9g8oAAAAAJjq__s2voFYDfpMhhV8so3gZ5Zm" 
+                    data-callback='login' 
+                    data-action='submit'>로그인</button>
                 </div>
                 <div class="util_box" id="findAccount">
                     <a href="/findaccount">아이디 · 비밀번호 찾기</a>
@@ -88,5 +92,5 @@
     document.querySelector(".loading").style.display = 'none';
 </script>
 </body>
-<script type="module" src="/assets/js/user.js"></script>
+<script src="/assets/js/user.js"></script>
 </html>

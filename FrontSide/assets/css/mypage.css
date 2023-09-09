@@ -18,6 +18,9 @@
 .mypage_wrap .post_nav .prev,
 .mypage_wrap .post_nav .next { display: inline-flex; align-items: center; justify-content: center; }
 
+/* 로봇문구 */
+.mypage_wrap .g-recaptcha { display: flex; justify-content: center; margin-top: 30px; width: 100%;  cursor: pointer;  color: white;  background: #F43B00;  border: 1px solid #F43B00; text-align: center; height: 45px; border-radius: 6px; font-size: 18px;display: block; line-height: 2.5; }
+
 #error {background-color:#f43d0010; color:#F43B00; text-align: center; margin:20px 0; font-size: 19px; font-weight: 500;}
 #error p{padding:20px 10px;}
 #success {background-color:#f43d0010; color:#67df7b; text-align: center; margin:20px 0; font-size: 19px; font-weight: 500;}

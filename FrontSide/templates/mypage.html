@@ -35,8 +35,13 @@
     <title>다봄 : 마이페이지</title>
     <link rel="stylesheet" href="/assets/css/reset.css">
     <link rel="stylesheet" href="/assets/css/layout.css">
+    <script src="/assets/js/mypage/my_info.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js"></script>
 </head>
 <body>
+    <div class="loading fix">
+        <span class="loader"></span>
+    </div>
  <div class="mypage_wrap">
      <div class="container">
          <nav class="left_box">
@@ -65,7 +70,7 @@
                         <input type="file" name="file" id="input">
                         <label class="profile_img_box" for="input">
                            <span class="profile_img">
-                                   <img src="/assets/images/default-profile.png" alt="프로필이미지">
+                                <img id="pf_image" src="/assets/images/default-profile.png" alt="프로필이미지">
                            </span>
                             <i class="camera_icon"></i>
                         </label>
@@ -75,65 +80,69 @@
                     <div class="form_list">
                         <div class="from_group">
                             <h3>상태메세지</h3>
-                            <input type="text" placeholder="상태메세지를 입력하세요">
+                            <input type="text" id="imsg" placeholder="상태메세지를 입력하세요">
                         </div>
                         <div class="from_group">
                             <h3>이메일</h3>
-                            <input type="text" placeholder="이메일">
+                            <input type="text" id="email" placeholder="이메일">
                         </div>
                         <div class="from_group">
                             <h3>이름</h3>
-                            <input type="text" placeholder="이름을(를) 입력하세요">
+                            <input type="text" id="Nickname" placeholder="이름을(를) 입력하세요">
                         </div>
                         <div class="from_group">
                             <h3>성별</h3>
                             <div class="radio-list">
                                 <div class="radio-box">
-                                    <input type="radio" id="man"/>
+                                    <input type="radio" name="gender" id="male" checked/>
                                     <label for="man">남자</label>
                                 </div>
                                 <div class="radio-box">
-                                    <input type="radio" id="woman"/>
+                                    <input type="radio" name="gender" id="female"/>
                                     <label for="woman">여자</label>
                                 </div>
                                 <div class="radio-box">
-                                    <input type="radio" id="private"/>
+                                    <input type="radio" name="gender" id="private"/>
                                     <label for="private">비공개</label>
                                 </div>
                             </div>
                         </div>
                         <div class="from_group">
                             <h3>키(cm)<em>정보를 입력하지 않으면 제공되는 정보가 제한될수 있습니다.</em></h3>
-                            <input type="text" placeholder="키cm을(를) 입력하세요">
+                            <input type="text" id="weight" placeholder="키cm을(를) 입력하세요">
                         </div>
                         <div class="from_group">
                             <h3>몸무게<em>정보를 입력하지 않으면 제공되는 정보가 제한될수 있습니다.</em></h3>
-                            <input type="text" placeholder="몸무게kg를(을) 입력하세요">
+                            <input type="text" id="height" placeholder="몸무게kg를(을) 입력하세요">
                         </div>
                         <div class="from_group">
                             <h3>생년월일</h3>
                             <div class="birth_box">
-                                <input type="number" placeholder="년">
-                                <select>
-                                    <option value="">월</option>
-                                    <option value="">1월</option>
-                                    <option value="">2월</option>
-                                    <option value="">3월</option>
-                                    <option value="">4월</option>
-                                    <option value="">5월</option>
-                                    <option value="">6월</option>
-                                    <option value="">7월</option>
-                                    <option value="">8월</option>
-                                    <option value="">9월</option>
-                                    <option value="">10월</option>
-                                    <option value="">11월</option>
-                                    <option value="">12월</option>
+                                <input id="year" type="number" placeholder="년">
+                                <select id="month">
+                                    <option value="00">월</option>
+                                    <option value="01">1월</option>
+                                    <option value="02">2월</option>
+                                    <option value="03">3월</option>
+                                    <option value="04">4월</option>
+                                    <option value="05">5월</option>
+                                    <option value="06">6월</option>
+                                    <option value="07">7월</option>
+                                    <option value="08">8월</option>
+                                    <option value="09">9월</option>
+                                    <option value="10">10월</option>
+                                    <option value="11">11월</option>
+                                    <option value="12">12월</option>
                                 </select>
-                                <input type="number" placeholder="일">
+                                <input id="date" type="number" placeholder="일">
                             </div>
                         </div>
                     </div>
-                    <button class="red_btn" type="submit">수정하기</button>
+                    <!--<button class="red_btn" onclick="edit_personal_info()" type="button">수정하기</button>-->
+                    <button class="g-recaptcha" 
+                    data-sitekey="6Lft9g8oAAAAAJjq__s2voFYDfpMhhV8so3gZ5Zm" 
+                    data-callback='edit_personal_info' 
+                    data-action='submit'>수정하기</button>
                 </form>
             </div>
          </div>

@@ -64,6 +64,7 @@ function food_add() {
                                     </div>`
                                     opener.opener.document.querySelector(".search_box").insertAdjacentHTML("beforeend", html)
                                     var q_tokcal = parseInt(opener.opener.document.querySelector("#tokcal").innerText) + parseInt(kcal_v);
+                                    opener.opener.f_t_kcal = q_tokcal;
                                     opener.opener.document.querySelector("#tokcal").innerText = q_tokcal;
                                     opener.close();
                                     window.close();
@@ -120,6 +121,7 @@ function food_add() {
                                     opener.opener.document.querySelector(".search_box").insertAdjacentHTML("beforeend", html)
                                     var q_tokcal = parseInt(opener.opener.document.querySelector("#tokcal").innerText) + parseInt(kcal_v);
                                     opener.opener.document.querySelector("#tokcal").innerText = q_tokcal;
+                                    opener.opener.f_t_kcal = q_tokcal;
                                     opener.close();
                                     window.close();
                                 })

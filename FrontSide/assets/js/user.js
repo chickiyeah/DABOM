@@ -1,7 +1,5 @@
 "use strict";
 
-import { toast } from "./toast.js";
-
 window.addEventListener('DOMContentLoaded', async function () {
     if (this.location.href.includes("login") || this.location.href.includes("register")){
       document.querySelector(".loading").style.display = "none"
@@ -9,7 +7,7 @@ window.addEventListener('DOMContentLoaded', async function () {
         if (this.location.href.includes("?")) {
           let r = this.location.href.split("?")[1]
           if (r === "t=r") {
-            toast("인증 이메일이 발송되었으니 확인해주세요!")
+            alert("인증 이메일이 발송되었으니 확인해주세요!")
           }
         }
       }
@@ -206,7 +204,7 @@ async function verify_token() {
               }else if (response.status === 307 || response.status === 401) {
                 localStorage.clear();
                 document.querySelector(".loading").style.display = "none"
-                if (location.href != location.origin+"/" && location.href.includes("login") == false && location.href.includes("register") == false && this.location.href.includes("findaccount") == false) {
+                if (location.href != location.origin+"/" && location.href.includes("login") == false && location.href.includes("register") == false && location.href.includes("findaccount") == false) {
                   location.href = "/login";
                 }
                 
@@ -245,14 +243,14 @@ async function logout() {
       localStorage.clear();
       location.href = "/";
     } else {
-      toast("로그아웃중 서버 오류가 발생했습니다.\n콘솔의 오류사항을 고객센터로 제보해주시기 바랍니다.")
+      alert("로그아웃중 서버 오류가 발생했습니다.\n콘솔의 오류사항을 고객센터로 제보해주시기 바랍니다.")
       response.json().then((response) => { console.error(response)})
     }
   })
 }
 
   // 로그인
-async function login() { //메인함수가 동기상태에요. 기본으로요? ㄴㄴ 앞에다가 async 붙이면 비동기 ㅇ아부붙이면 동아 아아기기
+async function login(token) { //메인함수가 동기상태에요. 기본으로요? ㄴㄴ 앞에다가 async 붙이면 비동기 ㅇ아부붙이면 동아 아아기기
   return new Promise(async function (resolve, reject) { // 예만 비동기된거임 아하
     var email_val
     var pw_val
@@ -282,6 +280,7 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
       body: JSON.stringify({
         "email": email_val,
         "password": pw_val,
+        "g_cap": token
       }),
     })
     .then(async function(data) { {}
@@ -325,7 +324,7 @@ async function login() { //메인함수가 동기상태에요. 기본으로요? 
           }
         });
       } else if (data.status == 422) {
-        toast("이메일 혹은 비밀번호가 입력되지 않았습니다.")
+        alert("이메일 혹은 비밀번호가 입력되지 않았습니다.")
         document.querySelector(".loading").style.display = 'none';
       }else{
         reject("SERVICE ERROR WITH UNKNOWN ERROR : " + data)

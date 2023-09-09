@@ -190,7 +190,7 @@ async def delete_all(username: str, channel: str):
 
 @chat.post("/uploadfile")
 async def upload(ext:str, image: UploadFile = File(), access_token: Optional[str] = Cookie(None)):
-    now = str(datetime.now(KST).strftime("%Y-%m-%d_%H:%M:%S"))
+    now = datetime.now(KST).strftime("%Y-%m-%d_%H:%M:%S")  
     try:
         user = auth.verify_id_token(access_token, check_revoked=True)
         uid = user['user_id']
@@ -198,16 +198,16 @@ async def upload(ext:str, image: UploadFile = File(), access_token: Optional[str
         uid = "register_"+now
 
     
-    a = Storage.child("/dabom/"+uid+"/"+ext).put(image.file)
-    #print(a)
-    print("https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+uid+"%2F"+ext+"?alt=media&token="+a['downloadTokens'])
-    return "https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F"+uid+"%2F"+ext+"?alt=media&token="+a['downloadTokens']
+    a = Storage.child(f"/dabom/{uid}/{now}_{ext}").put(image.file)
+    print(now)
+    print(f"https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F{uid}%2F{now}_{ext}?alt=media&token={a['downloadTokens']}")
+    return f"https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F{uid}%2F{now}_{ext}?alt=media&token={a['downloadTokens']}"
 
 
 @chat.get("/members")
 async def members(group: str):
     guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{group}'")
-    print(guilds)
+    print(guilds) 
     if guilds == None or len(guilds) == 0:
         raise HTTPException(400, er035)
 
