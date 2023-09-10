@@ -458,6 +458,8 @@ function get_with_posts(year, month, page) {
                         eat_with = "친구와"
                     } else if (post.with == "couple") {
                         eat_with = "연인과"
+                    } else if (post.with == "family") {
+                        eat_with = "가족과"
                     }
                     var f_html = "";
                     let friends = JSON.parse(post.friends.replace(/'/g, '"'));

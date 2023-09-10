@@ -152,17 +152,17 @@
                     <li> 
                         <div class="img_upload">
                             <div class="filebox">
-                                <form>
-                                    <input type="file" name="file" id="input" multiple="mutiple">
+                                <form action="" method="post">
+                                    <input type="file" name="file" id="input">
                                     <label class="profile_img_box" for="input">
                                         <h2 class="hidden">파일 업로드</h2>
                                         <div class="add_img">
                                             <object data="/assets/images/add-icon.svg" type="image/svg+xml" aria-label="플러스아이콘"></object>
+                                            <p>이미지 추가하기</p>
                                         </div>
                                     </label>
                                 </form>
                             </div>
-                            <p>이미지를 업로드 해주세요</p>
                         </div>
                     </li>
                   <!-- js 개발구간 -->
@@ -177,7 +177,7 @@
 
                         <a href="javascript:" onclick="window.open('/diary_kcal')" target="_blank" class="">칼로리 검색하기</a>
                         <a href="javascript:" onclick="window.open('/diary_bar_cam')" target="_blank" class="">바코드 검색하기</a>
-                        <a href="javascript:" id="d_f_open" target="_blank" class="">함께 먹은 친구/연인 추가</a>
+                        <a href="javascript:" id="d_f_open" target="_blank" class="">같이 먹은 사람 추가하기</a>
 
                 </div>
                 <div style="display:flex;justify-content: right;">

@@ -129,10 +129,11 @@ function init() {
                       </div>
                     </li>
                     `
-                    imgItem.insertAdjacentHTML("beforeend", html); // 땡 해당 스트링은 투입 위치를 지정하는것임 ( beforestart 요소가 위로 올라감 , afterstart 요소가 올라가지만 beforestart보다는 아래 , beforeend 요소가 아래로감 , afterend beforeend보다 더 아래로감 틀을 벗어날수잇음 )           
-                    remove_event()
+                    imgItem.insertAdjacentHTML("afterbegin", html); // 땡 해당 스트링은 투입 위치를 지정하는것임 ( beforestart 요소가 위로 올라감 , afterstart 요소가 올라가지만 beforestart보다는 아래 , beforeend 요소가 아래로감 , afterend beforeend보다 더 아래로감 틀을 벗어날수잇음 )           
         }
+        
     });
+    remove_event()
   }
 }
 
@@ -151,9 +152,11 @@ function init() {
 
   function remove_event() {
     Array.prototype.forEach.call(imgItem.children,(element) =>{
-      element.children[0].children[1].removeEventListener("click", closeevent);
-      element.children[0].children[1].addEventListener("click", closeevent)
-    })
+      if (!element.children[0].classList.contains('img_upload')) {
+        element.children[0].children[1].removeEventListener("click", closeevent);
+        element.children[0].children[1].addEventListener("click", closeevent)
+      }
+    }) 
   }
 
 

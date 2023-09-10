@@ -21,12 +21,16 @@
 .update_wrap .top_box .date_item .date , .kcal_wrap .top_box .date_item .date  { text-align: center; margin-bottom: 60px; }
 
 /* 기록 */
-.update_wrap .top_box .img_item { width: 100%; max-width: 1000px; margin: 0 auto; position: relative; z-index: 20; white-space: nowrap; overflow-x: hidden; padding-bottom: 10px; }
-.update_wrap .top_box .img_item:hover { overflow-x: scroll; }
-.update_wrap .top_box .img_item li { width: calc(33.333% - 10px); display: inline-block; position: relative; }
+.update_wrap .top_box .img_item { width: 100%; max-width: 1000px; margin: 0 auto; position: relative; z-index: 20; overflow-x: hidden; padding-bottom: 10px; display: flex; flex-wrap: nowrap; }
+.update_wrap .top_box .img_item:hover { overflow-x: auto;}
+.update_wrap .top_box .img_item li { position: relative; width: calc(33.333% - 10px); display: inline-block; flex: 0 0 auto;  }
 .update_wrap .top_box .img_item li + li { margin-left: 10px;}
 .update_wrap .top_box .img_item li .close_btn { position: absolute; right: 5px; top: 5px; background: #F43B00; border-radius: 20px; padding-right: 5px; padding-left: 5px; padding-top: 5px;}
-.update_wrap .top_box .img_item .img_upload {background: #000;}
+.update_wrap .top_box .img_item .img_upload { background:rgba(244, 59, 0, 0.10); width: 100%; padding: 10px; height: 100%; display: flex; justify-content: center; align-items: center; border-radius: 6px; }
+.update_wrap .top_box .img_item .img_upload .filebox { text-align: center; }
+.update_wrap .top_box .img_item .img_upload .filebox .add_img { cursor: pointer; }
+.update_wrap .top_box .img_item .img_upload .filebox .add_img p { margin-top: 10px;}
+.update_wrap .top_box .img_item .img_upload .filebox object { pointer-events: none; width: 35px; filter: invert(80%) sepia(5%) saturate(8%) hue-rotate(334deg) brightness(101%) contrast(98%);}
 .update_wrap .top_box .img_item li .close_btn object { filter: brightness(0) invert(1); }
 .update_wrap .top_box .img_item li .img_box { display: block; position: relative; width: 100%; height: auto; box-sizing: border-box; padding-bottom: 100%; }
 .update_wrap .top_box .img_item li .img_box img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover;
@@ -243,6 +247,8 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
     /* 기록 */
     .update_wrap .top_box { margin-top: 120px; margin-bottom: 20px; }
     .update_wrap .info_box .btn_item a { width: calc(50% - 5px); }
+    .update_wrap .top_box .img_item .img_upload .filebox object { width: 30px; }
+    .update_wrap .top_box .img_item .img_upload .filebox p { font-size: 12px;}
 
     /* 칼로리 */
     .kcal_wrap .top_box { margin-top: 120px; margin-bottom: 50px; }
