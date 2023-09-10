@@ -57,7 +57,7 @@ def verify_token(response: Response, req: Request, access_token: Optional[str] =
         user = auth.verify_id_token(access_token, check_revoked=True)
 
         uid = user['user_id']
-        return True, uid
+        return True, uid, user
 
     except auth.RevokedIdTokenError:
         # Token revoked, inform the user to reauthenticate or signOut().
@@ -97,7 +97,7 @@ def verify_token(response: Response, req: Request, access_token: Optional[str] =
             user = auth.verify_id_token(currentuser['idToken'], check_revoked=True)
             
             uid = user['user_id']
-            return True, uid
+            return True, uid, user
         
 
         except requests.HTTPError as e:
@@ -166,7 +166,7 @@ def verify_email_token(access_token: str, refresh_token: str):
         user = auth.verify_id_token(access_token, check_revoked=True)
         print(user)
         # Token is valid and not revoked.
-        return True, user['email_verified']
+        return True, user['email_verified'], user
     except auth.RevokedIdTokenError:
         # Token revoked, inform the user to reauthenticate or signOut().
         raise HTTPException(status_code=401, detail=unauthorized_revoked)
@@ -198,7 +198,7 @@ def verify_email_token(access_token: str, refresh_token: str):
         try:
             currentuser = Auth.refresh(refresh_token)
             user = auth.verify_id_token(currentuser['idToken'], check_revoked=True)
-            return True, user['email_verified']
+            return True, user['email_verified'], user
         except requests.HTTPError as e:
             error = json.loads(e.args[1])['error']['message']
             if error == "TOKEN_EXPIRED":

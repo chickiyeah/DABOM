@@ -24,6 +24,9 @@
     background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAxCAMAAAB6Z95gAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAA5UExURQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALx2UD0AAAASdFJOUwAQHyAwQFBgcICQn6Cwv8/f717uXdIAAAFJSURBVEjHrZdBEoMgDEVjBanGUun9D9uF2JIIBiR/K/OGgUcSAWL8R06AhtQA39rAlzZw0QY+tYG2BbhuF4lAA0oZIlCLB+aGNZeZdqBXA86pNQYREXGkSxZERHQAMBfzl2RNrbHZG9/vDQGgLMnGlbIp8GlJQhNwX/15pMBsKoHUGgUgtaYOGDLPwzNrXi1AV23NAVzopWwtQGJNpTauohBZAvRIElqAxBqFM2S1ph/Iak0/kFqjAKTWwPB35b1/GX8ZqoBrsUP5XCGXgbTWuCRxh6TogdzkiDWr1BllILVGAUitUQBSaxSA1BpjhYArZxSsuRnPypXBclwNkNYa+ek1zzW9wNNc0wuc+DTcC5z5NCz1FHEQ5db0Ark1BzDkZly8YU3vGR7WxI2YbqA5Pe9O4HQCmou/haXamlt/KlfW6AG9NjC0Ar8/13onYUDlHAAAAABJRU5ErkJggg==') no-repeat  0 0 / 100% 100%; animation: loader_animation 1s ease infinite;
 }
 
+/* 정보보안 */
+.grecaptcha-badge { visibility: hidden;}
+
 /*!* 고정 알림 *!*/
 .right_menu { position: fixed; right: 35px; top: 25px; z-index: 500;}
 .right_menu .bell { margin-right: 5px; }

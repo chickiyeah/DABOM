@@ -118,7 +118,7 @@ async def post_get(request:Request, authorized: bool = Depends(verify_token)):
         
         json = await request.json()
         count = len(execute_sql(f"SELECT no from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND `with` = 'alone' AND (deleted IS NULL OR deleted = 'false')"))
-        res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND `with` = 'alone' AND (deleted IS NULL OR deleted = 'false') LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
+        res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND `with` = 'alone' AND (deleted IS NULL OR deleted = 'false') ORDER BY created_at {json['sort']} LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
 
         if len(res) == 0:
             raise HTTPException(404, post_not_found)
@@ -137,7 +137,7 @@ async def post_get(request:Request, authorized: bool = Depends(verify_token)):
         json = await request.json()
 
         count = len(execute_sql(f"SELECT no from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND (`with` = 'friend' OR `with` = 'couple') AND (deleted IS NULL OR deleted = 'false')"))
-        res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND (`with` = 'friend' OR `with` = 'couple') AND (deleted IS NULL OR deleted = 'false') LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
+        res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND (`with` = 'friend' OR `with` = 'couple') AND (deleted IS NULL OR deleted = 'false') ORDER BY created_at {json['sort']} LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
 
         if len(res) == 0:
             raise HTTPException(404, post_not_found)
@@ -233,6 +233,7 @@ async def get_post_comments(post_id: int, request: Request, authorized: bool = D
         for comment in comments:
             post_id = comment['post_id']
             id = comment['id']
+            print(f"SELECT * FROM comments WHERE post_id = {post_id} AND `main_comment` = {id} AND `type` = 'sub' ORDER BY created_at ASC")
             subcomments = execute_sql(f"SELECT * FROM comments WHERE post_id = {post_id} AND `main_comment` = {id} AND `type` = 'sub' ORDER BY created_at ASC")
             comment['sub_comments'] = subcomments
             r_comments.append(comment)

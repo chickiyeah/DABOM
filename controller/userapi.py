@@ -280,6 +280,7 @@ token_revoke_responses = {
 class UserLogindata(BaseModel):
     email: str
     password: str
+    g_cap: str
 
 class UserRegisterdata(BaseModel):
     email: str
@@ -302,9 +303,6 @@ class LoginResponse(BaseModel):
 
 class RegisterResponse(BaseModel):
     detail: str
-
-class verify_token(BaseModel):
-    access_token: str
 
 class verify_token_res(BaseModel):
     uid: str
@@ -342,7 +340,7 @@ class setinfomsg(BaseModel):
 
 
 @userapi.post('/setinfomsg')
-async def setinfomsg(data:setinfomsg ,authorized: bool = Depends(verify_token)):
+async def setinfomesg(data:setinfomsg ,authorized: bool = Depends(verify_token)):
     if authorized:
         msg = data.msg
         sql = "UPDATE infomsg SET message = '%s' WHERE ID = '%s'" % (msg, authorized[1])
@@ -358,9 +356,33 @@ async def setinfomsg(data:setinfomsg ,authorized: bool = Depends(verify_token)):
         else:
             return "data updated"
 
+@userapi.post('/edit_profile')
+async def edit_user_profile(request: Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        h_data = await request.json()
+        g_capt = h_data['g_captcha']
+        g_cap = {
+            'secret': '6Lft9g8oAAAAAANE3oNaTKLgyCK6ksG4kfpGhg4Q',
+            'response' : g_capt
+        }
+        res = requests.post('https://www.google.com/recaptcha/api/siteverify', data=g_cap)
+        g_cap_res = res.json()
+        if g_cap_res['success'] == False:
+            raise HTTPException(403, "캡차 인증에 실패했습니다.")
+        
+        print(g_cap_res)
+        print(g_cap_res['success'] == True)
+        
+        return True
+
 @userapi.get('/cookie/me')
-async def reading(userId: Optional[str] = Cookie(None)):
-    return userId
+async def reading(userId: Optional[str] = Cookie(None)): 
+    user = execute_sql("SELECT * FROM `user` WHERE `ID` = '"+userId+"'")
+        
+    imsg = execute_sql("SELECT * FROM infomsg WHERE `ID` = '"+userId+"'")
+    user[0]['imsg'] = imsg[0]['message']
+        
+    return user[0]
 
 @userapi.get('/email/user_id')
 async def email(email:str):
@@ -401,7 +423,7 @@ async def f_verify_token(response: Response, access_token: str, refresh_token:st
         user = auth.verify_id_token(access_token, check_revoked=True)
         print(user)
         # Token is valid and not revoked.
-        return True, user['email_verified']
+        return True, user['email_verified'], user
     except auth.RevokedIdTokenError:
         # Token revoked, inform the user to reauthenticate or signOut().
         raise HTTPException(status_code=401, detail=unauthorized_revoked)
@@ -439,7 +461,7 @@ async def f_verify_token(response: Response, access_token: str, refresh_token:st
             response.set_cookie(key="userId", value=currentuser['userId'], httponly=True)
             user = auth.verify_id_token(currentuser['idToken'], check_revoked=True)
 
-            return True, user['email_verified']
+            return True, user['email_verified'], user
         except requests.HTTPError as e:
             error = json.loads(e.args[1])['error']['message']
             print("Auto_Login_Error "+error)
@@ -489,7 +511,7 @@ async def f_verify_token(response: Response, access_token: Optional[str] = Cooki
         user = auth.verify_id_token(access_token, check_revoked=True)
         print(user)
         # Token is valid and not revoked.
-        return True, user['email_verified']
+        return True, user['email_verified'], user
     except auth.RevokedIdTokenError:
         # Token revoked, inform the user to reauthenticate or signOut().
         raise HTTPException(status_code=401, detail=unauthorized_revoked)
@@ -526,7 +548,7 @@ async def f_verify_token(response: Response, access_token: Optional[str] = Cooki
             response.set_cookie(key="refresh_token", value=currentuser['refreshToken'], httponly=True)
             response.set_cookie(key="userId", value=currentuser['userId'], httponly=True)
             user = auth.verify_id_token(currentuser['idToken'], check_revoked=True)
-            return True, user['email_verified']
+            return True, user['email_verified'], user
         except requests.HTTPError as e:
             error = json.loads(e.args[1])['error']['message']
             if error == "TOKEN_EXPIRED":
@@ -679,6 +701,15 @@ er040 = {"code":"ER040", "message":"너무 많은 시도가 있었습니다. 나
 async def user_login(userdata: UserLogindata, request: Request, response: Response):
     email = userdata.email
     password = userdata.password
+    g_capt = userdata.g_cap
+    g_cap = {
+            'secret': '6Lft9g8oAAAAAANE3oNaTKLgyCK6ksG4kfpGhg4Q',
+            'response' : g_capt
+        }
+    res = requests.post('https://www.google.com/recaptcha/api/siteverify', data=g_cap)
+    g_cap_res = res.json()
+    if g_cap_res['success'] == False:
+        raise HTTPException(403, "캡차 인증에 실패했습니다.")
 
     if(len(email) == 0):
         raise HTTPException(status_code=400, detail=Missing_Email)

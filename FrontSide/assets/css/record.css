@@ -18,12 +18,17 @@
 
 .record_wrap .check_item { max-width: 600px; margin: auto; }
 .record_wrap .check_item .checkbox input[type=checkbox] + label { background-size: 20px; }
-.record_wrap .check_item  { display: flex; justify-content: space-between; border-bottom: 1px solid #e1e1e1; padding-bottom: 10px; margin-bottom: 30px; }
+.record_wrap .check_item  { display: flex; justify-content: space-between; border-bottom: 1px solid #e1e1e1; padding-bottom: 10px; margin-bottom: 10px; }
 .record_wrap .check_item .checkbox { font-size: 14px; border-color: black; }
 .record_wrap .check_item  .btn a { display: inline-block;  background: #E1E1E1; border: 1px solid #909090; color: #909090;
     text-align: center; border-radius: 3px; font-size: 12px; padding: 0 15px; height: 25px; line-height: 2; }
 
 .record_wrap .check_item  .btn a.enabled { color: black;}
+
+.record_wrap .tab_mune2 { display: flex; justify-content: right; color: #909090; font-size: 12px; max-width: 600px; margin: 0 auto; gap: 10px;  padding-bottom: 30px; }
+.record_wrap .tab_mune2 a:first-child { position: relative; }
+.record_wrap .tab_mune2 a:first-child::after { content: ""; position: absolute; width: 2px; height: 80%; top: 50%; right: -6px; transform: translateY(-50%); background: #E1E1E1; }
+.record_wrap .tab_mune2 a.on { color: #222222 }
 
 .record_wrap .month_item { white-space: nowrap; overflow-x: auto; overflow-y: hidden;
   width: 100%; max-width: 720px; margin: 30px  auto 20px; text-align: center; padding-bottom: 10px; }
@@ -88,11 +93,18 @@
 .record_wrap .comment_box .write_info input { width: calc(100% - 110px);}
 .record_wrap .comment_box .write_info input::placeholder { transform:translate3d(0,1px,0); }
 .record_wrap .comment_box .write_info a { border: 1px solid #222; height: 40px; border-radius: 3px; line-height: 2.5; padding: 0 14px; }
-.record_wrap .comment_box .comment_list li + li { padding-top: 10px; border-top: 1px solid #909090; }
+.record_wrap .comment_box .comment_list li + li { padding-top: 15px; border-top: 1px solid #909090; }
 /*공통*/
+.record_wrap .comment_box .comment_list .comment_area { display: flex; justify-content: space-between; }
 .record_wrap .comment_box .comment_list .nick_box { display: flex; align-items: center; gap: 5px; margin-bottom: 15px; }
 .record_wrap .comment_box .comment_list .nick_box .profile_img { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; border: 1px solid #E1E1E1; }
 .record_wrap .comment_box .comment_list .nick_box .info .nick { font-size: 14px; }
+.record_wrap .comment_box .comment_list .comment_button { position: relative; z-index: 100;}
+.record_wrap .comment_box .comment_list .comment_button:hover .comment_button_box { opacity: 1; transition: all 0.25s ease-in; }
+.record_wrap .comment_box .comment_list .comment_button .comment_button_box { opacity: 0; position: absolute; z-index: 100; left: 50%; top: 25px; transform: translateX(-50%);
+    display: flex; flex-flow: column; width: 80px; background: white; box-shadow: 0 0 8px rgba(204, 204, 204, 0.25); }
+.record_wrap .comment_box .comment_list .comment_button .comment_button_box button { line-height: 1.5; padding: 5px; background: white; transition: all 0.05s ease-in; }
+.record_wrap .comment_box .comment_list .comment_button .comment_button_box button:focus { background: #E1E1E1; }
 .record_wrap .comment_box .comment_list .nick_box .info .date { font-size: 12px; color: #909090; margin-top: 5px; }
 .record_wrap .comment_box .comment_list .text_box { font-weight: 100; padding-bottom: 15px; font-size: 14px; line-height: 1.5;}
 .record_wrap .comment_box .comment_list .comment_btn { display: flex; gap: 5px; font-size: 14px; line-height: 1.4; padding-bottom: 5px; }

@@ -17,15 +17,19 @@
     </script>
 </head>
 <body>
-    <div style="width: 100%" id="reader"></div>
+    <div class="bar_cam_wrap">
+        <div class="inner">
+            <div style="width: 100%" id="reader"></div>
 
-    <a class="manual_type" href="/diary_bar_scan?err=canceled">
-        <div>
-            <span>바코드 수동으로 입력하러 가기</span>
+            <a class="manual_type" href="/diary_bar_scan?err=canceled">
+                <div>
+                    <span>바코드 수동으로 입력하러 가기</span>
+                </div>
+            </a>
         </div>
-    </a>
+    </div>
 
-        <script>
+    <script>
         function onScanSuccess(decodedText, decodedResult) {
             // Handle on success condition with the decoded text or result.
             console.log(`Scan result: ${decodedText}`, decodedResult);
