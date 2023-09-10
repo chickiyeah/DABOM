@@ -18,7 +18,10 @@
         var last_year = 2023;
         var lastselmonth = 1;
         var last_page = 1;
+        var last_search_type = "alone"
         var checked = [];
+        var curpage = 1;
+        var h_sort = 'DESC'; // 데이터 정렬 : ASC (오래된순) DESC (최신순)
     </script>
 </head>
 <body>
@@ -142,6 +145,10 @@
                 <div class="btn">
                     <a id="rem_post" onclick="delete_post()" href="javascript:">삭제</a>
                 </div>
+            </div>
+            <div class="tab_mune2">
+                <a name="DESC" class="on" onclick="post_sort('DESC')" href="javascript:">최신순</a>
+                <a name="ASC" onclick="post_sort('ASC')" href="javascript:">오래된순</a>
             </div>
             <div class="record_box">
                 <ul class="my_record">

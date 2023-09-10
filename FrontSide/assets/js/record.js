@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
         checked = [];
 
-        get_alone_posts(last_year, lastselmonth, 1);
+        get_alone_posts(last_year, lastselmonth, 1, 'DESC');
     })
 
     our_post.addEventListener("click", (e) => {
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
         checked = [];
 
-        get_with_posts(last_year, lastselmonth, 1);
+        get_with_posts(last_year, lastselmonth, 1, 'DESC');
     })
 })
 
@@ -109,8 +109,6 @@ function sel_year(year) {
 function select_all(selectAll)  {
     const checkboxes  = document.getElementsByName('post');
     const rem_button = document.querySelector('#rem_post')
-    
-    
 
     if (selectAll.checked) {
         rem_button.classList.add('enabled');
@@ -139,6 +137,45 @@ function select_post(checkbox) {
         if (checked.length == 0) {
             rem_button.classList.remove('enabled');
         }
+    }
+}
+
+/** 게시글을 정렬 조회 하는 함수 */
+function post_sort(option) {
+    const desc_a = document.getElementsByName('DESC');
+    const asc_a = document.getElementsByName('ASC');
+
+    if (option === "DESC") {
+        desc_a.forEach((ele) => {
+            ele.classList.add('on');
+        })
+
+        asc_a.forEach((ele) => {
+            ele.classList.remove('on');
+        })
+
+        h_sort = option
+    }
+
+    if (option === "ASC") {
+        console.log("attemping")
+        desc_a.forEach((ele) => {
+            ele.classList.remove('on');
+        })
+
+        asc_a.forEach((ele) => {
+            ele.classList.add('on');
+        })
+
+        h_sort = option
+    }
+
+    if (last_search_type === "alone") {
+        get_alone_posts(last_year, lastselmonth, curpage)
+    }
+
+    if (last_search_type === "with") {
+        get_with_posts(last_year, lastselmonth, curpage)
     }
 }
 
@@ -175,6 +212,8 @@ function delete_post() {
  * (년:int, 월:int, 페이지:int)
  */
 function get_alone_posts(year, month, page) {
+    last_search_type = "alone"
+    curpage = page
     if (page <= 0) {
         page = 1;
     }
@@ -185,7 +224,8 @@ function get_alone_posts(year, month, page) {
         body: JSON.stringify({
             year: year,
             month: month,
-            page: page
+            page: page,
+            sort: h_sort
         })
     }).then((e) => {
         if (e.status === 404) {
@@ -280,6 +320,16 @@ function get_alone_posts(year, month, page) {
                     if (images.length > 0) {
                         image = images[0]
                     }
+                    let p_date = new Date(post.created_at)
+                    let p_month = p_date.getMonth()+1
+                    let p_day = p_date.getDate()
+                    if (p_month.toString().length === 1) {
+                        p_month = "0"+p_month.toString()
+                    }
+
+                    if (p_day.toString().length === 1) {
+                        p_day = "0"+p_day.toString()
+                    }
 
                     let html = `
                         <li id='p_${post.no}'>
@@ -288,7 +338,7 @@ function get_alone_posts(year, month, page) {
                             </div>
                             <div class="info_box">
                                 <h2 onclick='window.open(\"record_my?id=${post.no}\")' style="cursor:pointer">${post.title}</h2>
-                                <p class="date">05/03</p>
+                                <p class="date">${p_month} / ${p_day}</p>
                                 <p class="txt_info">${post.desc}</p>
                                 <div class="bottom">
                                     <div class="txt">
@@ -318,6 +368,8 @@ function get_alone_posts(year, month, page) {
  * (년:int, 월:int, 페이지:int)
  */
 function get_with_posts(year, month, page) {
+    last_search_type = "with"
+    curpage = page
     if (page <= 0) {
         page = 1;
     }
@@ -328,7 +380,8 @@ function get_with_posts(year, month, page) {
         body: JSON.stringify({
             year: year,
             month: month,
-            page: page
+            page: page,
+            sort: h_sort
         })
     }).then((e) => {
         if (e.status === 404) {
@@ -412,9 +465,17 @@ function get_with_posts(year, month, page) {
                     const our_ul = document.querySelector(".our_record");
                     let images = JSON.parse(post.images.replace(/'/g, '"'));
 
-                    console.log(images)
-
                     let image = "/assets/images/default-background.png"
+
+                    let p_date = new Date(post.created_at)
+                    let p_month = p_date.getMonth()+1
+                    let p_day = p_date.getDate()
+                    if (p_month.toString().length === 1) {
+                        p_month = "0"+p_month.toString()
+                    }
+                    if (p_day.toString().length === 1) {
+                        p_day = "0"+p_day.toString()
+                    }
 
                     if (images.length > 0) {
                         image = images[0]
@@ -431,7 +492,7 @@ function get_with_posts(year, month, page) {
                                 </a>
                                 <div class="info_box">
                                     <h2 onclick='window.open(\"record_my?id=${post.no}\")' style="cursor:pointer">${post.title}</h2>
-                                    <p class="date">05/03</p>
+                                    <p class="date">${p_month} / ${p_day}</p>
                                     <p class="txt_info">오늘은 피그마로 디자인을 너무 열심히 한 탓에 허기가지고
                                         머리가 안돌아가서 타코야끼랑 딸기바나를 먹었지 당떨어지면 달달한게 최고야</p>
                                     <div class="bottom">

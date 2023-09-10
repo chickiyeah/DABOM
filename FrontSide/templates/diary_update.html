@@ -149,15 +149,23 @@
                     <p class="date">2023년 6월 2일 금요일</p>
                 </div>
                 <ul class="img_item">
-                    <!-- <li>
-                        <div class="img_box">
-                            <img src="/assets/images/default-background.png" alt="이미지">
+                    <li> 
+                        <div class="img_upload">
+                            <div class="filebox">
+                                <form>
+                                    <input type="file" name="file" id="input" multiple="mutiple">
+                                    <label class="profile_img_box" for="input">
+                                        <h2 class="hidden">파일 업로드</h2>
+                                        <div class="add_img">
+                                            <object data="/assets/images/add-icon.svg" type="image/svg+xml" aria-label="플러스아이콘"></object>
+                                        </div>
+                                    </label>
+                                </form>
+                            </div>
+                            <p>이미지를 업로드 해주세요</p>
                         </div>
-                        <a class="close_btn" href="javascript:">
-                            <object data="/assets/images/close-icon.svg" type="image/svg+xml"
-                                    aria-label="닫기아이콘"></object>
-                        </a>
-                    </li> -->
+                    </li>
+                  <!-- js 개발구간 -->
                 </ul>
             </div>
             <div class="info_box">
@@ -194,10 +202,11 @@
 <div class="friend_list_back">
     <div class="inner">
         <div class="pop_close_head">
-            <h2 id="friend_ul_title" style="text-align: center;" class="title">같이 먹은 친구/연인을(를) 선택하세요.</h2>
+            <h2 id="friend_ul_title" style="text-align: center;" class="title">같이 먹은 사람을(를) 선택하세요.</h2>
         </div>
         <div class="f_sel">
             <a id="s_friend" onclick="set_with('friend')" class="on" href="javascript:">친구</a>
+            <a id="s_family" onclick="set_with('family')" href="javascript:">가족</a>
             <a id="s_couple" onclick="set_with('couple')"  href="javascript:">연인</a>
         </div>
         <ul class="content_box"></ul>
@@ -226,10 +235,16 @@
     function set_with(s_with) {
         if (s_with == "friend") {
             document.querySelector("#s_couple").classList.remove("on")
+            document.querySelector("#s_family").classList.remove("on")
             document.querySelector("#s_friend").classList.add("on")
-        } else {
+        } else if (s_with == "couple") {
             document.querySelector("#s_friend").classList.remove("on")
+            document.querySelector("#s_family").classList.remove("on")
             document.querySelector("#s_couple").classList.add("on")
+        } else if (s_with == "family") {
+            document.querySelector("#s_friend").classList.remove("on")
+            document.querySelector("#s_family").classList.add("on")
+            document.querySelector("#s_couple").classList.remove("on")
         }
         sel_with = s_with
     }
