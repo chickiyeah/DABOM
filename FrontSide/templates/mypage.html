@@ -37,6 +37,7 @@
     <link rel="stylesheet" href="/assets/css/layout.css">
     <script src="/assets/js/mypage/my_info.js"></script>
     <script src="https://www.google.com/recaptcha/api.js"></script>
+    <script type="module" src="/assets/js/fileupload.js"></script>
 </head>
 <body>
     <div class="loading fix">
@@ -84,7 +85,7 @@
                         </div>
                         <div class="from_group">
                             <h3>이메일</h3>
-                            <input type="text" id="email" placeholder="이메일">
+                            <input type="text" id="email" placeholder="이메일" readonly>
                         </div>
                         <div class="from_group">
                             <h3>이름</h3>
@@ -95,11 +96,11 @@
                             <div class="radio-list">
                                 <div class="radio-box">
                                     <input type="radio" name="gender" id="male" checked/>
-                                    <label for="man">남자</label>
+                                    <label for="male">남자</label>
                                 </div>
                                 <div class="radio-box">
                                     <input type="radio" name="gender" id="female"/>
-                                    <label for="woman">여자</label>
+                                    <label for="female">여자</label>
                                 </div>
                                 <div class="radio-box">
                                     <input type="radio" name="gender" id="private"/>

@@ -357,9 +357,10 @@ async def setinfomesg(data:setinfomsg ,authorized: bool = Depends(verify_token))
             return "data updated"
 
 @userapi.post('/edit_profile')
-async def edit_user_profile(request: Request, authorized: bool = Depends(verify_token)):
+async def edit_user_profile(request: Request, authorized: bool = Depends(verify_token), userId: Optional[str] = Cookie(None)):
     if authorized:
         h_data = await request.json()
+        print(h_data)
         g_capt = h_data['g_captcha']
         g_cap = {
             'secret': '6Lft9g8oAAAAAANE3oNaTKLgyCK6ksG4kfpGhg4Q',
@@ -371,8 +372,9 @@ async def edit_user_profile(request: Request, authorized: bool = Depends(verify_
             raise HTTPException(403, "캡차 인증에 실패했습니다.")
         
         print(g_cap_res)
-        print(g_cap_res['success'] == True)
-        
+        execute_sql(f"UPDATE `user` SET `Nickname` = '{h_data['Nickname']}', `gender` = '{h_data['gender']}', `birthday` = '{h_data['birthday']}', `height` = {h_data['height']}, `weight` = {h_data['weight']}, `profile_image` = '{h_data['profile_image']}' WHERE `ID` = '{userId}'")
+        execute_sql(f"UPDATE `infomsg` SET `message` = '{h_data['imsg']}' WHERE `ID` = '{userId}'")
+
         return True
 
 @userapi.get('/cookie/me')
