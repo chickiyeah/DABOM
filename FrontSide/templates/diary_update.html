@@ -11,6 +11,7 @@
     <script type="module" src="/assets/js/diary.js"></script>
     <link rel="stylesheet" href="/assets/css/toast.css">
     <script type="module" src="/assets/js/alert.js"></script>
+    <script type="module" src="/assets/js/fileupload.js"></script>
     <script>
         var eat_when = "morning";
         var fd_total_kcal = 0;
@@ -152,7 +153,7 @@
                     <li> 
                         <div class="img_upload">
                             <div class="filebox">
-                                <form action="" method="post">
+                                <form action="/chat/uploadfile" method="POST" entype="multipart/form-data">
                                     <input type="file" name="file" id="input">
                                     <label class="profile_img_box" for="input">
                                         <h2 class="hidden">파일 업로드</h2>

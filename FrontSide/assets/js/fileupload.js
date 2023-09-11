@@ -26,12 +26,34 @@ async function handleFiles() {
         files.push(url)
     }
     console.log(files)
-    sessionStorage.setItem("da_u_files", files)
     if (location.href.includes("diary_add")) {
         location.href = "/diary_update"
+        sessionStorage.setItem("da_u_files", files)
+    }
+
+    if (location.href.includes("diary_update")) {
+      const imgItem = document.querySelector('.img_item');
+      let p_files = sessionStorage.getItem("da_u_files")
+      let n_files = p_files.split(",")
+      let html = ` <li id="img-${files[0]+"_"+Math.floor(Math.random(1,100) * 100)}">
+                      <div class="img_box"> 
+                        <img src="${files[0]}" alt="이미지">
+                        <a class="close_btn" id="${files[0]+"_"+Math.floor(Math.random(1,100) * 100)}" href="javascript:">
+                          <object data="/assets/images/close-icon.svg" type="image/svg+xml"
+                                  aria-label="닫기아이콘"></object>
+                        </a>
+                      </div>
+                    </li>
+                    `
+                    imgItem.insertAdjacentHTML("afterbegin", html); 
+      n_files.forEach((n_file) => {
+        files.push(n_file)           
+      })
+      sessionStorage.setItem("da_u_files", files)
     }
 
     if (location.href.includes("register")) {
+      sessionStorage.setItem("da_u_files", files)
       document.querySelector("#pf_pro_image").src = files[0]
       loading.style.display = 'none';
     }
@@ -94,7 +116,7 @@ function makeRequest(extentsion, file, formdata) {
                 img.src = h_f_link
             }
             resolve(h_f_link)
-            //console.log(files)
+            console.log(h_f_link)
             
         };
         xhr.send(formdata)
