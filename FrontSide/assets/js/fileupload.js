@@ -52,7 +52,7 @@ async function handleFiles() {
       sessionStorage.setItem("da_u_files", files)
     }
 
-    if (location.href.includes("register")) {
+    if (location.href.includes("register") || location.href.includes("mypage")) {
       sessionStorage.setItem("da_u_files", files)
       document.querySelector("#pf_pro_image").src = files[0]
       loading.style.display = 'none';

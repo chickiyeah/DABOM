@@ -28,19 +28,48 @@ async function edit_personal_info(token) {
     if (!check_captcha()) {
         alert("먼저 로봇 인증을 진행해주세요.")
     } else {
+    
+
+      
+
         var sub_edit = confirm("개인정보를 수정하시겠습니까?");
         if(sub_edit) {
+          //요소 지정
+      const h_imsg = document.querySelector("#imsg");
+      const h_Nickname = document.querySelector("#Nickname");
+      const h_genders = document.getElementsByName("gender");
+      const h_weight = document.querySelector("#weight");
+      const h_height = document.querySelector("#height");
+      const h_year = document.querySelector("#year");
+      const h_month_sel = document.querySelector("#month");
+      const h_date = document.querySelector("#date");
+      const h_pf_image = document.querySelector("#pf_image");
+      
+      let new_pf = {
+        "g_captcha": token,
+        "imsg": h_imsg.value,
+        "Nickname": h_Nickname.value,
+        "weight": h_weight.value,
+        "height": h_height.value,
+        "profile_image": h_pf_image.src
+      }
+
+      h_genders.forEach((gender) => {
+          if (gender.checked) {
+              new_pf.gender = gender.id
+          }
+      })
+
+      new_pf.birthday = `${h_year.value}-${h_month_sel.selectedIndex}-${h_date.value}`;
             fetch("/api/user/edit_profile", {
                 method: "POST",
                 credentials: "include",
-                body: JSON.stringify({
-                    "g_captcha": token
-                })
+                body: JSON.stringify(
+                    new_pf
+                )
             }).then(function(response) {
                 if (response.status === 200) {
-
-                } else if (response.status === 403) {
-                    
+                  location.reload();
                 }
             })
         }

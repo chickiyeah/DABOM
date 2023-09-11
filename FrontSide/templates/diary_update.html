@@ -151,20 +151,16 @@
                 </div>
                 <ul class="img_item">
                     <li> 
-                        <div class="img_upload">
-                            <div class="filebox">
-                                <form action="/chat/uploadfile" method="POST" entype="multipart/form-data">
+                        <form class="uoload_list" action="#" method="POST" entype="multipart/form-data">
+                            <div class="img_upload">
+                                <label class="img_upload_box" for="input">
+                                    <h2 class="hidden">파일 업로드</h2>
                                     <input type="file" name="file" id="input">
-                                    <label class="profile_img_box" for="input">
-                                        <h2 class="hidden">파일 업로드</h2>
-                                        <div class="add_img">
-                                            <object data="/assets/images/add-icon.svg" type="image/svg+xml" aria-label="플러스아이콘"></object>
-                                            <p>이미지 추가하기</p>
-                                        </div>
-                                    </label>
-                                </form>
+                                    <object data="/assets/images/add-icon.svg" type="image/svg+xml" aria-label="플러스아이콘"></object>
+                                    <p>이미지 추가하기</p>
+                                  </label>
                             </div>
-                        </div>
+                        </form>
                     </li>
                   <!-- js 개발구간 -->
                 </ul>
@@ -181,9 +177,9 @@
                         <a href="javascript:" id="d_f_open" target="_blank" class="">같이 먹은 사람 추가하기</a>
 
                 </div>
-                <div style="display:flex;justify-content: right;">
-                    <span style="margin-right: auto;">이름을 눌러 갯수를 수정할 수 있습니다.</span>
-                    <span>현재 총 칼로리 :  <span id="tokcal">0</span>  kcal</span>
+                <div class="txt_box">
+                    <div>이름을 눌러 갯수를 수정할 수 있습니다.</div>
+                    <div class="desc">현재 총 칼로리 :  <em><span id="tokcal">0</span>  kcal</em></div>
                 </div>
                 <div class="search_box">
                     <!--동적-->

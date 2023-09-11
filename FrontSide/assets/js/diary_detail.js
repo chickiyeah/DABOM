@@ -156,7 +156,7 @@ function get_comments(post_no) {
                     console.log(sub_commment)
                     let sub_writer = await get_user_info(sub_commment.writer);
                     let sub_writed_at = new Date(sub_commment.created_at);
-                    let subcomment_h = `
+                    let p_subcomment_h = `
                     <li>
                         <div class="nick_box">
                             <div class="profile_img">
@@ -170,7 +170,7 @@ function get_comments(post_no) {
                         <div class="text_box">${sub_commment.comment}</div>
                     </li>`
 
-                    let n_subcomment_h = `
+                    let subcomment_h = `
                                 <li>
                                     <div class="comment_area">
                                         <div class="nick_box">
@@ -190,7 +190,7 @@ function get_comments(post_no) {
                                             </div>
                                         </a>
                                     </div>
-                                    <div class="text_box">그치만 너무너무 귀찮다~~</div>
+                                    <div class="text_box">${sub_commment.comment}</div>
                                     <button class="comment_btn">
                                         <i>
                                             <object aria-label="댓글아이콘" data="../assets/images/add-box-icon.svg"
@@ -208,15 +208,7 @@ function get_comments(post_no) {
                     subcomment_h_f = subcomment_h_f + subcomment_h
                     i++
                     if (comment.sub_comments.length == i) {
-                        let to_html = head_h + subcomment_h_f + `<li>
-                        <div class="inner_comment">
-                            <textarea placeholder="댓글을 작성하세요" role="textbox" rows="3"></textarea>
-                            <div class="inner_comment_btn">
-                                <a onclick="remove_writing_comment(this)" style="width:140px" href="javascript:">작성중인 댓글 모두 지우기</a>
-                                <a onclick="write_sub_comment(this)" href="javascript:">댓글 작성</a>
-                            </div>
-                        </div>
-                    </li></ul></li>`
+                        let to_html = head_h + subcomment_h_f + `</ul></li>`
 
                         document.querySelector(".comment_list").insertAdjacentHTML("beforeend",to_html)
                     }
