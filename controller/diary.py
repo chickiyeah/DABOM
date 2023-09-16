@@ -205,18 +205,27 @@ async def post_delete(request: Request, authorzed: bool = Depends(verify_token))
 async def write_main_comment(post_id:int, request: Request, authorized : bool = Depends(verify_token)):
     if authorized:
         data = await request.json()
-        data['post_id'] = post_id
-        comments = await execute_sql(f"SELECT * FROM comments WHERE post_id = {post_id} AND 'type' = 'main' ORDER BY created_at ASC")
+        comment = data['comment']
+        comment_id = execute_sql(f"SELECT `no` FROM `food_no` WHERE `fetch` = 'comments'")[0]['no'] + 1
+        created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        return data
+        execute_sql(f"INSERT INTO `comments` (`post_id`, `id`, `type`, `comment`, `writer`, `created_at`) VALUES ({post_id}, {comment_id}, 'main', '{comment}', '{authorized[1]}', '{created_at}')")
+        execute_sql(f"UPDATE `food_no` SET `no` = {comment_id} WHERE `fetch` = 'comments'")        
+
+        return "main comment writed"
 
 @diaryapi.post('/detail/{post_id}/comment/{main_comment_id}/sub')
 async def write_sub_comment(post_id:int, main_comment_id:int, request: Request, authorized : bool = Depends(verify_token)):
     if authorized:
         data = await request.json()
-        data['post_id'] = post_id
+        comment = data['comment']
+        comment_id = execute_sql(f"SELECT `no` FROM `food_no` WHERE `fetch` = 'comments'")[0]['no'] + 1
+        created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        return data
+        execute_sql(f"INSERT INTO `comments` (`post_id`, `id`, `type`, `comment`, `writer`, `created_at`, `main_comment`) VALUES ({post_id}, {comment_id}, 'sub', '{comment}', '{authorized[1]}', '{created_at}', {main_comment_id})")
+        execute_sql(f"UPDATE `food_no` SET `no` = {comment_id} WHERE `fetch` = 'comments'")   
+
+        return "sub comment writed"
 
 @diaryapi.get("/detail/{post_id}/comments")
 async def get_post_comments(post_id: int, request: Request, authorized: bool = Depends(verify_token)):
@@ -226,7 +235,7 @@ async def get_post_comments(post_id: int, request: Request, authorized: bool = D
         if len(notes) == 0:
             raise HTTPException(403, "글이 존재 하지 않거나, 해당 글에 접근할 권한이 없습니다.")
         
-        comments = execute_sql(f"SELECT * FROM comments WHERE `post_id` = {post_id} AND `type` = 'main' ORDER BY created_at ASC")
+        comments = execute_sql(f"SELECT * FROM comments WHERE `post_id` = {post_id} AND `type` = 'main' ORDER BY created_at DESC")
 
         r_comments = []
 

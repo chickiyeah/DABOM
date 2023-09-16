@@ -152,7 +152,8 @@ function init() {
 
   function remove_event() {
     Array.prototype.forEach.call(imgItem.children,(element) =>{
-      if (!element.children[0].classList.contains('img_upload')) {
+      if (!element.children[0].classList.contains('uoload_list')) {
+        console.log(element.children[0].classList)
         element.children[0].children[1].removeEventListener("click", closeevent);
         element.children[0].children[1].addEventListener("click", closeevent)
       }

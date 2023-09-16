@@ -271,13 +271,28 @@ export async function send_alert(type, tar_id, url) {
         var msg
         var title
         if (type === "friend_request") {
-            msg = `${nick} 님으로부터 친구요청이 도착했습니다!`
+            msg = `${nick} 님으로부터 친구요청이 도착했습니다.`
             title = "친구요청이 도착했습니다."
         }
 
         if (type === "guild_invite") {
-            msg = `${nick} 님으로부터 모임초대가 도착했습니다!`
+            msg = `${nick} 님으로부터 모임초대가 도착했습니다.`
             title = "모임초대가 도착했습니다."
+        }
+
+        if (type === "post_main_comment") {
+            msg = `${nick} 님이 회원님이 작성한 글에 댓글을 달았습니다.`
+            title = "작성한 글에 댓글이 달렸습니다."
+        }
+
+        if (type === "post_sub_comment") {
+            msg = `${nick} 님이 회원님이 작성한 댓글에 답글을 달았습니다.`
+            title = "작성한 댓글에 답글이 달렸습니다."
+        }
+
+        if (type === "post_tag_comment") {
+            msg = `${nick} 님이 댓글에서 회원님을 언급했습니다.`
+            title = "댓글에 언급되었습니다."
         }
 
         msg = `alert/*/${type}/*/${id}/*/${profile_image}/*/${url}/*/${title}/*/${msg}`

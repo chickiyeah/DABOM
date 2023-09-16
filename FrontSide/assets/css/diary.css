@@ -26,7 +26,7 @@
 .update_wrap .top_box .img_item li { position: relative; width: calc(33.333% - 10px); display: inline-block; flex: 0 0 auto;  }
 .update_wrap .top_box .img_item li + li { margin-left: 10px;}
 .update_wrap .top_box .img_item li .close_btn { position: absolute; right: 5px; top: 5px; background: #F43B00; border-radius: 20px; padding-right: 5px; padding-left: 5px; padding-top: 5px;}
-
+.update_wrap .top_box .img_item li:only-child { height: 42vh; }
 .update_wrap .uoload_list { height: 100%; }
 .update_wrap .uoload_list .img_upload { width: 100%; height: 100%; text-align: center; }
 .update_wrap .uoload_list .img_upload .img_upload_box { box-sizing: border-box;background:rgba(244, 59, 0, 0.10); width: 100%; padding: 10px; height: 100%;
@@ -285,6 +285,7 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
     .update_wrap .info_box .search_box a object { width: 12px; }
     .update_wrap .info_box .btn_item a { height: 40px; line-height: 3; font-size: 14px; }
     .update_wrap .info_box .search_box .search_item { font-size: 12px; }
+    .update_wrap .top_box .img_item li:only-child { height: 29vh; }
 
     /* 칼로리 */
     .kcal_wrap .bottom_box .info_box p { font-size: 22px; }
