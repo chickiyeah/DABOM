@@ -11,6 +11,9 @@
     <link href="/assets/css/swiper-bundle.min.css" rel="stylesheet">
     <script src="/assets/js/diary_detail.js"></script>
     <script type="module" src="/assets/js/alert.js"></script>
+    <script>
+        cur_post_no = -1;
+    </script>
 </head>
 <body>
     <div class="loading fix">
@@ -190,11 +193,11 @@
                         <div class="write_info">
                             <label class="hidden">댓글작성하기</label>
                             <input placeholder="댓글을 달아보세요" type="text">
-                            <a href="javascript:">댓글 작성</a>
+                            <a href="javascript:" onclick="write_comment(this)">댓글 작성</a>
                         </div>
                     </div>
                     <ul class="comment_list">
-                        <li>
+                        <!--<li>
                             <div class="comment_text_box">
                                 <div class="comment_area">
                                     <div class="nick_box">
@@ -206,13 +209,10 @@
                                             <div class="date">2023/04/25</div>
                                         </div>
                                     </div>
-                                    <a href="javascript:" class="comment_button">
-                                        <i><img src="/assets/images/more-icon.svg" alt="더보기버튼"></i>
-                                        <div class="comment_button_box">
-                                            <button type="button">수정</button>
-                                            <button type="button">삭제</button>
-                                        </div>
-                                    </a>
+                                <div class="comment_button">
+                                    <button type="button" onclick="comment_edit(${comment.id})">수정</button>
+                                    <button type="button" onclick="comment_delete(${comment.id})">삭제</button>
+                                </div>
                                 </div>
                                 <div class="text_box">아침은 든든히 먹어야지!!!!</div>
                                 <button class="comment_btn">
@@ -246,13 +246,10 @@
                                             <div class="date">2023/04/25</div>
                                         </div>
                                     </div>
-                                    <a href="javascript:" class="comment_button">
-                                        <i><img src="/assets/images/more-icon.svg" alt="더보기버튼"></i>
-                                        <div class="comment_button_box">
-                                            <button type="button">수정</button>
-                                            <button type="button">삭제</button>
-                                        </div>
-                                    </a>
+                                    <div class="comment_button">
+                                        <button type="button" onclick="comment_edit(${comment.id})">수정</button>
+                                        <button type="button" onclick="comment_delete(${comment.id})">삭제</button>
+                                    </div>
                                 </div>
                                 <div class="text_box">아침은 든든히 먹어야지!!!!</div>
                                 <button class="comment_btn">
@@ -274,13 +271,10 @@
                                                 <div class="date">2023/04/25</div>
                                             </div>
                                         </div>
-                                        <a href="javascript:" class="comment_button">
-                                            <i><img src="/assets/images/more-icon.svg" alt="더보기버튼"></i>
-                                            <div class="comment_button_box">
-                                                <button type="button">수정</button>
-                                                <button type="button">삭제</button>
-                                            </div>
-                                        </a>
+                                        <div class="comment_button">
+                                            <button type="button" onclick="comment_edit(${comment.id})">수정</button>
+                                            <button type="button" onclick="comment_delete(${comment.id})">삭제</button>
+                                        </div>
                                     </div>
                                     <div class="text_box">그치만 너무너무 귀찮다~~</div>
                                     <button class="comment_btn">
@@ -311,13 +305,10 @@
                                             <div class="date">2023/04/25</div>
                                         </div>
                                     </div>
-                                    <a href="javascript:" class="comment_button">
-                                        <i><img src="/assets/images/more-icon.svg" alt="더보기버튼"></i>
-                                        <div class="comment_button_box">
-                                            <button type="button">수정</button>
-                                            <button type="button">삭제</button>
-                                        </div>
-                                    </a>
+                                    <div class="comment_button">
+                                        <button type="button" onclick="comment_edit(${comment.id})">수정</button>
+                                        <button type="button" onclick="comment_delete(${comment.id})">삭제</button>
+                                    </div>
                                 </div>
                                 <div class="text_box">아침은 든든히 먹어야지!!!!</div>
                                 <button class="comment_btn">
@@ -339,13 +330,10 @@
                                                 <div class="date">2023/04/25</div>
                                             </div>
                                         </div>
-                                        <a href="javascript:" class="comment_button">
-                                            <i><img src="/assets/images/more-icon.svg" alt="더보기버튼"></i>
-                                            <div class="comment_button_box">
-                                                <button type="button">수정</button>
-                                                <button type="button">삭제</button>
-                                            </div>
-                                        </a>
+                                        <div class="comment_button">
+                                            <button type="button" onclick="comment_edit(${comment.id})">수정</button>
+                                            <button type="button" onclick="comment_delete(${comment.id})">삭제</button>
+                                        </div>
                                     </div>
                                     <div class="text_box">그치만 너무너무 귀찮다~~</div>
                                     <button class="comment_btn">
@@ -366,13 +354,10 @@
                                                 <div class="date">2023/04/25</div>
                                             </div>
                                         </div>
-                                        <a href="javascript:" class="comment_button">
-                                            <i><img src="/assets/images/more-icon.svg" alt="더보기버튼"></i>
-                                            <div class="comment_button_box">
-                                                <button type="button">수정</button>
-                                                <button type="button">삭제</button>
-                                            </div>
-                                        </a>
+                                        <div class="comment_button">
+                                            <button type="button" onclick="comment_edit(${comment.id})">수정</button>
+                                            <button type="button" onclick="comment_delete(${comment.id})">삭제</button>
+                                        </div>
                                     </div>
                                     <div class="text_box">그치만 너무너무 귀찮다~~</div>
                                     <button class="comment_btn">
@@ -383,7 +368,7 @@
                                     </button>
                                 </li>
                             </ul>
-                        </li>
+                        </li>-->
                     </ul>
                 </div>
             </div>
