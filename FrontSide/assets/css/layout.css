@@ -147,7 +147,7 @@ textarea { width: 100%; font-family: 'GmarketSans', sans-serif; border-radius: 6
     padding: 15px 10px; font-size: 16px; }
 /* 댓글 */
 .sub_comment_area { width: 100%; font-family: 'GmarketSans', sans-serif; border-radius: 6px; border: 1px solid #E1E1E1;
-    padding: 15px 10px; font-size: 16px; height: 89px; background-color: white; overflow: hidden; overflow-y: scroll; overflow-x: scroll; }
+    padding: 15px 10px; font-size: 16px; height: 89px; background-color: white; overflow: hidden; overflow-y: auto;  }
 
 /* 댓글 플레이스 홀더 */
 .sub_comment_area:empty::before {

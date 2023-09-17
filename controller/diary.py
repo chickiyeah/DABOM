@@ -1,3 +1,4 @@
+import html
 import json
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends, Request, File, UploadFile, Cookie
@@ -205,7 +206,7 @@ async def post_delete(request: Request, authorzed: bool = Depends(verify_token))
 async def write_main_comment(post_id:int, request: Request, authorized : bool = Depends(verify_token)):
     if authorized:
         data = await request.json()
-        comment = data['comment']
+        comment = html.escape(data['comment'])
         comment_id = execute_sql(f"SELECT `no` FROM `food_no` WHERE `fetch` = 'comments'")[0]['no'] + 1
         created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -218,7 +219,7 @@ async def write_main_comment(post_id:int, request: Request, authorized : bool = 
 async def write_sub_comment(post_id:int, main_comment_id:int, request: Request, authorized : bool = Depends(verify_token)):
     if authorized:
         data = await request.json()
-        comment = data['comment']
+        comment = html.escape(data['comment'])
         comment_id = execute_sql(f"SELECT `no` FROM `food_no` WHERE `fetch` = 'comments'")[0]['no'] + 1
         created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -226,6 +227,55 @@ async def write_sub_comment(post_id:int, main_comment_id:int, request: Request, 
         execute_sql(f"UPDATE `food_no` SET `no` = {comment_id} WHERE `fetch` = 'comments'")   
 
         return "sub comment writed"
+    
+@diaryapi.post('/detail/{post_id}/comment/{comment_id}/edit')
+async def edit_comment(post_id: int, comment_id: int, request: Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        data = await request.json()
+        new_comment = html.escape(data['comment'])
+        
+        comment = execute_sql(f"SELECT writer, `comment`, `deleted` FROM `comments` WHERE `id` = {comment_id} AND `post_id` = '{post_id}'")
+
+        if (len(comment) == 0):
+            raise HTTPException(404, "해당 댓글을 찾을수 없습니다.")
+
+        writer = comment[0]['writer']
+        o_comment = comment[0]['comment']
+        deleted = comment[0]['deleted']
+
+        if (deleted == 'true'):
+            raise HTTPException(404, "해당 댓글을 찾을수 없습니다.")
+
+        if (writer != authorized[1]):
+            raise HTTPException(403, "댓글 수정은 작성자만 가능합니다.")
+        
+        edited_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        execute_sql(f"UPDATE `comments` SET `comment` = '{new_comment}' WHERE `id` = {comment_id}")
+        execute_sql(f"INSERT INTO `comment_change_log` (`comment_id`, `editor`, `origin_comment`, `new_comment`, `edited_at`) VALUES ({comment_id}, '{authorized[1]}', '{o_comment}', '{new_comment}', '{edited_at}')")
+
+        return "comment_updated"
+    
+@diaryapi.delete('/detail/{post_id}/comment/{comment_id}/remove')
+async def edit_comment(post_id: int, comment_id: int, request: Request, authorized: bool = Depends(verify_token)):
+    if authorized:     
+        comment = execute_sql(f"SELECT writer, `comment`, `deleted` FROM `comments` WHERE `id` = {comment_id} AND `post_id` = '{post_id}'")
+
+        if (len(comment) == 0):
+            raise HTTPException(404, "해당 댓글을 찾을수 없습니다.")
+
+        writer = comment[0]['writer']
+        deleted = comment[0]['deleted']
+
+        if (deleted == 'true'):
+            raise HTTPException(404, "해당 댓글을 찾을수 없습니다.")
+
+        if (writer != authorized[1]):
+            raise HTTPException(403, "댓글 삭제는 작성자만 가능합니다.")
+
+        execute_sql(f"UPDATE `comments` SET `deleted` = 'true' WHERE `id` = {comment_id}")   
+
+        return "comment_deleted"
 
 @diaryapi.get("/detail/{post_id}/comments")
 async def get_post_comments(post_id: int, request: Request, authorized: bool = Depends(verify_token)):
@@ -235,7 +285,7 @@ async def get_post_comments(post_id: int, request: Request, authorized: bool = D
         if len(notes) == 0:
             raise HTTPException(403, "글이 존재 하지 않거나, 해당 글에 접근할 권한이 없습니다.")
         
-        comments = execute_sql(f"SELECT * FROM comments WHERE `post_id` = {post_id} AND `type` = 'main' ORDER BY created_at DESC")
+        comments = execute_sql(f"SELECT * FROM comments WHERE `post_id` = {post_id} AND `type` = 'main' AND `deleted` = 'false' ORDER BY created_at DESC")
 
         r_comments = []
 
@@ -245,7 +295,7 @@ async def get_post_comments(post_id: int, request: Request, authorized: bool = D
             print(f"SELECT * FROM comments WHERE post_id = {post_id} AND `main_comment` = {id} AND `type` = 'sub' ORDER BY created_at ASC")
             subcomments = execute_sql(f"SELECT * FROM comments WHERE post_id = {post_id} AND `main_comment` = {id} AND `type` = 'sub' ORDER BY created_at ASC")
             comment['sub_comments'] = subcomments
-            r_comments.append(comment)
+            r_comments.append(html.unescape(comment))
 
         return r_comments
 

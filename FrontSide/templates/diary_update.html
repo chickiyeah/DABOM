@@ -339,8 +339,10 @@
             })
 
             Array.prototype.forEach.call(imgs.children,(element) => {
-                let url = element.id.replace("img-","")
-                files.push(url)
+                if (element.id.includes("img-")) {
+                    let url = element.id.replace("img-","")
+                    files.push(url)
+                }
             })
 
             if (title.trim() === "") {

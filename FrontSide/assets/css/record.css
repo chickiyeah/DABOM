@@ -94,21 +94,21 @@
 .record_wrap .comment_box .write_info input::placeholder { transform:translate3d(0,1px,0); }
 .record_wrap .comment_box .write_info a { border: 1px solid #222; height: 40px; border-radius: 3px; line-height: 2.5; padding: 0 14px; }
 .record_wrap .comment_box .comment_list li + li { padding-top: 15px; border-top: 1px solid #909090; }
+
 /*공통*/
-.record_wrap .comment_box .comment_list .comment_area { display: flex; justify-content: space-between; }
+.record_wrap .comment_box .comment_list .comment_area { display: flex; justify-content: space-between; align-items: center;}
 .record_wrap .comment_box .comment_list .nick_box { display: flex; align-items: center; gap: 5px; margin-bottom: 15px; }
 .record_wrap .comment_box .comment_list .nick_box .profile_img { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; border: 1px solid #E1E1E1; }
 .record_wrap .comment_box .comment_list .nick_box .info .nick { font-size: 14px; }
-.record_wrap .comment_box .comment_list .comment_button { position: relative; z-index: 100;}
-.record_wrap .comment_box .comment_list .comment_button:hover .comment_button_box { opacity: 1; transition: all 0.25s ease-in; }
-.record_wrap .comment_box .comment_list .comment_button .comment_button_box { opacity: 0; position: absolute; z-index: 100; left: 50%; top: 25px; transform: translateX(-50%);
-    display: flex; flex-flow: column; width: 80px; background: white; box-shadow: 0 0 8px rgba(204, 204, 204, 0.25); }
-.record_wrap .comment_box .comment_list .comment_button .comment_button_box button { line-height: 1.5; padding: 5px; background: white; transition: all 0.05s ease-in; }
-.record_wrap .comment_box .comment_list .comment_button .comment_button_box button:focus { background: #E1E1E1; }
+.record_wrap .comment_box .comment_list .comment_button { display: flex; gap: 5px;}
+.record_wrap .comment_box .comment_list .comment_button button { font-size: 12px; font-weight: 400; color: #909090;  line-height: 1.5; padding: 5px 8px;}
+.record_wrap .comment_box .comment_list .comment_button button:hover {  text-decoration: underline;}
 .record_wrap .comment_box .comment_list .nick_box .info .date { font-size: 12px; color: #909090; margin-top: 5px; }
 .record_wrap .comment_box .comment_list .text_box { font-weight: 100; padding-bottom: 15px; font-size: 14px; line-height: 1.5;}
-.record_wrap .comment_box .comment_list .comment_btn { display: flex; gap: 5px; font-size: 14px; line-height: 1.4; padding-bottom: 5px; }
-.record_wrap .comment_box .comment_list .comment_btn i object { pointer-events: none; width: 16px; display: block; }
+.record_wrap .comment_box .comment_list .comment_btn { display: flex; gap: 5px; align-items: center; font-size: 14px; color: #FFCC00; padding-bottom: 5px; }
+.record_wrap .comment_box .comment_list .comment_btn i { display: inherit;}
+.record_wrap .comment_box .comment_list .comment_btn i object { pointer-events: none; width: 14px; display: block; padding-bottom: 2px;
+filter: invert(75%) sepia(81%) saturate(2300%) hue-rotate(4deg) brightness(107%) contrast(109%); }
 
 .record_wrap .comment_box .comment_list .comment_view_box { background: #FDF9F1; padding: 10px 20px; }
 .record_wrap .comment_box .comment_list .comment_view_box li { padding: 10px 0;}

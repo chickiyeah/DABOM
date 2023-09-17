@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", function() {
 })
 
 const img_dev = document.querySelector(".swiper-wrapper")
+const loading = document.querySelector(".loading");
 
 function setdate(date){
     const p_date = document.querySelector("#post_date");
@@ -98,74 +99,125 @@ function get_post(post_no) {
     })
 }
 
+var stringToHTML = function (str) {
+	var dom = document.createElement('div');
+	dom.innerHTML = str;
+	return dom;
 
+};
 
 function get_comments(post_no) {
     fetch(`/api/diary/detail/${post_no}/comments`,{
         method: "GET",
         credentials: "include"
     }).then((response) => {
-        response.json().then((comments) => {
+        response.json().then(async (comments) => {
             document.querySelector("#p_comment_count").innerText = comments.length
             console.log(comments)
+            let sender = await get_me()
             comments.forEach(async (comment) => {
                 console.log(comment)
                 let user = await get_user_info(comment.writer)
                 let writed_at = new Date(comment.created_at)
+                let n_comment = comment.comment.replace(/&lt;/g,"<").replace(/&gt;/g,">")
+                let head_h = ""
 
-                let head_h = `
-                        <li id=${comment.id}>
-                            <div class="comment_text_box">
-                                <div class="comment_area">
-                                    <div class="nick_box">
-                                        <div class="profile_img">
-                                            <img alt="프로필이미지" src="${user.profile_image}">
+                if (sender.ID === user.ID) {
+                    head_h = `
+                            <li id=${comment.id}>
+                                <div class="comment_text_box" id="comment_normal_${comment.id}">
+                                    <div class="comment_area">
+                                        <div class="nick_box">
+                                            <div class="profile_img">
+                                                <img alt="프로필이미지" src="${user.profile_image}">
+                                            </div>
+                                            <div class="info">
+                                                <div id=${user.ID} class="nick">${user.Nickname}</div>
+                                                <div class="date">${writed_at.getFullYear()}/${writed_at.getMonth()+1}/${writed_at.getDate()}</div>
+                                            </div>
                                         </div>
-                                        <div class="info">
-                                            <div class="nick">${user.Nickname}</div>
-                                            <div class="date">${writed_at.getFullYear()}/${writed_at.getMonth()+1}/${writed_at.getDate()}</div>
+                                        <div class="comment_button">
+                                            <button type="button" onclick="comment_edit(${comment.id})">수정</button>
+                                            <button type="button" onclick="comment_delete(${comment.id})">삭제</button>
                                         </div>
                                     </div>
-                                    <a href="javascript:" class="comment_button">
-                                        <i><img src="/assets/images/more-icon.svg" alt="더보기버튼"></i>
-                                        <div class="comment_button_box">
-                                            <button type="button">수정</button>
-                                            <button type="button">삭제</button>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="text_box">${comment.comment}</div>
-                                <div id="comment_edit_${comment.id}" class="sub_comment_area" contenteditable>${comment.comment}</div>
-                                        <div class="inner_comment_btn" style="text-align: right; margin-top: 5px;">
-                                            <a href="javascript:" style="display: inline-block; text-align: center; font-size: 12px; width: 80px; height: 24px; line-height: 2">취소</a>
-                                            <a href="javascript:" onclick="write_sub_comment(this)" style="backgroung: white; border: 1px solid #222; border-radius: 3px; display: inline-block; text-align: center; font-size: 12px; width: 80px; height: 24px; line-height: 2">수정 완료</a>
-                                        </div>
-                                </div>
-                                <button id="show_more_comment_${comment.id}" onclick="show_sub_comment(this)" class="comment_btn">
-                                    <i>
-                                        <object aria-label="댓글아이콘" data="../assets/images/add-box-icon.svg"
-                                                type="image/svg+xml"></object>
-                                    </i>답글 달기
-                                </button>
+                                    <div class="text_box" id="comment_default_${comment.id}">${n_comment}</div>
+                                    
+                                    <button id="show_more_comment_${comment.id}" onclick="show_sub_comment(this)" class="comment_btn">
+                                        <i>
+                                            <object aria-label="댓글아이콘" data="../assets/images/add-box-icon.svg"
+                                                    type="image/svg+xml"></object>
+                                        </i>답글 달기
+                                    </button>
 
-                                <button id="hide_more_comment_${comment.id}" style="display:none" class="comment_btn" onclick="hide_sub_comment(this)">
-                                    <i>
-                                        <object aria-label="댓글아이콘" data="/assets/images/minu-box-icon.svg"
-                                                type="image/svg+xml"></object>
-                                    </i>숨기기
-                                </button>
-                            </div>
-                            <ul id="sub_comments_${comment.id}" class="comment_view_box" style="display:none">
-                                <li id="sub_comments_${comment.id}_main">
-                                    <div class="inner_comment">
-                                    <div class="sub_comment_area" contenteditable></div>
-                                        <div class="inner_comment_btn">
-                                            <a href="javascript:">취소</a>
-                                            <a href="javascript:" onclick="write_sub_comment(this)">답글 작성</a>
+                                    <button id="hide_more_comment_${comment.id}" style="display:none" class="comment_btn" onclick="hide_sub_comment(this)">
+                                        <i>
+                                            <object aria-label="댓글아이콘" data="/assets/images/minu-box-icon.svg"
+                                                    type="image/svg+xml"></object>
+                                        </i>숨기기
+                                    </button>
+                                </div>
+                                <div id="comment_edit_${comment.id}" style="display: none">
+                                        <div class="sub_comment_area" contenteditable>${comment.comment}</div>
+                                            <div class="inner_comment_btn" style="text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                                                <a href="javascript:" onclick="comment_edit_hide(${comment.id})" style="display: inline-block; text-align: center; font-size: 12px; width: 80px; height: 24px; line-height: 2">취소</a>
+                                                <a href="javascript:" onclick="comment_update(${comment.id})" style="backgroung: white; border: 1px solid #222; border-radius: 3px; display: inline-block; text-align: center; font-size: 12px; width: 80px; height: 24px; line-height: 2">수정 완료</a>
+                                            </div>
+                                </div>
+                                <ul id="sub_comments_${comment.id}" class="comment_view_box" style="display:none">
+                                    <li id="sub_comments_${comment.id}_main">
+                                        <div class="inner_comment" id="write_sub_${comment.id}">
+                                        <div class="sub_comment_area" contenteditable></div>
+                                            <div class="inner_comment_btn">
+                                                <a id="${comment.id}" onclick="hide_sub_comment(this)" href="javascript:">취소</a>
+                                                <a href="javascript:" onclick="write_sub_comment(this)">답글 작성</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                    `
+                } else {
+                    head_h = `
+                            <li id=${comment.id}>
+                                <div class="comment_text_box" id="comment_normal_${comment.id}">
+                                    <div class="comment_area">
+                                        <div class="nick_box">
+                                            <div class="profile_img">
+                                                <img alt="프로필이미지" src="${user.profile_image}">
+                                            </div>
+                                            <div class="info">
+                                                <div id=${user.ID} class="nick">${user.Nickname}</div>
+                                                <div class="date">${writed_at.getFullYear()}/${writed_at.getMonth()+1}/${writed_at.getDate()}</div>
+                                            </div>
                                         </div>
                                     </div>
-                                </li>
-                `
+                                    <div class="text_box" id="comment_default_${comment.id}">${n_comment}</div>
+                                    
+                                    <button id="show_more_comment_${comment.id}" onclick="show_sub_comment(this)" class="comment_btn">
+                                        <i>
+                                            <object aria-label="댓글아이콘" data="../assets/images/add-box-icon.svg"
+                                                    type="image/svg+xml"></object>
+                                        </i>답글 달기
+                                    </button>
+
+                                    <button id="hide_more_comment_${comment.id}" style="display:none" class="comment_btn" onclick="hide_sub_comment(this)">
+                                        <i>
+                                            <object aria-label="댓글아이콘" data="/assets/images/minu-box-icon.svg"
+                                                    type="image/svg+xml"></object>
+                                        </i>숨기기
+                                    </button>
+                                </div>
+                                <ul id="sub_comments_${comment.id}" class="comment_view_box" style="display:none">
+                                    <li id="sub_comments_${comment.id}_main">
+                                        <div class="inner_comment" id="write_sub_${comment.id}">
+                                        <div class="sub_comment_area" contenteditable></div>
+                                            <div class="inner_comment_btn">
+                                                <a id="${comment.id}" onclick="hide_sub_comment(this)" href="javascript:">취소</a>
+                                                <a href="javascript:" onclick="write_sub_comment(this)">답글 작성</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                    `
+                }
                 let subcomment_h_f = "";
                 let i = 0;
                 
@@ -174,53 +226,94 @@ function get_comments(post_no) {
                         console.log(sub_commment)
                         let sub_writer = await get_user_info(sub_commment.writer);
                         let sub_writed_at = new Date(sub_commment.created_at);
-
-                        let subcomment_h = `
-                                    <li id="sub_comments_${comment.id}_${sub_commment.id}">
-                                        <div class="comment_area">
-                                            <div class="nick_box">
-                                                <div class="profile_img">
-                                                    <img alt="프로필이미지" src="${sub_writer.profile_image}">
+                        let n_comment = sub_commment.comment.replace(/&lt;/g,"<").replace(/&gt;/g,">")
+                        let subcomment_h = ""
+                        if (sender.ID === user.ID) {
+                            subcomment_h = `
+                                        <li id="sub_comments_${comment.id}_${sub_commment.id}">
+                                            <div id="comment_normal_${sub_commment.id}">
+                                                <div class="comment_area">
+                                                    <div class="nick_box">
+                                                        <div class="profile_img">
+                                                            <img alt="프로필이미지" src="${sub_writer.profile_image}">
+                                                        </div>
+                                                        <div class="info">
+                                                            <div id=${sub_writer.ID} class="nick">${sub_writer.Nickname}</div>
+                                                            <div class="date">${sub_writed_at.getFullYear()}/${sub_writed_at.getMonth()+1}/${sub_writed_at.getDate()}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="comment_button">
+                                                        <button type="button" onclick="comment_edit(${sub_commment.id})">수정</button>
+                                                        <button type="button" onclick="comment_delete(${sub_commment.id})">삭제</button>
+                                                    </div>
                                                 </div>
-                                                <div class="info">
-                                                    <div class="nick">${sub_writer.Nickname}</div>
-                                                    <div class="date">${sub_writed_at.getFullYear()}/${sub_writed_at.getMonth()+1}/${sub_writed_at.getDate()}</div>
+                                                <div class="text_box" id="comment_default_${sub_commment.id}">${n_comment}</div>
+                                                <button class="comment_btn" id="show_more_comment_${sub_commment.id}" onclick="show_sub_comment_write(this)">
+                                                    <i>
+                                                        <object aria-label="댓글아이콘" data="../assets/images/add-box-icon.svg"
+                                                                type="image/svg+xml"></object>
+                                                    </i>답글 달기
+                                                </button>
+                                                <button id="hide_more_comment_${sub_commment.id}" style="display:none" class="comment_btn" onclick="hide_sub_comment_write(this)">
+                                                    <i>
+                                                        <object aria-label="댓글아이콘" data="/assets/images/minu-box-icon.svg"
+                                                                type="image/svg+xml"></object>
+                                                    </i>숨기기
+                                                </button>
+                                            </div>
+                                            <div id="comment_edit_${sub_commment.id}" style="display: none">
+                                                <div class="sub_comment_area" contenteditable>${n_comment}</div>
+                                                <div class="inner_comment_btn" style="text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                                                    <a href="javascript:" onclick="comment_edit_hide(${sub_commment.id})" style="display: inline-block; text-align: center; font-size: 12px; width: 80px; height: 24px; line-height: 2">취소</a>
+                                                    <a href="javascript:" onclick="comment_update(${sub_commment.id})" style="background: white; border: 1px solid #222; border-radius: 3px; display: inline-block; text-align: center; font-size: 12px; width: 80px; height: 24px; line-height: 2">수정 완료</a>
                                                 </div>
                                             </div>
-                                            <a href="javascript:" class="comment_button">
-                                                <i><img src="/assets/images/more-icon.svg" alt="더보기버튼"></i>
-                                                <div class="comment_button_box">
-                                                    <button type="button">수정</button>
-                                                    <button type="button">삭제</button>
+                                            <div class="inner_comment" style="display:none" id="write_sub_${sub_commment.id}">
+                                                <div class="sub_comment_area" contenteditable><b style="color: orange" id=tag_${sub_commment.writer} contenteditable="false">@${sub_writer.Nickname}&nbsp;</b></div>
+                                                <div class="inner_comment_btn">
+                                                    <a id="${sub_commment.id}" onclick="hide_sub_comment_write(this)" href="javascript:">취소</a>
+                                                    <a href="javascript:" onclick="write_sub_comment(this)">답글 작성</a>
                                                 </div>
-                                            </a>
-                                        </div>
-                                        <div class="text_box">${sub_commment.comment}</div>
-                                        <div id="comment_edit_${comment.id}" class="sub_comment_area" contenteditable>${sub_commment.comment}</div>
-                                        <div class="inner_comment_btn" style="text-align: right; margin-top: 5px;">
-                                            <a href="javascript:" style="display: inline-block; text-align: center; font-size: 12px; width: 80px; height: 24px; line-height: 2">취소</a>
-                                            <a href="javascript:" onclick="write_sub_comment(this)" style="backgroung: white; border: 1px solid #222; border-radius: 3px; display: inline-block; text-align: center; font-size: 12px; width: 80px; height: 24px; line-height: 2">수정 완료</a>
-                                        </div>
-                                        <button class="comment_btn" id="show_more_comment_${sub_commment.id}" onclick="show_sub_comment_write(this)">
-                                            <i>
-                                                <object aria-label="댓글아이콘" data="../assets/images/add-box-icon.svg"
-                                                        type="image/svg+xml"></object>
-                                            </i>답글 달기
-                                        </button>
-                                        <button id="hide_more_comment_${sub_commment.id}" style="display:none" class="comment_btn" onclick="hide_sub_comment_write(this)">
-                                            <i>
-                                                <object aria-label="댓글아이콘" data="/assets/images/minu-box-icon.svg"
-                                                        type="image/svg+xml"></object>
-                                            </i>숨기기
-                                        </button>
-                                        <div class="inner_comment" style="display:none">
-                                            <div class="sub_comment_area" contenteditable><b style="color: orange" id=tag_${sub_commment.writer} contenteditable="false">@${sub_writer.Nickname}&nbsp;</b></div>
-                                            <div class="inner_comment_btn">
-                                                <a href="javascript:">취소</a>
-                                                <a href="javascript:" onclick="write_sub_comment(this)">답글 작성</a>
                                             </div>
-                                        </div>
-                                    </li>`
+                                        </li>`
+                        } else {
+                            subcomment_h = `
+                                        <li id="sub_comments_${comment.id}_${sub_commment.id}">
+                                            <div id="comment_normal_${sub_commment.id}">
+                                                <div class="comment_area">
+                                                    <div class="nick_box">
+                                                        <div class="profile_img">
+                                                            <img alt="프로필이미지" src="${sub_writer.profile_image}">
+                                                        </div>
+                                                        <div class="info">
+                                                            <div id=${sub_writer.ID} class="nick">${sub_writer.Nickname}</div>
+                                                            <div class="date">${sub_writed_at.getFullYear()}/${sub_writed_at.getMonth()+1}/${sub_writed_at.getDate()}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="text_box" id="comment_default_${sub_commment.id}">${n_comment}</div>
+                                                <button class="comment_btn" id="show_more_comment_${sub_commment.id}" onclick="show_sub_comment_write(this)">
+                                                    <i>
+                                                        <object aria-label="댓글아이콘" data="../assets/images/add-box-icon.svg"
+                                                                type="image/svg+xml"></object>
+                                                    </i>답글 달기
+                                                </button>
+                                                <button id="hide_more_comment_${sub_commment.id}" style="display:none" class="comment_btn" onclick="hide_sub_comment_write(this)">
+                                                    <i>
+                                                        <object aria-label="댓글아이콘" data="/assets/images/minu-box-icon.svg"
+                                                                type="image/svg+xml"></object>
+                                                    </i>숨기기
+                                                </button>
+                                            </div>
+                                            <div class="inner_comment" style="display:none" id="write_sub_${sub_commment.id}">
+                                                <div class="sub_comment_area" contenteditable><b style="color: orange" id=tag_${sub_commment.writer} contenteditable="false">@${sub_writer.Nickname}&nbsp;</b></div>
+                                                <div class="inner_comment_btn">
+                                                    <a id="${sub_commment.id}" onclick="hide_sub_comment_write(this)" href="javascript:">취소</a>
+                                                    <a href="javascript:" onclick="write_sub_comment(this)">답글 작성</a>
+                                                </div>
+                                            </div>
+                                        </li>`
+                        }
                         subcomment_h_f = subcomment_h_f + subcomment_h
                         i++
                         if (comment.sub_comments.length == i) {
@@ -254,8 +347,8 @@ function get_comments(post_no) {
                                     <a href="javascript:" class="comment_button">
                                         <i><img src="/assets/images/more-icon.svg" alt="더보기버튼"></i>
                                         <div class="comment_button_box">
-                                            <button type="button">수정</button>
-                                            <button type="button">삭제</button>
+                                            <button type="button" onclick="comment_edit(${comment.id})">수정</button>
+                                            <button type="button" onclick="comment_delete(${comment.id})>삭제</button>
                                         </div>
                                     </a>
                                 </div>
@@ -283,28 +376,102 @@ function get_comments(post_no) {
 
 function show_sub_comment(element) {
     element.style.display = "none"
-    element.parentElement.children[3].style.display = "";
-    element.parentElement.parentElement.children[1].style.display = "";
+    let id = parseInt(element.id.replace("show_more_comment_", ""))
+    let hide_sub_comment = document.getElementById(`hide_more_comment_${id}`)
+    let sub_comment_div = document.getElementById(`sub_comments_${id}`)
+    sub_comment_div.style.display = "";
+    hide_sub_comment.style.display = "";
 }
 
 function hide_sub_comment(element) {
-    element.style.display = "none"
-    element.parentElement.children[2].style.display = "";
-    element.parentElement.parentElement.children[1].style.display = "none";
+    let id = parseInt(element.id.replace("hide_more_comment_", ""))
+    let show_sub_comment = document.getElementById(`show_more_comment_${id}`)
+    let hide_sub_comment = document.getElementById(`hide_more_comment_${id}`)
+    let sub_comment_div = document.getElementById(`sub_comments_${id}`)
+    sub_comment_div.style.display = "none";
+    hide_sub_comment.style.display = "none";
+    show_sub_comment.style.display = "";
 }
 
 function show_sub_comment_write(element) {
     element.style.display = "none"
-    element.parentElement.children[3].style.display = "";
-    element.parentElement.children[4].style.display = "";
+    let id = parseInt(element.id.replace("show_more_comment_", ""))
+    let hide_sub_comment = document.getElementById(`hide_more_comment_${id}`)
+    let sub_comment_div = document.getElementById(`write_sub_${id}`)
+    sub_comment_div.style.display = "";
+    hide_sub_comment.style.display = "";
 }
 
 function hide_sub_comment_write(element) {
-    element.style.display = "none"
-    element.parentElement.children[2].style.display = "";
-    element.parentElement.children[4].style.display = "none";
+    let id = parseInt(element.id.replace("hide_more_comment_", ""))
+    let show_sub_comment = document.getElementById(`show_more_comment_${id}`)
+    let hide_sub_comment = document.getElementById(`hide_more_comment_${id}`)
+    let sub_comment_div = document.getElementById(`write_sub_${id}`)
+    sub_comment_div.style.display = "none";
+    hide_sub_comment.style.display = "none";
+    show_sub_comment.style.display = "";
 }
 
+function comment_edit(comment_id) {
+    let normal_div = document.getElementById(`comment_normal_${comment_id}`)
+    let edit_div = document.getElementById(`comment_edit_${comment_id}`)
+    let default_comment = document.getElementById(`comment_default_${comment_id}`)
+    edit_div.children[0].innerHTML = default_comment.innerHTML
+    normal_div.style.display = "none"
+    edit_div.style.display = ""
+}
+
+function comment_edit_hide(comment_id) {
+    let normal_div = document.getElementById(`comment_normal_${comment_id}`)
+    let edit_div = document.getElementById(`comment_edit_${comment_id}`)
+    normal_div.style.display = ""
+    edit_div.style.display = "none"
+}
+
+function comment_update(comment_id) {
+    let normal_div = document.getElementById(`comment_normal_${comment_id}`)
+    let edit_div = document.getElementById(`comment_edit_${comment_id}`)
+    const loading = document.querySelector(".loading");
+    
+    let new_comment = edit_div.children[0].innerHTML
+    loading.style.display = ""
+    fetch(`api/diary/detail/${cur_post_no}/comment/${comment_id}/edit`, {
+        method: 'POST',
+        credentials: "include",
+        body: JSON.stringify({
+            "comment": new_comment
+        })
+    }).then((response) => {
+        if (response.status === 200) {
+            /*normal_div.style.display = ""
+            edit_div.style.display = "none"
+            loading.style.display = "none"*/
+            location.reload()
+        } else {
+            alert("댓글 수정중 알수없는 오류가 발생하였습니다.")
+            loading.style.display = "none"
+        }
+    })
+}
+
+function comment_delete(comment_id) {
+    let con = confirm("이 댓글을 정말 삭제하시겠습니까?")
+    if (con) {
+        const loading = document.querySelector(".loading");
+        loading.style.display = ""
+        fetch(`api/diary/detail/${cur_post_no}/comment/${comment_id}/remove`, {
+            method: 'DELETE',
+            credentials: "include"
+        }).then((response) => {
+            if (response.status === 200) {
+                location.reload()
+            } else {
+                alert("댓글 삭제중 알수없는 오류가 발생하였습니다.")
+                loading.style.display = "none"
+            }
+        })
+    }
+}
 
 async function verify_token() {
     return new Promise(async function(resolve, reject) {
@@ -420,9 +587,11 @@ async function get_me() {
 
 function write_comment(element) {
     let comment = element.parentElement.children[1].value
+    const loading = document.querySelector(".loading");
     if (comment.trim() === '') {
         alert("댓글은 공백 일수 없습니다.")
     } else {
+        loading.style.display = ""
         fetch(`/api/diary/detail/${cur_post_no}/comment/main`, {
             method: 'POST',
             credentials: 'include',
