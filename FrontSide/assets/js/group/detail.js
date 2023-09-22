@@ -163,7 +163,7 @@ function get_write(g_id, page) {
                                     <img alt="식단 이미지" src="${image}">
                                 </a>
                                 <div class="info_box">
-                                    <h2>${post.title}</h2>
+                                    <h2 style="cursor:pointer" onclick='window.open(\"/record_my?id=${post.no}\")'>${post.title}</h2>
                                     <p class="meal">${when}</p>
                                     <p class="txt_info">${post.desc.substring(0, 130).replaceAll("\n", "")}</p>
                                     <div class="bottom">
@@ -171,7 +171,7 @@ function get_write(g_id, page) {
                                             ${f_html}
                                         </div>
                                         <div class="right_box">
-                                            <p class="date">${_day[1]} / ${_day[2]}</p>
+                                            <p class="date">${_day[1]} / ${_day[2].split("T")[0]}</p>
                                             <a class="comment" href="javascript:">
                                                 <i class="comment_icon"><img alt="댓글아이콘" src="/assets/images/comment-icon.svg"></i>
                                                 댓글 <em>${post.comments.length}</em>개
@@ -192,7 +192,7 @@ function get_write(g_id, page) {
                                     <img alt="식단 이미지" src="/assets/images/default-background.png">
                                 </a>
                                 <div class="info_box">
-                                    <h2>${post.title}</h2>
+                                    <h2 style="cursor:pointer" onclick='window.open(\"/record_my?id=${post.no}\")'>${post.title}</h2>
                                     <p class="meal">${when}</p>
                                     <p class="txt_info">${post.desc.substring(0, 130).replaceAll("\n", "")}</p>
                                     <div class="bottom">
@@ -200,7 +200,7 @@ function get_write(g_id, page) {
                                             ${f_html}
                                         </div>
                                         <div class="right_box">
-                                            <p class="date">${_day[1]} / ${_day[2]}</p>
+                                            <p class="date">${_day[1]} / ${_day[2].split("T")[0]}</p>
                                             <a class="comment" href="javascript:">
                                                 <i class="comment_icon"><img alt="댓글아이콘" src="/assets/images/comment-icon.svg"></i>
                                                 댓글 <em>0</em>개

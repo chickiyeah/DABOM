@@ -309,3 +309,35 @@ async def get_post_detail(post_id: int, request: Request, authorized: bool = Dep
             raise HTTPException(403, "글이 존재 하지 않거나, 해당 글에 접근할 권한이 없습니다.")
 
         return notes[0]
+    
+@diaryapi.get("/detail/{group_id}/{post_id}")
+async def get_group_post_detail(group_id: int, post_id: int, request: Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        notes = execute_sql(f"SELECT * FROM UserEat WHERE `id` = '{authorized[1]}' AND `no` = {post_id} AND `group` = {group_id} AND (deleted IS NULL OR deleted = 'false')")
+
+        if len(notes) == 0:
+            raise HTTPException(403, "글이 존재 하지 않거나, 해당 글에 접근할 권한이 없습니다.")
+
+        return notes[0]
+    
+@diaryapi.get("/detail/{group_id}/{post_id}/comments")
+async def get_post_comments(group_id: int, post_id: int, request: Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        notes = execute_sql(f"SELECT `no` FROM UserEat WHERE `id` = '{authorized[1]}' AND `no` = {post_id} AND `group` = {group_id} AND (deleted IS NULL OR deleted = 'false')")
+
+        if len(notes) == 0:
+            raise HTTPException(403, "글이 존재 하지 않거나, 해당 글에 접근할 권한이 없습니다.")
+        
+        comments = execute_sql(f"SELECT * FROM comments WHERE `post_id` = {post_id} AND `type` = 'main' AND `deleted` = 'false' ORDER BY created_at DESC")
+
+        r_comments = []
+
+        for comment in comments:
+            post_id = comment['post_id']
+            id = comment['id']
+            print(f"SELECT * FROM comments WHERE post_id = {post_id} AND `main_comment` = {id} AND `type` = 'sub' ORDER BY created_at ASC")
+            subcomments = execute_sql(f"SELECT * FROM comments WHERE post_id = {post_id} AND `main_comment` = {id} AND `type` = 'sub' ORDER BY created_at ASC")
+            comment['sub_comments'] = subcomments
+            r_comments.append(html.unescape(comment))
+
+        return r_comments
