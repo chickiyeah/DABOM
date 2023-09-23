@@ -69,17 +69,22 @@ async def post_add(request: Request, authorized: bool = Depends(verify_token)):
         title = data['title']
         memo = data['desc']
         friends = data['friends']
-        group = data['group']
         eat_when = data['eat_when']
         s_with = data['with']
         to_kcal = data['total_kcal']
-
         created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         p_num = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'post_no'")[0]['no'])
         n_p_num = p_num+1
-        execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
-        sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`group`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{group}','{eat_when}','{s_with}',{to_kcal})"
-        res = execute_sql(sql)
+        try:
+            group = data['group']
+            execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
+            sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`group`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{group}','{eat_when}','{s_with}',{to_kcal})"
+            res = execute_sql(sql)
+        except KeyError:
+            execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
+            sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}', '{s_with}', {to_kcal})"
+            res = execute_sql(sql)
+
         return res
     
 @diaryapi.get('/group/{group_id}/{page}')
@@ -309,3 +314,56 @@ async def get_post_detail(post_id: int, request: Request, authorized: bool = Dep
             raise HTTPException(403, "글이 존재 하지 않거나, 해당 글에 접근할 권한이 없습니다.")
 
         return notes[0]
+    
+@diaryapi.get("/detail/{group_id}/{post_id}")
+async def get_group_post_detail(group_id: int, post_id: int, request: Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        notes = execute_sql(f"SELECT * FROM UserEat WHERE `id` = '{authorized[1]}' AND `no` = {post_id} AND `group` = {group_id} AND (deleted IS NULL OR deleted = 'false')")
+
+        if len(notes) == 0:
+            raise HTTPException(403, "글이 존재 하지 않거나, 해당 글에 접근할 권한이 없습니다.")
+
+        return notes[0]
+    
+@diaryapi.get("/detail/{group_id}/{post_id}/comments")
+async def get_post_comments(group_id: int, post_id: int, request: Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        notes = execute_sql(f"SELECT `no` FROM UserEat WHERE `id` = '{authorized[1]}' AND `no` = {post_id} AND `group` = {group_id} AND (deleted IS NULL OR deleted = 'false')")
+
+        if len(notes) == 0:
+            raise HTTPException(403, "글이 존재 하지 않거나, 해당 글에 접근할 권한이 없습니다.")
+        
+        comments = execute_sql(f"SELECT * FROM comments WHERE `post_id` = {post_id} AND `type` = 'main' AND `deleted` = 'false' ORDER BY created_at DESC")
+
+        r_comments = []
+
+        for comment in comments:
+            post_id = comment['post_id']
+            id = comment['id']
+            print(f"SELECT * FROM comments WHERE post_id = {post_id} AND `main_comment` = {id} AND `type` = 'sub' ORDER BY created_at ASC")
+            subcomments = execute_sql(f"SELECT * FROM comments WHERE post_id = {post_id} AND `main_comment` = {id} AND `type` = 'sub' ORDER BY created_at ASC")
+            comment['sub_comments'] = subcomments
+            r_comments.append(html.unescape(comment))
+
+        return r_comments
+    
+@diaryapi.post('/update')
+async def post_add(request: Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        data = await request.json()
+        post_no = data['post_id']
+        imgs = data['images']
+        foods = data['foods']
+        title = data['title']
+        memo = data['desc']
+        friends = data['friends']
+        eat_when = data['eat_when']
+        s_with = data['with']
+        to_kcal = data['total_kcal']
+
+        #execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
+        #sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}', '{s_with}', {to_kcal})"
+        sql = f"UPDATE UserEat SET `title` = '{title}', `desc` = '{memo}', `foods` = \"{foods}\", `friends` = '{friends}', `images` = \"{imgs}\", `eat_when` = '{eat_when}', `with` = '{s_with}', `total_kcal` = {to_kcal} WHERE `no` = {post_no}"
+        
+        res = execute_sql(sql)
+        return res

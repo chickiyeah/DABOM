@@ -36,7 +36,8 @@ window.addEventListener('DOMContentLoaded', function() {
   getToday()
   
   if (this.location.href.includes('diary_update')) {
-    init();
+    if (this.location.href.includes("?") == false) {let con = confirm("하나의 글을 작성/수정 중에는\n다른글을 수정하지마세요\n* 중복 수정시 데이터 충돌이 발생합니다.\n\n계속 진행하시겠습니까?");if(con){init()}else{history.back()}}
+    
     const desc = document.querySelector(".content_box")
     fetch('/api/friends/all', {
       method: 'GET'

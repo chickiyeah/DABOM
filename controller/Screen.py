@@ -86,6 +86,11 @@ async def record_my(request: Request):
 async def record_my(request: Request):
     return templates.TemplateResponse("record_my.html", {"request":request})
 
+@ScreenRoute.get("/record/update")
+async def record_update(request: Request):
+    return templates.TemplateResponse("record_update.html", {"request":request})
+
+
 @ScreenRoute.get("/friend")
 async def friend(request: Request):
     return templates.TemplateResponse("friend.html", {"request":request})
