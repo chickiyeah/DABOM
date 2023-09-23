@@ -92,10 +92,12 @@ drag_drop.addEventListener('drop', async function(e) {
     if(!isValid(data)) return;
     const formdata = new FormData();
     let file = data.files[0]
-    let extentsion = file.name
+    let name = file.name
     formdata.append('image', file)
-        let xhr = new XMLHttpRequest();
-        xhr.open('POST', `/chat/uploadfile?ext=${extentsion}`, true)
+    var count = file.name.split('.').length - 1
+    let extentsion = file.name.split('.')[count]
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', `/chat/uploadfile?ext=${extentsion}&name=${name}`, true)
 
     let access_token = sessionStorage.getItem("access_token")
     xhr.setRequestHeader('Authorization', access_token)

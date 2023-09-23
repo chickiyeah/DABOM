@@ -170,14 +170,14 @@
                 </div>
                 <div class="btn_box" id="editbox">
                     <a class="gray_btn" href="javascript:">수정하기</a>
-                    <a class="red_btn" href="javascript:">삭제하기</a>
+                    <a onclick="delete_post()" class="red_btn" href="javascript:">삭제하기</a>
                 </div>
                 <div class="comment_box">
                     <div class="write_box">
                         <div class="top_info">
-                            <a href="javascript:">
+                            <a onclick="like_switch(this)" href="javascript:">
                                 <i class="link_icon">
-                                    <object aria-label="좋아요아이콘" data="../assets/images/link-icon.svg"
+                                    <object id="like_icon" aria-label="좋아요아이콘" data="../assets/images/link-icon.svg"
                                             type="image/svg+xml"></object>
                                 </i>
                                 <p>좋아요 <em id="p_like_count">0</em>개</p>

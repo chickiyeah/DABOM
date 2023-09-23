@@ -71,8 +71,12 @@ function makeRequest(extentsion, file, formdata) {
       if (loading != null) {
         loading.style.display = 'flex';
       }
+
+        let name = file.name
+        var count = file.name.split('.').length - 1
+        let extentsion = file.name.split('.')[count]
         let xhr = new XMLHttpRequest();
-        xhr.open('POST', `/chat/uploadfile?ext=${extentsion}`, true)
+        xhr.open('POST', `/chat/uploadfile?ext=${extentsion}&name=${name}`, true)
         let access_token = sessionStorage.getItem("access_token")
         xhr.setRequestHeader('Authorization', access_token)
         xhr.onload = xhr.onerror = async function () {
