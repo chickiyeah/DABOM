@@ -649,6 +649,7 @@ async def get_users(id:str, authorized:bool = Depends(verify_admin_token)):
     if authorized:
         back = ""
         id = json.loads(id)
+        print(id)
         for u in id:
             if back == "":
                 back = "`ID` = '"+ u + "'"

@@ -516,7 +516,7 @@ export async function send_message(message) {
 }
 
 
-async function get_online_user(room) {
+function get_online_user(room) {
     return new Promise(async function(resolve, reject) {
         let requrl = ""
         if (room == null) {
@@ -528,8 +528,11 @@ async function get_online_user(room) {
             fetch(requrl, {
                 method: 'GET',
             }).then(async function(res) {
-                res.json().then((json) => {
-                    const members = JSON.parse(json.members);
+                res.json().then(async (json) => {
+                    let members = JSON.parse(json.members);
+                    let user = await verify_token()
+                    let us_id = user[0].ID
+                    members.push(us_id)
                     //접속 아이디 전송
                     get_users_info(members)        
                 })
