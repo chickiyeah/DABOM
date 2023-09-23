@@ -45,6 +45,7 @@ function get_post(post_no) {
                 document.getElementById("editbox").style.display = "none";
                 g_id = g_id.split("id=")[1]
 
+
                 fetch(`/api/diary/detail/${g_id}/${post_no}`, {
                     method: "GET",
                     credentials: "include"
@@ -108,6 +109,7 @@ function get_post(post_no) {
         }
 
         if (opener.document.location.href.includes('record')) {
+            document.getElementById("editbox").children[0].href = "/diary_update?id="+post_no
             fetch(`/api/diary/detail/${post_no}`, {
                 method: "GET",
                 credentials: "include"

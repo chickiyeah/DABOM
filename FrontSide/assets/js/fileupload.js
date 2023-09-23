@@ -34,6 +34,9 @@ async function handleFiles() {
     if (location.href.includes("diary_update")) {
       const imgItem = document.querySelector('.img_item');
       let p_files = sessionStorage.getItem("da_u_files")
+      if (p_files == null) {
+        p_files = "[]";
+      }
       let n_files = p_files.split(",")
       let html = ` <li id="img-${files[0]+"_"+Math.floor(Math.random(1,100) * 100)}">
                       <div class="img_box"> 

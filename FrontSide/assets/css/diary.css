@@ -42,6 +42,11 @@
     border-radius: 6px;}
 
 /* 칼로리 */
+.kcal_wrap .search_item { display: flex; gap: 10px;}
+.kcal_wrap .search_item .category_box { width: 180px;}
+.kcal_wrap .search_item .category_box select { width: 100%; cursor: pointer; }
+.kcal_wrap .search_item .category_box select option { min-height: inherit; }
+.kcal_wrap .top_box .search_box { width: calc(100% - 190px);}
 .kcal_wrap .top_box .search_box input { border-bottom: 1px solid #222; border-radius: 0; border-left: 0; border-top: 0; border-right: 0; padding: 0 90px 0 10px; }
 .kcal_wrap .top_box .search_box input:focus { outline:none; border-bottom: 1px solid #F43B00; }
 .kcal_wrap .top_box .search_box { position: relative; margin-bottom: 60px; }
@@ -256,6 +261,9 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
     .update_wrap .txt_box { flex-flow: column; gap: 8px; align-items: center;}
     
     /* 칼로리 */
+    .kcal_wrap .search_item { flex-flow: column; flex-direction: column-reverse; gap: 15px;}
+    .kcal_wrap .search_item .category_box { width: 100%; margin-bottom: 40px; }
+    .kcal_wrap .top_box .search_box { width: 100%; margin-bottom: 0;}
     .kcal_wrap .top_box { margin-top: 120px; margin-bottom: 50px; }
     .kcal_wrap .top_box .search_info li .right_box p { font-size: 14px;}
     .kcal_wrap .top_box .search_info li .right_box .more_btn { width: 80px; font-size: 12px; }

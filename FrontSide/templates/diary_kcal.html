@@ -121,16 +121,47 @@
                     </div>
                     <p class="date">2023년 6월 2일 금요일</p>
                 </div>
-                <div class="search_box">
-                    <input type="text" id="searchInput" placeholder="음식을 검색하세요">
-                    <a title="검색" href="javascript:" class="search_icon" id="send">
-                        <object data="/assets/images/search-icon.svg" type="image/svg+xml" aria-label="검색아이콘"></object>
-                    </a>
-                    <a title="바코드 인식" href="javascript:" onclick="window.open('/diary_bar_cam')" class="camera_icon">
-                        <object data="/assets/images/bar-scan-icon.svg" type="image/svg+xml"
-                                aria-label="바코트 아이콘"></object>
-                    </a>
-                    
+                <div class="search_item">
+                    <form class="category_box" action="#">
+                        <select name="" id="">
+                            <option>전체</option>
+                            <option>과자류</option>
+                            <option>음료류</option>
+                            <option>베이커리</option>
+                            <option>즉석식품</option>
+                            <option>면류</option>
+                            <option>장류 및 양념류</option>
+                            <option>묵류</option>
+                            <option>신선식품</option>
+                            <option>특수식품</option>
+                            <option>반찬</option>
+                            <option>농수산물</option>
+                            <option>두부/김치/빵/국/김/밥</option>
+                            <option>견과류</option>
+                            <option>기타</option>
+                            <option>잼류</option>
+                            <option>소스</option>
+                            <option>가루</option>
+                            <option>튀김류</option>
+                            <option>건강식품</option>
+                            <option>당류</option>
+                            <option>찜류</option>
+                            <option>주류</option>
+                            <option>건식품</option>
+                            <option>편의식품</option>
+                        </select>
+                    </form>
+                    <div class="search_box">
+                        <input type="text" id="searchInput" placeholder="음식을 검색하세요">
+                        <a title="검색" href="javascript:" class="search_icon" id="send">
+                            <object data="/assets/images/search-icon.svg" type="image/svg+xml" aria-label="검색아이콘"></object>
+                        </a>
+                        <a title="바코드 인식" href="javascript:" onclick="window.open('/diary_bar_cam')" class="camera_icon">
+                            <object data="/assets/images/bar-scan-icon.svg" type="image/svg+xml"
+                                    aria-label="바코트 아이콘"></object>
+                        </a>
+                        
+                    </div>
                 </div>
                 <div class="search_count">
                     <span>검색 결과 : <span class="search_count_num"></span> 개</span>

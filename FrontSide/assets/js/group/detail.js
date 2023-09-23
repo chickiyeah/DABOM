@@ -203,7 +203,7 @@ function get_write(g_id, page) {
                                             <p class="date">${_day[1]} / ${_day[2].split("T")[0]}</p>
                                             <a class="comment" href="javascript:">
                                                 <i class="comment_icon"><img alt="댓글아이콘" src="/assets/images/comment-icon.svg"></i>
-                                                댓글 <em>0</em>개
+                                                댓글 <em>${post.comments.length}</em>개
                                             </a>
                                         </div>
                                     </div>

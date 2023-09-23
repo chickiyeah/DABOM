@@ -69,17 +69,22 @@ async def post_add(request: Request, authorized: bool = Depends(verify_token)):
         title = data['title']
         memo = data['desc']
         friends = data['friends']
-        group = data['group']
         eat_when = data['eat_when']
         s_with = data['with']
         to_kcal = data['total_kcal']
-
         created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         p_num = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'post_no'")[0]['no'])
         n_p_num = p_num+1
-        execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
-        sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`group`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{group}','{eat_when}','{s_with}',{to_kcal})"
-        res = execute_sql(sql)
+        try:
+            group = data['group']
+            execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
+            sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`group`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{group}','{eat_when}','{s_with}',{to_kcal})"
+            res = execute_sql(sql)
+        except KeyError:
+            execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
+            sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}', '{s_with}', {to_kcal})"
+            res = execute_sql(sql)
+
         return res
     
 @diaryapi.get('/group/{group_id}/{page}')
@@ -341,3 +346,24 @@ async def get_post_comments(group_id: int, post_id: int, request: Request, autho
             r_comments.append(html.unescape(comment))
 
         return r_comments
+    
+@diaryapi.post('/update')
+async def post_add(request: Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        data = await request.json()
+        post_no = data['post_id']
+        imgs = data['images']
+        foods = data['foods']
+        title = data['title']
+        memo = data['desc']
+        friends = data['friends']
+        eat_when = data['eat_when']
+        s_with = data['with']
+        to_kcal = data['total_kcal']
+
+        #execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
+        #sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}', '{s_with}', {to_kcal})"
+        sql = f"UPDATE UserEat SET `title` = '{title}', `desc` = '{memo}', `foods` = \"{foods}\", `friends` = '{friends}', `images` = \"{imgs}\", `eat_when` = '{eat_when}', `with` = '{s_with}', `total_kcal` = {to_kcal} WHERE `no` = {post_no}"
+        
+        res = execute_sql(sql)
+        return res

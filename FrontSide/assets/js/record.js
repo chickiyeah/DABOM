@@ -495,8 +495,7 @@ function get_with_posts(year, month, page) {
                                 <div class="info_box">
                                     <h2 onclick='window.open(\"record_my?id=${post.no}\")' style="cursor:pointer">${post.title}</h2>
                                     <p class="date">${p_month} / ${p_day}</p>
-                                    <p class="txt_info">오늘은 피그마로 디자인을 너무 열심히 한 탓에 허기가지고
-                                        머리가 안돌아가서 타코야끼랑 딸기바나를 먹었지 당떨어지면 달달한게 최고야</p>
+                                    <p class="txt_info">${post.desc}</p>
                                     <div class="bottom">
                                         <div class="txt">
                                             <span class="y_txt">${eat_with}</span>
