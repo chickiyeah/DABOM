@@ -33,7 +33,7 @@
  display: flex; flex-flow: column; justify-content: center; align-items: center; border-radius: 6px; cursor: pointer;}
  .update_wrap .uoload_list .img_upload .img_upload_box object { pointer-events: none; width: 35px; filter: invert(80%) sepia(5%) saturate(8%) hue-rotate(334deg) brightness(101%) contrast(98%);}
 .update_wrap .uoload_list .img_upload .img_upload_box p { margin-top: 10px;}
-.update_wrap .txt_box { display: flex; justify-content: space-between; color: #909090; font-size: 14px; margin-bottom: 5px;}
+.update_wrap .txt_box { display: flex; justify-content: space-between; color: #909090; font-size: 14px; margin-bottom: 10px;}
 .update_wrap .txt_box .desc { color: #222;}
 .update_wrap .txt_box .desc em { color: #F43B00;}
 .update_wrap .top_box .img_item li .close_btn object { filter: brightness(0) invert(1); }

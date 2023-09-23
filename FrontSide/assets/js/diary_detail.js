@@ -39,6 +39,7 @@ function get_post(post_no) {
     const desc = document.querySelector("#post_desc");
 
     if (opener != null) {
+
         if (opener.document.location.href.includes("group/detail")) {
             let g_id = opener.document.location.href.split("?")[1]
             if (g_id.includes("id=")) {
@@ -50,60 +51,74 @@ function get_post(post_no) {
                     method: "GET",
                     credentials: "include"
                 }).then((response) => {
-                    response.json().then((data) => {
-                        let imgs = ""
-                        //console.log(data)
-                        JSON.parse(data.images.replace(/'/g, '"')).forEach((image) => {
-                            let img_html = `
-                            <div class="swiper-slide">
-                                <div class="img_box">
-                                    <img alt="이미지" src="${image}">
-                                </div>
-                            </div>`
-                            imgs = imgs + img_html
-                        })
-                        setdate(data.created_at)
-                        document.querySelector(".swiper-wrapper").innerHTML = imgs
-        
-                        var eat_when = "";
-                        if (data.eat_when == "morning") {
-                            eat_when = "아침"
-                        } else if (data.eat_when == "lunch") {
-                            eat_when = "점심"
-                        } else if (data.eat_when == "night") {
-                            eat_when = "저녁"
-                        } else if (data.eat_when == "free") {
-                            eat_when = "간식"
-                        }
-                        document.querySelector(".y_txt").innerText = eat_when
-        
-                        desc.innerText = data.desc
-                        document.querySelector(".kcal").innerText = data.total_kcal+" Kcal"
-        
-                        document.querySelector("#eat_txt").querySelectorAll(".r_txt").forEach((ele) => ele.remove())
-                        title.innerText = data.title
-                        if (data.with != "alone") {
-                            JSON.parse(data.friends.replace(/'/g, '"')).forEach(async (friend) => { 
-                                let friend_d = await get_user_info(friend)
-                                let f_html  = `<span class="r_txt">${friend_d.Nickname}</span>`
-                                //console.log(f_html)
-                                document.querySelector("#eat_txt").insertAdjacentHTML("beforeend", f_html)
+                    if (response.status === 200) {
+                        response.json().then(async (data) => {
+                            let me = await get_me_all();
+                            let like_icon = document.getElementById("like_icon")
+                            JSON.parse(me.liked_post.replace(/'/g, '"')).forEach((post) => {
+                                if (post === parseInt(post_no)) {
+                                    like_icon.attributes.data.value = "../assets/images/liked-icon.svg"
+                                }
                             })
-                        }
-                        document.querySelector("#post_foods").innerHTML=""
-                        JSON.parse(data.foods.replace(/'/g, '"')).forEach(async (food) => {
-                            let code = food.code
-                            let amount = food.amount
-                            let food_data = await get_food_info(code)
-                            let food_h = `<tr>
-                                <td>${food_data.name}</td>
-                                <td>${food_data.kcal} Kcal</td>
-                                <td>${amount} 개</td>
-                            </tr>`
-                            document.querySelector("#post_foods").insertAdjacentHTML("beforeend", food_h)
+
+                            let imgs = ""
+                            document.getElementById("p_like_count").innerText = data.likecount
+                            JSON.parse(data.images.replace(/'/g, '"')).forEach((image) => {
+                                let img_html = `
+                                <div class="swiper-slide">
+                                    <div class="img_box">
+                                        <img alt="이미지" src="${image}">
+                                    </div>
+                                </div>`
+                                imgs = imgs + img_html
+                            })
+                            setdate(data.created_at)
+                            document.querySelector(".swiper-wrapper").innerHTML = imgs
+            
+                            var eat_when = "";
+                            if (data.eat_when == "morning") {
+                                eat_when = "아침"
+                            } else if (data.eat_when == "lunch") {
+                                eat_when = "점심"
+                            } else if (data.eat_when == "night") {
+                                eat_when = "저녁"
+                            } else if (data.eat_when == "free") {
+                                eat_when = "간식"
+                            }
+                            document.querySelector(".y_txt").innerText = eat_when
+            
+                            desc.innerText = data.desc
+                            document.querySelector(".kcal").innerText = data.total_kcal+" Kcal"
+            
+                            document.querySelector("#eat_txt").querySelectorAll(".r_txt").forEach((ele) => ele.remove())
+                            title.innerText = data.title
+                            if (data.with != "alone") {
+                                JSON.parse(data.friends.replace(/'/g, '"')).forEach(async (friend) => { 
+                                    let friend_d = await get_user_info(friend)
+                                    let f_html  = `<span class="r_txt">${friend_d.Nickname}</span>`
+                                    //console.log(f_html)
+                                    document.querySelector("#eat_txt").insertAdjacentHTML("beforeend", f_html)
+                                })
+                            }
+                            document.querySelector("#post_foods").innerHTML=""
+                            JSON.parse(data.foods.replace(/'/g, '"')).forEach(async (food) => {
+                                let code = food.code
+                                let amount = food.amount
+                                let food_data = await get_food_info(code)
+                                let food_h = `<tr>
+                                    <td>${food_data.name}</td>
+                                    <td>${food_data.kcal} Kcal</td>
+                                    <td>${amount} 개</td>
+                                </tr>`
+                                document.querySelector("#post_foods").insertAdjacentHTML("beforeend", food_h)
+                            })
+                            document.querySelector("#p_like_count").innerText = data.likecount
                         })
-                        document.querySelector("#p_like_count").innerText = data.likecount
-                    })
+                    } else {
+                        alert("비정상 접근으로 의심됩니다. 다시 시도해주세요.")
+                        opener.location.reload()
+                        window.close()
+                    }
                 })
             }
         }
@@ -115,9 +130,17 @@ function get_post(post_no) {
                 credentials: "include"
             }).then((response) => {
                 if (response.status === 200) {
-                    response.json().then((data) => {
+                    response.json().then(async (data) => {
+                        let me = await get_me_all();
+                        let like_icon = document.getElementById("like_icon")
+                        JSON.parse(me.liked_post.replace(/'/g, '"')).forEach((post) => {
+                            if (post === parseInt(post_no)) {
+                                like_icon.attributes.data.value = "../assets/images/liked-icon.svg"
+                            }
+                        })
+
                         let imgs = ""
-                        //console.log(data)
+                        document.getElementById("p_like_count").innerText = data.likecount
                         JSON.parse(data.images.replace(/'/g, '"')).forEach((image) => {
                             let img_html = `
                             <div class="swiper-slide">
@@ -171,7 +194,8 @@ function get_post(post_no) {
                     })
                 } else {
                     alert("비정상 접근으로 의심됩니다. 다시 시도해주세요.")
-                    history.back()
+                    opener.location.reload()
+                    window.close()
                 }
             })
         }
@@ -898,6 +922,10 @@ async function get_me() {
     return new Promise(async function(resolve, reject) {fetch("/api/user/cookie/get_info", {method: "GET"}).then((res) => {res.json().then((data) => {resolve(data[0])});})})
 }
 
+async function get_me_all() {
+    return new Promise(async function(resolve, reject) {fetch("/api/user/cookie/me", {method: "GET"}).then((res) => {res.json().then((data) => {resolve(data)});})})
+}
+
 function write_comment(element) {
     let comment = element.parentElement.children[1].value
     const loading = document.querySelector(".loading");
@@ -1052,3 +1080,65 @@ async function get_user_info(user) {
         })
     })
 }
+
+
+function like_switch(ele) {
+    let button = ele.children[0].children[0].attributes.data.value
+
+    if (button.includes("liked")) {
+        //좋아요 취소
+
+        fetch(`/api/diary/${cur_post_no}/unlike`, {
+            method: 'POST',
+            credentials: "include"
+        }).then((response) => {
+            if (response.status === 200) {
+                location.reload()
+            } else {
+                response.json().then((body) => {
+                    alert(body)
+                })
+            }
+        })
+    } else {
+        //좋아요
+
+        fetch(`/api/diary/${cur_post_no}/like`, {
+            method: 'POST',
+            credentials: "include"
+        }).then((response) => {
+            if (response.status === 200) {
+                location.reload()
+            } else {
+                response.json().then((body) => {
+                    alert(body)
+                })
+            }
+        })
+    }
+}
+
+/** 게시글을 삭제하는 함수 */
+function delete_post() {
+
+        let del_con = confirm("정말 게시글을 삭제하시겠습니까?")
+
+        if (del_con) {
+            let ids = []
+            ids.push(cur_post_no)
+            console.log(ids)
+            fetch("/api/diary/delete", {
+                method: "DELETE",
+                credentials: "include",
+                body: JSON.stringify({
+                    post_ids : ids
+                })
+            }).then((response) => {
+                if (response.status === 200) {
+                    opener.location.reload()
+                    window.close()
+                }
+            })
+        }
+    
+} 

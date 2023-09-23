@@ -92,10 +92,12 @@ drag_drop.addEventListener('drop', async function(e) {
     if(!isValid(data)) return;
     const formdata = new FormData();
     let file = data.files[0]
-    let extentsion = file.name
+    let name = file.name
     formdata.append('image', file)
-        let xhr = new XMLHttpRequest();
-        xhr.open('POST', `/chat/uploadfile?ext=${extentsion}`, true)
+    var count = file.name.split('.').length - 1
+    let extentsion = file.name.split('.')[count]
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', `/chat/uploadfile?ext=${extentsion}&name=${name}`, true)
 
     let access_token = sessionStorage.getItem("access_token")
     xhr.setRequestHeader('Authorization', access_token)
@@ -514,7 +516,7 @@ export async function send_message(message) {
 }
 
 
-async function get_online_user(room) {
+function get_online_user(room) {
     return new Promise(async function(resolve, reject) {
         let requrl = ""
         if (room == null) {
@@ -526,8 +528,11 @@ async function get_online_user(room) {
             fetch(requrl, {
                 method: 'GET',
             }).then(async function(res) {
-                res.json().then((json) => {
-                    const members = JSON.parse(json.members);
+                res.json().then(async (json) => {
+                    let members = JSON.parse(json.members);
+                    let user = await verify_token()
+                    let us_id = user[0].ID
+                    members.push(us_id)
                     //접속 아이디 전송
                     get_users_info(members)        
                 })

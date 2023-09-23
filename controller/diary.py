@@ -98,8 +98,8 @@ async def get_group_post(group_id:int, page:int, authorized :bool = Depends(veri
             page = 0
 
         offset = page*3
-        count = len(execute_sql(f"SELECT no from UserEat WHERE `group` = {group_id}"))
-        res = execute_sql(f"SELECT * from UserEat WHERE `group` = {group_id} ORDER BY created_at ASC LIMIT 3 OFFSET {offset}")
+        count = len(execute_sql(f"SELECT no from UserEat WHERE `group` = {group_id}  AND (deleted IS NULL OR deleted = 'false')"))
+        res = execute_sql(f"SELECT * from UserEat WHERE `group` = {group_id} AND (deleted IS NULL OR deleted = 'false') ORDER BY created_at ASC LIMIT 3 OFFSET {offset}")
         posts = []
         for post in res:
             comment = execute_sql(f"SELECT * from comments WHERE `post_id` = {post['no']} ORDER BY created_at ASC")
@@ -196,10 +196,10 @@ async def post_delete(request: Request, authorzed: bool = Depends(verify_token))
         sqls = []
         for post_id in post_ids:
             print(post_id)
-            print(post_id in note_num)
+            print(int(post_id) in note_num)
             sql = f"UPDATE UserEat SET `deleted` = 'true' WHERE `no` = {post_id}"
             sqls.append(sql)
-            if not post_id in note_num:
+            if not int(post_id) in note_num:
                 raise HTTPException(403, post_not_owner)
 
         for sql in sqls:
@@ -367,3 +367,45 @@ async def post_add(request: Request, authorized: bool = Depends(verify_token)):
         
         res = execute_sql(sql)
         return res
+
+@diaryapi.post("/{post_no}/like")
+async def like_post(post_no:int, authorized: bool = Depends(verify_token)):
+    if authorized:
+        user = execute_sql(f"SELECT `liked_post` FROM user WHERE `ID` = '{authorized[1]}'")
+        
+        if len(user) == 0:
+            raise HTTPException(404, "user not found")
+        
+        liked_post = json.loads(user[0]['liked_post'])
+
+        if post_no in liked_post:
+            raise HTTPException(403, "이미 좋아요를 누른 게시글 입니다.")
+        else:    
+            post_like = int(execute_sql(f"SELECT `likecount` FROM `UserEat` WHERE `no` = {post_no}")[0]['likecount'])
+            liked_post.append(post_no)
+            execute_sql(f"UPDATE `UserEat` SET `likecount` = {post_like + 1} WHERE `no` = {post_no}")
+            execute_sql(f"UPDATE `user` SET `liked_post` = '{liked_post}' WHERE `ID` = '{authorized[1]}'")
+
+        return True
+    
+@diaryapi.post("/{post_no}/unlike")
+async def like_post(post_no:int, authorized: bool = Depends(verify_token)):
+    if authorized:
+        user = execute_sql(f"SELECT `liked_post` FROM user WHERE `ID` = '{authorized[1]}'")
+        
+        if len(user) == 0:
+            raise HTTPException(404, "user not found")
+        
+        liked_post = json.loads(user[0]['liked_post'])
+
+        if post_no in liked_post:
+            post_like = int(execute_sql(f"SELECT `likecount` FROM `UserEat` WHERE `no` = {post_no}")[0]['likecount'])
+            print(post_like - 1)
+
+            liked_post.remove(post_no)
+            execute_sql(f"UPDATE `UserEat` SET `likecount` = {post_like - 1} WHERE `no` = {post_no}")
+            execute_sql(f"UPDATE `user` SET `liked_post` = '{liked_post}' WHERE `ID` = '{authorized[1]}'")
+        else:
+            raise HTTPException(404, "좋아요를 누른 게시글이 아닙니다.")
+
+        return True

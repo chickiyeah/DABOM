@@ -78,20 +78,26 @@ async def food_add(request: Request, authorized: bool = Depends(verify_token)):
 er044 = {"code":"ER044","message":"키워드가 입력되지 않았습니다."}
 
 @foodapi.post("/search/and")
-async def food_search(input:search_input ,authorized: bool = Depends(verify_token)):
+async def food_search(request: Request ,authorized: bool = Depends(verify_token)):
     if authorized:
+        data = await request.json()
+        cate = data["category"]
+        i_keywords = data["keywords"]
         #list면 keywords = json.loads(input.keywords)
         if input == "":
             raise HTTPException(400, er044)
         else:
             # , 으로 구분된 STR이면
-            keywords = input.keywords.split(',')
+            keywords = i_keywords.split(',')
             search = "SELECT SAMPLE_ID, 식품명, `에너지(kcal)` as 칼로리 FROM foodb WHERE "
-            for keyword in keywords:
+            for keyword in keywords: 
                 if keyword != "":
-                    search = search + "{0} LIKE \"%{1}%\" AND ".format("식품명", keyword)
+                    if keyword[:1] != "":
+                        search = search + "{0} LIKE \"%{1}%\" OR ".format("식품명", keyword)
+                    else:
+                        search = search + "{0} LIKE \"%{1}%\" OR ".format("식품명", keyword[1:])
 
-            res = execute_sql(search[0:-4])
+            res = execute_sql(search[0:-4]+f" AND `new카테` = '{cate}'")
             return res
     
 @foodapi.post("/search/or")
@@ -106,7 +112,10 @@ async def food_search(input:search_input ,authorized: bool = Depends(verify_toke
             search = "SELECT SAMPLE_ID, 식품명, `에너지(kcal)` as 칼로리 FROM foodb WHERE "
             for keyword in keywords:
                 if keyword != "":
-                    search = search + "{0} LIKE \"%{1}%\" OR ".format("식품명", keyword)
+                    if keyword[:1] != "":
+                        search = search + "{0} LIKE \"%{1}%\" OR ".format("식품명", keyword)
+                    else:
+                        search = search + "{0} LIKE \"%{1}%\" OR ".format("식품명", keyword[1:])
 
             res = execute_sql(search[0:-4])
             return res

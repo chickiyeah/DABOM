@@ -189,7 +189,7 @@ async def delete_all(username: str, channel: str):
     return "all message delete"
 
 @chat.post("/uploadfile")
-async def upload(ext:str, image: UploadFile = File(), access_token: Optional[str] = Cookie(None)):
+async def upload(ext:str, name:str, image: UploadFile = File(), access_token: Optional[str] = Cookie(None)):
     now = datetime.now(KST).strftime("%Y-%m-%d_%H:%M:%S")  
     try:
         user = auth.verify_id_token(access_token, check_revoked=True)
@@ -198,10 +198,10 @@ async def upload(ext:str, image: UploadFile = File(), access_token: Optional[str
         uid = "register_"+now
 
     
-    a = Storage.child(f"/dabom/{uid}/{now}_{ext}").put(image.file)
+    a = Storage.child(f"/dabom/{uid}/{now}_{name}.{ext}").put(image.file)
     print(now)
-    print(f"https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F{uid}%2F{now}_{ext}?alt=media&token={a['downloadTokens']}")
-    return f"https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F{uid}%2F{now}_{ext}?alt=media&token={a['downloadTokens']}"
+    print(f"https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F{uid}%2F{now}_{name}.{ext}?alt=media&token={a['downloadTokens']}")
+    return f"https://firebasestorage.googleapis.com/v0/b/dabom-ca6fe.appspot.com/o/dabom%2F{uid}%2F{now}_{name}.{ext}?alt=media&token={a['downloadTokens']}"
 
 
 @chat.get("/members")
