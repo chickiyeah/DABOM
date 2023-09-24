@@ -7,7 +7,7 @@ window.addEventListener('DOMContentLoaded', async function () {
         if (this.location.href.includes("?")) {
           let r = this.location.href.split("?")[1]
           if (r === "t=r") {
-            alert("인증 이메일이 발송되었으니 확인해주세요!")
+            alert("인증 이메일이 발송되었으니 확인해주세요!\n메일이 안보일 경우 스팸메일함을 확인해주세요.")
           }
         }
       }
@@ -310,7 +310,7 @@ async function login(token) { //메인함수가 동기상태에요. 기본으로
             document.querySelector(".loading").style.display = 'none';
           }else if(detail.code == "ER012"){
             reject( new Error("이메일 인증이 필요합니다"));
-            loginVal.insertAdjacentHTML('afterbegin', '<p>이메일 인증이 필요합니다.\n이메일로 인증메일이 발송되었습니다.</p>' );
+            loginVal.insertAdjacentHTML('afterbegin', '<p>이메일 인증이 필요합니다.\n이메일로 인증메일이 발송되었습니다.\n메일이 안보일 경우 스팸메일함을 확인해주세요.</p>' );
             document.querySelector(".loading").style.display = 'none';
           }else if(detail.code == "ER040"){
             reject( new Error("너무 많은 시도가 있었습니다. 나중에 시도해주세요."));
