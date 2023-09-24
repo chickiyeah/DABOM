@@ -1,5 +1,7 @@
 import html
 import json
+import random
+import string
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends, Request, File, UploadFile, Cookie
 from pydantic import BaseModel
@@ -117,6 +119,25 @@ async def get_group_post(group_id:int, page:int, authorized :bool = Depends(veri
     
     else:
         raise HTTPException(401)
+
+@diaryapi.post('/all')
+async def post_get(request:Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        
+        json = await request.json()
+        count = len(execute_sql(f"SELECT no from UserEat WHERE id = '{authorized[1]}' AND (deleted IS NULL OR deleted = 'false')"))
+        res = execute_sql(f"SELECT * from UserEat WHERE id = '{authorized[1]}' AND (deleted IS NULL OR deleted = 'false') ORDER BY created_at DESC LIMIT 6 OFFSET {(int(json['page'])-1)*6}")
+
+        if len(res) == 0:
+            raise HTTPException(404, post_not_found)
+        
+        j_res = {
+            "posts": res,
+            "page": int(json['page']),
+            "total": count
+        }
+        
+        return j_res
 
 @diaryapi.post('/alone')
 async def post_get(request:Request, authorized: bool = Depends(verify_token)):
@@ -363,7 +384,7 @@ async def post_add(request: Request, authorized: bool = Depends(verify_token)):
 
         #execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
         #sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}', '{s_with}', {to_kcal})"
-        sql = f"UPDATE UserEat SET `title` = '{title}', `desc` = '{memo}', `foods` = \"{foods}\", `friends` = '{friends}', `images` = \"{imgs}\", `eat_when` = '{eat_when}', `with` = '{s_with}', `total_kcal` = {to_kcal} WHERE `no` = {post_no}"
+        sql = f"UPDATE UserEat SET `title` = '{title}', `desc` = '{memo}', `foods` = \"{foods}\", `friends` = \"{friends}\", `images` = \"{imgs}\", `eat_when` = '{eat_when}', `with` = '{s_with}', `total_kcal` = {to_kcal} WHERE `no` = {post_no}"
         
         res = execute_sql(sql)
         return res
@@ -409,3 +430,64 @@ async def like_post(post_no:int, authorized: bool = Depends(verify_token)):
             raise HTTPException(404, "좋아요를 누른 게시글이 아닙니다.")
 
         return True
+    
+@diaryapi.post('/{post_id}/share')
+async def post_delete(request: Request, post_id:int, authorzed: bool = Depends(verify_token)):
+    if authorzed: 
+        notes = execute_sql(f"SELECT `no` FROM UserEat WHERE `id` = '{authorzed[1]}' AND (deleted IS NULL OR deleted = 'false')")
+        #print(notes)
+        note_num = []
+        for note in notes:
+            note_num.append(int(note['no']))
+
+        #print(note_num)
+        veri_list = execute_sql("SELECT `code` FROM f_verify WHERE `type` = 'post_share'")
+        keys = []
+        for key in veri_list:
+            keys.append(key['code'])
+
+        verifykey = "".join([random.choice(string.ascii_letters) for _ in range(15)])
+
+        while verifykey in keys:
+            verifykey = "".join([random.choice(string.ascii_letters) for _ in range(15)])
+
+        if not int(post_id) in note_num:
+            raise HTTPException(403, post_not_owner)
+
+        execute_sql(f"INSERT INTO f_verify (`code`, `req_id`, `tar_id`, `group_id`, `type`) VALUES ('{verifykey}','{authorzed[1]}','post_{post_id}',0,'post_share')")
+
+        return f"https://dabom.kro.kr/record_my?id={post_id}&v_key={verifykey}"
+    
+@diaryapi.post('/{post_id}/check_key')
+async def share_key_check(request: Request, post_id: str):
+        json = await request.json()
+        key = json['verify_key']
+        veri_list = execute_sql("SELECT `code` FROM f_verify WHERE `type` = 'post_share'")
+        
+        keys = []
+        for key1 in veri_list:
+            keys.append(key1['code'])
+
+        print(keys)
+        if key in keys:
+            notes = execute_sql(f"SELECT * FROM UserEat WHERE `no` = {post_id} AND (deleted IS NULL OR deleted = 'false')")
+            comments = execute_sql(f"SELECT * FROM comments WHERE `post_id` = {post_id} AND `type` = 'main' AND `deleted` = 'false' ORDER BY created_at DESC")
+
+            r_comments = []
+
+            for comment in comments:
+                post_id = comment['post_id']
+                id = comment['id']
+                print(f"SELECT * FROM comments WHERE post_id = {post_id} AND `main_comment` = {id} AND `type` = 'sub' ORDER BY created_at ASC")
+                subcomments = execute_sql(f"SELECT * FROM comments WHERE post_id = {post_id} AND `main_comment` = {id} AND `type` = 'sub' ORDER BY created_at ASC")
+                comment['sub_comments'] = subcomments
+                r_comments.append(html.unescape(comment))
+
+
+            if len(notes) == 0:
+                raise HTTPException(403, "글이 존재 하지 않거나, 해당 글에 접근할 권한이 없습니다.")
+            r_note = notes[0]
+            r_note['comments'] = r_comments
+            return r_note
+        else:
+            raise HTTPException(403)

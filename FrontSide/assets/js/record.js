@@ -158,7 +158,6 @@ function post_sort(option) {
     }
 
     if (option === "ASC") {
-        console.log("attemping")
         desc_a.forEach((ele) => {
             ele.classList.remove('on');
         })

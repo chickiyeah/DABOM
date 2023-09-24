@@ -34,10 +34,28 @@
     <meta name="theme-color" content="#ffffff">
     <title>다봄 : 게시글</title>
     <title>마이페이지</title>
+    <script src="/assets/js/mypage/post.js"></script>
     <link rel="stylesheet" href="/assets/css/reset.css">
     <link rel="stylesheet" href="/assets/css/layout.css">
 </head>
-</head>
+<script>
+    let curpage = 1;
+    let checked = [];
+</script>
+
+<script>
+    function copyToClipBoard(){
+    var content = document.getElementById('s_link').value;
+    console.log(content)
+    navigator.clipboard.writeText(content)
+        .then(() => {
+        alert("복사완료!")
+    })
+        .catch(err => {
+        console.log('Something went wrong', err);
+    })
+    }
+  </script>
 <body>
 <!-- .info_box 클릭하면 체크박스 같이 클릭되게 해주세요 -->
 <!-- .post_nav 연결해주세요  -->
@@ -64,7 +82,7 @@
         </nav>
         <div class="right_box">
             <div class="post_group">
-                <ul>
+                <ul class="post_ul">
                     <li>
                         <div class="checkbox">
                             <input type="checkbox" id="save1">
@@ -152,18 +170,24 @@
                 </ul>
                 <div class="post_nav">
                     <a class="prev" href="javascript:"> <object data="/assets/images/arrow-left.svg" type="image/svg+xml" aria-label="왼쪽 화살표"></object></a>
-                    <a class="num" href="javascript:">1</a>
-                    <a class="num" href="javascript:">2</a>
-                    <a class="num" href="javascript:">3</a>
-                    <a class="num" href="javascript:">4</a>
-                    <a class="num" href="javascript:">5</a>
+                    <div id="page_div">
+                        <a class="num" href="javascript:">1</a>
+                        <a class="num" href="javascript:">2</a>
+                        <a class="num" href="javascript:">3</a>
+                        <a class="num" href="javascript:">4</a>
+                        <a class="num" href="javascript:">5</a>
+                    </div>
                     <a class="next" href="javascript:">
                         <object data="/assets/images/arrow-right.svg" type="image/svg+xml" aria-label="오른쪽 화살표"></object>
                     </a>
                 </div>
+                <div class="share_area">
+                    <input id="s_link" readonly placeholder="공유하기로 생성된 링크가 표시됩니다" disabled>
+                    <button class="copy_button" onclick="copyToClipBoard()">링크 복사</button>
+                </div>
                 <div class="btn_box">
-                    <a class="red_line_btn" href="javascript:">공유하기</a>
-                    <a class="red_btn" href="javascript:">삭제하기</a>
+                    <a class="red_line_btn" onclick="share_post()" href="javascript:">공유하기</a>
+                    <a class="red_btn" onclick="delete_post()" href="javascript:">삭제하기</a>
                 </div>
             </div>
         </div>

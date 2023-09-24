@@ -1,8 +1,14 @@
 window.addEventListener('DOMContentLoaded', async function() {
     connnect()
     if (bell != null) {
-        get_unread_amount()
-        get_alerts(1)
+        if (document.location.href.includes("?")) {
+            let key = document.location.href.split("?")[1]
+            if (key.includes("v_key=") == false) {
+                get_unread_amount()
+                get_alerts(1)
+            }
+        }
+        
     }
 })
 
@@ -85,8 +91,16 @@ async function get_unread_amount() {
             let amount = json.amount
             if (amount > 0) {
                 bell_new_alert.forEach((ele) => ele.style.display = 'block')
+                /*var noti = new Notification("읽지 않은 알림이 존재 합니다.", {body:'지금 알림을 확인해보세요.', icon: './assets/images/favicon.ico'})
+
+                noti.addEventListener('click', (e) => {e.preventDefault();window.open("/")})
+
+
+                setTimeout(function(){
+                    noti.close();
+                }, 6000);*/
             } else {
-                ell_new_alert.forEach((ele) => ele.style.display = 'none')
+                bell_new_alert.forEach((ele) => ele.style.display = 'none')
             }
         })
     })
