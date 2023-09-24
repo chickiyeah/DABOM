@@ -89,6 +89,7 @@
 .record_wrap .comment_box .top_info a { display: flex; align-items: center; border-radius: 3px; border: 1px solid #909090;
  padding: 0 14px; height: 40px; font-size: 14px; }
 .record_wrap .comment_box .top_info a object { display: block; width: 24px; margin-right: 5px; }
+.record_wrap .comment_box .top_info .shape object { width: 18px;}
 .record_wrap .comment_box .write_info { display: flex; gap: 15px;align-items: center; margin-bottom: 50px; }
 .record_wrap .comment_box .write_info input { width: calc(100% - 110px);}
 .record_wrap .comment_box .write_info input::placeholder { transform:translate3d(0,1px,0); }

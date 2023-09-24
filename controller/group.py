@@ -218,7 +218,7 @@ async def group_invite(group:invite_group, userId: Optional[str] = Cookie(None))
 
         newno = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'log_invite'")[0]['no'])+1
 
-        execute_sql("INSERT INTO f_verify (`code`, `req_id`, `tar_id`, `group_id`, `type`) VALUES ('{0}','{1}','{2}',{3},'{4}')".format(verifykey, r_key, group.target_id, group.group_id, "group")),
+        execute_sql("INSERT INTO f_verify (`code`, `req_id`, `tar_id`, `group_id`, `type`) VALUES ('{0}','{1}','{2}',{3},'{4}')".format(verifykey, userId, "anonymous", group.group_id, "group")),
 
         execute_sql("INSERT INTO log_invite (no, type, req, tar) VALUES ({0},'{1}','{2}','{3}')".format(newno, "group_invite", r_key, group.target_id))
 
