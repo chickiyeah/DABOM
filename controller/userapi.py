@@ -841,7 +841,7 @@ async def user_login(userdata: UserLogindata, request: Request, response: Respon
             d.sendmail("noreply.dabom@gmail.com", email, msg.as_string())     
 
         #msg.set_content("아래 링크를 클릭해서 이메일을 인증하세요.\n"+message)
-        s.send_message(msg)
+        #s.sendmail(msg)
         raise HTTPException(status_code=400, detail=Email_Not_Verified)
 
     
@@ -1268,20 +1268,20 @@ async def admin_send_email(userdata: EmailSend, authorized: bool = Depends(verif
         message.set_content(userdata.content+"\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 <a href='https://dabom.channel.io/home'><strong>고객센터</strong></a>를 이용해 주시기 바랍니다.")
 
         try:
-            s.send_message(message)
+            s.sendmail(message)
         except smtplib.SMTPServerDisconnected:
             d = smtplib.SMTP("smtp.gmail.com", 587)
             d.ehlo()
             d.starttls()
             d.login("noreply.dabom", "sxhmurnajtenjtbr")
-            d.send_message(message)
+            d.sendmail(message)
             return {"detail":"Email Sent"}
         except smtplib.SMTPSenderRefused: #sender refused to send message
             d = smtplib.SMTP("smtp.gmail.com", 587)
             d.ehlo()
             d.starttls()
             d.login("noreply.dabom", "sxhmurnajtenjtbr")
-            d.send_message(message) 
+            d.sendmail(message) 
             return {"detail":"Email Sent"}
         
         return {"detail":"Email Sent"}
