@@ -55,10 +55,11 @@ function get_post(post_no) {
                     if (response.status === 200) {
                         response.json().then(async (data) => {
                             let me = await get_me_all();
-                            let like_icon = document.getElementById("like_icon")
+                            let like_icon = document.querySelector(".link_icon")
                             JSON.parse(me.liked_post.replace(/'/g, '"')).forEach((post) => {
                                 if (post === parseInt(post_no)) {
-                                    like_icon.attributes.data.value = "../assets/images/liked-icon.svg"
+                                    //like_icon.attributes.data.value = "../assets/images/liked-icon.svg"
+                                    like_icon.classList.add("on");
                                 }
                             })
 
@@ -136,12 +137,13 @@ function get_post(post_no) {
                 if (response.status === 200) {
                     response.json().then(async (data) => {
                         let me = await get_me_all();
-                        let like_icon = document.getElementById("like_icon")
-                        JSON.parse(me.liked_post.replace(/'/g, '"')).forEach((post) => {
-                            if (post === parseInt(post_no)) {
-                                like_icon.attributes.data.value = "../assets/images/liked-icon.svg"
-                            }
-                        })
+                        let like_icon = document.querySelector(".link_icon")
+                            JSON.parse(me.liked_post.replace(/'/g, '"')).forEach((post) => {
+                                if (post === parseInt(post_no)) {
+                                    //like_icon.attributes.data.value = "../assets/images/liked-icon.svg"
+                                    like_icon.classList.add("on");
+                                }
+                            })
 
                         let imgs = ""
                         document.getElementById("p_like_count").innerText = data.likecount
@@ -1289,9 +1291,9 @@ async function get_user_info(user) {
 
 
 function like_switch(ele) {
-    let button = ele.children[0].children[0].attributes.data.value
+    let button = ele.children[0].classList.contains('on')
 
-    if (button.includes("liked")) {
+    if (button) {
         //좋아요 취소
 
         fetch(`/api/diary/${cur_post_no}/unlike`, {

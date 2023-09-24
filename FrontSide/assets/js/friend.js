@@ -492,7 +492,7 @@ async function get_user_info(user, imsg) {
                         <div class="txt_box">
                             <p class="name">${nick} <em class="data">(${imsg})</em></p>
                         </div>
-                        <a href="javascript:">식단보기</a>
+                        <!--<a href="javascript:">식단보기</a>-->
                     </li>`
 
                     friend_list_div.insertAdjacentHTML("beforeend", html)

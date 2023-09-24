@@ -11,6 +11,7 @@
     <script type="module" src="/assets/js/diary.js"></script>
     <script type="module" src="/assets/js/diary_update.js"></script>
     <link rel="stylesheet" href="/assets/css/toast.css">
+    <link rel="stylesheet" href="/assets/css/popup.css">
     <script type="module" src="/assets/js/alert.js"></script>
     <script type="module" src="/assets/js/fileupload.js"></script>
     <script>
@@ -37,19 +38,25 @@
     </div>
     <div class="fd_edit_back">
         <div class="fd_edit">
-            <h2>음식 갯수 설정<label for="popup"><a onclick="this.parentElement.parentElement.parentElement.parentElement.style.display='none'" href="javascript:">X</a></label></h2>
+            <div class="pop_close_head">
+                <h2 class="title">음식 갯수 설정</h2>
+                <a class="close_btn" onclick="this.parentElement.parentElement.parentElement.parentElement.style.display='none'" href="javascript:">
+                    <object aria-label="닫기 아이콘" data="../assets/images/close-icon.svg" type="image/svg+xml"></object>
+                </a>
+            </div>
+            <!-- <h2>음식 갯수 설정<label for="popup"><a onclick="this.parentElement.parentElement.parentElement.parentElement.style.display='none'" href="javascript:">X</a></label></h2> -->
             <div class="fd_edit_content">
                 <div class="base_data">
-                    <div>식품명 : <span>소금빵</span> </div>
-                    <div>개당 칼로리 : <span>300</span>kcal</div>
+                    <div><em>식품명 :</em> <span>소금빵</span></div>
+                    <div><em>개당 칼로리 :</em> <span>300</span>kcal</div>
                 </div>
                 <div class="editable_data">
                     <div class="edit_amount">
                         갯수
                         <input class="amount" type="number" min="1" value="1" onchange="setamount(this.value)">
                     </div>
-                    <div style="margin-top: 50px; font-size: 30px; font-weight: 900;">
-                        총 칼로리 : <span id="total_kcal">300</span>kcal
+                    <div class="edit_total">
+                       <em>총 칼로리 :</em> <span><div id="total_kcal">300</div>kcal</span>
                     </div>
                 </div>
                 <div>
@@ -164,7 +171,7 @@
                           <div class="only_radio">
                             <input id="rb1" type="radio">
                             <label for="rb1">대표</label>
-                        </div>
+                            </div>
                         </div>
                       </li> -->
                     <li> 
