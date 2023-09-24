@@ -15,6 +15,24 @@
 .email_friend_wrap .inner .content_box .btn_box a:first-child { border: 1px solid #222; }
 .email_friend_wrap .inner .content_box .btn_box a:last-child { background: #F43B00; color: white; border: 1px solid #F43B00; }
 
+/* 음식 갯수 설정 팝업 */
+.fd_edit_back .fd_edit { position: absolute; padding: 25px; box-sizing: border-box; border-radius: 10px; width: 100%;
+    max-width: 600px; max-height: 500px; background: #fff; top: 50%; left: 50%; transform: translate(-50%, -50%);}
+.fd_edit_back .pop_close_head .close_btn object { filter: invert(0%) sepia(0%) saturate(7500%) hue-rotate(249deg) brightness(10%) contrast(108%); }
+.fd_edit_content {  display: flex; flex-direction: column;}
+.fd_edit_back .base_data { margin-bottom: 10px;}
+.fd_edit_back .base_data > div { display: flex; gap: 10px;}
+.fd_edit_back .base_data > div + div { margin-top: 10px;}
+.fd_edit_back .base_data > div > p { font-weight: 700; }
+.fd_edit_back .base_data .base_kcal { display: flex;}
+.fd_edit_back .base_data > div > span { font-weight: 400; }
+.fd_edit_back .edit_amount { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+.fd_edit_back .fd_edit .editable_data .amount { height: 40px; }
+.fd_edit_back .edit_total { margin-top: 10px; font-size: 18px; display: flex; gap: 10px;}
+.fd_edit_back .edit_total p { font-weight: 700;}
+.fd_edit_back .edit_total span { color: #F43B00; display: flex;}
+.fd_edit .edit_submit { width: 100%; cursor: pointer; color: white; background: #F43B00; border: 1px solid #F43B00;
+    text-align: center; height: 40px; border-radius: 6px; display: block; margin-top: 50px;}
 
 /* 오늘일지 칼로리 상세보기 팝업 */
 .kcal_popup_wrap { position: fixed; right: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.2);

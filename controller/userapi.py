@@ -1,3 +1,4 @@
+from collections import Counter
 import json
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends, Request, Response, Cookie
@@ -678,23 +679,26 @@ async def revoke_token(token: token_revoke):
     except _auth_utils.UserNotFoundError:
         raise HTTPException(status_code=400, detail=User_NotFound)
 
-@userapi.delete('/delete')
+@userapi.post('/unregister')
 async def user_delete(authorized:bool = Depends(verify_token)):
     if authorized:
-        user = authorized[1]
+        user = authorized[2]
         id = user['user_id']
         email = user['firebase']['identities']['email'][0]
         sql = 'SELECT Nickname FROM user WHERE ID = "%s"' % id
-        res = sql.execute(sql)
+        res = execute_sql(sql)
         if len(res) == 0:
             raise HTTPException(400, User_NotFound)
 
         nickname = res[0]
+        print(nickname)
 
-        sql = "UPDATE user SET ID = \"removed-{0}\", email = \"removed-{1}\", Nickname = \"removed-{2}\" WHERE ID = \"{0}\" AND email = \"{1}\"".format(id, email, nickname)
+        sql = "UPDATE user SET ID = \"removed-{0}\", email = \"removed-{1}\", Nickname = \"removed-{2}\" WHERE ID = \"{0}\" AND email = \"{1}\"".format(id, email, nickname['Nickname'])
         res = execute_sql(sql)
 
-        if res > 0:
+        print(sql)
+
+        if res > 0: 
             auth.delete_user(id)
             return {"detail":"User deleted successfully"}
         
@@ -744,6 +748,8 @@ async def user_login(userdata: UserLogindata, request: Request, response: Respon
     try:
         userjson= execute_sql("SELECT * FROM user WHERE ID = \"%s\"" % currentuser['localId'])[0]
     except TypeError:
+        raise HTTPException(400, Invaild_Email)
+    except IndexError:
         raise HTTPException(400, Invaild_Email)
     
     userjson['access_token'] = currentuser['idToken']
@@ -1281,7 +1287,56 @@ async def admin_send_email(userdata: EmailSend, authorized: bool = Depends(verif
         return {"detail":"Email Sent"}
     else:
         raise HTTPException(status_code=401, detail=unauthorized)
-    
+
+@userapi.get('/eat_avg/{to_day}')
+async def get_eat_avg(to_day:str, authorized: bool = Depends(verify_token)):
+    if authorized:
+        now = str(datetime.datetime.now().strftime("%Y-%m-%d"))
+        res = execute_sql(f"SELECT `foods`,`total_kcal` FROM `UserEat` WHERE `id` = '{authorized[1]}' AND `created_at` BETWEEN date('{to_day}') AND date('{now}')")
+        
+        to_kcal = 0
+        
+        foods_l = []
+        for data in res:
+            foods = data["foods"].replace("[","").replace("]", "").split("}, ")
+            for food in foods:
+                if "}" not in food:
+                    food = food + "}"
+                
+                food = food.replace("\'", "\"", 6)
+                food = json.loads(food)
+                food_name = execute_sql("SELECT 식품명 FROM foodb WHERE SAMPLE_ID = '%s'" % food['code'])[0]['식품명']
+                foods_l.append(food_name)
+
+            to_kcal = to_kcal + int(data['total_kcal'])
+
+        c_foods_l = sorted(Counter(foods_l).items(), key=lambda x: (-x[1], x[0]))
+
+        p = execute_sql(f"SELECT `gender`, `age` FROM `user` WHERE `ID` = '{authorized[1]}'")[0]
+
+        p_gender = p['gender']
+        p_age = p['age']
+
+        base_kcal = execute_sql(f"SELECT `kcal` FROM `{p_gender}` WHERE `연령` = '{p_age} 세'")
+        
+        if (len(base_kcal) != 0):
+            base_kcal = base_kcal[0]['kcal']
+        else:
+            base_kcal = 0
+
+
+        f_res = {
+            "sort_foods": c_foods_l,
+            "total_kcal": to_kcal,
+            "p_gender": p_gender,
+            "base_kcal": base_kcal
+        }
+
+        
+        return f_res
+
+
+
     """@userapi.post("/verify_token", response_model=verify_token_res, responses=token_verify_responses)
 async def verify_token(token: verify_token):
 

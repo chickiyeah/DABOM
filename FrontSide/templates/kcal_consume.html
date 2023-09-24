@@ -9,6 +9,7 @@
     <link href="/assets/css/reset.css" rel="stylesheet">
     <link href="/assets/css/layout.css" rel="stylesheet">
     <script type="module" src="/assets/js/alert.js"></script>
+    <script src="/assets/js/eat_avg.js"></script>
 </head>
 <body>
     <header>
@@ -101,30 +102,30 @@
     <div class="consume_wrap">
         <div class="container">
             <div class="month_box">
-                <a class="on" href="javascript:">7일</a>
-                <a href="javascript:">1개월</a>
-                <a href="javascript:">3개월</a>
-                <a href="javascript:">1년</a>
+                <a id="avg_0" name="date" onclick="eat_avg(0)" class="on" href="javascript:">1일</a>
+                <a id="avg_7" name="date" onclick="eat_avg(7)" href="javascript:">1주일</a>
+                <a id="avg_30" name="date" onclick="eat_avg(30)" href="javascript:">1개월</a>
+                <a id="avg_365" name="date" onclick="eat_avg(365)" href="javascript:">1년</a>
             </div>
             <div class="kcal_box">
                 <p class="title_txt">내칼로리 / 표준칼로리</p>
                 <p class="sub_txt">
-                    <span class="title"><em>12345kcal</em> / 15432kcal</span>
-                    <span class="txt">표준 칼로리의 89%를 섭취했어요</span>
+                    <span class="title"><em><span id="cur_kcal">12345</span>kcal</em> / <span id="to_kcal">15432</span>kcal</span>
+                    <span class="txt">표준 칼로리의 <span id="cur_per">89</span>%를 섭취했어요</span>
                 </p>
             </div>
             <div class="progress_box">
-                <div class="progress" style="width: 70%">
-                    <div class="progress_bar my">2851kal(섭취칼로리)</div>
+                <div class="progress" id="cur_per_bar" style="width: 70%">
+                    <div class="progress_bar my"><span id="cur_kcal_bar">2851</span>kcal(섭취칼로리)</div>
                 </div>
                 <div class="progress" style="width: 100%">
-                    <div class="progress_bar std">3200kal(표준칼로리)</div>
+                    <div class="progress_bar std"><span id="to_kcal_bar">3200</span>kcal(표준칼로리)</div>
                 </div>
             </div>
             <div class="list_box">
                 <h2>자주 먹은 음식</h2>
                 <ul class="food_list">
-                    <li>
+                    <!--<li>
                         <i class="circle">1</i>
                         <p>아메리카노</p>
                         <div class="number">7회</div>
@@ -153,7 +154,7 @@
                         <i class="circle">6</i>
                         <p>아메리카노</p>
                         <div class="number">7회</div>
-                    </li>
+                    </li>-->
                 </ul>
             </div>
             <div class="bml_box">
@@ -162,34 +163,34 @@
                     <p>* 나이, 신장(cm)과 체중(kg)만으로 비만을 판정하는 비만 지수</p>
                 </div>
                  <div class="bottom_txt">
-                     <p><span class="name">닉네임</span> 님의 BMI는<br> <em>25</em>이고, <em>정상</em> 입니다.</p>
+                     <p><span id="b_nick" class="name">닉네임</span> 님의 BMI는<br> <em id="b_bmi">25</em>이고, <em id="b_status">정상</em> 입니다.</p>
                  </div>
                 <ul class="bml_bar">
-                    <li>
+                    <li name="weight" id="low">
                         <div class="img_box">
                             <object aria-label="사람아이콘" data="/assets/images/person-icon-01.svg" type="image/svg+xml"></object>
                         </div>
                         <div class="txt">저체중</div>
                     </li>
-                    <li class="on">
+                    <li name="weight" id="normal" class="on">
                         <div class="img_box">
                             <object aria-label="사람아이콘" data="/assets/images/person-icon-02.svg" type="image/svg+xml"></object>
                         </div>
                         <div class="txt">정상</div>
                     </li>
-                    <li>
+                    <li name="weight" id="big">
                         <div class="img_box">
                             <object aria-label="사람아이콘" data="/assets/images/person-icon-03.svg" type="image/svg+xml"></object>
                         </div>
                         <div class="txt">과체중</div>
                     </li>
-                    <li>
+                    <li name="weight" id="fat">
                         <div class="img_box">
                             <object aria-label="사람아이콘" data="/assets/images/person-icon-04.svg" type="image/svg+xml"></object>
                         </div>
                         <div class="txt">비만</div>
                     </li>
-                    <li>
+                    <li name="weight" id="super_fat">
                         <div class="img_box">
                             <object aria-label="사람아이콘" data="/assets/images/person-icon-05.svg" type="image/svg+xml"></object>
                         </div>
