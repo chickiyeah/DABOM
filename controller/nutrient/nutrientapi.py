@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from firebase_admin import auth
 from urllib import parse
 from controller.database import execute_sql
+from controller.credentials import verify_token, verify_admin_token
 
 import os
 import requests
@@ -121,7 +122,7 @@ async def calculate_tandanji(pal: calculate,authorized: bool = Depends(verify_us
             return "2000 kcal"
         
 @nutrient.get('/calculate/bmi')
-async def calculate_bmi(authorized: bool = Depends(verify_user_token)):
+async def calculate_bmi(authorized: bool = Depends(verify_token)):
     if authorized:
         uid = authorized[1]
         sql = "SELECT Nickname, height, weight FROM user WHERE ID = '%s'" % uid
@@ -134,22 +135,28 @@ async def calculate_bmi(authorized: bool = Depends(verify_user_token)):
 
             bmi = math.floor(bmi * 10)/10
             
-            if bmi > 30:
+            print(bmi)
+
+            if bmi >= 30:
                 status = "고도비만"
-            elif ((bmi > 25.0) and (bmi < 29.9)):
+            elif ((bmi >= 25.0) and (bmi < 29.9)):
                 status = "비만"
-            elif ((bmi > 23.0) and (bmi < 24.9)):
+            elif ((bmi >= 23.0) and (bmi < 24.9)):
                 status = "과체중"
-            elif ((bmi > 18.5) and (bmi < 22.9)):
+            elif ((bmi >= 18.5) and (bmi < 22.9)):
                 status = "정상"
-            elif ((bmi > 11.1) and (bmi < 18.4)):
+            elif (bmi < 18.4): #(bmi >= 11.1) and 
                 status = "저체중"
-            elif bmi < 11:
-                status = "뼈다구"
             else:
                 raise HTTPException(401, value_error)
+            
+            f_res = {
+                "nickname": data['Nickname'],
+                "bmi": bmi,
+                "status": status
+            }
 
-            return "{2} 님의 BMI는 {0} 이고, {1} 입니다.".format(bmi, status, data['Nickname'])
+            return f_res
     
 
 @nutrient.get('/categories')

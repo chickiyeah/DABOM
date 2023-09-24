@@ -80,16 +80,6 @@
     float: right;
 }
 
-.fd_edit .edit_submit {
-    color: white;
-    margin-top: 50px;
-    background: #FFCC00;
-    padding: 5px 15px;
-    border-radius: 10px;
-    font-size: x-large;
-    font-weight: 600;
-}
-
 .fd_edit_back {
     display: none;
     position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/

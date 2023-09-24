@@ -44,19 +44,18 @@
                     <object aria-label="닫기 아이콘" data="../assets/images/close-icon.svg" type="image/svg+xml"></object>
                 </a>
             </div>
-            <!-- <h2>음식 갯수 설정<label for="popup"><a onclick="this.parentElement.parentElement.parentElement.parentElement.style.display='none'" href="javascript:">X</a></label></h2> -->
             <div class="fd_edit_content">
                 <div class="base_data">
-                    <div><em>식품명 :</em> <span>소금빵</span></div>
-                    <div><em>개당 칼로리 :</em> <span>300</span>kcal</div>
+                    <div><p>식품명 :</p><span id="pop_food_name">소금빵</span></div>
+                    <div><p>개당 칼로리 :</p> <div class="base_kcal"><span id="pop_food_base_kcal">300</span>kcal</div></div>
                 </div>
                 <div class="editable_data">
                     <div class="edit_amount">
                         갯수
-                        <input class="amount" type="number" min="1" value="1" onchange="setamount(this.value)">
+                        <input class="amount" id="amount" type="number" min="1" value="1" onchange="setamount(this.value)">
                     </div>
                     <div class="edit_total">
-                       <em>총 칼로리 :</em> <span><div id="total_kcal">300</div>kcal</span>
+                      <p> 총 칼로리 :</p> <span><div id="total_kcal">300</div>kcal</span>
                     </div>
                 </div>
                 <div>
@@ -250,7 +249,7 @@
     const loading = document.querySelector(".loading");
     function setamount(amount) {
         amount = parseInt(amount);
-        var default_kcal = parseInt(document.querySelector("body > div > div > div > div.base_data > div:nth-child(2) > span").innerText);
+        var default_kcal = parseInt(document.getElementById("pop_food_base_kcal").innerText);
         document.querySelector("#total_kcal").innerText = (default_kcal*amount)
     }
 
@@ -286,16 +285,16 @@
 
         var total_kcal = default_kcal;
 
-        base_data.children[0].children[0].innerText = name; // 식품명
-        base_data.children[1].children[0].innerText = default_kcal // 기본 칼로리
+        document.getElementById("pop_food_name").innerText = name; // 식품명
+        document.getElementById("pop_food_base_kcal").innerText = default_kcal // 기본 칼로리
 
         if (amonunt_div.style.display != 'none') {
-            edit_able_data.children[0].children[0].value = parseInt(amonunt_div.children[0].innerText); // 갯수
-            edit_able_data.children[1].children[0].innerText = (parseInt(amonunt_div.children[0].innerText)*default_kcal); // 갯수에 따른 총 칼로리
+            document.getElementById("amount").value = parseInt(amonunt_div.children[0].innerText); // 갯수
+            document.getElementById("total_kcal").innerText = (parseInt(amonunt_div.children[0].innerText)*default_kcal); // 갯수에 따른 총 칼로리
             total_kcal = (parseInt(amonunt_div.children[0].innerText)*default_kcal)
             ed_amount.value = parseInt(amonunt_div.children[0].innerText)
         } else {
-            edit_able_data.children[1].children[0].innerText = default_kcal; // 총 칼로리 ( 갯수가 지정안됨 ( 1개 ) )
+            document.getElementById("total_kcal").innerText = default_kcal; // 총 칼로리 ( 갯수가 지정안됨 ( 1개 ) )
             ed_amount.value = 1;
         }
 
@@ -307,9 +306,9 @@
     function submit_edit_amount(element) {
         element.parentElement.style.display = 'none'; // 처리하는 동안 조작할수 없게 안보이게 처리
         var f_data = element.children[1];
-        var amount = parseInt(f_data.children[0].children[0].value);
+        var amount = parseInt(document.getElementById("amount").value);
         if (amount > 0) {
-            var t_tokcal = parseInt(f_data.children[1].children[0].innerText);
+            var t_tokcal = parseInt(document.getElementById("total_kcal").innerText);
             if (amount === 1) {
                 last_click_element.children[0].children[1].style.display = 'none'; // 갯수가 1개면 갯수가 안보이게
             } else {
