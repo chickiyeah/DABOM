@@ -125,6 +125,10 @@ function food_add() {
                                     opener.close();
                                     window.close();
                                 })
+                            } else {
+                                response.json().then((json) => {
+                                    alert(json.detail)
+                                })
                             }
                         })
                     }
