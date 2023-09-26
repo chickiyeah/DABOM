@@ -125,7 +125,7 @@ function get_post(post_no) {
             }
         }
 
-        if (opener.location.href.includes('record') || opener.location.href.includes('posts')) {
+        if (opener.location.href.includes('record') || opener.location.href.includes('posts') || location.origin+"/" === opener.location.href) {
             document.getElementById("share").setAttribute('onclick', `share_post(${post_no})`)
 
             document.getElementById("editbox").children[0].href = "/diary_update?id="+post_no
@@ -643,7 +643,7 @@ function get_comments(post_no) {
             }
         }
 
-        if (opener.location.href.includes("record") || opener.location.href.includes('posts')) {
+        if (opener.location.href.includes("record") || opener.location.href.includes('posts') || location.origin+"/" === opener.location.href) {
             fetch(`/api/diary/detail/${post_no}/comments`,{
                 method: "GET",
                 credentials: "include"

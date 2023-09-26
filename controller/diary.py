@@ -120,6 +120,23 @@ async def get_group_post(group_id:int, page:int, authorized :bool = Depends(veri
     else:
         raise HTTPException(401)
 
+@diaryapi.get('/pola')
+async def post_get(authorized: bool = Depends(verify_token)):
+    if authorized:
+        
+        now = datetime.datetime.now().strftime("%Y-%m-%d")
+        nowspl = now.split('-')
+        res = execute_sql(f"SELECT * from UserEat WHERE id = '{authorized[1]}'AND YEAR(created_at) = {nowspl[0]} AND MONTH(created_at) = {nowspl[1]} AND DAY(created_at) = {nowspl[2]} AND (deleted IS NULL OR deleted = 'false') ORDER BY created_at DESC LIMIT 1")
+
+        if len(res) == 0:
+            raise HTTPException(404, post_not_found)
+        
+        j_res = {
+            "post": res
+        }
+        
+        return j_res
+
 @diaryapi.post('/all')
 async def post_get(request:Request, authorized: bool = Depends(verify_token)):
     if authorized:
