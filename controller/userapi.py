@@ -1292,7 +1292,7 @@ async def admin_send_email(userdata: EmailSend, authorized: bool = Depends(verif
 async def get_eat_avg(to_day:str, authorized: bool = Depends(verify_token)):
     if authorized:
         now = str(datetime.datetime.now().strftime("%Y-%m-%d"))
-        res = execute_sql(f"SELECT `foods`,`total_kcal` FROM `UserEat` WHERE `id` = '{authorized[1]}' AND `created_at` BETWEEN date('{to_day}') AND date('{now}')")
+        res = execute_sql(f"SELECT `foods`,`total_kcal` FROM `UserEat` WHERE `id` = '{authorized[1]}' AND `created_at` BETWEEN date('{to_day}') AND date('{now}') AND (deleted IS NULL OR deleted = 'false')")
         
         to_kcal = 0
         

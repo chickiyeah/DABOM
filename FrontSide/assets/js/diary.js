@@ -102,6 +102,14 @@ window.addEventListener('DOMContentLoaded', function() {
       beforex = onx;
     })
   }
+
+  if (this.location.href.includes('diary_kcal?')) {
+    if (location.origin+"/" === opener.location.href) {
+      let keyword = this.location.href.split('?keyword=')[1].split('&')[0];
+      document.querySelector('#searchInput').value = decodeURI(keyword)
+      searchfood()
+    }
+  }
 })
 
 //image -> (image) 여는 괄호는 어디로가썽요 임마박스는 뭐에요 date_item?? 아뇨 imgBox 가 왜 imaBox가 됬어요 앜ㅋ 오타.. ㅋㅋㅋㅋㅋ
@@ -278,19 +286,37 @@ return new Promise((resolve, reject) => {
                 i_food.push(foodid);
                 let kcalNum = Math.round(item_var.칼로리);
                   if(item_var != null){
-                    let html = `
-                  <li>
-                    <div class="checkbox">
-                        <input type="checkbox" id="${foodid}">
-                        <label for="${foodid}">체크하기</label>
-                    </div>
-                    <p class="info_txt">${item_var.식품명}</p>
-                    <div class="right_box">
-                        <p style="margin-right:20px" class="kcal">${kcalNum} kcal</p>
-                        <!--<a class="more_btn" id="moreBtn" href="javascript:">상세보기</a>-->
-                    </div>
-                </li>
-                    `
+                    let html = ""
+                    if (location.origin+"/" != opener.location.href) {
+                          html = `
+                                  <li>
+                                      <div class="checkbox">
+                                          <input type="checkbox" id="${foodid}">
+                                          <label for="${foodid}">체크하기</label>
+                                      </div>
+                                      <p class="info_txt">${item_var.식품명}</p>
+                                      <div class="right_box">
+                                          <p style="margin-right:20px" class="kcal">${kcalNum} kcal</p>
+                                          <!--<a class="more_btn" id="moreBtn" href="javascript:">상세보기</a>-->
+                                      </div>
+                                  </li>
+                                  `
+                    } else {
+                      html = `
+                                  <li>
+                                      <div class="checkbox">
+                                      </div>
+                                      <p class="info_txt">${item_var.식품명}</p>
+                                      <div class="right_box">
+                                          <p style="margin-right:20px" class="kcal">${kcalNum} kcal</p>
+                                          <!--<a class="more_btn" id="moreBtn" href="javascript:">상세보기</a>-->
+                                      </div>
+                                  </li>
+                                  `
+                      let ok_btn = document.getElementById("kc_h_submit")
+                      ok_btn.setAttribute("onclick", "")
+                      ok_btn.style.display = "none"
+                    }
 
                     to_html = to_html+html
                     //변수에다가 html을 삽입하라고하면 컴퓨터한테 뭘바라는거에요 쪼매만 기다려주숑 오키오키
@@ -373,19 +399,37 @@ return new Promise((resolve, reject) => {
                 i_food.push(foodid);
                 let kcalNum = Math.round(item_var.칼로리);
                   if(item_var != null){
-                    let html = `
-                  <li>
-                    <div class="checkbox">
-                        <input type="checkbox" id="${foodid}">
-                        <label for="${foodid}">체크하기</label>
-                    </div>
-                    <p class="info_txt">${item_var.식품명}</p>
-                    <div class="right_box">
-                        <p style="margin-right:20px" class="kcal">${kcalNum} kcal</p>
-                        <!--<a class="more_btn" id="moreBtn" href="javascript:">상세보기</a>-->
-                    </div>
-                </li>
-                    `
+                    let html = ""
+                    if (location.origin+"/" != opener.location.href) {
+                      html = `
+                              <li>
+                                  <div class="checkbox">
+                                      <input type="checkbox" id="${foodid}">
+                                      <label for="${foodid}">체크하기</label>
+                                  </div>
+                                  <p class="info_txt">${item_var.식품명}</p>
+                                  <div class="right_box">
+                                      <p style="margin-right:20px" class="kcal">${kcalNum} kcal</p>
+                                      <!--<a class="more_btn" id="moreBtn" href="javascript:">상세보기</a>-->
+                                  </div>
+                              </li>
+                              `
+                } else {
+                  html = `
+                              <li>
+                                  <div class="checkbox">
+                                  </div>
+                                  <p class="info_txt">${item_var.식품명}</p>
+                                  <div class="right_box">
+                                      <p style="margin-right:20px" class="kcal">${kcalNum} kcal</p>
+                                      <!--<a class="more_btn" id="moreBtn" href="javascript:">상세보기</a>-->
+                                  </div>
+                              </li>
+                              `
+                  let ok_btn = document.getElementById("kc_h_submit")
+                  ok_btn.setAttribute("onclick", "")
+                  ok_btn.style.display = "none"
+                }
 
                     to_html = to_html+html
                     //변수에다가 html을 삽입하라고하면 컴퓨터한테 뭘바라는거에요 쪼매만 기다려주숑 오키오키
@@ -397,7 +441,9 @@ return new Promise((resolve, reject) => {
         }
         progress_h.innerText = "정돈된 데이터를 추가하는중입니다."
         itemappend.insertAdjacentHTML("beforeend", to_html); // 땡 해당 스트링은 투입 위치를 지정하는것임 ( beforestart 요소가 위로 올라감 , afterstart 요소가 올라가지만 beforestart보다는 아래 , beforeend 요소가 아래로감 , afterend beforeend보다 더 아래로감 틀을 벗어날수잇음 )           
-                    check_event();
+        if (location.origin+"/" != opener.location.href) {  
+          check_event();
+        }
                     //more_event();
         itemappend.style.display = '';
         loading.style.display = 'none';
@@ -431,24 +477,28 @@ function checkevent(e) {
   // const checkbox = document.getElementById(foodid);
 
   //f_map 체크한 음식 맵
-  const f_check = e.target.parentElement.children[0];
-  const f_obj = f_check.parentElement.parentElement;
-  if (!f_check.checked) {
-    let f_name = f_obj.children[1].innerText;
-    let f_kcal = parseInt(f_obj.children[2].children[0].innerText.replace(" kcal", "")); 
-    let f_data = [f_name, f_kcal, f_check.attributes.id.value]
-    f_map.set(f_check.attributes.id.value, f_data)
-    //console.log(f_map)
-  } else {
-    f_map.delete(f_check.attributes.id.value)
-    //console.log(f_map)
-  }
+  
+    const f_check = e.target.parentElement.children[0];
+    const f_obj = f_check.parentElement.parentElement;
+    if (!f_check.checked) {
+      let f_name = f_obj.children[1].innerText;
+      let f_kcal = parseInt(f_obj.children[2].children[0].innerText.replace(" kcal", "")); 
+      let f_data = [f_name, f_kcal, f_check.attributes.id.value]
+      f_map.set(f_check.attributes.id.value, f_data)
+      //console.log(f_map)
+    } else {
+      f_map.delete(f_check.attributes.id.value)
+      //console.log(f_map)
+    }
+  
 }
 
 function check_event() {
-  Array.prototype.forEach.call(kcalBox.children,(element) =>{
-    element.children[0].children[1].removeEventListener("click", checkevent);
-    element.children[0].children[1].addEventListener("click", checkevent)})
+  if (location.origin+"/" != opener.location.href) {
+    Array.prototype.forEach.call(kcalBox.children,(element) =>{
+      element.children[0].children[1].removeEventListener("click", checkevent);
+      element.children[0].children[1].addEventListener("click", checkevent)})
+    }
 }
 
 
