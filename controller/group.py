@@ -361,13 +361,18 @@ async def remove_group(group_id:int, userId: Optional[str] = Cookie(None)):
 er033 =  {'code':'ER033', 'message':'해당 유저는 해당그룹의 멤버가 아닙니다.'}
 
 @groupapi.post("/kick_member")
-async def kick_member(member_id:str, group_id:int, userId: Optional[str] = Cookie(None)):
-        group = execute_sql("SELECT `owner`, `operator`, `members` FROM `group` WHERE `id` = %s", group_id)
+async def kick_member(request:Request, authorized:bool = Depends(verify_token)):
+    if authorized:
+        data = await request.json()
+        member_id = data['member_id']
+        group_id = int(data['group_id'])
+
+        group = execute_sql(f"SELECT `owner`, `operator`, `members` FROM `group` WHERE `id` = {group_id}")
         if len(group) == 0:
             raise HTTPException(400, er031)
         
         n_group = group[0]
-        if userId != n_group['owner'] and not userId in json.loads(n_group['operator']) and not userId == "admin":
+        if authorized[1] != n_group['owner'] and not authorized[1] in json.loads(n_group['operator']) and not authorized[1] == "admin":
             raise HTTPException(403, er024)
 
         members = json.loads(n_group['members'])
@@ -376,13 +381,16 @@ async def kick_member(member_id:str, group_id:int, userId: Optional[str] = Cooki
             
         mem_g = json.loads(execute_sql("SELECT `groups` FROM user WHERE `ID` = '{0}' OR `ID` = 'DELETED-{0}'".format(member_id))[0]['groups'])
 
+        print(mem_g, group_id)
+        print(members, member_id)
+
         mem_g.remove(group_id)
         members.remove(member_id)
             
-        execute_sql("UPDATE `user` SET `groups` = {0} WHERE `ID` = '{1}' OR `ID` = 'DELETED-{1}'".format(mem_g ,member_id))
-        execute_sql("UPDATE `group` SET `members` = {0} WHERE `id` = '{1}'".format(members, group_id))
+        execute_sql("UPDATE `user` SET `groups` = \"{0}\" WHERE `ID` = '{1}' OR `ID` = 'DELETED-{1}'".format(mem_g ,member_id))
+        execute_sql("UPDATE `group` SET `members` = \"{0}\" WHERE `id` = '{1}'".format(members, group_id))
 
-        await group_log(group_id, "kick", userId or "admin", member_id)
+        await group_log(group_id, "kick", authorized[1] or "admin", member_id)
 
         return "멤버를 추방했습니다."
 
@@ -477,3 +485,26 @@ async def group_warn(group: group_warn, admin: bool = Depends(verify_admin_token
 
         group_log(group.group_id, "warn", "admin", group.group_id)
         return "경고 횟수를 누적했습니다. 새 경고 누적치 : %s 번" % newwarn
+    
+@groupapi.post('/update')
+async def group_update(request: Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        data = await request.json()
+        g_id = data['id']
+        name = data['name']
+        pf_image = data['pf_image']
+        desc = data['desc']
+
+        group = execute_sql(f"SELECT `id`, `owner`,`operator`,`members` FROM `group` WHERE `id` = {g_id}")
+
+        if len(group) == 0:
+            raise HTTPException(404, er031)    
+
+        d_group = group[0]
+
+        if authorized[1] != d_group['owner'] and not authorized[1] in json.loads(d_group['operator']) and not authorized[1] == "admin":
+            raise HTTPException(403, er024)
+
+        execute_sql(f"UPDATE `group` SET `name` = '{name}', `description` = '{desc}', `groupimg` = '{pf_image}' WHERE `id` = '{g_id}'")
+
+        return "업데이트 완료"

@@ -168,6 +168,23 @@ function button_Event(pointerevent) {
     if (type === "delete") {
         let name = target.parentElement.parentElement.children[0].innerText
         let delete_confirm = confirm(`정말 ${name} 모임을 삭제하시겠습니까?\n이 작업은 취소할수 없습니다!\n\n삭제 전 꼭 확인하세요!\n삭제가 확정되는 즉시 멤버들은 그룹에서 강제로 탈퇴됩니다.\n그룹 글 데이터는 30일간 보관되지만, 개인적으로 열람은 제한됩니다.\n삭제한 이후 그룹과 글은 복구할 수 없습니다.`)
+        
+        if (delete_confirm) {
+            fetch(`/api/group/delete?group_id=${id}`, {
+                method: "DELETE",
+                body: JSON.stringify({
+                    "group_id": id
+                })
+            }).then((response) => {
+                if (response.status === 200) {
+                    location.reload();
+                } else {
+                    response.json().then((data) => {
+                        alert(data.detail)
+                    })
+                }
+            })
+        }
     }
 
     if (type == "detail") {
@@ -180,6 +197,7 @@ function button_Event(pointerevent) {
 
 }
 
+//그룹정보 수정 클래스 group_change_popup
 
 function apply_event(div) {
     Array.prototype.forEach.call(div.children,(element) =>{
@@ -230,7 +248,7 @@ async function verify_token() {
             }
         })
     })
-  }
+}
 
   async function LoadCookie(){
     let lo_access_token = localStorage.getItem("access_token")
@@ -327,7 +345,7 @@ async function verify_token() {
                         //console.log(groups)
                         groups.forEach((group) => {
                             var html
-                            let mem = JSON.parse(group.members).length
+                            let mem = JSON.parse(group.members.replace(/'/g, '"')).length
                             let name = group.name
                             let img = group.groupimg
                             let no = group.no

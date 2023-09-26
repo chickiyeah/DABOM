@@ -37,6 +37,7 @@
     <link href="/assets/css/layout.css" rel="stylesheet">
     <link href="/assets/css/popup.css" rel="stylesheet">
     <script type="module" src="/assets/js/alert.js"></script>
+    <script type="module" src="/assets/js/fileupload.js"></script>
 </head>
 <body>
     <header>
@@ -135,7 +136,7 @@
                     <h2>종로역 식단관리 모임</h2>
                     <a href="javascript:" class="member">맴버 : 125명 <i class="user_List_icon"><object data="/assets/images/user-list-icon.svg" type="image/svg+xml" aria-label="왼쪽 화살표"></object></i></a>
                     <div class="btn_box">
-                        <a class="gray_btn" href="javascript:">소개보기</a>
+                        <a id="edit_btn" class="gray_btn" href="javascript:">소개보기</a>
                         <a class="red_btn" href="javascript:" style="display: none">채팅하기</a>
                     </div>
                 </div>
@@ -239,7 +240,7 @@
         <div class="inner">
             <div class="pop_close_head">
                 <h2 id="mem_ul_title" class="title">그룹 맴버 138</h2>
-                <a class="admin_check" href="javascript:">관리자 지정</a>
+                <!--<a class="admin_check" href="javascript:">관리자 지정</a>-->
             </div>
             <ul class="content_box">
                 <li>
@@ -251,12 +252,29 @@
             <button id="close_mem_list" class="black_line_btn">뒤로가기</button>
         </div>
     </div>
+
+<div id="group_info" class="group_change_popup">
+        <div class="inner">
+            <div class="pop_close_head">
+                <h2 class="title">그룹 소개</h2>
+                <a class="close_btn" onclick="document.querySelector('#group_info').style.display = 'none'" href="javascript:">
+                    <object aria-label="닫기 아이콘" data="/assets/images/close-icon.svg" type="image/svg+xml"></object>
+                </a>
+            </div>
+            <div class="content_box">
+                <div id="g_info" class="info_box">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 수정하기 클릭했을때 나오는 팝업 -->
-    <div class="group_change_popup">
+    <div id="group_edit" class="group_change_popup">
         <div class="inner">
             <div class="pop_close_head">
                 <h2 class="title">그룹 정보 수정</h2>
-                <a class="close_btn" href="javascript:">
+                <a class="close_btn" onclick="document.querySelector('#group_edit').style.display = 'none'" href="javascript:">
                     <object aria-label="닫기 아이콘" data="/assets/images/close-icon.svg" type="image/svg+xml"></object>
                 </a>
             </div>
@@ -266,7 +284,7 @@
                         <input type="file" name="file" id="input">
                         <label class="profile_img_box" for="input">
                             <div class="upload_img">
-                                <img src="/assets/images/group-add-bg.png" alt="파일 업로드 이미지">
+                                <img id="e_g_pf" src="/assets/images/group-add-bg.png" alt="파일 업로드 이미지">
                             </div>
                         </label>
                     </form>
@@ -274,15 +292,50 @@
                 <p class="upload_txt"><i><object data="/assets/images/img-icon.svg" type="image/svg+xml" aria-label="이미지아이콘"></object></i>사진을 <em>업로드</em> 해주세요</p>
                 <div class="info_box">
                     <label class="hidden">그룹명</label>
-                    <input type="text">
+                    <input id="e_g_name" type="text" placeholder="그룹명을 입력하세요.">
                     <label class="hidden">그룹 소개</label>
-                    <textarea name="" id="" rows="8"></textarea>
+                    <textarea name="" id="e_g_desc" rows="8" placeholder="그룹 소개를 입력하세요."></textarea>
                 </div>
             </div>
-            <button class="red_btn">수정하기</button>
+            <button id="e_g_b_submit" class="red_btn">수정하기</button>
         </div>
     </div>
 </main>
 </body>
 <script src="/assets/js/header.js"></script>
+<script>
+    function show_info() {
+        document.querySelector('#group_info').style.display = "flex"
+    }
+
+    /** 그룹 정보 수정 */
+    function show_info_edit(group_id) {
+        document.querySelector("#group_edit").style.display = "flex"
+        document.querySelector("#e_g_b_submit").setAttribute("onclick",`submit_info_edit(${group_id})`)
+    }
+
+    function submit_info_edit(group_id) {
+        let name = document.getElementById("e_g_name").value //name
+        let desc = document.getElementById("e_g_desc").value //desc
+        let img = document.getElementById("e_g_pf").src //img
+
+        fetch("/api/group/update", {
+            method: "POST",
+            body: JSON.stringify({
+                "id": group_id,
+                "name": name,
+                "desc": desc,
+                "pf_image": img
+            })
+        }).then((response) => {
+            if (response.status === 200) {
+                location.reload()
+            } else {
+                response.json().then((data) => {
+                    alert(data.detail.message)
+                })
+            }
+        })
+    }
+</script>
 </html>

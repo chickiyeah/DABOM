@@ -16,8 +16,15 @@ window.addEventListener('DOMContentLoaded', async function() {
                             get_group_data(value)
                             get_write(value, 1)
                             if (this.location.href.includes("detail")) {
+                                let info_btn = document.querySelector("#edit_btn")
+                                info_btn.setAttribute("onclick", `show_info()`)
                                 mem_list_invite.remove()
                                 mem_list_admin_check.remove()
+                            } else {
+                                let edit_btn = document.querySelector("#edit_btn")
+                                edit_btn.innerHTML = "수정하기"
+                                edit_btn.setAttribute("onclick", `show_info_edit(${value})`)
+                                //group_change_popup
                             }
                         } else {
                             this.alert("올바르지 않은 접근입니다.")
@@ -280,6 +287,31 @@ function kick(mouseevent) {
     let tar_name = target.parentElement.parentElement.children[1].innerText
     let tar_uid = target.attributes.uid.value
     let r_confirm = confirm(`정말 ${tar_name}님을 모임에서 추방하시겠습니까?`)
+    if (r_confirm) {
+        let parameters = location.href.split('?')[1].split('&');
+        parameters.forEach((param) => {
+            let key = param.split('=')[0];
+            let value = param.split('=')[1];
+            if (key === 'id') {
+                let g_id = value
+                fetch("/api/group/kick_member", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        "member_id": tar_uid,
+                        "group_id": g_id
+                    })
+                }).then((response) => {
+                    if (response.status === 200) {
+                        location.reload();
+                    } else {
+                        response.json().then((data) => {
+                            alert(data.detail)
+                        })
+                    }
+                })
+            }
+        })
+    }
 }
 
 
@@ -289,13 +321,18 @@ function get_group_data(id) {
         method: 'GET'
     }).then((res) => {
         res.json().then((group) => {
-            let mem = JSON.parse(group.members).length
-            let memlist = JSON.parse(group.members)
+            let mem = JSON.parse(group.members.replace(/'/g, '"')).length
+            let memlist = JSON.parse(group.members.replace(/'/g, '"'))
             let owner = group.owner
             let name = group.name
             let img = group.groupimg
             let no = group.id
             let ops = JSON.parse(group.operator)
+            let desc = group.description
+            document.getElementById("e_g_name").value = name
+            document.getElementById("e_g_desc").value = desc
+            document.getElementById("e_g_pf").src = img
+            document.getElementById("g_info").innerHTML = desc
             mem_ul_title.innerText = "그룹 멤버 "+mem
 
             banner_img.src = img
