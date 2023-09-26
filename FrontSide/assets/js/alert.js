@@ -4,9 +4,11 @@ window.addEventListener('DOMContentLoaded', async function() {
         if (document.location.href.includes("?")) {
             let key = document.location.href.split("?")[1]
             if (key.includes("v_key=") == false) {
-                get_unread_amount()
-                get_alerts(1)
+                
             }
+        } else {
+            get_unread_amount()
+            get_alerts(1)
         }
         
     }
