@@ -59,8 +59,8 @@
                         <input id="login_pw" type="password" placeholder="비밀번호">
                         <div class="eyes">
                             <input type="checkbox">
-                            <i class="on"></i>
-                            <!-- <i class="off"></i> -->
+                            <i id="ps_hide" onclick="password_visable(true)" class="on"></i>
+                            <i id="ps_show" style="display:none" onclick="password_visable(false)" class="off"></i>
                         </div>
                     </div>
                 </div>
@@ -92,5 +92,22 @@
     document.querySelector(".loading").style.display = 'none';
 </script>
 </body>
+<script>
+    function password_visable(bool) {
+        let h_ps_hide = document.querySelector("#ps_hide"); //눈 뜬거
+        let h_ps_show = document.querySelector("#ps_show"); //눈 감은거
+        let h_ps_input = document.querySelector("#login_pw"); //비번 입력창
+
+        if (bool == true) {
+            h_ps_hide.style.display = "none"
+            h_ps_show.style.display = "";
+            h_ps_input.setAttribute("type", "text");
+        } else {
+            h_ps_hide.style.display = ""
+            h_ps_show.style.display = "none";
+            h_ps_input.setAttribute("type", "password");
+        }
+    } 
+</script>
 <script src="/assets/js/user.js"></script>
 </html>
