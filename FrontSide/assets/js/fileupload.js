@@ -60,6 +60,11 @@ async function handleFiles() {
       document.querySelector("#pf_pro_image").src = files[0]
       loading.style.display = 'none';
     }
+
+    if (location.href.includes("group/edit")) {
+      sessionStorage.setItem("da_e_g_u_files", files)
+      loading.style.display = 'none';
+    }
 }
 
 function makeRequest(extentsion, file, formdata) {
@@ -121,6 +126,11 @@ function makeRequest(extentsion, file, formdata) {
             if (location.href.includes('group/add')) {
                 let img = document.querySelector('.upload_img').children[0]
                 img.src = h_f_link
+            }
+
+            if (location.href.includes('group/edit')) {
+              let img = document.querySelector('#e_g_pf')
+              img.src = h_f_link
             }
             resolve(h_f_link)
             console.log(h_f_link)
