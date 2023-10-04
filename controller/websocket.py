@@ -37,7 +37,7 @@ firebaseConfig = {
 
 Storage = Firebase(firebaseConfig).storage()
 
-r = redis.Redis(host="35.212.135.37", port=6379, decode_responses=True, db=0)
+r = redis.Redis(host="35.212.249.82", port=6379, decode_responses=True, db=0)
 
 chat = APIRouter(prefix="/chat", tags=['webSocket_chat'])
 
@@ -50,7 +50,7 @@ unauthorized_invaild = {'code':'ER015','message':'UNAUTHORIZED (TOKEN INVALID)'}
 unauthorized_userdisabled = {'code':'ER016','message':'UNAUTHORIZED (TOKENS FROM DISABLED USERS)'}
 
 #broadcast = Broadcast("redis://localhost:6379")
-broadcast = Broadcast("redis://35.212.168.183:6379")
+broadcast = Broadcast("redis://35.212.249.82:6379")
     
 #print(broadcast)
 CHANNEL = "CHAT"
