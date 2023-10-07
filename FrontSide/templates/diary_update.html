@@ -257,7 +257,7 @@
         var default_kcal = parseInt(document.getElementById("pop_food_base_kcal").innerText);
         var default_kcal = parseInt(document.getElementById("pop_food_base_kcal").innerText);
         var gram = parseInt(document.querySelector("#edit_gram_input").value);
-        var default_gram = parseInt(document.getElementById("default_gram").innerText);
+        var default_gram = parseInt(last_click_element.querySelector("#default_gram").innerText);
         var per_kcal = default_kcal / default_gram;
         document.querySelector("#total_kcal").innerText = parseInt(Math.round(per_kcal * gram) * amount)
     }
@@ -265,7 +265,7 @@
     function setgram(gram) {
         gram = parseInt(gram)
         var default_kcal = parseInt(document.getElementById("pop_food_base_kcal").innerText);
-        var default_gram = parseInt(document.getElementById("default_gram").innerText);
+        var default_gram = parseInt(last_click_element.querySelector("#default_gram").innerText);
         var per_kcal = default_kcal / default_gram;
         console.log(per_kcal);
         var amount = parseInt(document.querySelector("#amount").value);
@@ -296,7 +296,7 @@
         last_click_element = element
         document.querySelector('.fd_edit').style.display = '';
 
-        var default_gram = parseInt(document.getElementById("default_gram").innerText);
+        var default_gram = parseInt(element.querySelector("#default_gram").innerText);
         
 
         var name = element.children[0].children[0].innerText;
@@ -309,8 +309,8 @@
         var base_data = fd_edit_content.children[0];
         var edit_able_data = fd_edit_content.children[1];
 
-        document.querySelector('.gram').value = parseInt(document.querySelector('#per_gram').innerText) //그람
-        var gram = parseInt(document.querySelector('#per_gram').innerText)
+        document.querySelector('#edit_gram_input').value = parseInt(element.querySelector('#per_gram').innerText) //그람
+        var gram = parseInt(element.querySelector('#per_gram').innerText)
 
         var total_kcal = default_kcal;
 
@@ -352,7 +352,7 @@
             last_click_element.title = "해당 음식의 칼로리는 개당 "+last_click_element.attributes.per.value+" kcal 이며, 전체 칼로리는 "+t_tokcal+" kcal 입니다."
             last_click_element.attributes.tokcal.value = t_tokcal
 
-            document.querySelector("#per_gram").innerText = document.querySelector('.gram').value
+            last_click_element.querySelector("#per_gram").innerText = document.querySelector('.gram').value
             
             if (fd_total_kcal < 0) {
                 document.querySelector("#tokcal").innerText = t_tokcal;
