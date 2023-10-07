@@ -205,8 +205,8 @@ kc_h_submit.addEventListener("click", (event) => {
     f_map.forEach((value) => {
       console.log(value)
       let kcal = "해당 음식의 칼로리는 개당 "+value[1]+" kcal 이며, 전체 칼로리는 "+value[1]+" kcal 입니다."
-      let html = `<div title="${kcal}" per="${value[1]}" s_code="${value[2]}" class="search_item">
-                <a onclick="editamount(this.parentElement)" href="javascript:"><span>${value[0]}</span><span class="amount" style="display:none;"> X <span class="amount_num">2</span></span></a>
+      let html = `<div title="${kcal}" per="${value[1]}" tokcal="${value[1]}" s_code="${value[2]}" class="search_item">
+                <a onclick="editamount(this.parentElement)" href="javascript:"><span>${value[0]}</span><span> / <span id="per_gram">${value[3]}</span><span id="default_gram" style="display:none">${value[3]}</span> g(ml)</span><span class="amount" style="display:none;"> X <span class="amount_num">2</span></span></a>
                 <a onclick="remove_ele(this.parentElement)" href="javascript:">
                   <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
                 </a>
@@ -297,6 +297,7 @@ return new Promise((resolve, reject) => {
                                       <p class="info_txt">${item_var.식품명}</p>
                                       <div class="right_box">
                                           <p style="margin-right:20px" class="kcal">${kcalNum} kcal</p>
+                                          <p id="per_gram" style="display:none">${item_var.per_gram}</p>
                                           <!--<a class="more_btn" id="moreBtn" href="javascript:">상세보기</a>-->
                                       </div>
                                   </li>
@@ -309,6 +310,7 @@ return new Promise((resolve, reject) => {
                                       <p class="info_txt">${item_var.식품명}</p>
                                       <div class="right_box">
                                           <p style="margin-right:20px" class="kcal">${kcalNum} kcal</p>
+                                          <p id="per_gram" style="display:none">${item_var.per_gram}</p>
                                           <!--<a class="more_btn" id="moreBtn" href="javascript:">상세보기</a>-->
                                       </div>
                                   </li>
@@ -483,7 +485,8 @@ function checkevent(e) {
     if (!f_check.checked) {
       let f_name = f_obj.children[1].innerText;
       let f_kcal = parseInt(f_obj.children[2].children[0].innerText.replace(" kcal", "")); 
-      let f_data = [f_name, f_kcal, f_check.attributes.id.value]
+      let f_gram = parseInt(document.getElementById("per_gram").innerText)
+      let f_data = [f_name, f_kcal, f_check.attributes.id.value, f_gram]
       f_map.set(f_check.attributes.id.value, f_data)
       //console.log(f_map)
     } else {
