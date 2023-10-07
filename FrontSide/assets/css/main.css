@@ -145,7 +145,7 @@ section 5 다이어리
 .footer_wrap .scroller_group span { flex: 0 0 auto; animation: left-move 3.5s linear infinite;
     padding-right: 2vw; will-change: transform; }
 .footer_wrap .footer_info { background: #F43B00; }
-.footer_wrap .footer_info p { font-size: 20px; font-weight: 700; color: white; }
+.footer_wrap .footer_info a { font-size: 20px; font-weight: 700; color: white; }
 .footer_wrap .footer_info .footer_menu { display: flex; padding: 55px 35px 15px; gap: 2vw; position: relative; }
 .footer_wrap .footer_info .footer_policies { display: flex; justify-content: space-between; padding: 30px 35px 35px; }
 /* 지그재그라인 */
@@ -197,7 +197,7 @@ hr.zag { position: relative; opacity: 0.4; z-index: 50;
     .food_diary_wrap .diary_box { max-width: 600px; }
     /*푸터*/
     .footer_wrap .scroller_group { font-size: 18px; }
-    .footer_wrap .footer_info p { font-size: 18px;}
+    .footer_wrap .footer_info a { font-size: 18px;}
     .footer_wrap .footer_info .footer_menu { padding: 50px 35px 10px; }
     .footer_wrap .footer_info .footer_policies { padding: 25px 35px 30px; flex-flow: column; }
     .footer_wrap .footer_info .footer_policies p + p { margin-top: 10px; }
@@ -226,7 +226,7 @@ hr.zag { position: relative; opacity: 0.4; z-index: 50;
     .introduce_wrap .char_group .img_box:not(:nth-child(4)) { width: 110px;}
     /*푸터*/
     .footer_wrap .scroller_group { font-size: 16px; }
-    .footer_wrap .footer_info p { font-size: 16px; letter-spacing: -0.8px; font-weight: 400; }
+    .footer_wrap .footer_info a { font-size: 16px; letter-spacing: -0.8px; font-weight: 400; }
     .footer_wrap .footer_info .footer_menu { padding: 45px 24px 5px; justify-content: center; }
     .footer_wrap .footer_info .footer_policies { text-align: center; }
 
