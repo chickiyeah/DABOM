@@ -88,14 +88,14 @@ function get_post(post_id) {
                     let html = ''
                     if (amount === 1) {
                         html = `<div title="${kcal}" per="${food_data.kcal}" s_code="${code}" class="search_item">
-                                <a onclick="editamount(this.parentElement)" href="javascript:"><span>${food_data.name}</span><span class="amount" style="display:none;"> X <span class="amount_num">${amount}</span></span></a>
+                                <a onclick="editamount(this.parentElement)" href="javascript:"><span>${food_data.name}</span><span> / <span id="per_gram">${food.gram}</span><span id="default_gram" style="display:none">${food_data.per_gram}</span> g(ml)</span><span class="amount" style="display:none;"> X <span class="amount_num">${amount}</span></span></a>
                                 <a onclick="remove_ele(this.parentElement)" href="javascript:">
                                 <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
                                 </a>
                             </div>`
                     } else {
                         html = `<div title="${kcal}" per="${food_data.kcal}" s_code="${code}" class="search_item">
-                                <a onclick="editamount(this.parentElement)" href="javascript:"><span>${food_data.name}</span><span class="amount"> X <span class="amount_num">${amount}</span></span></a>
+                                <a onclick="editamount(this.parentElement)" href="javascript:"><span>${food_data.name}</span><span> / <span id="per_gram">${food.gram}</span><span id="default_gram" style="display:none">${food_data.per_gram}</span> g(ml)</span><span class="amount"> X <span class="amount_num">${amount}</span></span></a>
                                 <a onclick="remove_ele(this.parentElement)" href="javascript:">
                                 <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
                                 </a>

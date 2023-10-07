@@ -131,6 +131,7 @@ async def food_datail(sample_id:str):
             "name": detail['식품명'],
             "category" : detail['new카테'],
             "company" : detail['유통사'],
-            "kcal" : detail['에너지(kcal)']
+            "kcal" : detail['에너지(kcal)'],
+            "per_gram": detail['per_gram']
         }    
         return res
