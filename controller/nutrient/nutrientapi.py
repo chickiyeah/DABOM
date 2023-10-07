@@ -205,7 +205,7 @@ async def get_cus24_barcode(barcode: str):
 async def get_object_with_barcode(barcode:str):
 
     #제공된 바코드가 DB에 있는지 확인
-    detail = execute_sql("SELECT 식품명, 1회제공량, 내용량_단위, 유통사, new카테, `에너지(kcal)` FROM foodb WHERE `barcode` = '%s'" % barcode)
+    detail = execute_sql("SELECT 식품명, per_gram, 내용량_단위, 유통사, new카테, `에너지(kcal)` FROM foodb WHERE `barcode` = '%s'" % barcode)
     if len(detail) != 0:
         #있으면 데이터 리턴
         return detail[0]
@@ -343,12 +343,12 @@ async def get_object_with_barcode(barcode:str):
                     try:
                         if len(glist) != 1:
                             back = back + ",{0},{1},'{2}'".format(glist[0], glist[1], "g")
-                            front = front + ",`총내용량(g)`,`1회제공량`,`내용량_단위`"
+                            front = front + ",`총내용량(g)`,`per_gram`,`내용량_단위`"
                         else:
                             back = back + ",{0},{0},'{1}'".format(glist[0],"g")
-                            front = front + ",`총내용량(g)`,`1회제공량`,`내용량_단위`"
+                            front = front + ",`총내용량(g)`,`per_gram`,`내용량_단위`"
                     except IndexError:
-                        front = front + ",`총내용량(g)`,`1회제공량`,`내용량_단위`"
+                        front = front + ",`총내용량(g)`,`per_gram`,`내용량_단위`"
                         back = back + ",{0},{0},'{1}'".format(weight,"g")  
 
                     print("under")                      
@@ -596,7 +596,7 @@ async def get_object_with_barcode(barcode:str):
                             if len(glist) != 1:
                                 p_res = {
                                     "식품명": name,
-                                    "1회제공량": glist[1],
+                                    "per_gram": glist[1],
                                     "내용량_단위": "g",
                                     "유통사": s_company,
                                     "new카테": cate_n,
@@ -605,7 +605,7 @@ async def get_object_with_barcode(barcode:str):
                             else:
                                 p_res = {
                                     "식품명": name,
-                                    "1회제공량": glist[0],
+                                    "per_gram": glist[0],
                                     "내용량_단위": "g",
                                     "유통사": s_company,
                                     "new카테": cate_n,
@@ -614,7 +614,7 @@ async def get_object_with_barcode(barcode:str):
                         except IndexError:
                             p_res = {
                                 "식품명": name,
-                                "1회제공량": weight,
+                                "per_gram": weight,
                                 "내용량_단위": "g",
                                 "유통사": s_company,
                                 "new카테": cate_n,
@@ -626,12 +626,12 @@ async def get_object_with_barcode(barcode:str):
                     try:
                         if len(glist) != 1:
                             back = back + ",{0},{1},'{2}'".format(glist[0], glist[1], "g")
-                            front = front + ",`총내용량(g)`,`1회제공량`,`내용량_단위`"
+                            front = front + ",`총내용량(g)`,`per_gram`,`내용량_단위`"
                         else:
                             back = back + ",{0},{0},'{1}'".format(glist[0],"g")
-                            front = front + ",`총내용량(g)`,`1회제공량`,`내용량_단위`"
+                            front = front + ",`총내용량(g)`,`per_gram`,`내용량_단위`"
                     except IndexError:
-                        front = front + ",`총내용량(g)`,`1회제공량`,`내용량_단위`"
+                        front = front + ",`총내용량(g)`,`per_gram`,`내용량_단위`"
                         back = back + ",{0},{0},'{1}'".format(weight,"g")  
 
                     print("under")                      
@@ -887,7 +887,7 @@ async def get_object_with_barcode(barcode:str):
                             if len(glist) != 1:
                                 p_res = {
                                     "식품명": name,
-                                    "1회제공량": glist[1],
+                                    "per_gram": glist[1],
                                     "내용량_단위": "g",
                                     "유통사": s_company,
                                     "new카테": cate_n,
@@ -896,7 +896,7 @@ async def get_object_with_barcode(barcode:str):
                             else:
                                 p_res = {
                                     "식품명": name,
-                                    "1회제공량": glist[0],
+                                    "per_gram": glist[0],
                                     "내용량_단위": "g",
                                     "유통사": s_company,
                                     "new카테": cate_n,
@@ -905,7 +905,7 @@ async def get_object_with_barcode(barcode:str):
                         except IndexError:
                             p_res = {
                                 "식품명": name,
-                                "1회제공량": weight,
+                                "per_gram": weight,
                                 "내용량_단위": "g",
                                 "유통사": s_company,
                                 "new카테": cate_n,
