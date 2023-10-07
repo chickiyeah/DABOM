@@ -63,7 +63,6 @@ function get_post(post_id) {
                 })
 
                 document.querySelector("#f_desc").value = data.desc
-                document.querySelector("#tokcal").innerText = data.total_kcal
 
                 document.querySelector("#f_title").value = data.title
                 if (data.with != "alone") {
@@ -79,30 +78,38 @@ function get_post(post_id) {
                     })
                 }
 
+                var to_kcal = 0
+
                 JSON.parse(data.foods.replace(/'/g, '"')).forEach(async (food) => {
                     console.log(food)
                     let code = food.code
                     let amount = food.amount
                     let food_data = await get_food_info(code)
-                    let kcal = "해당 음식의 칼로리는 개당 "+food_data.kcal+" kcal 이며, 전체 칼로리는 "+(food_data.kcal*amount)+" kcal 입니다."
+                    var per_kcal = food_data.kcal / food_data.per_gram;
+                    let kcal = "해당 음식의 칼로리는 개당 "+food_data.kcal+" kcal 이며, 전체 칼로리는 "+(Math.round(food.gram * per_kcal)*amount)+" kcal 입니다."
                     let html = ''
                     if (amount === 1) {
-                        html = `<div title="${kcal}" per="${food_data.kcal}" s_code="${code}" class="search_item">
+                        html = `<div title="${kcal}" per="${food_data.kcal}" s_code="${code}" tokcal="${Math.round(food.gram * per_kcal)}" class="search_item">
                                 <a onclick="editamount(this.parentElement)" href="javascript:"><span>${food_data.name}</span><span> / <span id="per_gram">${food.gram}</span><span id="default_gram" style="display:none">${food_data.per_gram}</span> g(ml)</span><span class="amount" style="display:none;"> X <span class="amount_num">${amount}</span></span></a>
                                 <a onclick="remove_ele(this.parentElement)" href="javascript:">
                                 <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
                                 </a>
                             </div>`
                     } else {
-                        html = `<div title="${kcal}" per="${food_data.kcal}" s_code="${code}" class="search_item">
+                        html = `<div title="${kcal}" per="${food_data.kcal}" s_code="${code}" tokcal="${Math.round(food.gram * per_kcal)}" class="search_item">
                                 <a onclick="editamount(this.parentElement)" href="javascript:"><span>${food_data.name}</span><span> / <span id="per_gram">${food.gram}</span><span id="default_gram" style="display:none">${food_data.per_gram}</span> g(ml)</span><span class="amount"> X <span class="amount_num">${amount}</span></span></a>
                                 <a onclick="remove_ele(this.parentElement)" href="javascript:">
                                 <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
                                 </a>
                             </div>`
                     }
+
+                    to_kcal = to_kcal + (Math.round(food.gram * per_kcal)*amount)
+                    document.querySelector("#tokcal").innerText = to_kcal
                     document.querySelector(".search_box").insertAdjacentHTML("beforeend", html)
                 })
+
+                
             })
         } else {
             alert("비정상 접근으로 의심됩니다. 다시 시도해주세요.")
