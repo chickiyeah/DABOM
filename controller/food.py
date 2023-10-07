@@ -52,7 +52,7 @@ async def food_add(request: Request, authorized: bool = Depends(verify_token)):
             pname = execute_sql("SELECT Nickname FROM user WHERE ID = '{0}'".format(authorized[1]))[0]['Nickname']
             execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'custom_food'".format(int(b_num)+1))
             execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'food_db'".format(n_food_num))
-            execute_sql("INSERT INTO foodb (NO, SAMPLE_ID, `에너지(kcal)`, new카테, 식품명, data_adder, 식품코드, `내용량_단위`, `총내용량(g)`, `1회제공량`) VALUES ({0},'{1}','{2}','{3}', '{4}','{5}','{6}','{7}',{8},{9})".format(n_food_num, n_num, kcal, cate, name, pname, n_code, "g", weight, weight))
+            execute_sql("INSERT INTO foodb (NO, SAMPLE_ID, `에너지(kcal)`, new카테, 식품명, data_adder, 식품코드, `내용량_단위`, `총내용량(g)`, `per_gram`) VALUES ({0},'{1}','{2}','{3}', '{4}','{5}','{6}','{7}',{8},{9})".format(n_food_num, n_num, kcal, cate, name, pname, n_code, "g", weight, weight))
 
             return n_num
         else:
@@ -68,7 +68,7 @@ async def food_add(request: Request, authorized: bool = Depends(verify_token)):
             pname = execute_sql("SELECT Nickname FROM user WHERE ID = '{0}'".format(authorized[1]))[0]['Nickname']
             execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'custom_food'".format(int(b_num)+1))
             execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'food_db'".format(n_food_num))
-            execute_sql("INSERT INTO foodb (NO, SAMPLE_ID, `에너지(kcal)`, new카테, 식품명, data_adder, 식품코드, barcode, `내용량_단위`, `총내용량(g)`, `1회제공량`) VALUES ({0},'{1}','{2}','{3}', '{4}','{5}','{6}',{7},'{8}',{9},{10})".format(n_food_num, n_num, kcal, cate, name, pname, n_code, barcode, "g", weight, weight))
+            execute_sql("INSERT INTO foodb (NO, SAMPLE_ID, `에너지(kcal)`, new카테, 식품명, data_adder, 식품코드, barcode, `내용량_단위`, `총내용량(g)`, `per_gram`) VALUES ({0},'{1}','{2}','{3}', '{4}','{5}','{6}',{7},'{8}',{9},{10})".format(n_food_num, n_num, kcal, cate, name, pname, n_code, barcode, "g", weight, weight))
 
             return n_num
         else:
@@ -89,7 +89,7 @@ async def food_search(request: Request ,authorized: bool = Depends(verify_token)
         else:
             # , 으로 구분된 STR이면
             keywords = i_keywords.split(',')
-            search = "SELECT SAMPLE_ID, 식품명, `에너지(kcal)` as 칼로리 FROM foodb WHERE "
+            search = "SELECT SAMPLE_ID, 식품명, per_gram, `에너지(kcal)` as 칼로리 FROM foodb WHERE "
             for keyword in keywords: 
                 if keyword != "":
                     if keyword[:1] != "":
@@ -109,7 +109,7 @@ async def food_search(input:search_input ,authorized: bool = Depends(verify_toke
         else:
             # , 으로 구분된 STR이면
             keywords = input.keywords.split(',')
-            search = "SELECT SAMPLE_ID, 식품명, `에너지(kcal)` as 칼로리 FROM foodb WHERE "
+            search = "SELECT SAMPLE_ID, 식품명, per_gram, `에너지(kcal)` as 칼로리 FROM foodb WHERE "
             for keyword in keywords:
                 if keyword != "":
                     if keyword[:1] != "":
@@ -122,12 +122,12 @@ async def food_search(input:search_input ,authorized: bool = Depends(verify_toke
     
 @foodapi.get("/detail/{sample_id}")
 async def food_datail(sample_id:str):
-        detail = execute_sql("SELECT 식품명, 1회제공량, 내용량_단위, 유통사, new카테, `에너지(kcal)` FROM foodb WHERE SAMPLE_ID = '%s'" % sample_id)
+        detail = execute_sql("SELECT 식품명, per_gram, 내용량_단위, 유통사, new카테, `에너지(kcal)` FROM foodb WHERE SAMPLE_ID = '%s'" % sample_id)
         if len(detail) == 0:
             raise HTTPException(400, "Could not find food with this sample id.")
         
         detail = detail[0]
-        gram = str(detail['1회제공량']) + " " + detail['내용량_단위']
+        gram = str(detail['per_gram']) + " " + detail['내용량_단위']
         res = {
             "SAMPLE_ID": sample_id,
             "name": detail['식품명'],
