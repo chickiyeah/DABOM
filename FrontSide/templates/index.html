@@ -170,12 +170,10 @@ getNotificationPermission()*/
                 <p class="sub_txt">칼로리 확인하러 가보자고 !</p>
                 <div class="search_box">
                     <span class="seaech_back"></span>
-                    <div class="search_item">
-                        <input class="search_i" placeholder="오늘 섭취한 음식칼로리를  확인해보세요" type="text">
-                        <button class="search_icon">
-                            <object data="/assets/images/search-icon.svg" type="image/svg+xml" aria-label="검색아이콘"></object>
-                        </button>
-                    </div>
+                    <input class="search_i" placeholder="오늘 섭취한 음식칼로리를  확인해보세요" type="text">
+                    <button onclick="window.open(`diary_kcal?keyword=${document.querySelector('.search_i').value}`)" class="search_icon">
+                        <object data="/assets/images/search-icon.svg" type="image/svg+xml" aria-label="검색아이콘"></object>
+                    </button>
                 </div>
             </div>
             <div class="category_box">
