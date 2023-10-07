@@ -226,7 +226,7 @@ hr.zag { position: relative; opacity: 0.4; z-index: 50;
     .introduce_wrap .char_group .img_box:not(:nth-child(4)) { width: 110px;}
     /*푸터*/
     .footer_wrap .scroller_group { font-size: 16px; }
-    .footer_wrap .footer_info { font-size: 16px; letter-spacing: -0.8px; font-weight: 400; }
+    .footer_wrap .footer_info , .footer_wrap .footer_menu a { font-size: 16px; letter-spacing: -0.8px; font-weight: 400; }
     .footer_wrap .footer_info .footer_menu { padding: 45px 24px 5px; justify-content: center; }
     .footer_wrap .footer_info .footer_policies { text-align: center; }
 
@@ -242,7 +242,7 @@ hr.zag { position: relative; opacity: 0.4; z-index: 50;
     .introduce_wrap .text_group span { padding: 12px 14px 12px 14px; font-size: 13px; }
     .food_diary_wrap .txt { font-size: 16px; }
     /*푸터*/
-    .footer_wrap .footer_info .footer_menu p { font-size: 14px; }
+    .footer_wrap .footer_info .footer_menu a { font-size: 14px; }
     .footer_wrap .footer_info .footer_policies p { font-size: 12px; }
 }
 
