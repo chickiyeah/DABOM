@@ -89,6 +89,56 @@ async def post_add(request: Request, authorized: bool = Depends(verify_token)):
 
         return res
     
+@diaryapi.post('/add_temp')
+async def post_add(request: Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        data = await request.json()
+        uid = authorized[1]
+        imgs = data['images']
+        foods = data['foods']
+        title = data['title']
+        memo = data['desc']
+        friends = data['friends']
+        eat_when = data['eat_when']
+        s_with = data['with']
+        to_kcal = data['total_kcal']
+
+        created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        p_num = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'post_no'")[0]['no'])
+        n_p_num = p_num+1
+        execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
+        sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`,`with`,`total_kcal`,`temp`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}', '{s_with}', {to_kcal}, 'true')"
+        res = execute_sql(sql)
+        return res
+    
+@diaryapi.post('/add_g_temp')
+async def post_add(request: Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        data = await request.json()
+        uid = authorized[1]
+        imgs = data['images']
+        foods = data['foods']
+        title = data['title']
+        memo = data['desc']
+        friends = data['friends']
+        eat_when = data['eat_when']
+        s_with = data['with']
+        to_kcal = data['total_kcal']
+        created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        p_num = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'post_no'")[0]['no'])
+        n_p_num = p_num+1
+        try:
+            group = data['group']
+            execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
+            sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`group`,`eat_when`,`with`,`total_kcal`,`temp`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{group}','{eat_when}','{s_with}',{to_kcal},'true')"
+            res = execute_sql(sql)
+        except KeyError:
+            execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
+            sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`,`with`,`total_kcal`,`temp`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}', '{s_with}', {to_kcal},'true')"
+            res = execute_sql(sql)
+
+        return res
+    
 @diaryapi.get('/group/{group_id}/{page}')
 async def get_group_post(group_id:int, page:int, authorized :bool = Depends(verify_token)):
     g_mem = execute_sql(f"SELECT members FROM `group` WHERE `id` = {group_id}")[0]['members']
@@ -126,7 +176,7 @@ async def post_get(authorized: bool = Depends(verify_token)):
         
         now = datetime.datetime.now().strftime("%Y-%m-%d")
         nowspl = now.split('-')
-        res = execute_sql(f"SELECT * from UserEat WHERE id = '{authorized[1]}'AND YEAR(created_at) = {nowspl[0]} AND MONTH(created_at) = {nowspl[1]} AND DAY(created_at) = {nowspl[2]} AND (deleted IS NULL OR deleted = 'false') ORDER BY created_at DESC LIMIT 1")
+        res = execute_sql(f"SELECT * from UserEat WHERE id = '{authorized[1]}'AND YEAR(created_at) = {nowspl[0]} AND MONTH(created_at) = {nowspl[1]} AND DAY(created_at) = {nowspl[2]} AND (deleted IS NULL OR deleted = 'false') AND `temp` = 'false' ORDER BY created_at DESC LIMIT 1")
 
         if len(res) == 0:
             raise HTTPException(404, post_not_found)
@@ -143,7 +193,7 @@ async def post_get(request:Request, authorized: bool = Depends(verify_token)):
         
         json = await request.json()
         count = len(execute_sql(f"SELECT no from UserEat WHERE id = '{authorized[1]}' AND (deleted IS NULL OR deleted = 'false')"))
-        res = execute_sql(f"SELECT * from UserEat WHERE id = '{authorized[1]}' AND (deleted IS NULL OR deleted = 'false') ORDER BY created_at DESC LIMIT 6 OFFSET {(int(json['page'])-1)*6}")
+        res = execute_sql(f"SELECT * from UserEat WHERE id = '{authorized[1]}' AND (deleted IS NULL OR deleted = 'false') AND temp = 'false' ORDER BY created_at DESC LIMIT 6 OFFSET {(int(json['page'])-1)*6}")
 
         if len(res) == 0:
             raise HTTPException(404, post_not_found)
@@ -161,8 +211,8 @@ async def post_get(request:Request, authorized: bool = Depends(verify_token)):
     if authorized:
         
         json = await request.json()
-        count = len(execute_sql(f"SELECT no from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND `with` = 'alone' AND (deleted IS NULL OR deleted = 'false')"))
-        res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND `with` = 'alone' AND (deleted IS NULL OR deleted = 'false') ORDER BY created_at {json['sort']} LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
+        count = len(execute_sql(f"SELECT no from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND `with` = 'alone' AND (deleted IS NULL OR deleted = 'false') AND `temp` = 'false'"))
+        res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND `with` = 'alone' AND (deleted IS NULL OR deleted = 'false') AND `temp` = 'false' ORDER BY created_at {json['sort']} LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
 
         if len(res) == 0:
             raise HTTPException(404, post_not_found)
@@ -180,8 +230,8 @@ async def post_get(request:Request, authorized: bool = Depends(verify_token)):
     if authorized:
         json = await request.json()
 
-        count = len(execute_sql(f"SELECT no from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND (`with` = 'friend' OR `with` = 'couple') AND (deleted IS NULL OR deleted = 'false')"))
-        res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND (`with` = 'friend' OR `with` = 'couple') AND (deleted IS NULL OR deleted = 'false') ORDER BY created_at {json['sort']} LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
+        count = len(execute_sql(f"SELECT no from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND (`with` = 'friend' OR `with` = 'couple') AND (deleted IS NULL OR deleted = 'false') AND `temp` = 'false'"))
+        res = execute_sql(f"SELECT * from UserEat WHERE YEAR(created_at) = {json['year']} AND MONTH(created_at) = {json['month']} AND id = '{authorized[1]}' AND (`with` = 'friend' OR `with` = 'couple') AND (deleted IS NULL OR deleted = 'false') AND `temp` = 'false' ORDER BY created_at {json['sort']} LIMIT 3 OFFSET {(int(json['page'])-1)*3}")
 
         if len(res) == 0:
             raise HTTPException(404, post_not_found)
