@@ -22,8 +22,9 @@ section 2 칼로리 검색
     line-height: 1.2; letter-spacing: -1.5px; }
 .food_search_wrap .left_box .sub_txt { font-size: 24px; font-weight: 700; margin-bottom: 6.5vw; }
 .food_search_wrap .left_box .search_box { max-width: 560px; }
+.food_search_wrap .left_box .search_box .search_item { position: relative;}
 .food_search_wrap .left_box .search_box input { border-top: 0; border-left: 0; border-right: 0;  border-radius: 0;
-    border-bottom: 6px solid #222; background: url("../images/search-icon.svg") no-repeat; background-position: right 5px center; background-size: 28px; font-size: 18px; padding: 0 35px 0 10px; }
+    border-bottom: 6px solid #222; font-size: 18px; padding: 0 35px 0 10px; }
 .food_search_wrap .left_box .search_box input::placeholder { font-size: 18px; }
 .food_search_wrap .left_box .search_box input:focus { outline-color: transparent;}
 

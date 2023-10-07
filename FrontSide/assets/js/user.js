@@ -204,7 +204,7 @@ async function verify_token() {
               }else if (response.status === 307 || response.status === 401) {
                 localStorage.clear();
                 document.querySelector(".loading").style.display = "none"
-                if (location.href != location.origin+"/" && location.href.includes("login") == false && location.href.includes("register") == false && location.href.includes("findaccount") == false) {
+                if (location.href != location.origin+"/" && location.href.includes("login") == false && location.href.includes("register") == false && location.href.includes("findaccount") == false && (location.href.includes("diary_kcal") == false && opener.href != location.origin+"/")) {
                   location.href = "/login";
                 }
                 

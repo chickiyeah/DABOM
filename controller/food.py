@@ -78,8 +78,7 @@ async def food_add(request: Request, authorized: bool = Depends(verify_token)):
 er044 = {"code":"ER044","message":"키워드가 입력되지 않았습니다."}
 
 @foodapi.post("/search/and")
-async def food_search(request: Request ,authorized: bool = Depends(verify_token)):
-    if authorized:
+async def food_search(request: Request):
         data = await request.json()
         cate = data["category"]
         i_keywords = data["keywords"]
@@ -101,8 +100,7 @@ async def food_search(request: Request ,authorized: bool = Depends(verify_token)
             return res
     
 @foodapi.post("/search/or")
-async def food_search(input:search_input ,authorized: bool = Depends(verify_token)):
-    if authorized:
+async def food_search(input:search_input):
         #list면 keywords = json.loads(input.keywords)
         if input == "":
             raise HTTPException(400, er044)
