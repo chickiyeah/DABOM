@@ -66,53 +66,73 @@ function eat_avg(cal_date) {
 
             let cur_kcal = data.total_kcal
 
-            let per_cal_day = cal_date
+            if (cur_kcal === undefined) {
+                
+                //document.getElementById('cur_per_bar').style.width = "??? %"
 
-            if (cal_date == 0) {
-                per_cal_day = 1
+                document.getElementById('cur_kcal').innerHTML = "?????"
+                document.getElementById('cur_kcal_bar').innerHTML =  "?????"
+                document.getElementById("to_kcal").innerHTML =  "?????"
+                document.getElementById("to_kcal_bar").innerHTML =  "?????"
+                document.getElementById('cur_per').innerHTML = "??"
+
+                document.querySelector(".food_list").innerHTML = "<div class='desc'>자주 먹은 음식이 존재하지 않습니다.\n지금 바로 작성해 보세요.</div>"
+            } else {
+                document.getElementById("login").style.display = "none"
+                document.getElementById("logout").style.display = ""
+                
+                let per_cal_day = cal_date
+
+                if (cal_date == 0) {
+                    per_cal_day = 1
+                }
+
+                let per = (cur_kcal / (base_kcal * per_cal_day)) * 100
+                
+                document.getElementById('cur_per').innerHTML = per.toFixed(2)
+
+                if (per < 31) {
+                    per = 30
+                }
+
+                if (per > 100) {
+                    per = 100
+                }
+
+                document.getElementById('cur_per_bar').style.width = per +"%"
+
+                document.getElementById('cur_kcal').innerHTML = cur_kcal
+                document.getElementById('cur_kcal_bar').innerHTML = cur_kcal
+                document.getElementById("to_kcal").innerHTML = base_kcal * per_cal_day
+                document.getElementById("to_kcal_bar").innerHTML = base_kcal * per_cal_day
+
+
+                let foods = data.sort_foods
+                let max = foods.length
+                
+                if (max > 6) {
+                    max = 6
+                }
+                
+                let to_html = ""
+
+                for (i=0; i<max; i++) {
+                    let food = foods[i]
+                    let html = `<li>
+                        <i class="circle">${i+1}</i>
+                        <p>${food[0]}</p>
+                        <div class="number">${food[1]}회</div>
+                    </li>`
+
+                    to_html = to_html + html
+                }
+                if (to_html === "") {
+                    document.querySelector(".food_list").innerHTML = "<div class='desc'>자주 먹은 음식이 존재하지 않습니다.\n지금 바로 작성해 보세요.</div>"
+                } else {
+                    document.querySelector(".food_list").innerHTML = to_html
+                }
+                
             }
-
-            let per = (cur_kcal / (base_kcal * per_cal_day)) * 100
-            
-            document.getElementById('cur_per').innerHTML = per.toFixed(2)
-
-            if (per < 20) {
-                per = 25
-            }
-
-            if (per > 100) {
-                per = 100
-            }
-
-            document.getElementById('cur_per_bar').style.width = per +"%"
-
-            document.getElementById('cur_kcal').innerHTML = cur_kcal
-            document.getElementById('cur_kcal_bar').innerHTML = cur_kcal
-            document.getElementById("to_kcal").innerHTML = base_kcal * per_cal_day
-            document.getElementById("to_kcal_bar").innerHTML = base_kcal * per_cal_day
-
-
-            let foods = data.sort_foods
-            let max = foods.length
-            
-            if (max > 6) {
-                max = 6
-            }
-            
-            let to_html = ""
-
-            for (i=0; i<max; i++) {
-                let food = foods[i]
-                let html = `<li>
-                    <i class="circle">${i+1}</i>
-                    <p>${food[0]}</p>
-                    <div class="number">${food[1]}회</div>
-                </li>`
-
-                to_html = to_html + html
-            }
-
-            document.querySelector(".food_list").innerHTML = to_html
         })
     })
 }
@@ -153,9 +173,31 @@ function get_bmi() {
                 }
             })
 
-            document.getElementById("b_nick").innerText = data.nickname
-            document.getElementById("b_bmi").innerText = data.bmi
-            document.getElementById("b_status").innerText = data.status
+            if (data.nickname === undefined) {
+                document.getElementById("b_nick").innerText = "?????"
+                document.getElementById("b_bmi").innerText = "?????"
+                document.getElementById("b_status").innerText = "정상"
+            }else{
+                document.getElementById("b_nick").innerText = data.nickname
+                document.getElementById("b_bmi").innerText = data.bmi
+                document.getElementById("b_status").innerText = data.status
+            }
+
+            
         })
     })
 }
+
+async function logout() {
+    fetch("/api/user/logout", {
+      method: "GET"
+    }).then((response) => {
+      if (response.status === 200) {
+        localStorage.clear();
+        location.href = "/";
+      } else {
+        alert("로그아웃중 서버 오류가 발생했습니다.\n콘솔의 오류사항을 고객센터로 제보해주시기 바랍니다.")
+        response.json().then((response) => { console.error(response)})
+      }
+    })
+  }

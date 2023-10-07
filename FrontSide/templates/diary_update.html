@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="/assets/css/popup.css">
     <script type="module" src="/assets/js/alert.js"></script>
     <script type="module" src="/assets/js/fileupload.js"></script>
+    <script type="module" src="/assets/js/user.js"></script>
     <script>
         var eat_when = "morning";
         var fd_total_kcal = 0;
@@ -53,6 +54,10 @@
                     <div class="edit_amount">
                         갯수
                         <input class="amount" id="amount" type="number" min="1" value="1" onchange="setamount(this.value)">
+                    </div>
+                    <div style="margin-top: 10px; display: flex; align-items: center; gap: 10px; font-weight: 700;" id="edit_gram">
+                        그람
+                        <input class="gram" id="edit_gram_input" style="height: 40px;" type="number" min="1" value="1" onchange="setgram(this.value)">
                     </div>
                     <div class="edit_total">
                       <p> 총 칼로리 :</p> <span><div id="total_kcal">300</div>kcal</span>
@@ -250,7 +255,24 @@
     function setamount(amount) {
         amount = parseInt(amount);
         var default_kcal = parseInt(document.getElementById("pop_food_base_kcal").innerText);
-        document.querySelector("#total_kcal").innerText = (default_kcal*amount)
+        var default_kcal = parseInt(document.getElementById("pop_food_base_kcal").innerText);
+        var gram = parseInt(document.querySelector("#edit_gram_input").value);
+        var default_gram = parseInt(document.getElementById("default_gram").innerText);
+        var per_kcal = default_kcal / default_gram;
+        document.querySelector("#total_kcal").innerText = parseInt(Math.round(per_kcal * gram) * amount)
+    }
+
+    function setgram(gram) {
+        gram = parseInt(gram)
+        var default_kcal = parseInt(document.getElementById("pop_food_base_kcal").innerText);
+        var default_gram = parseInt(document.getElementById("default_gram").innerText);
+        var per_kcal = default_kcal / default_gram;
+        console.log(per_kcal);
+        var amount = parseInt(document.querySelector("#amount").value);
+        console.log(amount);
+        console.log((per_kcal * gram) * amount);
+        document.querySelector("#total_kcal").innerText = parseInt(Math.round(per_kcal * gram) * amount)
+        //gram / kcal
     }
 
     function set_with(s_with) {
@@ -274,19 +296,27 @@
         last_click_element = element
         document.querySelector('.fd_edit').style.display = '';
 
+        var default_gram = parseInt(document.getElementById("default_gram").innerText);
+        
+
         var name = element.children[0].children[0].innerText;
         var default_kcal = parseInt(element.attributes.per.value);
-        var amonunt_div = element.children[0].children[1]
+        var amonunt_div = element.children[0].children[2]
+        var per_kcal = default_kcal / default_gram;
 
         var fd_edit_content = document.querySelector('.fd_edit_back').children[0].children[1];
         var ed_amount = document.querySelector('.edit_amount').children[0]
         var base_data = fd_edit_content.children[0];
         var edit_able_data = fd_edit_content.children[1];
 
+        document.querySelector('.gram').value = parseInt(document.querySelector('#per_gram').innerText) //그람
+        var gram = parseInt(document.querySelector('#per_gram').innerText)
+
         var total_kcal = default_kcal;
 
         document.getElementById("pop_food_name").innerText = name; // 식품명
         document.getElementById("pop_food_base_kcal").innerText = default_kcal // 기본 칼로리
+        console.log(element)
 
         if (amonunt_div.style.display != 'none') {
             document.getElementById("amount").value = parseInt(amonunt_div.children[0].innerText); // 갯수
@@ -298,7 +328,10 @@
             ed_amount.value = 1;
         }
 
-        fd_total_kcal = parseInt(document.querySelector("#tokcal").innerText) - total_kcal; // 현재 수정요소의 칼로리를 제외한 전체 칼로리를 저장
+        var amount = parseInt(document.querySelector("#amount").value);
+        document.querySelector("#total_kcal").innerText = parseInt(Math.round(per_kcal * gram) * amount)
+
+        fd_total_kcal = parseInt(document.querySelector("#tokcal").innerText) - parseInt(Math.round(per_kcal * gram) * amount); // 현재 수정요소의 칼로리를 제외한 전체 칼로리를 저장
 
         document.querySelector('.fd_edit_back').style.display = 'flex';
     }
@@ -310,15 +343,23 @@
         if (amount > 0) {
             var t_tokcal = parseInt(document.getElementById("total_kcal").innerText);
             if (amount === 1) {
-                last_click_element.children[0].children[1].style.display = 'none'; // 갯수가 1개면 갯수가 안보이게
+                last_click_element.children[0].children[2].style.display = 'none'; // 갯수가 1개면 갯수가 안보이게
             } else {
-                last_click_element.children[0].children[1].style.display = ''; // 갯수가 2개 이상이면 갯수가 보이게
+                last_click_element.children[0].children[2].style.display = ''; // 갯수가 2개 이상이면 갯수가 보이게
             }
             
-            last_click_element.children[0].children[1].children[0].innerText = amount; // 표시 갯수 변경
+            last_click_element.children[0].children[2].children[0].innerText = amount; // 표시 갯수 변경
             last_click_element.title = "해당 음식의 칼로리는 개당 "+last_click_element.attributes.per.value+" kcal 이며, 전체 칼로리는 "+t_tokcal+" kcal 입니다."
+            last_click_element.attributes.tokcal.value = t_tokcal
 
-            document.querySelector("#tokcal").innerText = fd_total_kcal + t_tokcal; //총 칼로리 변경
+            document.querySelector("#per_gram").innerText = document.querySelector('.gram').value
+            
+            if (fd_total_kcal < 0) {
+                document.querySelector("#tokcal").innerText = t_tokcal;
+            } else {
+                document.querySelector("#tokcal").innerText = fd_total_kcal + t_tokcal;
+            }
+            //총 칼로리 변경
             f_t_kcal = fd_total_kcal + t_tokcal;
             document.querySelector('.fd_edit_back').style.display = 'none'; //작업 완료후 배경 원상 복귀
         } else {
@@ -330,14 +371,7 @@
     function remove_ele(element) {
         f_name = element.children[0].children[0].innerText
         let del_con = confirm(`${f_name}을(를) 삭제하시겠습니까?`)
-        var amonunt_div = element.children[0].children[1]
-        let amount = 1;
-        if (amonunt_div.style.display != 'none') {
-            amount = parseInt(element.children[0].children[1].children[0].innerText)
-        }
-        
-        let cur_kcal = parseInt(element.attributes.per.value)
-        let to_kcal = cur_kcal * amount
+        let to_kcal = element.attributes.tokcal.value
         let final_kcal = parseInt(document.querySelector("#tokcal").innerText) - to_kcal;
         
         if (del_con) {

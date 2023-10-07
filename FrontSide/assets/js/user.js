@@ -234,7 +234,6 @@ async function verify_token() {
 }
 
 
-
 async function logout() {
   fetch("/api/user/logout", {
     method: "GET"
