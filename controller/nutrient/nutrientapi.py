@@ -145,7 +145,7 @@ async def calculate_bmi(authorized: bool = Depends(verify_token)):
                 status = "과체중"
             elif ((bmi >= 18.5) and (bmi < 22.9)):
                 status = "정상"
-            elif (bmi < 18.4): #(bmi >= 11.1) and 
+            elif (bmi <= 18.4): #(bmi >= 11.1) and 
                 status = "저체중"
             else:
                 raise HTTPException(401, value_error)

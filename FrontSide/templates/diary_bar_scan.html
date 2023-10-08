@@ -213,22 +213,29 @@
     const searchParams = new URLSearchParams(location.search);
     const err_des = document.querySelector(".des");
     const erbit = document.querySelector("#err_big");
+    var cur_err = ""
     for (const param of searchParams) {
         console.log(param);
         if (param[0] === "err") {
             var err = param[1];
+            cur_err = param[1]
             if (err === "nocodeimg") {
                 err_des.innerText = "선택한 이미지에서 바코드를 찾을수 없습니다.\n위의 이미지를 눌러 인식을 다시 시도하시거나 수동으로 입력해주세요.";
             }
 
             if (err === "nofood") {
                 erbit.innerText = "바코드 인식에 성공했으나 오류가 발생했습니다.";
-                err_des.innerText = "음식이 아닌 바코드를 인식했거나, 찾을수 없는 바코드입니다.\n(이의 경우 음식 데이터를 추가해주시면 추후에는 발생하지 않습니다.)";
+                err_des.innerText = `음식이 아닌 바코드를 인식했거나, 찾을수 없는 바코드입니다.\n(이의 경우 음식 데이터를 추가해주시면 추후에는 발생하지 않습니다.)`;
+
             }
 
             if (err === "canceled") {
                 err_des.innerText = "사용자가 바코드 인식을 취소했습니다."
             }
+        }
+
+        if (param[0] === "barcode" && cur_err == "nofood") {
+            err_des.innerText = `음식이 아닌 바코드를 인식했거나, 찾을수 없는 바코드입니다.\n(이의 경우 음식 데이터를 추가해주시면 추후에는 발생하지 않습니다.)\n인식된 바코드 : ${param[1]}`;
         }
     }
 

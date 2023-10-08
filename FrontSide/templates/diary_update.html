@@ -215,7 +215,10 @@
                 <div class="text_item">
                     <input id="f_title" type="text" placeholder="제목을 입력하세요">
                     <textarea id="f_desc" placeholder="내용을 입력하세요" rows="20" role="textbox"></textarea>
-                    <button id="done" onclick="submit_write()">작성하기</button>
+                    <div style="display: flex; flex-direction: row" class="buttons">
+                        <button style="background: #909090;" id="temp" onclick="temp_save()">임시저장</button>
+                        <button id="done" onclick="submit_write()">작성하기</button>
+                    </div>       
                 </div>
             </div>
             
@@ -257,7 +260,7 @@
         var default_kcal = parseInt(document.getElementById("pop_food_base_kcal").innerText);
         var default_kcal = parseInt(document.getElementById("pop_food_base_kcal").innerText);
         var gram = parseInt(document.querySelector("#edit_gram_input").value);
-        var default_gram = parseInt(document.getElementById("default_gram").innerText);
+        var default_gram = parseInt(last_click_element.querySelector("#default_gram").innerText);
         var per_kcal = default_kcal / default_gram;
         document.querySelector("#total_kcal").innerText = parseInt(Math.round(per_kcal * gram) * amount)
     }
@@ -265,7 +268,7 @@
     function setgram(gram) {
         gram = parseInt(gram)
         var default_kcal = parseInt(document.getElementById("pop_food_base_kcal").innerText);
-        var default_gram = parseInt(document.getElementById("default_gram").innerText);
+        var default_gram = parseInt(last_click_element.querySelector("#default_gram").innerText);
         var per_kcal = default_kcal / default_gram;
         console.log(per_kcal);
         var amount = parseInt(document.querySelector("#amount").value);
@@ -296,7 +299,7 @@
         last_click_element = element
         document.querySelector('.fd_edit').style.display = '';
 
-        var default_gram = parseInt(document.getElementById("default_gram").innerText);
+        var default_gram = parseInt(element.querySelector("#default_gram").innerText);
         
 
         var name = element.children[0].children[0].innerText;
@@ -309,9 +312,8 @@
         var base_data = fd_edit_content.children[0];
         var edit_able_data = fd_edit_content.children[1];
 
-        document.querySelector('.gram').value = parseInt(document.querySelector('#per_gram').innerText) //그람
-        var gram = parseInt(document.querySelector('#per_gram').innerText)
-
+        document.querySelector('#edit_gram_input').value = parseInt(element.querySelector('#per_gram').innerText) //그람
+        var gram = parseInt(element.querySelector('#per_gram').innerText)
         var total_kcal = default_kcal;
 
         document.getElementById("pop_food_name").innerText = name; // 식품명
@@ -352,7 +354,7 @@
             last_click_element.title = "해당 음식의 칼로리는 개당 "+last_click_element.attributes.per.value+" kcal 이며, 전체 칼로리는 "+t_tokcal+" kcal 입니다."
             last_click_element.attributes.tokcal.value = t_tokcal
 
-            document.querySelector("#per_gram").innerText = document.querySelector('.gram').value
+            last_click_element.querySelector("#per_gram").innerText = document.querySelector('.gram').value
             
             if (fd_total_kcal < 0) {
                 document.querySelector("#tokcal").innerText = t_tokcal;
@@ -380,6 +382,83 @@
         }
     }
 
+    function temp_save() {
+        const food_element = document.querySelector(".search_box")
+        let title = document.querySelector("#f_title").value
+        const desc = document.querySelector("#f_desc").value
+        const imgs = document.querySelector(".img_item")
+            var a_list = []
+            var files = []
+            Array.prototype.forEach.call(food_element.children,(element) => {
+                var amount = 1;
+                var gram = 0
+                if(element.children[0].children[1].style.display != "none") {
+                    amount = parseInt(element.children[0].children[2].children[0].innerText)
+                }
+                gram = parseInt(element.children[0].children[1].children[0].innerText)
+
+                let d_json = {
+                    "code" : element.attributes.s_code.value,
+                    "amount" : amount,
+                    "gram" : gram
+                }
+
+                a_list.push(d_json)
+            })
+
+            Array.prototype.forEach.call(imgs.children,(element) => {
+                if (element.id.includes("img-")) {
+                    let url = element.id.replace("img-","")
+                    files.push(url)
+                }
+            })
+                var s_json = {
+                    "title": title,
+                    "desc": desc,
+                    "foods": a_list,
+                    "friends": s_friends,
+                    "with": sel_with,
+                    "images": files,
+                    "eat_when": eat_when,
+                    "total_kcal": parseInt(document.querySelector("#tokcal").innerText)
+                }
+
+                if (s_friends.length == 0) {
+                    s_json.with = "alone"
+                }
+                
+                if (opener == null) {
+                    fetch("/api/diary/add_temp", {
+                        method: "POST",
+                        credentials: "include",
+                        body: JSON.stringify(s_json)
+                    }).then((res) => {
+                        if (res.status === 200) {
+                            alert("임시저장 되었습니다.")
+                        }
+                    })
+                } else {
+                    let g_id
+                    try {
+                        opener.document.location.href.split("?")[1].split(";").forEach((ele) => {if(ele.includes("id")){let a=ele.replace("id=","");g_id = a}})
+                        s_json.group = parseInt(g_id)
+                    } catch(e) {
+                        
+                    }
+                    fetch("/api/diary/add_g_temp", {
+                        method: "POST",
+                        credentials: "include",
+                        body: JSON.stringify(s_json)
+                    }).then((res) => {
+                        if (res.status === 200) {
+                            alert("임시저장 되었습니다.")
+                        }
+                    })
+                }
+            
+        
+    }
+
     function submit_write() {
         const food_element = document.querySelector(".search_box")
         const title = document.querySelector("#f_title").value
@@ -392,13 +471,16 @@
             var files = []
             Array.prototype.forEach.call(food_element.children,(element) => {
                 var amount = 1;
+                var gram = 0
                 if(element.children[0].children[1].style.display != "none") {
-                    amount = parseInt(element.children[0].children[1].children[0].innerText)
-                } 
+                    amount = parseInt(element.children[0].children[2].children[0].innerText)
+                }
+                gram = parseInt(element.children[0].children[1].children[0].innerText)
 
                 let d_json = {
                     "code" : element.attributes.s_code.value,
-                    "amount" : amount
+                    "amount" : amount,
+                    "gram" : gram
                 }
 
                 a_list.push(d_json)
@@ -455,6 +537,7 @@
                         body: JSON.stringify(s_json)
                     }).then((res) => {
                         if (res.status === 200) {
+                            sessionStorage.removeItem("da_u_files")
                             opener.location.reload()
                             window.close()
                         }
@@ -477,12 +560,13 @@ function submit_edit(id) {
         Array.prototype.forEach.call(food_element.children,(element) => {
             var amount = 1;
             if(element.children[0].children[1].style.display != "none") {
-                amount = parseInt(element.children[0].children[1].children[0].innerText)
+                amount = parseInt(element.children[0].children[2].children[0].innerText)
             } 
 
             let d_json = {
                 "code" : element.attributes.s_code.value,
-                "amount" : amount
+                "amount" : amount,
+                "gram": element.querySelector("#per_gram").innerText
             }
 
             a_list.push(d_json)
@@ -529,5 +613,17 @@ function submit_edit(id) {
         }
     }
 }
+
+function closeevent(pointerevent) {
+    console.log(1);
+    // 해당 클릭이 발생한 HTML 요소
+    let target = pointerevent.target;
+    console.log(target.id);
+    console.log(target.parentElement);
+    console.log(target.parentElement.parentElement);
+    if(confirm('정말 삭제하시겠어요?')){
+      target.parentElement.parentElement.remove();
+    }
+  }
 </script>
 </html>

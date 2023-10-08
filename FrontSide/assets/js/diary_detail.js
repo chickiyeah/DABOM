@@ -189,9 +189,10 @@ function get_post(post_no) {
                             let code = food.code
                             let amount = food.amount
                             let food_data = await get_food_info(code)
+                            var per_kcal = food_data.kcal / food_data.per_gram;
                             let food_h = `<tr>
                                 <td>${food_data.name}</td>
-                                <td>${food_data.kcal} Kcal</td>
+                                <td>${Math.round(food.gram * per_kcal)} Kcal</td>
                                 <td>${amount} 개</td>
                             </tr>`
                             document.querySelector("#post_foods").insertAdjacentHTML("beforeend", food_h)

@@ -16,15 +16,14 @@
 .consume_wrap .progress_box { display: flex; flex-flow: column; gap: 15px; margin-bottom: 100px;}
 .consume_wrap .progress_box .progress { border-radius: 6px; height: 30px; overflow: hidden; position: relative;
     transform: translateZ(0); }
-.progress_bar { background-color: #ececec; bottom: 0; left: 0; position: absolute; right: 0;top: 0;
-    transition: all 500ms ease-out; color: white; text-align: center; font-size: clamp(0.625rem, 2.7vw, 0.875rem);
-    line-height: 2.5; }
+.progress_bar { background-color: #ececec; bottom: 0; left: 0; position: absolute; right: 0;top: 0;  transition: all 500ms ease-out;
+     color: white; text-align: center; font-size: clamp(0.625rem, 2.7vw, 0.875rem); line-height: 2.5; font-weight: 500; }
 .consume_wrap .progress_box .progress_bar.my { background: #F43B00;}
 .consume_wrap .progress_box .progress_bar.std { background: #222222;}
 
 .consume_wrap .list_box { margin-bottom: 100px; }
 .consume_wrap .list_box h2 { font-size: 20px; font-weight: 400; margin-bottom: 10px; }
-.consume_wrap .list_box .food_list .desc { color: #909090;}
+.consume_wrap .list_box .desc { color: #909090;}
 .consume_wrap .list_box .food_list li { display: flex; justify-content: space-between; border: 1px solid #E1E1E1;
     background: white; border-radius: 6px; align-items: center; padding: 14px 20px; }
 .consume_wrap .list_box .food_list li + li { margin-top: 20px; }
@@ -53,7 +52,7 @@
     .consume_wrap .progress_box { margin-bottom: 80px; }
     .consume_wrap .kcal_box .title_txt { font-size: 18px; }
     .consume_wrap .list_box h2 { font-size: 18px; }
-    .consume_wrap .list_box .food_list .desc { font-size: 14px; }
+    .consume_wrap .list_box .desc { font-size: 14px;}
     .consume_wrap .list_box .food_list li i { width: 35px; height: 35px; font-size: 16px; margin-right: 10px; }
     .consume_wrap .list_box .food_list li p { font-size: 18px; }
     .consume_wrap .list_box .food_list li .number { font-size: 16px; }
@@ -65,10 +64,11 @@
 @media all and (max-width: 400px) {
     .consume_wrap .kcal_box .title_txt { font-size: 16px; }
     .consume_wrap .month_box a { width: calc(33% - 4px);}
-    .consume_wrap .progress_box .progress_bar {line-height: 3;}
-    .consume_wrap .list_box .food_list .desc { font-size: 12px; }
+    .progress_bar { line-height: 3;}
     .consume_wrap .list_box .food_list li { padding: 10px 14px; }
     .consume_wrap .bml_box .bml_bar li .txt { font-size: 14px; }
+    .consume_wrap .list_box h2 { font-size: 16px; }
+    .consume_wrap .list_box .desc { font-size: 12px;}
     .consume_wrap .bml_box .top_txt p:first-child { font-size: 16px; }
     .consume_wrap .bml_box .top_txt p:last-child { font-size: 12px; }
 }

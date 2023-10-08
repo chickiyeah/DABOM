@@ -21,11 +21,14 @@ section 2 칼로리 검색
 .food_search_wrap .left_box .title { font-size: clamp(1.5rem, 3vw, 2.625rem); margin-bottom: 1.5vw;
     line-height: 1.2; letter-spacing: -1.5px; }
 .food_search_wrap .left_box .sub_txt { font-size: 24px; font-weight: 700; margin-bottom: 6.5vw; }
-.food_search_wrap .left_box .search_box { max-width: 560px; }
+.food_search_wrap .left_box .search_box { max-width: 560px; position: relative; }
 .food_search_wrap .left_box .search_box input { border-top: 0; border-left: 0; border-right: 0;  border-radius: 0;
-    border-bottom: 6px solid #222; background: url("../images/search-icon.svg") no-repeat; background-position: right 5px center; background-size: 28px; font-size: 18px; padding: 0 35px 0 10px; }
+    border-bottom: 6px solid #222; font-size: 18px; padding: 0 35px 0 10px; }
 .food_search_wrap .left_box .search_box input::placeholder { font-size: 18px; }
 .food_search_wrap .left_box .search_box input:focus { outline-color: transparent;}
+.food_search_wrap .left_box .search_box .search_icon { display: block; width: 26px; position: absolute; top: 50%; right: 5px;
+   transform: translateY(-50%); cursor: pointer;}
+   .food_search_wrap .left_box .search_box .search_icon object { pointer-events: none;}
 
 .food_search_wrap .category_box { width: 550px; position: relative; }
 .food_search_wrap .category_box .category_item { box-shadow: 10px 30px 20px 0 rgba(0, 0, 0, 0.16);
@@ -142,7 +145,7 @@ section 5 다이어리
 .footer_wrap .scroller_group span { flex: 0 0 auto; animation: left-move 3.5s linear infinite;
     padding-right: 2vw; will-change: transform; }
 .footer_wrap .footer_info { background: #F43B00; }
-.footer_wrap .footer_info p { font-size: 20px; font-weight: 700; color: white; }
+.footer_wrap .footer_info { font-size: 20px; font-weight: 700; color: white; }
 .footer_wrap .footer_info .footer_menu { display: flex; padding: 55px 35px 15px; gap: 2vw; position: relative; }
 .footer_wrap .footer_info .footer_policies { display: flex; justify-content: space-between; padding: 30px 35px 35px; }
 /* 지그재그라인 */
@@ -194,11 +197,7 @@ hr.zag { position: relative; opacity: 0.4; z-index: 50;
     .food_diary_wrap .diary_box { max-width: 600px; }
     /*푸터*/
     .footer_wrap .scroller_group { font-size: 18px; }
-<<<<<<< Updated upstream
-    .footer_wrap .footer_info p { font-size: 18px;}
-=======
-    .footer_wrap .footer_info , .footer_wrap .footer_menu a { font-size: 18px;}
->>>>>>> Stashed changes
+    .footer_wrap .footer_info a { font-size: 18px; }
     .footer_wrap .footer_info .footer_menu { padding: 50px 35px 10px; }
     .footer_wrap .footer_info .footer_policies { padding: 25px 35px 30px; flex-flow: column; }
     .footer_wrap .footer_info .footer_policies p + p { margin-top: 10px; }
@@ -227,7 +226,7 @@ hr.zag { position: relative; opacity: 0.4; z-index: 50;
     .introduce_wrap .char_group .img_box:not(:nth-child(4)) { width: 110px;}
     /*푸터*/
     .footer_wrap .scroller_group { font-size: 16px; }
-    .footer_wrap .footer_info p { font-size: 16px; letter-spacing: -0.8px; font-weight: 400; }
+    .footer_wrap .footer_info , .footer_wrap .footer_menu a { font-size: 16px; letter-spacing: -0.8px; font-weight: 400; }
     .footer_wrap .footer_info .footer_menu { padding: 45px 24px 5px; justify-content: center; }
     .footer_wrap .footer_info .footer_policies { text-align: center; }
 
@@ -243,7 +242,7 @@ hr.zag { position: relative; opacity: 0.4; z-index: 50;
     .introduce_wrap .text_group span { padding: 12px 14px 12px 14px; font-size: 13px; }
     .food_diary_wrap .txt { font-size: 16px; }
     /*푸터*/
-    .footer_wrap .footer_info .footer_menu p { font-size: 14px; }
+    .footer_wrap .footer_info .footer_menu a { font-size: 14px; }
     .footer_wrap .footer_info .footer_policies p { font-size: 12px; }
 }
 

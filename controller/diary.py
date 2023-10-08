@@ -57,7 +57,16 @@ async def post_add(request: Request, authorized: bool = Depends(verify_token)):
         p_num = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'post_no'")[0]['no'])
         n_p_num = p_num+1
         execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
-        sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}', '{s_with}', {to_kcal})"
+        temp_post = execute_sql(f"SELECT * FROM temp_post WHERE `id` = '{uid}'")
+        
+        if len(temp_post) == 0:
+            sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}', '{s_with}', {to_kcal})"
+        else:
+            sql = f"DELETE FROM temp_post WHERE `id` = '{uid}'"
+            execute_sql(sql)
+            sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}', '{s_with}', {to_kcal})"
+            execute_sql(sql)
+
         res = execute_sql(sql)
         return res
     
@@ -77,15 +86,110 @@ async def post_add(request: Request, authorized: bool = Depends(verify_token)):
         created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         p_num = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'post_no'")[0]['no'])
         n_p_num = p_num+1
-        try:
-            group = data['group']
-            execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
-            sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`group`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{group}','{eat_when}','{s_with}',{to_kcal})"
+        temp_post = execute_sql(f"SELECT * FROM temp_post WHERE `id` = '{uid}'")
+        
+        if len(temp_post) == 0:
+            try:
+                group = data['group']
+                execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
+                sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`group`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{group}','{eat_when}','{s_with}',{to_kcal})"
+                res = execute_sql(sql)
+            except KeyError:
+                execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
+                sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}', '{s_with}', {to_kcal})"
+                res = execute_sql(sql)
+        else:
+            try:
+                group = data['group']
+                sql = f"DELETE FROM temp_post WHERE `id` = '{uid}'"
+                execute_sql(sql)
+                execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
+                sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`group`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{group}','{eat_when}','{s_with}',{to_kcal})"
+                res = execute_sql(sql)
+            except KeyError:
+                sql = f"DELETE FROM temp_post WHERE `id` = '{uid}'"
+                execute_sql(sql)
+                execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
+                sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}', '{s_with}', {to_kcal})"
+                res = execute_sql(sql)
+
+        return res
+
+@diaryapi.get('/get_temp')
+async def temp_get(authorized: bool = Depends(verify_token)):
+    if authorized:
+        uid = authorized[1]
+        temp_post = execute_sql(f"SELECT * FROM temp_post WHERE `id` = '{uid}'")
+        
+        if len(temp_post) == 0:
+            raise HTTPException(404, "임시 게시글이 없습니다.")
+
+        return temp_post
+
+@diaryapi.post('/add_temp')
+async def post_add(request: Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        data = await request.json()
+        uid = authorized[1]
+        imgs = data['images']
+        foods = data['foods']
+        title = data['title']
+        memo = data['desc']
+        friends = data['friends']
+        eat_when = data['eat_when']
+        s_with = data['with']
+        to_kcal = data['total_kcal']
+
+        created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        temp_post = execute_sql(f"SELECT * FROM temp_post WHERE `id` = '{uid}'")
+        
+        if len(temp_post) == 0:
+            sql = f"INSERT INTO temp_post (`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`,`with`,`total_kcal`) VALUES ('{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}', '{s_with}', {to_kcal})"
             res = execute_sql(sql)
-        except KeyError:
-            execute_sql("UPDATE food_no SET `no` = %s WHERE `fetch` = 'post_no'" % n_p_num)
-            sql = f"INSERT INTO UserEat (`no`,`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`,`with`,`total_kcal`) VALUES ({n_p_num}, '{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}', '{s_with}', {to_kcal})"
+        else:
+            sql = f"DELETE FROM temp_post WHERE `id` = '{uid}'"
+            execute_sql(sql)
+            sql = f"INSERT INTO temp_post (`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`,`with`,`total_kcal`) VALUES ('{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}', '{s_with}', {to_kcal})"
             res = execute_sql(sql)
+
+        return res
+    
+@diaryapi.post('/add_g_temp')
+async def post_add(request: Request, authorized: bool = Depends(verify_token)):
+    if authorized:
+        data = await request.json()
+        uid = authorized[1]
+        imgs = data['images']
+        foods = data['foods']
+        title = data['title']
+        memo = data['desc']
+        friends = data['friends']
+        eat_when = data['eat_when']
+        s_with = data['with']
+        to_kcal = data['total_kcal']
+        created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        temp_post = execute_sql(f"SELECT * FROM temp_post WHERE `id` = '{uid}'")
+        
+        if len(temp_post) == 0:
+            try:
+                group = data['group']
+                sql = f"INSERT INTO temp_post (`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`group`,`eat_when`,`with`,`total_kcal`) VALUES ('{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{group}','{eat_when}','{s_with}',{to_kcal})"
+                res = execute_sql(sql)
+            except KeyError:
+                sql = f"INSERT INTO temp_post (`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`,`with`,`total_kcal`) VALUES ('{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}', '{s_with}', {to_kcal})"
+                res = execute_sql(sql)
+        else:
+            try:
+                group = data['group']
+                sql = f"DELETE FROM temp_post WHERE `id` = '{uid}'"
+                execute_sql(sql)
+                sql = f"INSERT INTO temp_post (`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`group`,`eat_when`,`with`,`total_kcal`) VALUES ('{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{group}','{eat_when}','{s_with}',{to_kcal})"
+                res = execute_sql(sql)
+            except KeyError:
+                sql = f"DELETE FROM temp_post WHERE `id` = '{uid}'"
+                execute_sql(sql)
+                sql = f"INSERT INTO temp_post (`id`,`title`,`desc`,`foods`,`friends`,`created_at`,`images`,`eat_when`,`with`,`total_kcal`) VALUES ('{uid}', '{title}','{memo}',\"{foods}\",\"{friends}\",'{created_at}',\"{imgs}\",'{eat_when}', '{s_with}', {to_kcal})"
+                res = execute_sql(sql)
 
         return res
     

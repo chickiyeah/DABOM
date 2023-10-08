@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 let id = this.location.href.split("?")[1].split("id=")[1]
                 let con = confirm("하나의 글을 작성/수정 중에는\n다른글을 수정하지마세요\n* 중복 수정시 데이터 충돌이 발생합니다.\n\n계속 진행하시겠습니까?");
                 if (con) {
+                    document.querySelector("#temp").remove()
                     get_post(id);
                 } else {
                     history.back()
@@ -14,8 +15,102 @@ document.addEventListener("DOMContentLoaded", function() {
                 history.back();
             }
         }
+    } else {
+        
+        check_temp()
     }
 })
+
+function check_temp() {
+    fetch("/api/diary/get_temp", {
+        method: "GET",
+        credentials: "include"
+    }).then((response) => {
+        if (response.status === 200) {
+            let load_con = confirm("임시저장된 글을 발견했습니다.\n글을 불러올까요?")
+            
+            if (load_con) {
+                response.json().then((data) => {
+                    data = data[0]
+                    let imgs = ""
+                    setdate(data.created_at)
+                    //console.log(data)
+                    img_init(data.images.replace(/'/g, '"'))
+    
+                    var eat_when = "";
+                    if (data.eat_when == "morning") {
+                        eat_when = "아침"
+                    } else if (data.eat_when == "lunch") {
+                        eat_when = "점심"
+                    } else if (data.eat_when == "night") {
+                        eat_when = "저녁"
+                    } else if (data.eat_when == "free") {
+                        eat_when = "간식"
+                    }
+    
+                    document.querySelectorAll("#eat_when").forEach((ele) => {
+                        if (ele.innerText == eat_when) {
+                            ele.classList.add("on");
+                        } else {
+                            ele.classList.remove("on");
+                        }
+                    })
+    
+                    document.querySelector("#f_desc").value = data.desc
+    
+                    document.querySelector("#f_title").value = data.title
+                    if (data.with != "alone") {
+                        JSON.parse(data.friends.replace(/'/g, '"')).forEach(async (friend) => { 
+                            Array.prototype.forEach.call(document.querySelector(".content_box").children,(ele) => {
+                                let f_id = ele.children[2].children[1].attributes.for.value.split("-")[1]
+                                if (friend === f_id) {
+                                    ele.children[2].children[0].checked = true
+                                    s_friends.push(friend) //오류 아님
+                                }
+                            })
+                            
+                        })
+                    }
+    
+                    var to_kcal = 0
+    
+                    JSON.parse(data.foods.replace(/'/g, '"')).forEach(async (food) => {
+                        console.log(food)
+                        let code = food.code
+                        let amount = food.amount
+                        let food_data = await get_food_info(code)
+                        var per_kcal = food_data.kcal / food_data.per_gram;
+                        let kcal = "해당 음식의 칼로리는 개당 "+food_data.kcal+" kcal 이며, 전체 칼로리는 "+(Math.round(food.gram * per_kcal)*amount)+" kcal 입니다."
+                        let html = ''
+                        if (amount === 1) {
+                            html = `<div title="${kcal}" per="${food_data.kcal}" s_code="${code}" tokcal="${Math.round(food.gram * per_kcal)}" class="search_item">
+                                    <a onclick="editamount(this.parentElement)" href="javascript:"><span>${food_data.name}</span><span> / <span id="per_gram">${food.gram}</span><span id="default_gram" style="display:none">${food_data.per_gram}</span> g(ml)</span><span class="amount" style="display:none;"> X <span class="amount_num">${amount}</span></span></a>
+                                    <a onclick="remove_ele(this.parentElement)" href="javascript:">
+                                    <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
+                                    </a>
+                                </div>`
+                        } else {
+                            html = `<div title="${kcal}" per="${food_data.kcal}" s_code="${code}" tokcal="${Math.round(food.gram * per_kcal)}" class="search_item">
+                                    <a onclick="editamount(this.parentElement)" href="javascript:"><span>${food_data.name}</span><span> / <span id="per_gram">${food.gram}</span><span id="default_gram" style="display:none">${food_data.per_gram}</span> g(ml)</span><span class="amount"> X <span class="amount_num">${amount}</span></span></a>
+                                    <a onclick="remove_ele(this.parentElement)" href="javascript:">
+                                    <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
+                                    </a>
+                                </div>`
+                        }
+    
+                        to_kcal = to_kcal + (Math.round(food.gram * per_kcal)*amount)
+                        document.querySelector("#tokcal").innerText = to_kcal
+                        document.querySelector(".search_box").insertAdjacentHTML("beforeend", html)
+                    })
+    
+                    
+                })
+            } else {
+                sessionStorage.removeItem("da_u_files")
+            }
+        }
+    })
+}
 
 function setdate(date){
     const p_date = document.querySelector("#post_date");
@@ -63,7 +158,6 @@ function get_post(post_id) {
                 })
 
                 document.querySelector("#f_desc").value = data.desc
-                document.querySelector("#tokcal").innerText = data.total_kcal
 
                 document.querySelector("#f_title").value = data.title
                 if (data.with != "alone") {
@@ -79,30 +173,38 @@ function get_post(post_id) {
                     })
                 }
 
+                var to_kcal = 0
+
                 JSON.parse(data.foods.replace(/'/g, '"')).forEach(async (food) => {
                     console.log(food)
                     let code = food.code
                     let amount = food.amount
                     let food_data = await get_food_info(code)
-                    let kcal = "해당 음식의 칼로리는 개당 "+food_data.kcal+" kcal 이며, 전체 칼로리는 "+(food_data.kcal*amount)+" kcal 입니다."
+                    var per_kcal = food_data.kcal / food_data.per_gram;
+                    let kcal = "해당 음식의 칼로리는 개당 "+food_data.kcal+" kcal 이며, 전체 칼로리는 "+(Math.round(food.gram * per_kcal)*amount)+" kcal 입니다."
                     let html = ''
                     if (amount === 1) {
-                        html = `<div title="${kcal}" per="${food_data.kcal}" s_code="${code}" class="search_item">
-                                <a onclick="editamount(this.parentElement)" href="javascript:"><span>${food_data.name}</span><span class="amount" style="display:none;"> X <span class="amount_num">${amount}</span></span></a>
+                        html = `<div title="${kcal}" per="${food_data.kcal}" s_code="${code}" tokcal="${Math.round(food.gram * per_kcal)}" class="search_item">
+                                <a onclick="editamount(this.parentElement)" href="javascript:"><span>${food_data.name}</span><span> / <span id="per_gram">${food.gram}</span><span id="default_gram" style="display:none">${food_data.per_gram}</span> g(ml)</span><span class="amount" style="display:none;"> X <span class="amount_num">${amount}</span></span></a>
                                 <a onclick="remove_ele(this.parentElement)" href="javascript:">
                                 <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
                                 </a>
                             </div>`
                     } else {
-                        html = `<div title="${kcal}" per="${food_data.kcal}" s_code="${code}" class="search_item">
-                                <a onclick="editamount(this.parentElement)" href="javascript:"><span>${food_data.name}</span><span class="amount"> X <span class="amount_num">${amount}</span></span></a>
+                        html = `<div title="${kcal}" per="${food_data.kcal}" s_code="${code}" tokcal="${Math.round(food.gram * per_kcal)}" class="search_item">
+                                <a onclick="editamount(this.parentElement)" href="javascript:"><span>${food_data.name}</span><span> / <span id="per_gram">${food.gram}</span><span id="default_gram" style="display:none">${food_data.per_gram}</span> g(ml)</span><span class="amount"> X <span class="amount_num">${amount}</span></span></a>
                                 <a onclick="remove_ele(this.parentElement)" href="javascript:">
                                 <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
                                 </a>
                             </div>`
                     }
+
+                    to_kcal = to_kcal + (Math.round(food.gram * per_kcal)*amount)
+                    document.querySelector("#tokcal").innerText = to_kcal
                     document.querySelector(".search_box").insertAdjacentHTML("beforeend", html)
                 })
+
+                
             })
         } else {
             alert("비정상 접근으로 의심됩니다. 다시 시도해주세요.")
