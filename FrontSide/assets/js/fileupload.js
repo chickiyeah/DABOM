@@ -3,6 +3,7 @@ const loading = document.querySelector(".loading");
 const loading_box = document.querySelector(".loading_box")
 
 import { send_message } from './chat.js'
+  
 
 async function handleFiles() {
   verify_token()
@@ -38,10 +39,10 @@ async function handleFiles() {
         p_files = "[]";
       }
       let n_files = p_files.split(",")
-      let html = ` <li id="img-${files[0]+"_"+Math.floor(Math.random(1,100) * 100)}">
+      let html = ` <li id="img-${files[0]}">
                       <div class="img_box"> 
                         <img src="${files[0]}" alt="이미지">
-                        <a class="close_btn" id="${files[0]+"_"+Math.floor(Math.random(1,100) * 100)}" href="javascript:">
+                        <a class="close_btn" id="${files[0]}" href="javascript:">
                           <object data="/assets/images/close-icon.svg" type="image/svg+xml"
                                   aria-label="닫기아이콘"></object>
                         </a>
@@ -49,6 +50,16 @@ async function handleFiles() {
                     </li>
                     `
                     imgItem.insertAdjacentHTML("afterbegin", html); 
+
+                    Array.prototype.forEach.call(imgItem.children,(element) =>{
+                      if (!element.children[0].classList.contains('uoload_list')) {
+                        console.log(element.children[0].classList)
+                        element.children[0].children[1].removeEventListener("click", closeevent);
+                        element.children[0].children[1].addEventListener("click", closeevent)
+                      }
+                    }) 
+                  
+      
       n_files.forEach((n_file) => {
         files.push(n_file)           
       })

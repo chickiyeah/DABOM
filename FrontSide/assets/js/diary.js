@@ -1,6 +1,6 @@
 "use strict";
 
-const images = sessionStorage.getItem("da_u_files"); //세션 스토리지에서 da_u_files의 키값을 가진 값(value)를 가져와라.
+let images = sessionStorage.getItem("da_u_files"); //세션 스토리지에서 da_u_files의 키값을 가진 값(value)를 가져와라.
 
 
 const imgBox = document.querySelector('.img_box'); // 고정 요소는 최대한 const로 
@@ -116,6 +116,8 @@ window.addEventListener('DOMContentLoaded', function() {
 function init() {
   console.log("init progressing")
   console.log(images)
+  sessionStorage.removeItem("da_u_files")
+  images = null//sessionStorage.getItem("da_u_files");
   if (images != null) {
     let imglist = images.split(",");
     let img_data = imglist[0];
