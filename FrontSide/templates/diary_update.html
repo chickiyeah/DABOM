@@ -385,12 +385,9 @@
 
     function temp_save() {
         const food_element = document.querySelector(".search_box")
-        const title = document.querySelector("#f_title").value
+        let title = document.querySelector("#f_title").value
         const desc = document.querySelector("#f_desc").value
         const imgs = document.querySelector(".img_item")
-        if (food_element.innerText === "") {
-            alert("선택한 음식이 없습니다.\n음식을 선택해주세요.")
-        } else {
             var a_list = []
             var files = []
             Array.prototype.forEach.call(food_element.children,(element) => {
@@ -416,12 +413,6 @@
                     files.push(url)
                 }
             })
-
-            if (title.trim() === "") {
-                alert("제목을 입력해주세요.")
-            } else if (desc.trim() === "") {
-                alert("내용을 업력해주세요.")
-            } else {
                 var s_json = {
                     "title": title,
                     "desc": desc,
@@ -465,8 +456,8 @@
                         }
                     })
                 }
-            }
-        }
+            
+        
     }
 
     function submit_write() {
