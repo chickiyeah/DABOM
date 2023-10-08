@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 let id = this.location.href.split("?")[1].split("id=")[1]
                 let con = confirm("하나의 글을 작성/수정 중에는\n다른글을 수정하지마세요\n* 중복 수정시 데이터 충돌이 발생합니다.\n\n계속 진행하시겠습니까?");
                 if (con) {
+                    document.querySelector("#temp").remove()
                     get_post(id);
                 } else {
                     history.back()
