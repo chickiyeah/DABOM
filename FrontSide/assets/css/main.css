@@ -197,7 +197,7 @@ hr.zag { position: relative; opacity: 0.4; z-index: 50;
     .food_diary_wrap .diary_box { max-width: 600px; }
     /*푸터*/
     .footer_wrap .scroller_group { font-size: 18px; }
-    .footer_wrap .footer_info a { font-size: 18px;}
+    .footer_wrap .footer_info a { font-size: 18px; }
     .footer_wrap .footer_info .footer_menu { padding: 50px 35px 10px; }
     .footer_wrap .footer_info .footer_policies { padding: 25px 35px 30px; flex-flow: column; }
     .footer_wrap .footer_info .footer_policies p + p { margin-top: 10px; }
