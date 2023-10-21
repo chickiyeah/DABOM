@@ -64,6 +64,7 @@ async function handleFiles() {
         files.push(n_file)           
       })
       sessionStorage.setItem("da_u_files", files)
+      loading.style.display = 'none';
     }
 
     if (location.href.includes("register") || location.href.includes("mypage")) {
