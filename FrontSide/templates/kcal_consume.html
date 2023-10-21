@@ -32,7 +32,7 @@
                 <a id="login" class="login_icon" href="/login" title="로그인">
                     <img alt="로그인 아이콘" src="/assets/images/login-icon.svg">
                 </a>
-                <a id="logout" style="display:none" class="logout_icon" href="javascript:" title="로그아웃">
+                <a id="logout" style="display:none" class="logout_icon" onclick="logout()" href="javascript:" title="로그아웃">
                  <img alt="로그아웃 아이콘" src="/assets/images/login-out-icon.svg">
                 </a>
             </div>
@@ -97,8 +97,9 @@
         </div>
     </header>
 <main>
-    <!-- .month_box a태그에 .on 들어갈때로 스타일 줬어요 -->
-    <!-- .bml_bar li에 .on 들어갈때로 스타일 줬어요 -->
+    <div class="loading fix">
+        <span class="loader"></span>
+    </div>
     <div class="consume_wrap">
         <div class="container">
             <div class="month_box">
