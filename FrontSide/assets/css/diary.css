@@ -140,7 +140,7 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
     color: white; font-size: 14px; border-radius: 3px; padding: 6px 10px 5px 10px; }
 .update_wrap .info_box .search_box a object { display: block; width: 14px; filter: brightness(0) invert(1); margin-bottom: 2px; }
 .update_wrap .info_box .text_item input { margin-bottom: 10px; }
-.update_wrap .info_box .text_item button { width: 100%; max-width: 300px; background: #F43B00; color: white; height: 45px; font-size: 18px; font-weight: 700; line-height: 2.8; border-radius: 6px; text-align: center; display: block; margin: 30px auto 60px;}
+.update_wrap .info_box .text_item .btn_box { max-width: 700px; }
  .update_wrap .info_box .btn_box { max-width: 900px; margin: 30px auto 60px; }
 
  /* 음식 수동 , 음식 데이터 추가 */
@@ -202,6 +202,7 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
     .diary_warp .info_box .line { left: calc(50% - -1px); }
     .diary_warp .img_box { max-width: 350px; }
 
+
     /* 기록, 칼로리 공통 */
     .update_wrap .top_box .date_item .img_box ,.kcal_wrap .top_box .date_item .img_box { max-width: 70px; padding-bottom: 10px; }
     .update_wrap .top_box .date_item .date, .kcal_wrap .top_box .date_item .date  { margin-bottom: 30px; }
@@ -211,6 +212,7 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
     .update_wrap .info_box .btn_item a { width: calc(50% - 5px); }
     .update_wrap .top_box .img_item li { width: calc(50% - 10px);}
     .update_wrap .txt_box { flex-flow: column; gap: 8px; align-items: center;}
+    .update_wrap .info_box .text_item .btn_box button { font-size: 14px; height: 40px; line-height: 3; }
     
     /* 칼로리 */
     .kcal_wrap .search_item { flex-flow: column; flex-direction: column-reverse; gap: 15px;}
@@ -233,6 +235,7 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
 @media all and (max-width: 400px) {
     /* 사진 업로드 */
     .update_wrap .top_box .date_item .img_box { max-width: 60px; }
+
     .diary_warp .info_box .add_img { width: 40px; height: 40px; }
     .diary_warp .info_box .add_img object { width: 24px; }
     .diary_warp .info_box p { font-size: 20px; }
@@ -243,6 +246,7 @@ text-align: center; height: 50px; border-radius: 6px; line-height: 3.2; font-wei
 
     /* 기록 */
     .update_wrap .info_box .search_box a object { width: 12px; }
+    .update_wrap .uoload_list .img_upload .img_upload_box object { width: 30px;}
     .update_wrap .info_box .btn_item a { height: 40px; line-height: 3; font-size: 14px; }
     .update_wrap .info_box .search_box .search_item { font-size: 12px; }
     .update_wrap .top_box .img_item li:only-child { height: 29vh; }
