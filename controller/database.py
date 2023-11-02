@@ -1,7 +1,7 @@
 import pymysqlpool
 from pymysql import cursors
 #pymysqlpool.logger.setLevel('DEBUG')
-config ={'host':'193.123.249.160','port':3306,'user':'r_root','password':'Dlstn0722','db':'food','autocommit':True}
+config ={'host':'193.123.249.160','port':3306,'user':'dabom','password':'Dlstn0722','db':'food','autocommit':True}
 
 def __init__():
     global pool1
