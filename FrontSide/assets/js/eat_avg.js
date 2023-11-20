@@ -15,6 +15,9 @@ function eat_avg(cal_date) {
 
     var date = new Date();
     var cyoil = date.getDay()+1
+    if (cal_date == 1) {
+        cal_date = 2
+    }
     date.setDate(date.getDate() - cal_date)
     var pyoil = date.getDay()+1
     
