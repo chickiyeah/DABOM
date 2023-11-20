@@ -50,7 +50,7 @@ unauthorized_invaild = {'code':'ER015','message':'UNAUTHORIZED (TOKEN INVALID)'}
 unauthorized_userdisabled = {'code':'ER016','message':'UNAUTHORIZED (TOKENS FROM DISABLED USERS)'}
 
 #broadcast = Broadcast("redis://localhost:6379")
-broadcast = Broadcast("redis://35.212.135.37:6379")
+broadcast = Broadcast("redis://35.212.249.82:6379")
     
 #print(broadcast)
 CHANNEL = "CHAT"
