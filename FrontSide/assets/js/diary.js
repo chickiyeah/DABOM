@@ -414,6 +414,7 @@ return new Promise((resolve, reject) => {
                                   <p class="info_txt">${item_var.식품명}</p>
                                   <div class="right_box">
                                       <p style="margin-right:20px" class="kcal">${kcalNum} kcal</p>
+                                      <p id="per_gram" style="display:none">${item_var.per_gram}</p>
                                       <!--<a class="more_btn" id="moreBtn" href="javascript:">상세보기</a>-->
                                   </div>
                               </li>
@@ -426,6 +427,7 @@ return new Promise((resolve, reject) => {
                                   <p class="info_txt">${item_var.식품명}</p>
                                   <div class="right_box">
                                       <p style="margin-right:20px" class="kcal">${kcalNum} kcal</p>
+                                      <p id="per_gram" style="display:none">${item_var.per_gram}</p>
                                       <!--<a class="more_btn" id="moreBtn" href="javascript:">상세보기</a>-->
                                   </div>
                               </li>

@@ -1291,19 +1291,29 @@ async def admin_send_email(userdata: EmailSend, authorized: bool = Depends(verif
 @userapi.get('/eat_avg/{to_day}')
 async def get_eat_avg(to_day:str, authorized: bool = Depends(verify_token)):
     if authorized:
-        now = str(datetime.datetime.now().strftime("%Y-%m-%d"))
-        res = execute_sql(f"SELECT `foods`,`total_kcal` FROM `UserEat` WHERE `id` = '{authorized[1]}' AND `created_at` BETWEEN date('{to_day}') AND date('{now}') AND (deleted IS NULL OR deleted = 'false')")
+        now = str((datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%Y-%m-%d"))
+
+        sql = f"SELECT `foods`,`total_kcal` FROM `UserEat` WHERE `id` = '{authorized[1]}' AND `created_at` BETWEEN date('{to_day}') AND date('{now}') AND (deleted IS NULL OR deleted = 'false')"
+        
+        print(sql)
+
+        res = execute_sql(sql)
         
         to_kcal = 0
         
         foods_l = []
+        print(res)
         for data in res:
             foods = data["foods"].replace("[","").replace("]", "").split("}, ")
             for food in foods:
+                
                 if "}" not in food:
                     food = food + "}"
+
                 
-                food = food.replace("\'", "\"", 6)
+                
+                food = food.replace("\'", "\"")
+                print(food)
                 food = json.loads(food)
                 food_name = execute_sql("SELECT 식품명 FROM foodb WHERE SAMPLE_ID = '%s'" % food['code'])[0]['식품명']
                 foods_l.append(food_name)
