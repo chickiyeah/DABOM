@@ -72,9 +72,9 @@ async def get_friend(request: Request, authorzation: bool = Depends(verify_token
 
             return e_res
         
-        for e in res:
-            user = execute_sql("SELECT `Nickname`, `profile_image`, `ID` FROM `user` WHERE `ID` = '"+e+"'")
-            imsg = execute_sql("SELECT * FROM infomsg WHERE `ID` = '"+e+"'")
+        for uid in res:
+            user = execute_sql("SELECT `Nickname`, `profile_image`, `ID` FROM `user` WHERE `ID` = %s", (uid))
+            imsg = execute_sql("SELECT * FROM infomsg WHERE `ID` = %s", (uid))
             user[0]['imsg'] = imsg[0]['message']
             f_res.append(user[0])
 
@@ -100,8 +100,8 @@ async def friend_list(response: Response, page: int, access_token: Optional[str]
         
         uid = user['user_id']
         page = page - 1
-        sql = "SELECT friends FROM user WHERE ID = '%s'" % (uid)
-        res = json.loads(execute_sql(sql)[0]['friends'])
+        sql = "SELECT friends FROM user WHERE ID = %s"
+        res = json.loads(execute_sql(sql)[0]['friends'], (uid))
         if len(res) == 0:
             e_res = {
                 'friends': [],
@@ -118,7 +118,7 @@ async def friend_list(response: Response, page: int, access_token: Optional[str]
         sql = sql[0:-3] + " LIMIT 7 OFFSET %s" % (page * 7)
         
         res = {
-            'friends': execute_sql(sql),
+            'friends': execute_sql(sql, ()),
             'amount': len(res),
             'page': page +1
         }
@@ -148,8 +148,8 @@ async def friend_list(response: Response, page: int, access_token: Optional[str]
         
             uid = user['user_id']
             page = page - 1
-            sql = "SELECT friends FROM user WHERE ID = '%s'" % (uid)
-            res = json.loads(execute_sql(sql)[0]['friends'])
+            sql = "SELECT friends FROM user WHERE ID = '%s'"
+            res = json.loads(execute_sql(sql)[0]['friends'], (uid))
             if len(res) == 0:
                 e_res = {
                     'friends': [],
@@ -166,7 +166,7 @@ async def friend_list(response: Response, page: int, access_token: Optional[str]
             sql = sql[0:-3] + " LIMIT 7 OFFSET %s" % (page * 7)
             
             res = {
-                'friends': execute_sql(sql),
+                'friends': execute_sql(sql, ()),
                 'amount': len(res),
                 'page': page +1
             }
@@ -204,8 +204,8 @@ async def friend_request(uid:str, userId: Optional[str] = Cookie(None)):
             target = target.email_verified
 
             uid = userId
-            sql = "SELECT friends FROM user WHERE ID = '%s'" % uid
-            res = json.loads(execute_sql(sql)[0]['friends'])
+            sql = "SELECT friends FROM user WHERE ID = %s"
+            res = json.loads(execute_sql(sql)[0]['friends'], (uid))
 
             if targetid in res:
                 raise HTTPException(400, er029)
@@ -214,29 +214,29 @@ async def friend_request(uid:str, userId: Optional[str] = Cookie(None)):
                 raise HTTPException(400, User_NotFound)
             
             requestid = userId
-            sql = "SELECT Nickname FROM user WHERE ID='%s'" % requestid
-            requestnick = execute_sql(sql)[0]['Nickname']
-            tarsql = "SELECT Nickname FROM user WHERE ID='%s'" % targetid
-            targetnick = execute_sql(tarsql)[0]['Nickname']
+            sql = "SELECT Nickname FROM user WHERE ID=%s"
+            requestnick = execute_sql(sql, (requestid))[0]['Nickname']
+            tarsql = "SELECT Nickname FROM user WHERE ID=%s"
+            targetnick = execute_sql(tarsql, (targetid))[0]['Nickname']
             msg = MIMEMultipart('alternative')
             msg['Subject'] = '[다봄] %s 님으로 부터 친구요청이 도착했습니다.' % requestnick
             msg['From'] = utils.formataddr(("다봄","noreply.dabom@gmail.com"))
             msg['To'] = targetmail
             versql = "SELECT code FROM f_verify WHERE `type` = 'friend'"
-            veri_list = execute_sql(versql)
+            veri_list = execute_sql(versql, ())
             f_sql =  "SELECT req_id, tar_id FROM f_verify"
-            f_list = execute_sql(f_sql)
+            f_list = execute_sql(f_sql, ())
             d = {"req_id": requestid, "tar_id": targetid}
             
             newno = int(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'log_invite'")[0]['no'])+1
 
-            execute_sql("INSERT INTO log_invite (no, type, req, tar) VALUES ({0},'{1}','{2}','{3}')".format(newno, "friend", requestid, targetid))
+            execute_sql("INSERT INTO log_invite (no, type, req, tar) VALUES (%s, %s, %s, %s)", (newno, "friend", requestid, targetid))
 
-            execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'log_invite'".format(newno))
+            execute_sql("UPDATE food_no SET no = %s WHERE `fetch` = 'log_invite'", (newno))
 
             if d in f_list:
-                delteme = "DELETE FROM f_verify WHERE req_id = '%s' AND tar_id = '%s'" % (requestid, targetid)
-                execute_sql(delteme)
+                delteme = "DELETE FROM f_verify WHERE req_id = '%s' AND tar_id = '%s'"
+                execute_sql(delteme, (requestid, targetid))
 
             keys = []
             for key in veri_list:
@@ -247,8 +247,8 @@ async def friend_request(uid:str, userId: Optional[str] = Cookie(None)):
             while verifykey in keys:
                 verifykey = "".join([random.choice(string.ascii_letters) for _ in range(15)])
             
-            add_verifykey = "INSERT INTO f_verify (code, req_id, tar_id, `type`) VALUES ('%s','%s','%s', 'friend')" % (verifykey, requestid, targetid)
-            execute_sql(add_verifykey)
+            add_verifykey = "INSERT INTO f_verify (code, req_id, tar_id, `type`) VALUES ( %s, %s, %s, 'friend')"
+            execute_sql(add_verifykey, (verifykey, requestid, targetid))
 
             link = "https://dabom.kro.kr/friend/request/%s/%s/%s/%s/%s" % (requestid, requestnick, targetid, targetnick, verifykey)
             text = "\n\n\n안녕하세요 다봄 입니다.\n\n%s 님이 유저님에게 친구요청을 보냈습니다.\n아래 링크를 클릭해서 수락/거절 여부를 선택해주세요!\n\n\n%s\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 다봄 <a href='https://dabom.channel.io/home'><strong>고객센터</strong></a>를 이용해 주시기 바랍니다."
@@ -324,14 +324,14 @@ async def remove_friend(delid:str, authorized: bool = Depends(verify_token)):
     if authorized:
         try:
             auth.get_user(delid)
-            f_list = json.loads(execute_sql("SELECT friends FROM user WHERE ID = '%s'" % authorized[1])[0]['friends'])
-            t_list = json.loads(execute_sql("SELECT friends FROM user WHERE ID = '%s'" % delid)[0]['friends'])
-            print(authorized[1])
+            f_list = json.loads(execute_sql("SELECT friends FROM user WHERE ID = %s", (authorized[1]))[0]['friends'])
+            t_list = json.loads(execute_sql("SELECT friends FROM user WHERE ID = %s", (delid))[0]['friends'])
+            #print(authorized[1])
             if delid in f_list:
                 f_list.remove(delid)
                 t_list.remove(authorized[1])
-                execute_sql("UPDATE user SET friends = '%s' WHERE ID = '%s'" % (json.dumps(f_list), authorized[1]))
-                execute_sql("UPDATE user SET friends = '%s' WHERE ID = '%s'" % (json.dumps(t_list), delid))
+                execute_sql("UPDATE user SET friends = %s WHERE ID = %s", (json.dumps(f_list), authorized[1]))
+                execute_sql("UPDATE user SET friends = %s WHERE ID = %s", (json.dumps(t_list), delid))
                 return "Friend Removed"
             else:
                 raise HTTPException(400, er030)
@@ -350,7 +350,7 @@ async def ban_list_friend(page:int, userId: Optional[str] = Cookie(None)):
         page = 0
 
     try:
-        b_list = json.loads(execute_sql(f"SELECT friend_ban FROM user WHERE `ID` = '{userId}'")[0]['friend_ban'])
+        b_list = json.loads(execute_sql("SELECT friend_ban FROM user WHERE `ID` = %s", (userId))[0]['friend_ban'])
     except IndexError:
         return []
 
@@ -360,21 +360,21 @@ async def ban_list_friend(page:int, userId: Optional[str] = Cookie(None)):
 async def ban_friend(user_id: str, userId: Optional[str] = Cookie(None)):
         try:
             auth.get_user(user_id)
-            b_list = json.loads(execute_sql(f"SELECT friend_ban FROM user WHERE `ID` = '{userId}'")[0]['friend_ban'])
+            b_list = json.loads(execute_sql("SELECT friend_ban FROM user WHERE `ID` = %s;", (userId))[0]['friend_ban'])
             if user_id in b_list:
                 raise HTTPException(400, er037)
 
-            f_list = json.loads(execute_sql("SELECT friends FROM user WHERE `ID` = '%s'" % userId)[0]['friends'])
-            t_list = json.loads(execute_sql("SELECT friends FROM user WHERE `ID` = '%s'" % user_id)[0]['friends'])
+            f_list = json.loads(execute_sql("SELECT friends FROM user WHERE `ID` = %s;", (userId))[0]['friends'])
+            t_list = json.loads(execute_sql("SELECT friends FROM user WHERE `ID` = %s;", (user_id))[0]['friends'])
             if user_id in f_list:
                 f_list.remove(user_id)
                 t_list.remove(userId)
-                print("UPDATE user SET friends = '%s' WHERE `ID` = '%s'" % (f_list, userId))
-                execute_sql("UPDATE user SET friends = '%s' WHERE `ID` = '%s'" % (json.dumps(f_list), userId))
-                execute_sql("UPDATE user SET friends = '%s' WHERE `ID` = '%s'" % (json.dumps(t_list), user_id))
+                #print("UPDATE user SET friends = '%s' WHERE `ID` = '%s" % (f_list, userId))
+                execute_sql("UPDATE user SET friends = %s WHERE `ID` = %s", (json.dumps(f_list), userId))
+                execute_sql("UPDATE user SET friends = %s WHERE `ID` = %s", (json.dumps(t_list), user_id))
 
             b_list.append(user_id)
-            execute_sql(f"UPDATE user SET friend_ban = '{json.dumps(b_list)}' WHERE `ID` = '{userId}'")
+            execute_sql("UPDATE user SET friend_ban = %s WHERE `ID` = %s", (json.dumps(b_list), userId))
             return "유저를 차단했습니다."         
 
         except auth.UserNotFoundError:
@@ -384,12 +384,12 @@ async def ban_friend(user_id: str, userId: Optional[str] = Cookie(None)):
 async def pardon_friend(user_id: str, userId: Optional[str] = Cookie(None)):
         try:
             auth.get_user(user_id)
-            b_list = json.loads(execute_sql(f"SELECT friend_ban FROM user WHERE ID = '{userId}'")[0]['friend_ban'])
+            b_list = json.loads(execute_sql("SELECT friend_ban FROM user WHERE ID = %s", (userId))[0]['friend_ban'])
             if not user_id in b_list:
                 raise HTTPException(400, er038)
             
             b_list.remove(user_id)
-            execute_sql(f"UPDATE user SET friend_ban = '{json.dumps(b_list)}' WHERE ID = '{userId}'")
+            execute_sql("UPDATE user SET friend_ban = %s WHERE ID = %s", (json.dumps(b_list), userId))
             return "유저를 차단해제했습니다."
 
         except auth.UserNotFoundError:
@@ -401,8 +401,8 @@ async def edit_friend(f_type: str, req_id: str, req_nick:str, tar_id: str, tar_n
     if f_type != "accept" and f_type != "reject":
         raise HTTPException(403, er028)
     
-    versql = "SELECT * FROM f_verify WHERE code = '%s'" % verify_id
-    veri = execute_sql(versql)
+    versql = "SELECT * FROM f_verify WHERE code = %s"
+    veri = execute_sql(versql, verify_id)
     er026 = {'code':'ER026', 'message':'올바르지 않은 인증키입니다.'}
     er027 = {'code':'ER027', 'message':'인증키에 저장된 정보와 일치하지 않습니다.'}
     if len(veri) == 0:
@@ -422,20 +422,20 @@ async def edit_friend(f_type: str, req_id: str, req_nick:str, tar_id: str, tar_n
         raise HTTPException(403, er027)
 
     if f_type == "accept":
-        r_friend = json.loads(execute_sql("SELECT friends FROM user WHERE ID = '%s'" % (req_id))[0]['friends'])      
+        r_friend = json.loads(execute_sql("SELECT friends FROM user WHERE ID = %s", (req_id))[0]['friends'])      
         if (tar_id in r_friend):
-            execute_sql("DELETE FROM f_verify WHERE code = '%s'" % verify_id)
+            execute_sql("DELETE FROM f_verify WHERE code = %s", verify_id)
             raise HTTPException(400, er026)
         else:
             r_friend.append(tar_id)
-            t_friend = json.loads(execute_sql("SELECT friends FROM user WHERE ID = '%s'" % (tar_id))[0]['friends'])
+            t_friend = json.loads(execute_sql("SELECT friends FROM user WHERE ID = %s", (tar_id))[0]['friends'])
             t_friend.append(req_id)
 
-            execute_sql("UPDATE user SET friends = '%s' WHERE ID = '%s'" % (json.dumps(r_friend), req_id))
-            execute_sql("UPDATE user SET friends = '%s' WHERE ID = '%s'" % (json.dumps(t_friend), tar_id))
-            execute_sql("DELETE FROM f_verify WHERE code = '%s'" % verify_id)
+            execute_sql("UPDATE user SET friends = %s WHERE ID = %s", (json.dumps(r_friend), req_id))
+            execute_sql("UPDATE user SET friends = %s WHERE ID = %s", (json.dumps(t_friend), tar_id))
+            execute_sql("DELETE FROM f_verify WHERE code = %s", (verify_id))
             return "Friend Request Accepted"
 
     if f_type == "reject":
-        execute_sql("DELETE FROM f_verify WHERE code = '%s'" % verify_id)
+        execute_sql("DELETE FROM f_verify WHERE code = %s", (verify_id))
         return "Friend Request Rejected"

@@ -41,7 +41,7 @@ async def get_unread_amount(response: Response, access_token: Optional[str] = Co
         print(user)
         
         uid = user['user_id']
-        unread_amount = execute_pri_sql(f"SELECT count(id) as `amount` FROM food.alert WHERE `read` = 'False' AND `target_id` = '{uid}'")
+        unread_amount = execute_pri_sql("SELECT count(id) as `amount` FROM food.alert WHERE `read` = 'False' AND `target_id` = %s", (uid))
         return unread_amount[0]
     except auth.RevokedIdTokenError:
         # Token revoked, inform the user to reauthenticate or signOut().
@@ -63,7 +63,7 @@ async def get_unread_amount(response: Response, access_token: Optional[str] = Co
             user = auth.verify_id_token(currentuser['idToken'], check_revoked=True)
             uid = user['user_id']
 
-            unread_amount = execute_pri_sql(f"SELECT count(id) as `amount` FROM food.alert WHERE `read` = 'False' AND `target_id` = '{uid}'")
+            unread_amount = execute_pri_sql("SELECT count(id) as `amount` FROM food.alert WHERE `read` = 'False' AND `target_id` = %s", (uid))
             return unread_amount[0]
         except HTTPException as e:
             error = json.loads(e.args[1])['error']['message']
@@ -91,7 +91,7 @@ async def get_alerts(response: Response, access_token: Optional[str] = Cookie(No
         print(user)
         
         uid = user['user_id']
-        alerts = execute_pri_sql(f"SELECT * FROM food.alert WHERE `target_id` = '{uid}' ORDER BY `read` ASC")
+        alerts = execute_pri_sql("SELECT * FROM food.alert WHERE `target_id` = %s ORDER BY `read` ASC", (uid))
         return alerts
 
     except auth.RevokedIdTokenError:
@@ -113,7 +113,7 @@ async def get_alerts(response: Response, access_token: Optional[str] = Cookie(No
             response.set_cookie(key="userId", value=currentuser['userId'], httponly=True)
             user = auth.verify_id_token(currentuser['idToken'], check_revoked=True)
             
-            alerts = execute_pri_sql(f"SELECT * FROM food.alert WHERE `target_id` = '{uid}' ORDER BY `read` ASC")
+            alerts = execute_pri_sql("SELECT * FROM food.alert WHERE `target_id` = %s ORDER BY `read` ASC", (uid))
             return alerts
 
         except requests.HTTPError as e:
@@ -145,5 +145,5 @@ async def setread(alert:setread, userId: Optional[str] = Cookie(None)):
     title = parse.unquote(alert.title)
     msg = parse.unquote(alert.msg)
 
-    execute_pri_sql(f"UPDATE food.alert SET `read` = 'True' WHERE `target_id` = '{userId}' AND `title` = '{title}' AND `msg` = '{msg}' AND `url` = '{url}'")
+    execute_pri_sql("UPDATE food.alert SET `read` = 'True' WHERE `target_id` = %s AND `title` = %s AND `msg` = %s AND `url` = %s", (userId, title, msg, url))
     return "complete"

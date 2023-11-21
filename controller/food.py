@@ -43,32 +43,32 @@ async def food_add(request: Request, authorized: bool = Depends(verify_token)):
         print()
         bar = 1
         if barcode == 0:
-            b_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'custom_food'")[0]['no'])
+            b_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'custom_food'", ())[0]['no'])
             b_num_len = "0"*(6-(len(str(int(b_num)+1))))
             n_num = "C{0}{1}-ZZ-AVG".format(b_num_len, int(b_num)+1)
             n_code ="C{0}{1}".format(b_num_len, int(b_num)+1)
-            b_food_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'food_db'")[0]['no'])
+            b_food_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'food_db'", ())[0]['no'])
             n_food_num = int(b_food_num)+1
-            pname = execute_sql("SELECT Nickname FROM user WHERE ID = '{0}'".format(authorized[1]))[0]['Nickname']
-            execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'custom_food'".format(int(b_num)+1))
-            execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'food_db'".format(n_food_num))
-            execute_sql("INSERT INTO foodb (NO, SAMPLE_ID, `에너지(kcal)`, new카테, 식품명, data_adder, 식품코드, `내용량_단위`, `총내용량(g)`, `per_gram`) VALUES ({0},'{1}','{2}','{3}', '{4}','{5}','{6}','{7}',{8},{9})".format(n_food_num, n_num, kcal, cate, name, pname, n_code, "g", weight, weight))
+            pname = execute_sql("SELECT Nickname FROM user WHERE ID = %s", (authorized[1]))[0]['Nickname']
+            execute_sql("UPDATE food_no SET no = %s WHERE `fetch` = 'custom_food'", (int(b_num)+1))
+            execute_sql("UPDATE food_no SET no = %s WHERE `fetch` = 'food_db'", (n_food_num))
+            execute_sql("INSERT INTO foodb (NO, SAMPLE_ID, `에너지(kcal)`, new카테, 식품명, data_adder, 식품코드, `내용량_단위`, `총내용량(g)`, `per_gram`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (n_food_num, n_num, kcal, cate, name, pname, n_code, "g", weight, weight))
 
             return n_num
         else:
-            bar = len(execute_sql("SELECT barcode FROM foodb WHERE barcode = {0}".format(barcode)))
+            bar = len(execute_sql("SELECT barcode FROM foodb WHERE barcode = %s", (barcode)))
         
         if bar == 0:
-            b_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'custom_food'")[0]['no'])
+            b_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'custom_food'", ())[0]['no'])
             b_num_len = "0"*(6-(len(str(int(b_num)+1))))
             n_num = "C{0}{1}-ZZ-AVG".format(b_num_len, int(b_num)+1)
             n_code ="C{0}{1}".format(b_num_len, int(b_num)+1)
             b_food_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'food_db'")[0]['no'])
             n_food_num = int(b_food_num)+1
-            pname = execute_sql("SELECT Nickname FROM user WHERE ID = '{0}'".format(authorized[1]))[0]['Nickname']
-            execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'custom_food'".format(int(b_num)+1))
-            execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'food_db'".format(n_food_num))
-            execute_sql("INSERT INTO foodb (NO, SAMPLE_ID, `에너지(kcal)`, new카테, 식품명, data_adder, 식품코드, barcode, `내용량_단위`, `총내용량(g)`, `per_gram`) VALUES ({0},'{1}','{2}','{3}', '{4}','{5}','{6}',{7},'{8}',{9},{10})".format(n_food_num, n_num, kcal, cate, name, pname, n_code, barcode, "g", weight, weight))
+            pname = execute_sql("SELECT Nickname FROM user WHERE ID = %s", (authorized[1]))[0]['Nickname']
+            execute_sql("UPDATE food_no SET no = %s WHERE `fetch` = 'custom_food'", (int(b_num)+1))
+            execute_sql("UPDATE food_no SET no = %s WHERE `fetch` = 'food_db'", (n_food_num))
+            execute_sql("INSERT INTO foodb (NO, SAMPLE_ID, `에너지(kcal)`, new카테, 식품명, data_adder, 식품코드, barcode, `내용량_단위`, `총내용량(g)`, `per_gram`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (n_food_num, n_num, kcal, cate, name, pname, n_code, barcode, "g", weight, weight))
 
             return n_num
         else:
@@ -91,12 +91,13 @@ async def food_search(request: Request):
             search = "SELECT SAMPLE_ID, 식품명, per_gram, `에너지(kcal)` as 칼로리 FROM foodb WHERE "
             for keyword in keywords: 
                 if keyword != "":
-                    if keyword[:1] != "":
-                        search = search + "{0} LIKE \"%{1}%\" OR ".format("식품명", keyword)
-                    else:
-                        search = search + "{0} LIKE \"%{1}%\" OR ".format("식품명", keyword[1:])
+                    if ";" or "--" not in keyword:
+                        if keyword[:1] != "":
+                            search = search + "{0} LIKE \"%{1}%\" OR ".format("식품명", keyword)
+                        else:
+                            search = search + "{0} LIKE \"%{1}%\" OR ".format("식품명", keyword[1:])
 
-            res = execute_sql(search[0:-4]+f" AND `new카테` = '{cate}'")
+            res = execute_sql(search[0:-4]+" AND `new카테` = %s", (cate))
             return res
     
 @foodapi.post("/search/or")
@@ -110,17 +111,18 @@ async def food_search(input:search_input):
             search = "SELECT SAMPLE_ID, 식품명, per_gram, `에너지(kcal)` as 칼로리 FROM foodb WHERE "
             for keyword in keywords:
                 if keyword != "":
-                    if keyword[:1] != "":
-                        search = search + "{0} LIKE \"%{1}%\" OR ".format("식품명", keyword)
-                    else:
-                        search = search + "{0} LIKE \"%{1}%\" OR ".format("식품명", keyword[1:])
+                    if ";" or "--" not in keyword:
+                        if keyword[:1] != "":
+                            search = search + "{0} LIKE \"%{1}%\" OR ".format("식품명", keyword)
+                        else:
+                            search = search + "{0} LIKE \"%{1}%\" OR ".format("식품명", keyword[1:])
 
             res = execute_sql(search[0:-4])
             return res
     
 @foodapi.get("/detail/{sample_id}")
 async def food_datail(sample_id:str):
-        detail = execute_sql("SELECT 식품명, per_gram, 내용량_단위, 유통사, new카테, `에너지(kcal)` FROM foodb WHERE SAMPLE_ID = '%s'" % sample_id)
+        detail = execute_sql("SELECT 식품명, per_gram, 내용량_단위, 유통사, new카테, `에너지(kcal)` FROM foodb WHERE SAMPLE_ID = '%s'", (sample_id))
         if len(detail) == 0:
             raise HTTPException(400, "Could not find food with this sample id.")
         

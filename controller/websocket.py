@@ -382,7 +382,7 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
 @chat.on_event("startup")
 async def start_up():
     await broadcast.connect()
-    execute_sql("TRUNCATE chatroom")
+    execute_sql("TRUNCATE chatroom", ())
     #asyncio.create_task(mutecheck())
 
 @chat.on_event("shutdown")

@@ -344,12 +344,12 @@ class setinfomsg(BaseModel):
 async def setinfomesg(data:setinfomsg ,authorized: bool = Depends(verify_token)):
     if authorized:
         msg = data.msg
-        sql = "UPDATE infomsg SET message = '%s' WHERE ID = '%s'" % (msg, authorized[1])
-        res = execute_sql(sql)
+        sql = "UPDATE infomsg SET message = %s WHERE ID = %s"
+        res = execute_sql(sql, (msg, authorized[1]))
         if res == 0:
-            sql = "INSERT INTO infomsg VALUES ('%s','%s')" % (authorized[1], msg)
+            sql = "INSERT INTO infomsg VALUES (%s,%s)"
             try:
-                res = execute_sql(sql)
+                res = execute_sql(sql,(authorized[1], msg))
                 return "data created"
             except IntegrityError as e:
                 if e.args[0] == 1062:
@@ -746,7 +746,7 @@ async def user_login(userdata: UserLogindata, request: Request, response: Respon
 
     currentuser = Auth.current_user
     try:
-        userjson= execute_sql("SELECT * FROM user WHERE ID = \"%s\"" % currentuser['localId'])[0]
+        userjson= execute_sql("SELECT * FROM user WHERE ID = %s", currentuser['localId'])[0]
     except TypeError:
         raise HTTPException(400, Invaild_Email)
     except IndexError:

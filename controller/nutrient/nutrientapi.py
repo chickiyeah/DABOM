@@ -86,12 +86,13 @@ month_error = {"code":"ER021","DETAIL":"0세이하 개월수는 0~11 개월 입�
 
 
 @nutrient.get('/calculate/kcal')
+#개인 칼로리 계산
 async def calculate_kcal(pal: calculate,authorized: bool = Depends(verify_user_token)):
     pal = pal.pal
     if authorized:
         uid = authorized[1]
-        sql = "SELECT height, weight, gender, age FROM user WHERE ID = '%s'" % uid
-        user = execute_sql(sql)[0]
+        sql = "SELECT height, weight, gender, age FROM user WHERE ID = '%s'"
+        user = execute_sql(sql, (uid))[0]
         if user['height'] != "" and user['weight'] != "" and (user['gender'] == "male" or user['gender'] == "female"):
             if user['gender'] == "male":
                 base = 66.47 + (13.75*float(user['weight'])) + (5*float(user['height'])) - (6.76 * int(user['age']))
@@ -104,12 +105,13 @@ async def calculate_kcal(pal: calculate,authorized: bool = Depends(verify_user_t
             return "2000 kcal"
         
 @nutrient.post('/culcutaete/tandanji')
+#탄단지 미사용
 async def calculate_tandanji(pal: calculate,authorized: bool = Depends(verify_user_token)):
     pal = pal.pal
     if authorized:
         uid = authorized[1]
-        sql = "SELECT height, weight, gender, age FROM user WHERE ID = '%s'" % uid
-        user = execute_sql(sql)[0]
+        sql = "SELECT height, weight, gender, age FROM user WHERE ID = '%s'" 
+        user = execute_sql(sql, (uid))[0]
         if user['height'] != "" and user['weight'] != "" and (user['gender'] == "male" or user['gender'] == "female"):
             if user['gender'] == "male":
                 base = 66.47 + (13.75*float(user['weight'])) + (5*float(user['height'])) - (6.76 * int(user['age']))
@@ -122,20 +124,20 @@ async def calculate_tandanji(pal: calculate,authorized: bool = Depends(verify_us
             return "2000 kcal"
         
 @nutrient.get('/calculate/bmi')
+#BMI 계산
 async def calculate_bmi(authorized: bool = Depends(verify_token)):
     if authorized:
         uid = authorized[1]
-        sql = "SELECT Nickname, height, weight FROM user WHERE ID = '%s'" % uid
-        data = execute_sql(sql)[0]
+        sql = "SELECT Nickname, height, weight FROM user WHERE ID = '%s'"
+        data = execute_sql(sql, (uid))[0]
         if data['height'] == "" or data['weight'] == "":
+            #빈 값일시 오류 리턴
             raise HTTPException(400, value_error)
         else:
             height = float(data['height']) * 0.01
             bmi = float(data['weight'])/(height*height)
 
             bmi = math.floor(bmi * 10)/10
-            
-            print(bmi)
 
             if bmi >= 30:
                 status = "고도비만"
@@ -148,6 +150,7 @@ async def calculate_bmi(authorized: bool = Depends(verify_token)):
             elif (bmi <= 18.4): #(bmi >= 11.1) and 
                 status = "저체중"
             else:
+                #도저히 나올수 없는 bmi 수치
                 raise HTTPException(401, value_error)
             
             f_res = {
@@ -160,15 +163,17 @@ async def calculate_bmi(authorized: bool = Depends(verify_token)):
     
 
 @nutrient.get('/categories')
+#음식 카테고리
 async def get_categories():   
     sql = "SELECT new카테 as 카테고리,  count(new카테) as 개수 FROM food.foodb GROUP BY new카테 ORDER BY new카테"
-    res = execute_sql(sql)
+    res = execute_sql(sql, ())
     return res
 
 @nutrient.get('/recomm2000')
+#
 async def get_recomm2000():
     sql = "SELECT * FROM food.recommeat"
-    return execute_sql(sql)
+    return execute_sql(sql, ())
 
 @nutrient.get('/recomm/{age}/{gender}')
 async def get_recommand(age, gender):
@@ -185,8 +190,8 @@ async def get_recommand(age, gender):
             else:
                 raise HTTPException(400, age_error)
 
-        sql = 'SELECT * FROM food.'+gender+' WHERE 연령 = \"'+age+'\"'
-        return execute_sql(sql)
+        sql = 'SELECT * FROM food.%s WHERE 연령 = %s'
+        return execute_sql(sql, (gender, age))
 
     if gender == 'male' or gender == 'female':     
         return get_recomm(age, gender)
@@ -205,7 +210,7 @@ async def get_cus24_barcode(barcode: str):
 async def get_object_with_barcode(barcode:str):
 
     #제공된 바코드가 DB에 있는지 확인
-    detail = execute_sql("SELECT 식품명, per_gram, 내용량_단위, 유통사, new카테, `에너지(kcal)` FROM foodb WHERE `barcode` = '%s'" % barcode)
+    detail = execute_sql("SELECT 식품명, per_gram, 내용량_단위, 유통사, new카테, `에너지(kcal)` FROM foodb WHERE `barcode` = %s", (barcode))
     if len(detail) != 0:
         #있으면 데이터 리턴
         return detail[0]
@@ -354,9 +359,9 @@ async def get_object_with_barcode(barcode:str):
                     print("under")                      
                     
 
-                    b_food_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'food_db'")[0]['no'])
+                    b_food_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'food_db'")[0]['no'], ())
                     n_food_num = int(b_food_num)+1
-                    b_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'custom_food'")[0]['no'])
+                    b_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'custom_food'")[0]['no'], ())
                     b_num_len = "0"*(6-(len(str(int(b_num)+1))))
                     n_num = "C{0}{1}-ZZ-AVG".format(b_num_len, int(b_num)+1)
                     n_code ="C{0}{1}".format(b_num_len, int(b_num)+1)
@@ -368,8 +373,8 @@ async def get_object_with_barcode(barcode:str):
                     name = fd_n_name#title1[:n_index]
                     #print(str(re.sub('<.+?>', '', str(title[k]), 0).strip()))
                     #print(name)
-                    dlen = len(execute_sql("SELECT 식품명 FROM foodb WHERE 식품명 LIKE \"%{0}%\"".format(name)))
-                    bar = len(execute_sql("SELECT barcode FROM foodb WHERE barcode = {0}".format(s_barcode)))
+                    dlen = len(execute_sql("SELECT 식품명 FROM foodb WHERE 식품명 LIKE %s", ("%"+name+"%")))
+                    bar = len(execute_sql("SELECT barcode FROM foodb WHERE barcode = %s", (s_barcode)))
                     #print("dlen"+str(dlen))
                     kcal = "`에너지(kcal)`"
                     tancu = "`탄수화물(g)`"
@@ -586,11 +591,11 @@ async def get_object_with_barcode(barcode:str):
                             except IndexError:
                                 print(nute+" 데이터 불완성 스킵")
 
-                        sql = "INSERT INTO foodb ({0}) VALUES ({1})".format(front, back)
+                        sql = "INSERT INTO foodb (%s) VALUES (%s)"
                         #print(sql)
-                        res = execute_sql(sql)
-                        execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'custom_food'".format(int(b_num)+1))
-                        execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'food_db'".format(n_food_num))
+                        res = execute_sql(sql, (front, back))
+                        execute_sql("UPDATE food_no SET no = %s WHERE `fetch` = 'custom_food'", (int(b_num)+1))
+                        execute_sql("UPDATE food_no SET no = %s WHERE `fetch` = 'food_db'", (n_food_num))
                         #print(res)
                         try:                            
                             if len(glist) != 1:
@@ -637,9 +642,9 @@ async def get_object_with_barcode(barcode:str):
                     print("under")                      
                     
 
-                    b_food_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'food_db'")[0]['no'])
+                    b_food_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'food_db'")[0]['no'], ())
                     n_food_num = int(b_food_num)+1
-                    b_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'custom_food'")[0]['no'])
+                    b_num = str(execute_sql("SELECT `no` FROM food_no WHERE `fetch` = 'custom_food'")[0]['no'], ())
                     b_num_len = "0"*(6-(len(str(int(b_num)+1))))
                     n_num = "C{0}{1}-ZZ-AVG".format(b_num_len, int(b_num)+1)
                     n_code ="C{0}{1}".format(b_num_len, int(b_num)+1)
@@ -651,8 +656,8 @@ async def get_object_with_barcode(barcode:str):
                     name = title1[:n_index]
                     #print(str(re.sub('<.+?>', '', str(title[k]), 0).strip()))
                     #print(name)
-                    dlen = len(execute_sql("SELECT 식품명 FROM foodb WHERE 식품명 LIKE \"%{0}%\"".format(name)))
-                    bar = len(execute_sql("SELECT barcode FROM foodb WHERE barcode = {0}".format(s_barcode)))
+                    dlen = len(execute_sql("SELECT 식품명 FROM foodb WHERE 식품명 LIKE %s", ("%"+name+"%")))
+                    bar = len(execute_sql("SELECT barcode FROM foodb WHERE barcode = %s", (s_barcode)))
                     #print("dlen"+str(dlen))
                     kcal = "`에너지(kcal)`"
                     tancu = "`탄수화물(g)`"
@@ -877,11 +882,11 @@ async def get_object_with_barcode(barcode:str):
                             
                         if (fd_kcal == 0):
                             raise HTTPException(400, "열량 데이터가 없습니다.")
-                        sql = "INSERT INTO foodb ({0}) VALUES ({1})".format(front, back)
+                        sql = "INSERT INTO foodb (%s) VALUES (%s)"
                         #print(sql)
-                        res = execute_sql(sql)
-                        execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'custom_food'".format(int(b_num)+1))
-                        execute_sql("UPDATE food_no SET no = {0} WHERE `fetch` = 'food_db'".format(n_food_num))
+                        res = execute_sql(sql, (front, back))
+                        execute_sql("UPDATE food_no SET no = %s WHERE `fetch` = 'custom_food'", (int(b_num)+1))
+                        execute_sql("UPDATE food_no SET no = %s WHERE `fetch` = 'food_db'", (n_food_num))
                         #print(res)
                         try:                            
                             if len(glist) != 1:
