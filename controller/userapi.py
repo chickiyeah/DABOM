@@ -1298,9 +1298,17 @@ async def get_eat_avg(to_day:str, authorized: bool = Depends(verify_token)):
     if authorized:
         now = str((datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%Y-%m-%d"))
 
+<<<<<<< Updated upstream
         sql = "SELECT `foods`,`total_kcal` FROM `UserEat` WHERE `id` = %s AND `created_at` BETWEEN date(%s) AND date(%s) AND (deleted IS NULL OR deleted = 'false')"
 
         res = execute_sql(sql, (authorized[1], to_day, now))
+=======
+        sql = f"SELECT `foods`,`total_kcal` FROM `UserEat` WHERE `id` = '{authorized[1]}' AND `created_at` BETWEEN date('{to_day}') AND date('{now}') AND (deleted IS NULL OR deleted = 'false')"
+        
+        print(sql)
+
+        res = execute_sql(sql)
+>>>>>>> Stashed changes
         
         to_kcal = 0
         

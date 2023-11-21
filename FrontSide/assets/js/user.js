@@ -513,7 +513,7 @@ async function findaccount(){
     joinBirday.value = "";
   }
   document.querySelector(".loading").style.display = 'flex';
-fetch("http://dabom.kro.kr/api/user/findid?birthday="+`${bir_mon_val}/${bir_col_val}/${bir_day_val}`, {
+fetch("https://dabom.kro.kr/api/user/findid?birthday="+`${bir_mon_val}/${bir_col_val}/${bir_day_val}`, {
   method: "POST", 
   headers: {
     "Content-Type": "application/json",
