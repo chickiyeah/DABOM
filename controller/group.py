@@ -382,7 +382,7 @@ async def kick_member(request:Request, authorized:bool = Depends(verify_token)):
         m_member_id = {
             'member_id': member_id
         }
-        mem_g = json.loads(execute_sql("SELECT `groups` FROM user WHERE `ID` = %(member_id)s OR `ID` = 'DELETED-%(member_id)s'", (m_member_id), ())[0]['groups'])
+        mem_g = json.loads(execute_sql("SELECT `groups` FROM user WHERE `ID` = %s OR `ID` = %s", (member_id, "DELETED-"+member_id))[0]['groups'])
 
         #print(mem_g, group_id)
         #print(members, member_id)
@@ -391,7 +391,7 @@ async def kick_member(request:Request, authorized:bool = Depends(verify_token)):
         mem_g.remove(group_id)
         members.remove(member_id)
             
-        execute_sql("UPDATE `user` SET `groups` = %(mem_g)s WHERE `ID` = %(member_id)s OR `ID` = 'DELETED-%(member_id)s'", (m_member_id), ())
+        execute_sql("UPDATE `user` SET `groups` = %s WHERE `ID` = %s OR `ID` = %s", (mem_g, member_id, "DELETED-"+member_id))
         execute_sql("UPDATE `group` SET `members` = %s WHERE `id` = %s", (members, group_id))
 
         await group_log(group_id, "kick", authorized[1] or "admin", member_id)

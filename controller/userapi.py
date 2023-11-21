@@ -347,7 +347,7 @@ async def setinfomesg(data:setinfomsg ,authorized: bool = Depends(verify_token))
         sql = "UPDATE infomsg SET message = %s WHERE ID = %s"
         res = execute_sql(sql, (msg, authorized[1]))
         if res == 0:
-            sql = "INSERT INTO infomsg VALUES (%s,%s)"
+            sql = "INSERT INTO infomsg VALUES (%s, %s)"
             try:
                 res = execute_sql(sql,(authorized[1], msg))
                 return "data created"
@@ -373,16 +373,16 @@ async def edit_user_profile(request: Request, authorized: bool = Depends(verify_
             raise HTTPException(403, "캡차 인증에 실패했습니다.")
         
         print(g_cap_res)
-        execute_sql(f"UPDATE `user` SET `Nickname` = '{h_data['Nickname']}', `gender` = '{h_data['gender']}', `birthday` = '{h_data['birthday']}', `height` = {h_data['height']}, `weight` = {h_data['weight']}, `profile_image` = '{h_data['profile_image']}' WHERE `ID` = '{userId}'")
-        execute_sql(f"UPDATE `infomsg` SET `message` = '{h_data['imsg']}' WHERE `ID` = '{userId}'")
+        execute_sql("UPDATE `user` SET `Nickname` = %s, `gender` = %s, `birthday` = %s, `height` = %s, `weight` = %s, `profile_image` = %s WHERE `ID` = %s", (h_data['Nickname'], h_data['gender'], h_data['birthday'], h_data['height'], h_data['weight'], h_data['profile_image'], userId))
+        execute_sql("UPDATE `infomsg` SET `message` = %s WHERE `ID` = %s", (h_data['imsg'], userId))
 
         return True
 
 @userapi.get('/cookie/me')
 async def reading(userId: Optional[str] = Cookie(None)): 
-    user = execute_sql("SELECT * FROM `user` WHERE `ID` = '"+userId+"'")
+    user = execute_sql("SELECT * FROM `user` WHERE `ID` = %s", (userId))
         
-    imsg = execute_sql("SELECT * FROM infomsg WHERE `ID` = '"+userId+"'")
+    imsg = execute_sql("SELECT * FROM infomsg WHERE `ID` = %s", (userId))
     user[0]['imsg'] = imsg[0]['message']
         
     return user[0]
@@ -575,9 +575,9 @@ async def f_verify_token(response: Response, access_token: Optional[str] = Cooki
         # Verify the ID token while checking if the token is revoked by
         # passing check_revoked=True.
         currentuser = auth.verify_id_token(access_token, check_revoked=True)
-        print(currentuser)
+        #print(currentuser)
         # Token is valid and not revoked.
-        user = execute_sql("SELECT `Nickname`, `profile_image`, `ID` FROM `user` WHERE `ID` = '"+currentuser['user_id']+"'")
+        user = execute_sql("SELECT `Nickname`, `profile_image`, `ID` FROM `user` WHERE `ID` = %s", (currentuser['user_id']))
 
         return user
     except auth.RevokedIdTokenError:
@@ -615,7 +615,7 @@ async def f_verify_token(response: Response, access_token: Optional[str] = Cooki
             response.set_cookie(key="access_token", value=currentuser['idToken'], httponly=True)
             response.set_cookie(key="refresh_token", value=currentuser['refreshToken'], httponly=True)
             response.set_cookie(key="userId", value=currentuser['userId'], httponly=True)
-            user = execute_sql("SELECT `Nickname`, `profile_image`, `ID` FROM `user` WHERE `ID` = '"+currentuser['userId']+"'")
+            user = execute_sql("SELECT `Nickname`, `profile_image`, `ID` FROM `user` WHERE `ID` = %s", (currentuser['userId']))
 
             return user
         except requests.HTTPError as e:
@@ -638,9 +638,9 @@ async def f_verify_token(response: Response, access_token: Optional[str] = Cooki
 @userapi.get("/get_user")
 async def get_user(id:str, authorized:bool = Depends(verify_admin_token)):
     if authorized:
-        user = execute_sql("SELECT `Nickname`, `profile_image`, `ID` FROM `user` WHERE `ID` = '"+id+"'")
+        user = execute_sql("SELECT `Nickname`, `profile_image`, `ID` FROM `user` WHERE `ID` = %s", (id))
         
-        imsg = execute_sql("SELECT * FROM infomsg WHERE `ID` = '"+id+"'")
+        imsg = execute_sql("SELECT * FROM infomsg WHERE `ID` = %s", (id))
         user[0]['imsg'] = imsg[0]['message']
         
         return user
@@ -652,13 +652,14 @@ async def get_users(id:str, authorized:bool = Depends(verify_admin_token)):
         id = json.loads(id)
         print(id)
         for u in id:
-            if back == "":
-                back = "`ID` = '"+ u + "'"
-            else:
-                back = back + " OR `ID` = '"+ u + "'"
+            if ";" or "--" not in u:
+                if back == "":
+                    back = "`ID` = '"+ u + "'"
+                else:
+                    back = back + " OR `ID` = '"+ u + "'"
         f_users = []
 
-        users = execute_sql("SELECT `Nickname`, `profile_image` FROM `user` WHERE "+back)
+        users = execute_sql("SELECT `Nickname`, `profile_image` FROM `user` WHERE %s", (back))
 
         return users 
     
@@ -685,15 +686,19 @@ async def user_delete(authorized:bool = Depends(verify_token)):
         user = authorized[2]
         id = user['user_id']
         email = user['firebase']['identities']['email'][0]
-        sql = 'SELECT Nickname FROM user WHERE ID = "%s"' % id
-        res = execute_sql(sql)
+        sql = 'SELECT Nickname FROM user WHERE ID = %s'
+        res = execute_sql(sql, (id))
         if len(res) == 0:
             raise HTTPException(400, User_NotFound)
 
         nickname = res[0]
         print(nickname)
 
-        sql = "UPDATE user SET ID = \"removed-{0}\", email = \"removed-{1}\", Nickname = \"removed-{2}\" WHERE ID = \"{0}\" AND email = \"{1}\"".format(id, email, nickname['Nickname'])
+        user_data = {
+            "id": id,
+        }
+
+        sql = "UPDATE user SET ID = %s, email = %s, Nickname = %s WHERE ID = %s AND email = %s", ("removed-"+id, "removed-"+email, "removed-"+nickname['Nickname'], id, email)
         res = execute_sql(sql)
 
         print(sql)
@@ -848,7 +853,7 @@ async def user_login(userdata: UserLogindata, request: Request, response: Respon
     id = userjson['ID']
     login_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     ip = request.client.host
-    execute_sql("INSERT INTO loginlog VALUES ('{0}','{1}','{2}','{3}')".format(id, login_at, ip, userjson['Nickname']))
+    execute_sql("INSERT INTO loginlog VALUES (%s, %s, %s, %s)", (id, login_at, ip, userjson['Nickname']))
     response.set_cookie(key="access_token", value=currentuser['idToken'], httponly=True)
     response.set_cookie(key="refresh_token", value=currentuser['refreshToken'], httponly=True)
     response.set_cookie(key="userId", value=currentuser['localId'], httponly=True)
@@ -1018,9 +1023,9 @@ async def user_create(userdata: UserRegisterdata):
         d.login("noreply.dabom", "sxhmurnajtenjtbr")
         d.sendmail("noreply.dabom@gmail.com", email, msg.as_string())       
 
-    execute_sql(f"INSERT INTO infomsg (ID, message) VALUES ('{id}','없음')")
-    sql = "INSERT INTO user VALUES (\""+email+"\",\""+id+"\",\""+nickname+"\",\""+str(now.strftime("%Y-%m-%d %H:%M:%S"))+"\",\""+gender+"\",\""+str(age)+"\",\""+height+"\",\""+weight+"\", \"[]\", '[]', 'False',  '[]', \""+str(t_birthday.strftime("%Y-%m-%d"))+"\",'"+image+"', '[]')"
-    res = execute_sql(sql)
+    execute_sql("INSERT INTO infomsg (ID, message) VALUES (%s,'없음')", (id))
+    sql = "INSERT INTO user VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, \"[]\", '[]', 'False',  '[]', %s, %s, '[]')"
+    res = execute_sql(sql, (email, id, nickname, str(now.strftime("%Y-%m-%d %H:%M:%S")), gender, str(age), height, weight, str(t_birthday.strftime("%Y-%m-%d")), image))
     if res != 1:
         raise HTTPException(500, "ERROR ON CREATE DATA FOR NEW USER")
     
@@ -1049,8 +1054,8 @@ async def user_findid(birthday: str):
     except SyntaxError:
         raise HTTPException(400, er039)
 
-    sql = "SELECT * FROM user WHERE birthday = \"%s\"" % str(t_birthday.strftime("%Y-%m-%d"))
-    users = execute_sql(sql)
+    sql = "SELECT * FROM user WHERE birthday = %s"
+    users = execute_sql(sql, (str(t_birthday.strftime("%Y-%m-%d"))))
 
     resemails = {}
     resemails["data"] = []
@@ -1293,11 +1298,9 @@ async def get_eat_avg(to_day:str, authorized: bool = Depends(verify_token)):
     if authorized:
         now = str((datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%Y-%m-%d"))
 
-        sql = f"SELECT `foods`,`total_kcal` FROM `UserEat` WHERE `id` = '{authorized[1]}' AND `created_at` BETWEEN date('{to_day}') AND date('{now}') AND (deleted IS NULL OR deleted = 'false')"
-        
-        print(sql)
+        sql = "SELECT `foods`,`total_kcal` FROM `UserEat` WHERE `id` = %s AND `created_at` BETWEEN date(%s) AND date(%s) AND (deleted IS NULL OR deleted = 'false')"
 
-        res = execute_sql(sql)
+        res = execute_sql(sql, (authorized[1], to_day, now))
         
         to_kcal = 0
         
@@ -1315,19 +1318,19 @@ async def get_eat_avg(to_day:str, authorized: bool = Depends(verify_token)):
                 food = food.replace("\'", "\"")
                 print(food)
                 food = json.loads(food)
-                food_name = execute_sql("SELECT 식품명 FROM foodb WHERE SAMPLE_ID = '%s'" % food['code'])[0]['식품명']
+                food_name = execute_sql("SELECT 식품명 FROM foodb WHERE SAMPLE_ID = %s", (food['code']))[0]['식품명']
                 foods_l.append(food_name)
 
             to_kcal = to_kcal + int(data['total_kcal'])
 
         c_foods_l = sorted(Counter(foods_l).items(), key=lambda x: (-x[1], x[0]))
 
-        p = execute_sql(f"SELECT `gender`, `age` FROM `user` WHERE `ID` = '{authorized[1]}'")[0]
+        p = execute_sql("SELECT `gender`, `age` FROM `user` WHERE `ID` = %s", (authorized[1]))[0]
 
         p_gender = p['gender']
         p_age = p['age']
 
-        base_kcal = execute_sql(f"SELECT `kcal` FROM `{p_gender}` WHERE `연령` = '{p_age} 세'")
+        base_kcal = execute_sql("SELECT `kcal` FROM %s WHERE `연령` = %s", (p_gender, p_age+" 세"))
         
         if (len(base_kcal) != 0):
             base_kcal = base_kcal[0]['kcal']

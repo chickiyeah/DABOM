@@ -88,9 +88,9 @@ async def logfile(author, msg, channel):
     f_name = f_data.split('/')[3]
     f_link = f_data.split('/_/')[1].replace("\"","")
     now = str(datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"))
-    print(now)
-    res = execute_sql(f"INSERT INTO chat_file (file_type, file_type_ext, file_name_ext, file_link, author, channel, at, file_name) VALUES ('{f_type}','{f_type_extension}','{f_file_extension}','{f_link}','{author}','{channel}','{now}','{f_name}')")
-    print(res)
+    #print(now)
+    res = execute_sql(f"INSERT INTO chat_file (file_type, file_type_ext, file_name_ext, file_link, author, channel, at, file_name) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", (f_type, f_type_extension, f_file_extension, f_link, author, channel, now, f_name))
+    #print(res)
 
 async def receive_message(websocket: WebSocket, username: str, channel: str, u_id: str):
     async with broadcast.subscribe(channel) as subscriber:
@@ -104,7 +104,7 @@ async def receive_message(websocket: WebSocket, username: str, channel: str, u_i
 async def send_message(websocket: WebSocket, username: str, channel: str, u_id: str):
     data = await websocket.receive_text()
     print(u_id)
-    user = execute_sql("SELECT `Nickname`, `profile_image` FROM `user` WHERE `ID` = '"+u_id+"'")
+    user = execute_sql("SELECT `Nickname`, `profile_image` FROM `user` WHERE `ID` = %s", (u_id))
     print(user)
     pf_image = user[0]['profile_image']
     curse = check_word(data, "ko")
@@ -117,7 +117,7 @@ async def send_message(websocket: WebSocket, username: str, channel: str, u_id: 
         r.xadd(channel,{'time':now, 'username':username, 'channel':channel, 'message' :curse, 'u_id':u_id, 'pf_image':pf_image})
         event = MessageEvent(u_id=u_id, username=username, message=curse, time=now, pf_image=pf_image)
         if "pri" in channel:
-            execute_pri_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
+            execute_pri_sql("INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES (%s, %s, %s, %s, %s, %s)", (u_id, channel, curse, now, data, username))
         elif "@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr" in channel:
             print(data)
             if data.count("/*/") == 6:
@@ -132,18 +132,18 @@ async def send_message(websocket: WebSocket, username: str, channel: str, u_id: 
                     url = datas[4]
                     title = datas[5]
                     tar_msg = datas[6]
-                    execute_pri_sql(f"INSERT INTO `alert` (`id`, `msg`, `read`, `send_at`, `type`, `target_id`, `url`, `title`, `profile_image`)) VALUES ('{u_id}','{tar_msg}', 'False', '{now}', '{type}', '{tar_id}', '{url}', '{title}', '{profile_image}')")
+                    execute_pri_sql("INSERT INTO `alert` (`id`, `msg`, `read`, `send_at`, `type`, `target_id`, `url`, `title`, `profile_image`)) VALUES (%s, %s, 'False', %s, %s, %s, %s, %s, %s)", (u_id, tar_msg, now, type, tar_id, url, title, profile_image))
             else:
                 raise HTTPException(403)
         else:
-            execute_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
+            execute_sql("INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES (%s, %s, %s, %s, %s, %s)", (u_id, channel, curse, now, data, username))
         
         await broadcast.publish(channel, message=event.json())
     else:
         r.xadd(channel,{'time':now, 'username':username, 'channel':channel, 'message' :data, 'u_id':u_id, 'pf_image':pf_image})
         event = MessageEvent(u_id=u_id, username=username, message=data, time=now, pf_image=pf_image)
         if "pri" in channel:
-            execute_pri_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
+            execute_pri_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES (%s, %s, %s, %s, %s, %s)", (u_id, channel, curse, now, data, username))
         elif "@!UQGEOkHI@O6nVpLY-5-Ul{gefAFr" in channel:
             if data.count("/*/") == 6:
                 datas = data.split("/*/")
@@ -156,11 +156,11 @@ async def send_message(websocket: WebSocket, username: str, channel: str, u_id: 
                     url = datas[4]
                     title = datas[5]
                     tar_msg = datas[6]
-                    execute_pri_sql(f"INSERT INTO `alert` (`id`, `msg`, `read`, `send_at`, `type`, `target_id`, `url`, `title`, `profile_image`) VALUES ('{u_id}','{tar_msg}', 'False', '{now}', '{type}', '{tar_id}', '{url}', '{title}', '{profile_image}')")
+                    execute_pri_sql("INSERT INTO `alert` (`id`, `msg`, `read`, `send_at`, `type`, `target_id`, `url`, `title`, `profile_image`) VALUES (%s, %s, 'False', %s, %s, %s, %s, %s, %s)", (u_id, tar_msg, now, type, tar_id, url, title, profile_image))
             else:
                 raise HTTPException(403)
         else:
-            execute_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES ('{u_id}','{channel}','{curse}', '{now}', '{data}', '{username}')")
+            execute_sql(f"INSERT INTO `chat` (`id`, `group`, `filter_message`, `send_at`, `origin_message`, `nickname`) VALUES (%s, %s, %s, %s, %s, %s)", (u_id, channel, curse, now, data, username))
         
         await broadcast.publish(channel, message=event.json())
 
@@ -206,7 +206,7 @@ async def upload(ext:str, name:str, image: UploadFile = File(), access_token: Op
 
 @chat.get("/members")
 async def members(group: str):
-    guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{group}'")
+    guilds = execute_sql("SELECT room, members FROM chatroom WHERE room = %s", (group))
     print(guilds) 
     if guilds == None or len(guilds) == 0:
         raise HTTPException(400, er035)
@@ -224,7 +224,7 @@ async def mute(group: str, num: int, time_type: str, user_id: str, reason: Optio
         if not time_type in ['m','h','d']:
             raise HTTPException(400, er036)
         
-        groups = execute_sql("SELECT `id`, `owner`, `operator`, `name` FROM `group` WHERE `id` = {0}".format(group))
+        groups = execute_sql("SELECT `id`, `owner`, `operator`, `name` FROM `group` WHERE `id` = %s", (group))
         if len(groups) == 0:
             raise HTTPException(404, er023)
         
@@ -247,16 +247,16 @@ async def mute(group: str, num: int, time_type: str, user_id: str, reason: Optio
             plustime = (((num * 60) * 60) * 12)
             unmutesec = cursec + plustime
 
-        a = execute_sql("SELECT id FROM chat_mute WHERE id = %s" % user_id)
+        a = execute_sql("SELECT id FROM chat_mute WHERE id = %s", (user_id))
         if len(a) == 0:
-            execute_sql(f"INSERT INTO chat_mute VALUES('{user_id}', '{authorized[1]}', '{reason}',{unmutesec}, {group})")
+            execute_sql("INSERT INTO chat_mute VALUES(%s, %s, %s, %s, %s)", (user_id, authorized[1], reason, unmutesec, group))
         else:
-            execute_sql(f"UPDATE chat_mute SET unmute_at = {unmutesec} WHERE id = '{user_id}' AND `group` = {group}")
+            execute_sql("UPDATE chat_mute SET unmute_at = %s WHERE id = %s AND `group` = %s", (unmutesec, user_id, group))
 
 @chat.post("/unmute")
 async def unmute(group: str, user_id: str, authorized: bool = Depends(verify_token)):
     if authorized:
-        groups = execute_sql("SELECT `id`, `owner`, `operator`, `name` FROM `group` WHERE `id` = {0}".format(group))
+        groups = execute_sql("SELECT `id`, `owner`, `operator`, `name` FROM `group` WHERE `id` = %s", (group))
         if len(groups) == 0:
             raise HTTPException(404, er023)
         
@@ -265,7 +265,7 @@ async def unmute(group: str, user_id: str, authorized: bool = Depends(verify_tok
         if authorized[1] != n_group['owner'] and not authorized[1] in operators and not authorized[1] == "admin":
             raise HTTPException(403, er024)
         
-        execute_sql(f"DELETE FROM `chat_mute` WHERE id = '{user_id}' AND `group` = {group}")
+        execute_sql("DELETE FROM `chat_mute` WHERE id = %s AND `group` = %s", (user_id, group))
         return f"{user_id} unmuted"
 
 er037 = {"code": "ER037", "message": "이미 차단된 유저입니다."}
@@ -273,7 +273,7 @@ er037 = {"code": "ER037", "message": "이미 차단된 유저입니다."}
 @chat.post("/ban")
 async def ban(group: str, user_id: str, reason: Optional[str] = None, authorized: bool = Depends(verify_token)):
     if authorized:
-        groups = execute_sql("SELECT `id`, `owner`, `operator`, `name` FROM `group` WHERE `id` = {0}".format(group))
+        groups = execute_sql("SELECT `id`, `owner`, `operator`, `name` FROM `group` WHERE `id` = %s", (group))
         if len(groups) == 0:
             raise HTTPException(404, er023)
         
@@ -282,18 +282,18 @@ async def ban(group: str, user_id: str, reason: Optional[str] = None, authorized
         if authorized[1] != n_group['owner'] and not authorized[1] in operators and not authorized[1] == "admin":
             raise HTTPException(403, er024)
 
-        rl = execute_sql(f"SELECT `id` FROM chat_ban WHERE `id` = {user_id} AND `group_id` = {group}")
+        rl = execute_sql(f"SELECT `id` FROM chat_ban WHERE `id` = %s AND `group_id` = %s", (user_id, group))
 
         if not len(rl) == 0:
             raise HTTPException(400, er037)
         
-        execute_sql(f"INSERT INTO chat_ban VALUES ('{user_id}', '{authorized[1]}','{reason}',{group})")
+        execute_sql("INSERT INTO chat_ban VALUES (%s, %s, %s, %s)", (user_id, authorized[1], reason, group))
 
 er038 = {"code":"ER038","message":"차단되지 않은 유저입니다."}
 @chat.post('/pardon')
 async def pardon(group: str, user_id: str, authorized: bool = Depends(verify_token)):
     if authorized:
-        groups = execute_sql("SELECT `id`, `owner`, `operator`, `name` FROM `group` WHERE `id` = {0}".format(group))
+        groups = execute_sql("SELECT `id`, `owner`, `operator`, `name` FROM `group` WHERE `id` = %s", (group))
         if len(groups) == 0:
             raise HTTPException(404, er023)
         
@@ -302,16 +302,16 @@ async def pardon(group: str, user_id: str, authorized: bool = Depends(verify_tok
         if authorized[1] != n_group['owner'] and not authorized[1] in operators and not authorized[1] == "admin":
             raise HTTPException(403, er024)
 
-        rl = execute_sql(f"SELECT `id` FROM chat_ban WHERE `id` = {user_id} AND `group_id` = {group}")
+        rl = execute_sql("SELECT `id` FROM chat_ban WHERE `id` = %s AND `group_id` = %s", (user_id, group))
 
-        if len(rl) == 0:
+        if len(rl) == 0: 
             raise HTTPException(400, er038)
         
-        execute_sql(f"DELETE FROM chat_ban WHERE `id` = {user_id} AND `group_id` = {group}")
+        execute_sql("DELETE FROM chat_ban WHERE `id` = %s AND `group_id` = %s", (user_id, group))
 
 @chat.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Anonymous", channel: str = "lobby"):
-    guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{channel}'")
+    guilds = execute_sql("SELECT room, members FROM chatroom WHERE room = %s", (channel))
     print(u_id)
     user_d = {
         'name': username,
@@ -319,11 +319,11 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
     }
     if guilds == None or len(guilds) == 0:
         member = [f'{u_id}']
-        execute_sql(f"INSERT INTO chatroom (room, members) VALUES ('{channel}', '{json.dumps(member)}')")
+        execute_sql("INSERT INTO chatroom (room, members) VALUES (%s, %s)", (channel, json.dumps(member)))
     else:
         members = json.loads(guilds[0]['members'])
         members.append(u_id)
-        execute_sql(f"UPDATE chatroom SET members = '{json.dumps(members)}' WHERE room = '{channel}'")
+        execute_sql("UPDATE chatroom SET members = %s WHERE room = %s", (json.dumps(members), channel))
 
     if username == "Anonymous":
         await websocket.close()
@@ -333,10 +333,10 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
     await websocket.accept()
 
     if "pri" in channel:
-        comments = execute_pri_sql(f"SELECT * FROM chat WHERE `group` = '{channel}' ORDER BY send_at DESC LIMIT 100")
+        comments = execute_pri_sql("SELECT * FROM chat WHERE `group` = %s ORDER BY send_at DESC LIMIT 100", (channel))
         if len(comments) != 0:
             for comment in comments:
-                user = execute_sql("SELECT `Nickname`, `profile_image` FROM `user` WHERE `ID` = '"+u_id+"'")
+                user = execute_sql("SELECT `Nickname`, `profile_image` FROM `user` WHERE `ID` = %s", (u_id))
                 pf_image = user[0]['profile_image']
                 if comment['filter_message'] == "None":
                     event = MessageEvent(u_id=comment['id'], username=comment['nickname'], message=comment['origin_message'], time=str(comment['send_at']), pf_image=pf_image)
@@ -369,12 +369,12 @@ async def websocket_endpoint(websocket: WebSocket,u_id:str, username: str = "Ano
                 task.result()
     except WebSocketDisconnect as close:
 
-        guilds = execute_sql(f"SELECT room, members FROM chatroom WHERE room = '{channel}'")
+        guilds = execute_sql("SELECT room, members FROM chatroom WHERE room = %s", (channel))
         print(close.code)
         members = json.loads(guilds[0]['members'])
         members.remove(u_id)
         await exit_channel(username, channel)
-        execute_sql(f"UPDATE chatroom SET members = '{json.dumps(members)}' WHERE room = '{channel}'")
+        execute_sql("UPDATE chatroom SET members = %s WHERE room = %s", (json.dumps(members), channel))
         print("socket closed")
 
 
