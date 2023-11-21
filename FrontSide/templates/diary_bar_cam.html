@@ -49,7 +49,7 @@
                         let f_name = f_data['식품명']
                         if (previous.includes("기록")) {
                             alert("기록!")
-                            html = `<div title="${kcal}" per="${f_data['에너지(kcal)']}" tokcal="${f_data['에너지(kcal)']}" s_code=${f_data['SAMPLE_ID']} class="search_item">
+                            let html = `<div title="${kcal}" per="${f_data['에너지(kcal)']}" tokcal="${f_data['에너지(kcal)']}" s_code=${f_data['SAMPLE_ID']} class="search_item">
                                             <a onclick="editamount(this.parentElement)" href="javascript:"><span>${f_name}</span><span> / <span id="id="per_gram"">${f_data['per_gram']}</span><span id="default_gram" style="display:none">${value[3]}</span> g(ml)</span><span class="amount" style="display:none;"> X <span class="amount_num">2</span></span></a>
                                             <a onclick="remove_ele(this.parentElement)" href="javascript:">
                                                 <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
@@ -62,7 +62,7 @@
                         }
 
                         if (previous.includes("칼로리")) {
-                            html = `<div title="${kcal}" per="${f_data['에너지(kcal)']}" tokcal="${f_data['에너지(kcal)']}" s_code=${f_data['SAMPLE_ID']} class="search_item">
+                            let html = `<div title="${kcal}" per="${f_data['에너지(kcal)']}" tokcal="${f_data['에너지(kcal)']}" s_code=${f_data['SAMPLE_ID']} class="search_item">
                                             <a onclick="editamount(this.parentElement)" href="javascript:"><span>${f_name}</span><span> / <span id="per_gram">${f_data['per_gram']}</span><span id="default_gram" style="display:none">${value[3]}</span> g(ml)</span><span class="amount" style="display:none;"> X <span class="amount_num">2</span></span></a>
                                             <a onclick="remove_ele(this.parentElement)" href="javascript:">
                                                 <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
