@@ -68,9 +68,9 @@
                                                 <object data="/assets/images/close-icon.svg" type="image/svg+xml" aria-label="닫기아이콘"></object>
                                             </a>
                                         </div>`
-                            opener.opener.document.querySelector(".search_box").insertAdjacentHTML("beforeend", html)
+                            oopener.document.querySelector(".search_box").insertAdjacentHTML("beforeend", html)
                             var q_tokcal = parseInt(opener.opener.document.querySelector("#tokcal").innerText) + parseInt(f_data['에너지(kcal)']);
-                            opener.opener.document.querySelector("#tokcal").innerText = q_tokcal;
+                            opener.document.querySelector("#tokcal").innerText = q_tokcal;
                             opener.close();
                             window.close();
                         }
