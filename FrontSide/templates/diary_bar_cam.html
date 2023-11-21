@@ -31,11 +31,13 @@
         function onScanSuccess(decodedText, decodedResult) {
             // Handle on success condition with the decoded text or result.
             console.log(`Scan result: ${decodedText}`, decodedResult);
+            
+            eruda.init();
             // ...
             html5QrcodeScanner.clear();
             // ^ this will stop the scanner (video feed) and clear the scan area.
             document.write(`인식된 바코드 번호 ${decodedText}로 음식을 조회중입니다.`)
-            document.write(`<script>eruda.init();</script>`)
+            document.write(`eruda.init();`)
             url = "/api/nutrient/barcodecroll/"+decodedText
             var previous = opener.document.title
             fetch(url, {
