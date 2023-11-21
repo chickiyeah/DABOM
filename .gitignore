@@ -7,3 +7,5 @@ cert/serviceAccountKey.json
 *.pyc
 *.pyc
 cert/serviceAccountKey.json
+cert/serviceAccountKey.json
+*.json
