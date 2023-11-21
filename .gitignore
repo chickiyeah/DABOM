@@ -6,3 +6,4 @@ controller/__pycache__/websocket.cpython-311.pyc
 cert/serviceAccountKey.json
 *.pyc
 *.pyc
+cert/serviceAccountKey.json

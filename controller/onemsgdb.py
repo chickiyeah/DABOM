@@ -7,14 +7,14 @@ def __init1__():
     global pool1
     pool1 = pymysqlpool.ConnectionPool(size=2, pre_create_num=2, name='pool1', **config)
 
-def execute_pri_sql(sql:str):
+def execute_pri_sql(sql:str, args: object = None):
     global pool1
     con = pool1.get_connection()
     cursor = con.cursor(cursors.DictCursor)
     with cursor as cur:
 
         def get(sql):
-            cur.execute(sql)
+            cur.execute(sql, args)
             try:
                 con.close()
                 res = cur.fetchall()
@@ -25,7 +25,7 @@ def execute_pri_sql(sql:str):
 
         
         def edit(sql):
-            res = cur.execute(sql)
+            res = cur.execute(sql, args)
             try:
                 con.close()
                 return res
