@@ -321,7 +321,7 @@ async def process_invite(accept_type:str, group_id:int, req_id:str, tar_id:str, 
         p_group = json.loads(execute_sql("SELECT `groups` FROM `user` WHERE `ID` = %s", (tar_id))[0]['groups'])
         p_group.append(group_id)
         execute_sql("UPDATE user SET `groups` = %s WHERE ID = %s", (json.dumps(p_group), tar_id))
-        g_members = json.loads(execute_sql("SELECT `members` FROM `group` WHERE id = '%s'" % group_id)[0]['members'])
+        g_members = json.loads(execute_sql("SELECT `members` FROM `group` WHERE id = %s" % group_id)[0]['members'])
         g_members.append(tar_id)
         execute_sql("UPDATE `group` SET members = %s WHERE id = %s", (json.dumps(g_members), group_id))
         execute_sql("DELETE FROM f_verify WHERE `req_id` = %s AND `tar_id` = %s AND group_id = %s", (req_id, tar_id, group_id))

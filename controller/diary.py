@@ -332,7 +332,7 @@ async def post_update(data:update_diary, authorized: bool = Depends(verify_token
         if res['NO'] != uid:
             raise HTTPException(403, post_not_owner)
         
-        execute_sql("UPDATE UserEat SET `먹은종류` = '%s', `음식명` = '%s', `음식종류` = '%s', `칼로리` = %s, `음식이미지` = '%s', `메모` = '%s', `친구` = '%s', `제목` = '%s' WHERE `NO` = %s", (e_cate, f_name, f_cate, f_kcal, imgbase64, memo, with_friend, title, post_no))
+        execute_sql("UPDATE UserEat SET `먹은종류` = %s, `음식명` = %s, `음식종류` = %s, `칼로리` = %s, `음식이미지` = %s, `메모` = %s, `친구` = %s, `제목` = %s WHERE `NO` = %s", (e_cate, f_name, f_cate, f_kcal, imgbase64, memo, with_friend, title, post_no))
         return "글이 업데이트 되었습니다."
 
 @diaryapi.delete('/delete')
@@ -341,7 +341,7 @@ async def post_delete(request: Request, authorzed: bool = Depends(verify_token))
     if authorzed:
         data = await request.json()
         post_ids = data['post_ids']
-        notes = execute_sql("SELECT `no` FROM UserEat WHERE `id` = '%s' AND (deleted IS NULL OR deleted = 'false')", authorzed[1])
+        notes = execute_sql("SELECT `no` FROM UserEat WHERE `id` = %s AND (deleted IS NULL OR deleted = 'false')", authorzed[1])
         note_num = []
         for note in notes:
             note_num.append(int(note['no']))

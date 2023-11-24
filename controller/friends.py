@@ -62,7 +62,7 @@ async def get_friend(request: Request, authorzation: bool = Depends(verify_token
         f_res = []
 
         uid = authorzation[1]
-        sql = "SELECT friends FROM user WHERE ID = '%s'" % (uid)
+        sql = "SELECT friends FROM user WHERE ID = %s" % (uid)
         res = json.loads(execute_sql(sql)[0]['friends'])
         if len(res) == 0:
             e_res = {
@@ -113,7 +113,7 @@ async def friend_list(response: Response, page: int, access_token: Optional[str]
         
         sql = "SELECT * FROM infomsg WHERE"
         for e in res:
-            sql = sql + " ID = '%s' OR" % e
+            sql = sql + " ID = %s OR" % e
 
         sql = sql[0:-3] + " LIMIT 7 OFFSET %s" % (page * 7)
         
@@ -148,7 +148,7 @@ async def friend_list(response: Response, page: int, access_token: Optional[str]
         
             uid = user['user_id']
             page = page - 1
-            sql = "SELECT friends FROM user WHERE ID = '%s'"
+            sql = "SELECT friends FROM user WHERE ID = %s"
             res = json.loads(execute_sql(sql)[0]['friends'], (uid))
             if len(res) == 0:
                 e_res = {
@@ -161,7 +161,7 @@ async def friend_list(response: Response, page: int, access_token: Optional[str]
             
             sql = "SELECT * FROM infomsg WHERE"
             for e in res:
-                sql = sql + " ID = '%s' OR" % e
+                sql = sql + " ID = %s OR" % e
 
             sql = sql[0:-3] + " LIMIT 7 OFFSET %s" % (page * 7)
             
@@ -235,7 +235,7 @@ async def friend_request(uid:str, userId: Optional[str] = Cookie(None)):
             execute_sql("UPDATE food_no SET no = %s WHERE `fetch` = 'log_invite'", (newno))
 
             if d in f_list:
-                delteme = "DELETE FROM f_verify WHERE req_id = '%s' AND tar_id = '%s'"
+                delteme = "DELETE FROM f_verify WHERE req_id = %s AND tar_id = %s"
                 execute_sql(delteme, (requestid, targetid))
 
             keys = []
@@ -369,7 +369,7 @@ async def ban_friend(user_id: str, userId: Optional[str] = Cookie(None)):
             if user_id in f_list:
                 f_list.remove(user_id)
                 t_list.remove(userId)
-                #print("UPDATE user SET friends = '%s' WHERE `ID` = '%s" % (f_list, userId))
+                #print("UPDATE user SET friends = %s WHERE `ID` = '%s" % (f_list, userId))
                 execute_sql("UPDATE user SET friends = %s WHERE `ID` = %s", (json.dumps(f_list), userId))
                 execute_sql("UPDATE user SET friends = %s WHERE `ID` = %s", (json.dumps(t_list), user_id))
 

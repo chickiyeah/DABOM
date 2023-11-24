@@ -122,7 +122,7 @@ async def food_search(input:search_input):
     
 @foodapi.get("/detail/{sample_id}")
 async def food_datail(sample_id:str):
-        detail = execute_sql("SELECT 식품명, per_gram, 내용량_단위, 유통사, new카테, `에너지(kcal)` FROM foodb WHERE SAMPLE_ID = '%s'", (sample_id))
+        detail = execute_sql("SELECT 식품명, per_gram, 내용량_단위, 유통사, new카테, `에너지(kcal)` FROM foodb WHERE SAMPLE_ID = %s", (sample_id))
         if len(detail) == 0:
             raise HTTPException(400, "Could not find food with this sample id.")
         
