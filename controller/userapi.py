@@ -1330,7 +1330,7 @@ async def get_eat_avg(to_day:str, authorized: bool = Depends(verify_token)):
         p_gender = p['gender']
         p_age = p['age']
 
-        base_kcal = execute_sql("SELECT `kcal` FROM %s WHERE `연령` = %s", (p_gender, p_age+" 세"))
+        base_kcal = execute_sql("SELECT `kcal` FROM "+p_gender+" WHERE `연령` = %s", (str(p_age)+" 세"))
         
         if (len(base_kcal) != 0):
             base_kcal = base_kcal[0]['kcal']

@@ -128,7 +128,7 @@ async def calculate_tandanji(pal: calculate,authorized: bool = Depends(verify_us
 async def calculate_bmi(authorized: bool = Depends(verify_token)):
     if authorized:
         uid = authorized[1]
-        sql = "SELECT Nickname, height, weight FROM user WHERE ID = '%s'"
+        sql = "SELECT Nickname, height, weight FROM user WHERE ID = %s"
         data = execute_sql(sql, (uid))[0]
         if data['height'] == "" or data['weight'] == "":
             #빈 값일시 오류 리턴

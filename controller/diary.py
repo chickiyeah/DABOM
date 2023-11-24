@@ -276,7 +276,7 @@ async def post_get(request:Request, authorized: bool = Depends(verify_token)):
         
         json = await request.json()
         count = len(execute_sql("SELECT no from UserEat WHERE YEAR(created_at) = %s AND MONTH(created_at) = %s AND id = %s AND `with` = 'alone' AND (deleted IS NULL OR deleted = 'false')", (json['year'], json['month'], authorized[1])))
-        res = execute_sql("SELECT * from UserEat WHERE YEAR(created_at) = %s AND MONTH(created_at) = %s AND id = %s AND `with` = 'alone' AND (deleted IS NULL OR deleted = 'false') ORDER BY created_at %s LIMIT 3 OFFSET %s", (json['year'], json['month'], authorized[1], json['sort'], (int(json['page'])-1)*3))
+        res = execute_sql("SELECT * from UserEat WHERE YEAR(created_at) = %s AND MONTH(created_at) = %s AND id = %s AND `with` = 'alone' AND (deleted IS NULL OR deleted = 'false') ORDER BY created_at "+json['sort']+" LIMIT 3 OFFSET %s", (json['year'], json['month'], authorized[1], (int(json['page'])-1)*3))
 
         if len(res) == 0:
             raise HTTPException(404, post_not_found)
@@ -296,7 +296,7 @@ async def post_get(request:Request, authorized: bool = Depends(verify_token)):
         json = await request.json()
 
         count = len(execute_sql("SELECT no from UserEat WHERE YEAR(created_at) = %s AND MONTH(created_at) = %s AND id = %s AND (`with` = 'friend' OR `with` = 'couple') AND (deleted IS NULL OR deleted = 'false')", (json['year'], json['month'], authorized[1])))
-        res = execute_sql("SELECT * from UserEat WHERE YEAR(created_at) = %s AND MONTH(created_at) = %s AND id = %s AND (`with` = 'friend' OR `with` = 'couple') AND (deleted IS NULL OR deleted = 'false') ORDER BY created_at %s LIMIT 3 OFFSET %s", (json['year'], json['month'], authorized[1], json['sort'], (int(json['page'])-1)*3))
+        res = execute_sql("SELECT * from UserEat WHERE YEAR(created_at) = %s AND MONTH(created_at) = %s AND id = %s AND (`with` = 'friend' OR `with` = 'couple') AND (deleted IS NULL OR deleted = 'false') ORDER BY created_at "+json['sort']+" LIMIT 3 OFFSET %s", (json['year'], json['month'], authorized[1], (int(json['page'])-1)*3))
 
         if len(res) == 0:
             raise HTTPException(404, post_not_found)

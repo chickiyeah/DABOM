@@ -14,6 +14,7 @@ def execute_sql(sql:str, args:object=None):
     with cursor as cur:
 
         def get(sql):
+            print(sql)
             cur.execute(sql, args)
             try:
                 con.close()
