@@ -101,7 +101,7 @@ async def friend_list(response: Response, page: int, access_token: Optional[str]
         uid = user['user_id']
         page = page - 1
         sql = "SELECT friends FROM user WHERE ID = %s"
-        res = json.loads(execute_sql(sql)[0]['friends'], (uid))
+        res = json.loads(execute_sql(sql, (uid))[0]['friends'])
         if len(res) == 0:
             e_res = {
                 'friends': [],
@@ -113,12 +113,12 @@ async def friend_list(response: Response, page: int, access_token: Optional[str]
         
         sql = "SELECT * FROM infomsg WHERE"
         for e in res:
-            sql = sql + " ID = %s OR" % e
+            sql = sql + " ID = '%s' OR" % e
 
-        sql = sql[0:-3] + " LIMIT 7 OFFSET %s" % (page * 7)
+        sql = sql[0:-3] + " LIMIT 7 OFFSET %s"
         
         res = {
-            'friends': execute_sql(sql, ()),
+            'friends': execute_sql(sql, (page * 7)),
             'amount': len(res),
             'page': page +1
         }

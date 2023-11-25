@@ -12,6 +12,8 @@ from firebase_admin import storage
 from firebase_admin import _auth_utils
 from firebase import Firebase
 import datetime
+from urllib import parse
+
 from controller.credentials import verify_token, verify_admin_token
 diaryapi = APIRouter(prefix="/api/diary", tags=["diary"])
 
@@ -380,8 +382,7 @@ async def write_sub_comment(post_id:int, main_comment_id:int, request: Request, 
         comment = html.escape(data['comment'])
         comment_id = execute_sql(f"SELECT `no` FROM `food_no` WHERE `fetch` = 'comments'", ())[0]['no'] + 1
         created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        execute_sql("INSERT INTO `comments` (`post_id`, `id`, `type`, `comment`, `writer`, `main_comment`) VALUES (%s, %s, 'sub', %s, %s, %s)",  (post_id, comment_id, comment, authorized[1], main_comment_id))
+        execute_sql("INSERT INTO `comments` (`post_id`, `id`, `type`, `comment`, `writer`, `main_comment`) VALUES (%s, %s, 'sub', %s, %s, %s)",  (post_id, comment_id, parse.unquote(comment), authorized[1], main_comment_id))
         execute_sql("UPDATE `food_no` SET `no` = %s WHERE `fetch` = 'comments'", (comment_id))   
 
         return "sub comment writed"
@@ -589,7 +590,7 @@ async def post_delete(request: Request, post_id:int, authorzed: bool = Depends(v
         if not int(post_id) in note_num:
             raise HTTPException(403, post_not_owner)
 
-        execute_sql("INSERT INTO f_verify (`code`, `req_id`, `tar_id`, `group_id`, `type`) VALUES (%s, %s, %s ,0,'post_share')", (verifykey, authorzed[1], "post_"+post_id))
+        execute_sql("INSERT INTO f_verify (`code`, `req_id`, `tar_id`, `group_id`, `type`) VALUES (%s, %s, %s ,0,'post_share')", (verifykey, authorzed[1], "post_"+str(post_id)))
 
         return f"https://dabom.kro.kr/record_my?id={post_id}&v_key={verifykey}"
     
