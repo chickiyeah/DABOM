@@ -698,10 +698,9 @@ async def user_delete(authorized:bool = Depends(verify_token)):
             "id": id,
         }
 
-        sql = "UPDATE user SET ID = %s, email = %s, Nickname = %s WHERE ID = %s AND email = %s", ("removed-"+id, "removed-"+email, "removed-"+nickname['Nickname'], id, email)
-        res = execute_sql(sql)
+        sql = "UPDATE user SET ID = %s, email = %s, Nickname = %s WHERE ID = %s AND email = %s"
+        res = execute_sql(sql, ("removed-"+id, "removed-"+email, "removed-"+nickname['Nickname'], id, email))
 
-        print(sql)
 
         if res > 0: 
             auth.delete_user(id)

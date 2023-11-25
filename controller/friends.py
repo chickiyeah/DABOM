@@ -62,8 +62,8 @@ async def get_friend(request: Request, authorzation: bool = Depends(verify_token
         f_res = []
 
         uid = authorzation[1]
-        sql = "SELECT friends FROM user WHERE ID = %s" % (uid)
-        res = json.loads(execute_sql(sql)[0]['friends'])
+        sql = "SELECT friends FROM user WHERE ID = %s"
+        res = json.loads(execute_sql(sql, (uid))[0]['friends'])
         if len(res) == 0:
             e_res = {
                 'friends': [],

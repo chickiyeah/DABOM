@@ -45,11 +45,11 @@ async def post_add(request: Request, authorized: bool = Depends(verify_token)):
     if authorized:
         data = await request.json()
         uid = authorized[1]
-        imgs = data['images']
-        foods = data['foods']
+        imgs = json.dumps(data['images'])
+        foods = json.dumps(data['foods'])
         title = data['title']
         memo = data['desc']
-        friends = data['friends']
+        friends = json.dumps(data['friends'])
         eat_when = data['eat_when']
         s_with = data['with']
         to_kcal = data['total_kcal']
@@ -78,11 +78,11 @@ async def post_add(request: Request, authorized: bool = Depends(verify_token)):
     if authorized:
         data = await request.json()
         uid = authorized[1]
-        imgs = data['images']
-        foods = data['foods']
+        imgs = json.dumps(data['images'])
+        foods = json.dumps(data['foods'])
         title = data['title']
         memo = data['desc']
-        friends = data['friends']
+        friends = json.dumps(data['friends'])
         eat_when = data['eat_when']
         s_with = data['with']
         to_kcal = data['total_kcal']
@@ -136,11 +136,11 @@ async def post_add(request: Request, authorized: bool = Depends(verify_token)):
     if authorized:
         data = await request.json()
         uid = authorized[1]
-        imgs = data['images']
-        foods = data['foods']
+        imgs = json.dumps(data['images'])
+        foods = json.dumps(data['foods'])
         title = data['title']
         memo = data['desc']
-        friends = data['friends']
+        friends = json.dumps(data['friends'])
         eat_when = data['eat_when']
         s_with = data['with']
         to_kcal = data['total_kcal']
@@ -381,7 +381,7 @@ async def write_sub_comment(post_id:int, main_comment_id:int, request: Request, 
         comment_id = execute_sql(f"SELECT `no` FROM `food_no` WHERE `fetch` = 'comments'", ())[0]['no'] + 1
         created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        execute_sql("INSERT INTO `comments` (`post_id`, `id`, `type`, `comment`, `writer`, `created_at`, `main_comment`) VALUES (%s, %s 'sub', %s, %s, %s, %s)",  (post_id, comment_id, comment, authorized[1], created_at, main_comment_id))
+        execute_sql("INSERT INTO `comments` (`post_id`, `id`, `type`, `comment`, `writer`, `main_comment`) VALUES (%s, %s, 'sub', %s, %s, %s)",  (post_id, comment_id, comment, authorized[1], main_comment_id))
         execute_sql("UPDATE `food_no` SET `no` = %s WHERE `fetch` = 'comments'", (comment_id))   
 
         return "sub comment writed"
@@ -538,10 +538,10 @@ async def like_post(post_no:int, authorized: bool = Depends(verify_token)):
         if post_no in liked_post:
             raise HTTPException(403, "이미 좋아요를 누른 게시글 입니다.")
         else:    
-            post_like = int(execute_sql("SELECT `likecount` FROM `UserEat` WHERE `no` = %s")[0]['likecount'])
+            post_like = int(execute_sql("SELECT `likecount` FROM `UserEat` WHERE `no` = %s", (post_no))[0]['likecount'] )
             liked_post.append(post_no)
             execute_sql("UPDATE `UserEat` SET `likecount` = %s WHERE `no` = %s", (post_like + 1, post_no))
-            execute_sql("UPDATE `user` SET `liked_post` = %s WHERE `ID` = %s", (liked_post, authorized[1]))
+            execute_sql("UPDATE `user` SET `liked_post` = %s WHERE `ID` = %s", (json.dumps(liked_post), authorized[1]))
 
         return True
     
@@ -560,7 +560,7 @@ async def like_post(post_no:int, authorized: bool = Depends(verify_token)):
 
             liked_post.remove(post_no)
             execute_sql("UPDATE `UserEat` SET `likecount` = %s WHERE `no` = %s", (post_like - 1, post_no))
-            execute_sql("UPDATE `user` SET `liked_post` = %s WHERE `ID` = %s", (liked_post, authorized[1]))
+            execute_sql("UPDATE `user` SET `liked_post` = %s WHERE `ID` = %s", (json.dumps(liked_post), authorized[1]))
         else:
             raise HTTPException(404, "좋아요를 누른 게시글이 아닙니다.")
 
